@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Moses</string>
+    <string name="standardaddr">http://test.jahofmann.de/test.php</string>
+    <string name="username">Username</string>
+    <string name="webaddr">Website address</string>
+    <string name="password">Password</string>
+    <string name="connect">Connect</string>
+
+</resources>
