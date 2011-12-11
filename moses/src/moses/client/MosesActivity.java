@@ -2,6 +2,7 @@ package moses.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Timer;
 
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON;
@@ -30,6 +31,7 @@ public class MosesActivity extends Activity {
 	private Button btnconnect;
 	
 	private NetworkJSON task;
+	private Button btnLogout;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -52,8 +54,26 @@ public class MosesActivity extends Activity {
 				connect();
 			}
 		});
+		
+		btnLogout = (Button) findViewById(R.string.logoutText);
+		btnLogout.setVisibility(View.INVISIBLE);
+		btnLogout.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				logout();
+			}
+		});
 	}
-
+	
+	private void connect() {
+		NetworkJSON.url = txtWebAddr.getText().toString();
+		RequestLogin r = new RequestLogin(new ReqClass(), txtUname.getText().toString(), txtPW.getText().toString());
+		r.send();
+	}
+	
+	private void logout(){
+		
+	}
+	
 	private class ReqClass implements ReqTaskExecutor {
 
 		public void postExecution(String s) {
@@ -62,6 +82,16 @@ public class MosesActivity extends Activity {
 				j = new JSONObject(s);
 				if(RequestLogin.loginValid(j, txtUname.getText().toString())) {
 					txtSuccess.setText("SUCCESS");
+					
+					
+					txtSuccess.setVisibility(View.INVISIBLE);
+					txtWebAddr.setVisibility(View.INVISIBLE);
+					txtUname.setVisibility(View.INVISIBLE);
+					txtPW.setVisibility(View.INVISIBLE);
+					
+					btnconnect.setVisibility(View.INVISIBLE);
+					btnLogout.setVisibility(View.VISIBLE);
+					
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
 				}
@@ -81,11 +111,5 @@ public class MosesActivity extends Activity {
 		public void handleException(Exception e) {
 			txtSuccess.setText("FAILURE: " + e.getMessage());
 		}
-	}
-	
-	private void connect() {
-		NetworkJSON.url = txtWebAddr.getText().toString();
-		RequestLogin r = new RequestLogin(new ReqClass(), txtUname.getText().toString(), txtPW.getText().toString());
-		r.send();
 	}
 }

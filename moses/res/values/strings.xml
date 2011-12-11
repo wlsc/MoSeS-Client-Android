@@ -8,5 +8,6 @@
     <string name="connect">Connect</string>
     <string name="username_text">alex</string>
     <string name="userpassword_text">777</string>
+    <string name="logoutText">Logout</string>
 
 </resources>
