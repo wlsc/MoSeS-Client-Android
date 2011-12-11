@@ -42,6 +42,9 @@ public class RequestLogin {
 	}
 	
 	public static boolean loginValid(JSONObject j, String uname) throws JSONException {
-		return j.getString("LOGIN").equals(uname) && j.getString("STATUS").equals("GRANTED");
+		if(!j.getString("SESSIONID").equals("NULL")) {
+			return j.getString("LOGIN").equals(uname);
+		}
+		return false;
 	}
 }

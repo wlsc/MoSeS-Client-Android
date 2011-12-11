@@ -70,13 +70,11 @@ public class MosesActivity extends Activity {
 		}
 
 		public void updateExecution(ConnectionParam c) {
-			// TODO Auto-generated method stub
-			
+			txtSuccess.setText(c.toString());
 		}
 
 		public void handleException(Exception e) {
 			txtSuccess.setText("FAILURE: " + e.getMessage());
-			
 		}
 	}
 	
