@@ -9,6 +9,7 @@ import moses.client.com.NetworkJSON;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestLogin;
+import moses.client.com.requests.RequestLogout;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,7 +56,7 @@ public class MosesActivity extends Activity {
 			}
 		});
 		
-		btnLogout = (Button) findViewById(R.string.logoutText);
+		btnLogout = (Button) findViewById(R.id.logout_button);
 		btnLogout.setVisibility(View.INVISIBLE);
 		btnLogout.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
@@ -65,13 +66,18 @@ public class MosesActivity extends Activity {
 	}
 	
 	private void connect() {
-		NetworkJSON.url = txtWebAddr.getText().toString();
+		// TODO This should not be hard coded
+		NetworkJSON.url = "http://test.jahofmann.de/test.php";
 		RequestLogin r = new RequestLogin(new ReqClass(), txtUname.getText().toString(), txtPW.getText().toString());
 		r.send();
 	}
 	
 	private void logout(){
-		
+		// TODO This should not be hard coded
+		NetworkJSON.url = "http://test.jahofmann.de/logout_android.php";
+		String sessionID = RequestLogin.getSessionID();
+		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(), sessionID);
+		rlogout.send();
 	}
 	
 	private class ReqClass implements ReqTaskExecutor {
@@ -94,6 +100,46 @@ public class MosesActivity extends Activity {
 					
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		public void updateExecution(BackgroundException c) {
+			if(c.c != ConnectionParam.EXCEPTION) {
+				txtSuccess.setText(c.toString());
+			} else {
+				handleException(c.e);
+			}
+		}
+
+		public void handleException(Exception e) {
+			txtSuccess.setText("FAILURE: " + e.getMessage());
+		}
+	}
+	
+	private class ReqClassLogout implements ReqTaskExecutor {
+
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				if(RequestLogout.logoutValid(j)) {
+					txtSuccess.setText("SUCCESSFULLY LOGGED OUT");
+					
+					
+					txtSuccess.setVisibility(View.VISIBLE);
+					txtWebAddr.setVisibility(View.VISIBLE);
+					txtUname.setVisibility(View.VISIBLE);
+					txtPW.setVisibility(View.VISIBLE);
+					
+					btnconnect.setVisibility(View.VISIBLE);
+					btnLogout.setVisibility(View.INVISIBLE);
+					
+				} else {
+					// TODO handling!!
+					txtSuccess.setText("LOGOUT WAS REJECTED FROM SERVER" + j.toString());
 				}
 			} catch (JSONException e) {
 				this.handleException(e);

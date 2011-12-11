@@ -9,6 +9,7 @@ import moses.client.com.ReqTaskExecutor;
 public class RequestLogin {
 	private JSONObject j;
 	ReqTaskExecutor e;
+	private static String SESSION_ID = null; // the id of login session given by the server
 	
 	public RequestLogin(ReqTaskExecutor e, String uname, String pw) {
 		j = new JSONObject();
@@ -42,9 +43,15 @@ public class RequestLogin {
 	}
 	
 	public static boolean loginValid(JSONObject j, String uname) throws JSONException {
-		if(!j.getString("SESSIONID").equals("NULL")) {
+		String sessionID =  j.getString("SESSIONID");
+		if(!sessionID.equals("NULL")) {
+			SESSION_ID=sessionID;
 			return j.getString("LOGIN").equals(uname);
 		}
 		return false;
+	}
+
+	public static String getSessionID() {
+		return SESSION_ID;
 	}
 }

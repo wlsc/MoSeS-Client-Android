@@ -14,8 +14,8 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int button1=0x7f050007;
         public static final int connect_button=0x7f050006;
+        public static final int logout_button=0x7f050007;
         public static final int pword=0x7f050005;
         public static final int success=0x7f050008;
         public static final int textView1=0x7f050000;
