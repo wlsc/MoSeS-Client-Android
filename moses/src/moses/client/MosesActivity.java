@@ -3,6 +3,11 @@ package moses.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import moses.client.com.ConnectionParam;
+import moses.client.com.NetworkJSON;
+import moses.client.com.ReqTaskExecutor;
+import moses.client.com.requests.RequestLogin;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,27 +53,37 @@ public class MosesActivity extends Activity {
 		});
 	}
 
-	private void connect() {
+	private class ReqClass implements ReqTaskExecutor {
 
-		JSONObject j = new JSONObject();
-		try {
-			j.put("MESSAGE", "LOGIN_REQUEST");
-			j.put("LOGIN", txtUname.getText().toString());
-			j.put("PASSWORD", txtPW.getText().toString());
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				if(j.getString("STATUS").equals("GRANTED")) {
+					txtSuccess.setText("SUCCESS");
+				} else {
+					txtSuccess.setText("NOT GRANTED: " + j.toString());
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+
 		}
-		
-		task = new NetworkJSON();
 
-		NetworkJSON.APIRequest req;
+		public void updateExecution(ConnectionParam c) {
+			// TODO Auto-generated method stub
+			
+		}
 
-		req = task.new APIRequest();
-		req.url = txtWebAddr.getText().toString();
-		req.request = j;
-		req.txtv = txtSuccess;
-
-		task.execute(req);
+		public void handleException(Exception e) {
+			txtSuccess.setText("FAILURE: " + e.getMessage());
+			
+		}
+	}
+	
+	private void connect() {
+		NetworkJSON.url = txtWebAddr.getText().toString();
+		RequestLogin r = new RequestLogin(new ReqClass(), txtUname.getText().toString(), txtPW.getText().toString());
+		r.send();
 	}
 }
