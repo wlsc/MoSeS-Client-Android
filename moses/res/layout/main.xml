@@ -26,11 +26,12 @@
         android:layout_height="wrap_content"
         android:text="@string/username"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
     <EditText
         android:id="@+id/uname"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="@string/username_text" />
 
     <TextView
         android:id="@+id/textView3"
@@ -38,13 +39,14 @@
         android:layout_height="wrap_content"
         android:text="@string/password"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
+
     <EditText
         android:id="@+id/pword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textPassword" />
-
+        android:inputType="textPassword"
+        android:text="@string/userpassword_text" />
+
     <Button
         android:id="@+id/connect_button"
         android:layout_width="wrap_content"

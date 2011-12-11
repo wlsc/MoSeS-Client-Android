@@ -32,6 +32,8 @@ public final class R {
         public static final int password=0x7f040004;
         public static final int standardaddr=0x7f040001;
         public static final int username=0x7f040002;
+        public static final int username_text=0x7f040006;
+        public static final int userpassword_text=0x7f040007;
         public static final int webaddr=0x7f040003;
     }
 }
