@@ -5,6 +5,7 @@ import java.util.Map;
 
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON;
+import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestLogin;
 
@@ -69,8 +70,12 @@ public class MosesActivity extends Activity {
 			}
 		}
 
-		public void updateExecution(ConnectionParam c) {
-			txtSuccess.setText(c.toString());
+		public void updateExecution(BackgroundException c) {
+			if(c.c != ConnectionParam.EXCEPTION) {
+				txtSuccess.setText(c.toString());
+			} else {
+				handleException(c.e);
+			}
 		}
 
 		public void handleException(Exception e) {

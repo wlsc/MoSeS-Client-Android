@@ -18,7 +18,7 @@ import android.os.AsyncTask;
 import android.widget.TextView;
 
 public class NetworkJSON extends
-		AsyncTask<NetworkJSON.APIRequest, ConnectionParam, String> {
+		AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
 	
 	public static String url; 
 	
@@ -36,27 +36,27 @@ public class NetworkJSON extends
 
 		HttpResponse response;
 		response = httpclient.execute(httppost);
-		publishProgress(ConnectionParam.CONNECTED);
+		publishProgress(new BackgroundException(ConnectionParam.CONNECTED,null));
 		return response;
 	}
 
 	@Override
 	protected String doInBackground(NetworkJSON.APIRequest... params) {
-		publishProgress(ConnectionParam.INIT);
+		publishProgress(new BackgroundException(ConnectionParam.INIT,null));
 		e = params[0].e;
 		String ret = "";
 		try {
-			publishProgress(ConnectionParam.CONNECTING);
+			publishProgress(new BackgroundException(ConnectionParam.CONNECTING,null));
 			HttpResponse re = doPost(url, params[0].request);
 			ret = EntityUtils.toString(re.getEntity());
 		} catch (Exception e) {
-			this.e.handleException(e);
+			publishProgress(new BackgroundException(ConnectionParam.EXCEPTION,e));
 		}
-		publishProgress(ConnectionParam.POSTEXECUTE);
+		publishProgress(new BackgroundException(ConnectionParam.POSTEXECUTE,null));
 		return ret;
 	}
 
-	protected void onProgressUpdate(ConnectionParam c) {
+	protected void onProgressUpdate(BackgroundException c) {
 		e.updateExecution(c);
 	}
 
@@ -67,5 +67,14 @@ public class NetworkJSON extends
 	public class APIRequest {
 		public JSONObject request;
 		public ReqTaskExecutor e;
+	}
+	
+	public class BackgroundException {
+		public BackgroundException(ConnectionParam c, Exception e) {
+			this.c = c;
+			this.e = e;
+		}
+		public ConnectionParam c;
+		public Exception e;
 	}
 }

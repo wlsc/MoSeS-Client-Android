@@ -4,5 +4,6 @@ public enum ConnectionParam {
 	INIT,
 	CONNECTING,
 	CONNECTED,
-	POSTEXECUTE
+	POSTEXECUTE,
+	EXCEPTION
 }
