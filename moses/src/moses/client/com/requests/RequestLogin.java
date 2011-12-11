@@ -40,4 +40,8 @@ public class RequestLogin {
 		req.e = this.e;
 		task.execute(req);
 	}
+	
+	public static boolean loginValid(JSONObject j, String uname) throws JSONException {
+		return j.getString("LOGIN").equals(uname) && j.getString("STATUS").equals("GRANTED");
+	}
 }

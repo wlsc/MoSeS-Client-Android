@@ -59,7 +59,7 @@ public class MosesActivity extends Activity {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				if(j.getString("STATUS").equals("GRANTED")) {
+				if(RequestLogin.loginValid(j, txtUname.getText().toString())) {
 					txtSuccess.setText("SUCCESS");
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
@@ -67,7 +67,6 @@ public class MosesActivity extends Activity {
 			} catch (JSONException e) {
 				this.handleException(e);
 			}
-
 		}
 
 		public void updateExecution(ConnectionParam c) {
