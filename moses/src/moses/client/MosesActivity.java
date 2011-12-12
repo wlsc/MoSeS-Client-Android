@@ -32,7 +32,7 @@ public class MosesActivity extends Activity {
 
 	private SharedPreferences settings;
 	
-	private View view;
+	private Activity view = this;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -66,7 +66,6 @@ public class MosesActivity extends Activity {
 		btnconnect = (Button) findViewById(R.id.connect_button);
 		btnconnect.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				view = v;
 				connect();
 			}
 		});
@@ -102,7 +101,7 @@ public class MosesActivity extends Activity {
 			try {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, txtUname.getText().toString())) {
-					Intent loggedIn = new Intent(view.getContext(), LoggedInViewActivity.class);
+					Intent loggedIn = new Intent(view, LoggedInViewActivity.class);
 					startActivityForResult(loggedIn, 0);
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
