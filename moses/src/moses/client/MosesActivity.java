@@ -74,7 +74,7 @@ public class MosesActivity extends Activity {
 	
 	private void logout(){
 		// TODO This should not be hard coded
-		NetworkJSON.url = "http://test.jahofmann.de/logout_android.php";
+		NetworkJSON.url = "http://test.jahofmann.de/test.php";
 		String sessionID = RequestLogin.getSessionID();
 		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(), sessionID);
 		rlogout.send();
