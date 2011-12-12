@@ -15,7 +15,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
-import android.widget.TextView;
 
 public class NetworkJSON extends
 		AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {

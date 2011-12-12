@@ -3,22 +3,6 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/webaddr"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/websiteaddr"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/standardaddr" >
-
-        <requestFocus />
-    </EditText>
 
     <TextView
         android:id="@+id/textView2"
@@ -46,18 +30,24 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:text="@string/userpassword_text" />
+
+    <CheckBox
+        android:id="@+id/saveunamepw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/saveunamepw" />
+
+    <CheckBox
+        android:id="@+id/loginauto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/loginauto" />
 
     <Button
         android:id="@+id/connect_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/connect" />
-
-    <Button
-        android:id="@+id/logout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/logoutText" />
 
     <TextView
         android:id="@+id/success"
@@ -65,5 +55,17 @@
         android:layout_height="wrap_content"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/logoutText" />
+
+    <Button
+        android:id="@+id/exitbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/exit" />
 
 </LinearLayout>
