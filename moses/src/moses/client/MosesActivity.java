@@ -92,8 +92,6 @@ public class MosesActivity extends Activity {
 		r.send();
 	}
 
-
-
 	private class ReqClass implements ReqTaskExecutor {
 
 		public void postExecution(String s) {
@@ -101,8 +99,8 @@ public class MosesActivity extends Activity {
 			try {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, txtUname.getText().toString())) {
-					Intent loggedIn = new Intent(view, LoggedInViewActivity.class);
-					startActivityForResult(loggedIn, 0);
+					Intent chooseSensors = new Intent(view, ChooseSensorsActivity.class);
+					startActivity(chooseSensors);
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
 				}

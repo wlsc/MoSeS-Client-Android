@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".LoggedInViewActivity"></activity>
+        <activity android:name=".ChooseSensorsActivity"></activity>
     </application>
 
 </manifest>
