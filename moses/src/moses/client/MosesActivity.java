@@ -5,12 +5,11 @@ import moses.client.com.NetworkJSON;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestLogin;
-import moses.client.com.requests.RequestLogout;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -26,15 +25,14 @@ public class MosesActivity extends Activity {
 	private TextView txtSuccess;
 
 	private Button btnconnect;
-
-	private Button btnLogout;
-	
 	private Button btnExit;
 
 	private CheckBox chkLoginAuto;
 	private CheckBox chkSaveUnamePW;
 
 	private SharedPreferences settings;
+	
+	private View view;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -68,15 +66,8 @@ public class MosesActivity extends Activity {
 		btnconnect = (Button) findViewById(R.id.connect_button);
 		btnconnect.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
+				view = v;
 				connect();
-			}
-		});
-
-		btnLogout = (Button) findViewById(R.id.logout_button);
-		btnLogout.setVisibility(View.INVISIBLE);
-		btnLogout.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				logout();
 			}
 		});
 		
@@ -102,12 +93,7 @@ public class MosesActivity extends Activity {
 		r.send();
 	}
 
-	private void logout() {
-		String sessionID = RequestLogin.getSessionID();
-		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(),
-				sessionID);
-		rlogout.send();
-	}
+
 
 	private class ReqClass implements ReqTaskExecutor {
 
@@ -116,15 +102,8 @@ public class MosesActivity extends Activity {
 			try {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, txtUname.getText().toString())) {
-					txtSuccess.setText("SUCCESS");
-
-					txtSuccess.setVisibility(View.INVISIBLE);
-					txtUname.setVisibility(View.INVISIBLE);
-					txtPW.setVisibility(View.INVISIBLE);
-
-					btnconnect.setVisibility(View.INVISIBLE);
-					btnLogout.setVisibility(View.VISIBLE);
-
+					Intent loggedIn = new Intent(view.getContext(), LoggedInViewActivity.class);
+					startActivityForResult(loggedIn, 0);
 				} else {
 					txtSuccess.setText("NOT GRANTED: " + j.toString());
 				}
@@ -146,42 +125,5 @@ public class MosesActivity extends Activity {
 		}
 	}
 
-	private class ReqClassLogout implements ReqTaskExecutor {
 
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestLogout.logoutValid(j)) {
-					txtSuccess.setText("SUCCESSFULLY LOGGED OUT");
-
-					txtSuccess.setVisibility(View.VISIBLE);
-					txtUname.setVisibility(View.VISIBLE);
-					txtPW.setVisibility(View.VISIBLE);
-
-					btnconnect.setVisibility(View.VISIBLE);
-					btnLogout.setVisibility(View.INVISIBLE);
-
-				} else {
-					// TODO handling!!
-					txtSuccess.setText("LOGOUT WAS REJECTED FROM SERVER"
-							+ j.toString());
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				txtSuccess.setText(c.toString());
-			} else {
-				handleException(c.e);
-			}
-		}
-
-		public void handleException(Exception e) {
-			txtSuccess.setText("FAILURE: " + e.getMessage());
-		}
-	}
 }
