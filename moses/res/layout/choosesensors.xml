@@ -3,11 +3,24 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/choosesensorsokbutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choosesensorsokbutton" />
+
+    <TextView
+        android:id="@+id/choosesensorstext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/choosesensorstext"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <ListView
         android:id="@+id/sensorlist"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="737dp"
         android:choiceMode="multipleChoice" >
 
         <!-- Preview: listitem=@android:layout/simple_list_item_checked -->

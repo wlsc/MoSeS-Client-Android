@@ -12,5 +12,7 @@
     <string name="loginauto">Log in automatically?</string>
     <string name="saveunamepw">Save username/password?</string>
     <string name="exit">Exit App</string>
+    <string name="choosesensorsokbutton">Ok</string>
+    <string name="choosesensorstext">choose the sensors and press Ok</string>
 
 </resources>
