@@ -1,10 +1,10 @@
 package moses.client.com.requests;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is used for setting hardware parameters
@@ -13,10 +13,18 @@ import moses.client.com.ReqTaskExecutor;
  *
  */
 public class RequestSetHardwareParameters {
+	public static boolean parameterSetOnServer(JSONObject j) throws JSONException {
+		if(j.getString("STATUS").equals("SUCCESS")) {
+			return true;
+		}
+		return false;
+	}
 	private JSONObject j;
+	
 	ReqTaskExecutor e;
 	
-	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID, String androidVersion, String sensors) {
+	
+	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID, String androidVersion, Integer[] sensors) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -24,12 +32,21 @@ public class RequestSetHardwareParameters {
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", deviceID);
 			j.put("ANDVER", androidVersion);
-			j.put("SENSORS", sensors);
+			
+			//TODO: Change server to arrays
+			StringBuilder sb = new StringBuilder();
+			for(int i : sensors) {
+				sb.append(i);
+				sb.append('_');
+			}
+			if(sb.length()>0) {
+				sb.deleteCharAt(sb.length()-1);
+			}
+			j.put("SENSORS", sb);
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
 	}
-	
 	
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
@@ -38,12 +55,5 @@ public class RequestSetHardwareParameters {
 		req.request = j;
 		req.e = this.e;
 		task.execute(req);
-	}
-	
-	public static boolean parameterSetOnServer(JSONObject j) throws JSONException {
-		if(j.getString("STATUS").equals("SUCCESS")) {
-			return true;
-		}
-		return false;
 	}
 }

@@ -1,10 +1,10 @@
 package moses.client.com.requests;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * This class is used for logging out
@@ -13,8 +13,16 @@ import moses.client.com.ReqTaskExecutor;
  *
  */
 public class RequestLogout {
+	public static boolean logoutValid(JSONObject j) throws JSONException {
+		if(j.getString("STATUS").equals("SUCCESS")) {
+			return true;
+		}
+		return false;
+	}
 	private JSONObject j;
+	
 	ReqTaskExecutor e;
+	
 	
 	public RequestLogout(ReqTaskExecutor e, String sessionID) {
 		j = new JSONObject();
@@ -27,7 +35,6 @@ public class RequestLogout {
 		}
 	}
 	
-	
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;
@@ -35,12 +42,5 @@ public class RequestLogout {
 		req.request = j;
 		req.e = this.e;
 		task.execute(req);
-	}
-	
-	public static boolean logoutValid(JSONObject j) throws JSONException {
-		if(j.getString("STATUS").equals("SUCCESS")) {
-			return true;
-		}
-		return false;
 	}
 }

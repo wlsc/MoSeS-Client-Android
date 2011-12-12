@@ -3,6 +3,7 @@ package moses.client.com;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -16,28 +17,32 @@ import org.json.JSONObject;
 
 import android.os.AsyncTask;
 
+/**
+ * This class gives basic request capability
+ * @author Jaco
+ *
+ */
+
 public class NetworkJSON extends
 		AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
 	
-	public static String url; 
+	public class APIRequest {
+		public JSONObject request;
+		public ReqTaskExecutor e;
+	} 
 	
-	private ReqTaskExecutor e;
-	
-	private HttpResponse doPost(String url, JSONObject j)
-			throws ClientProtocolException, IOException {
-		HttpClient httpclient = new DefaultHttpClient();
-		HttpPost httppost = new HttpPost(url);
-
-		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-		nameValuePairs.add(new BasicNameValuePair("HTTP_JSON", j.toString()));
-
-		httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-		HttpResponse response;
-		response = httpclient.execute(httppost);
-		publishProgress(new BackgroundException(ConnectionParam.CONNECTED,null));
-		return response;
+	public class BackgroundException {
+		public ConnectionParam c;
+		public Exception e;
+		public BackgroundException(ConnectionParam c, Exception e) {
+			this.c = c;
+			this.e = e;
+		}
 	}
+	
+	public static String url;
+
+	private ReqTaskExecutor e;
 
 	@Override
 	protected String doInBackground(NetworkJSON.APIRequest... params) {
@@ -55,25 +60,28 @@ public class NetworkJSON extends
 		return ret;
 	}
 
-	protected void onProgressUpdate(BackgroundException c) {
-		e.updateExecution(c);
+	private HttpResponse doPost(String url, JSONObject j)
+			throws ClientProtocolException, IOException {
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpPost httppost = new HttpPost(url);
+
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+		nameValuePairs.add(new BasicNameValuePair("HTTP_JSON", j.toString()));
+
+		httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+		HttpResponse response;
+		response = httpclient.execute(httppost);
+		publishProgress(new BackgroundException(ConnectionParam.CONNECTED,null));
+		return response;
 	}
 
+	@Override
 	protected void onPostExecute(String result) {
 		e.postExecution(result);
 	}
-
-	public class APIRequest {
-		public JSONObject request;
-		public ReqTaskExecutor e;
-	}
 	
-	public class BackgroundException {
-		public BackgroundException(ConnectionParam c, Exception e) {
-			this.c = c;
-			this.e = e;
-		}
-		public ConnectionParam c;
-		public Exception e;
+	protected void onProgressUpdate(BackgroundException c) {
+		e.updateExecution(c);
 	}
 }

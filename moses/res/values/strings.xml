@@ -14,5 +14,7 @@
     <string name="exit">Exit App</string>
     <string name="choosesensorsokbutton">Ok</string>
     <string name="choosesensorstext">choose the sensors and press Ok</string>
+    <string name="synchw">Sync Hardware</string>
+    <string name="selfilter">Select Filter</string>
 
 </resources>

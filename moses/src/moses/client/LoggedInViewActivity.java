@@ -1,53 +1,38 @@
 package moses.client;
 
+import moses.client.abstraction.HardwareAbstraction;
+import moses.client.com.ConnectionParam;
+import moses.client.com.NetworkJSON.BackgroundException;
+import moses.client.com.ReqTaskExecutor;
+import moses.client.com.requests.RequestLogin;
+import moses.client.com.requests.RequestLogout;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import moses.client.com.ConnectionParam;
-import moses.client.com.ReqTaskExecutor;
-import moses.client.com.NetworkJSON.BackgroundException;
-import moses.client.com.requests.RequestLogin;
-import moses.client.com.requests.RequestLogout;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+/**
+ * This activity resembles the view after logging in
+ * @author Jaco
+ *
+ */
 public class LoggedInViewActivity extends Activity {
-	
-	private Button btnLogout;
-	private TextView txtSuccess;
-	
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.loggedinview);
-		initControls();
-	}
-	
-	private void initControls() {
-		
-		txtSuccess = (TextView) findViewById(R.id.success);
-		
-		btnLogout = (Button) findViewById(R.id.logout_button);
-		btnLogout.setOnClickListener(new Button.OnClickListener() {
-			public void onClick(View v) {
-				logout();
-			}
-		});
-	}
-	
-	private void logout() {
-		String sessionID = RequestLogin.getSessionID();
-		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(),
-				sessionID);
-		rlogout.send();
-	}
 	
 	private class ReqClassLogout implements ReqTaskExecutor {
 
+		@Override
+		public void handleException(Exception e) {
+			txtSuccess.setText("FAILURE: " + e.getMessage());
+		}
+
+		@Override
 		public void postExecution(String s) {
 			JSONObject j = null;
 			try {
@@ -66,6 +51,7 @@ public class LoggedInViewActivity extends Activity {
 			}
 		}
 
+		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
 				txtSuccess.setText(c.toString());
@@ -73,9 +59,76 @@ public class LoggedInViewActivity extends Activity {
 				handleException(c.e);
 			}
 		}
-
-		public void handleException(Exception e) {
-			txtSuccess.setText("FAILURE: " + e.getMessage());
+	}
+	private Button btnLogout;
+	private Button btnSyncHW;
+	private Button btnSelectFilter;
+	
+	private TextView txtSuccess;
+	
+	private SharedPreferences settings;
+	
+	private void checkHardware(boolean force) {
+		if(settings.getBoolean("synchw", true) || force) {
+			HardwareAbstraction hw = new HardwareAbstraction(this);
+			hw.checkHardwareParameters();
+			SharedPreferences.Editor editor = settings.edit();
+			editor.putBoolean("synchw", false);
+			editor.commit();
 		}
 	}
+	
+	private void initControls() {
+		
+		txtSuccess = (TextView) findViewById(R.id.success);
+		
+		btnLogout = (Button) findViewById(R.id.logout_button);
+		btnLogout.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				logout();
+			}
+		});
+		
+		btnSyncHW = (Button) findViewById(R.id.synchw);
+		btnSyncHW.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				checkHardware(true);
+			}
+		});
+		
+		btnSelectFilter = (Button) findViewById(R.id.selectfilter);
+		btnSelectFilter.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent chooseSensors = new Intent(getInstance(),
+						ChooseSensorsActivity.class);
+				startActivity(chooseSensors);
+			}
+		});
+
+	}
+	
+	private Activity getInstance() {
+		return this;
+	}
+	
+	private void logout() {
+		String sessionID = RequestLogin.getSessionID();
+		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(),
+				sessionID);
+		rlogout.send();
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.loggedinview);
+		settings = getSharedPreferences("MoSeS.cfg", 0);
+		initControls();
+		checkHardware(false);
+	}
+	
+
 }
