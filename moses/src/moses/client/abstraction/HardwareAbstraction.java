@@ -30,7 +30,7 @@ import android.os.Build;
  */
 public class HardwareAbstraction {
 
-	private class ReqClassChooseSensors implements ReqTaskExecutor {
+	private class ReqClassSetHardware implements ReqTaskExecutor {
 
 		@Override
 		public void handleException(Exception e) {
@@ -45,6 +45,44 @@ public class HardwareAbstraction {
 				j = new JSONObject(s);
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
 					// TODO handling success
+				} else {
+					// TODO handling errors
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				alertDialog.setMessage(c.c.toString());
+				alertDialog.show();
+			} else {
+				handleException(c.e);
+			}
+		}
+	}
+	
+	private class ReqClassGetHardware implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			alertDialog.setMessage("FAILURE: " + e.getMessage());
+			alertDialog.show();
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
+					StringBuilder sb = new StringBuilder();
+					sb.append("DeviceID: "); sb.append(j.getString("DEVICEID"));
+					sb.append("\nSensors: "); sb.append(j.getString("SENSORS"));
+					alertDialog.setMessage(sb);
+					alertDialog.show();
 				} else {
 					// TODO handling errors
 				}
@@ -105,7 +143,7 @@ public class HardwareAbstraction {
 		}
 
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
+				new ReqClassSetHardware(), sessionID, Build.MANUFACTURER
 						+ " " + Build.MODEL + " " + Build.FINGERPRINT,
 				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
@@ -120,7 +158,7 @@ public class HardwareAbstraction {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 	
 		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
-				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
+				new ReqClassGetHardware(), sessionID, Build.MANUFACTURER
 						+ " " + Build.MODEL + " " + Build.FINGERPRINT);
 		rGetHWParams.send();
 	
