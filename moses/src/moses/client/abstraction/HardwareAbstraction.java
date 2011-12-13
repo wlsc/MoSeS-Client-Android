@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
+import moses.client.com.requests.RequestGetHardwareParameters;
 import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetHardwareParameters;
 
@@ -62,6 +63,7 @@ public class HardwareAbstraction {
 			}
 		}
 	}
+	
 	private AlertDialog alertDialog;
 
 	private Context appContext;
@@ -105,8 +107,22 @@ public class HardwareAbstraction {
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
 				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
 						+ " " + Build.MODEL + " " + Build.FINGERPRINT,
-				Build.VERSION.SDK, sensors.toArray(new Integer[sensors.size()]));
+				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
 
+	}
+
+	/**
+	 * This method reads the sensor list stored for the device on the server
+	 */
+	public void getHardwareParameters() {
+		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
+		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+	
+		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
+				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
+						+ " " + Build.MODEL + " " + Build.FINGERPRINT);
+		rGetHWParams.send();
+	
 	}
 }

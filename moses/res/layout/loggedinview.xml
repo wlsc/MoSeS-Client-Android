@@ -3,11 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
+
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
 
         <Button
             android:id="@+id/logout_button"
@@ -20,14 +21,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/synchw" />
-
+
         <Button
             android:id="@+id/selectfilter"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="@string/selfilter" />
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/gethw_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/gethw_button" />
 
     <TextView
         android:id="@+id/success"

@@ -1,8 +1,11 @@
 package moses.client.com.requests;
 
+import java.util.List;
+
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,7 +27,7 @@ public class RequestSetHardwareParameters {
 	ReqTaskExecutor e;
 	
 	
-	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID, String androidVersion, Integer[] sensors) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID, String androidVersion, List<Integer> sensors) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -32,17 +35,8 @@ public class RequestSetHardwareParameters {
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", deviceID);
 			j.put("ANDVER", androidVersion);
-			
-			//TODO: Change server to arrays
-			StringBuilder sb = new StringBuilder();
-			for(int i : sensors) {
-				sb.append(i);
-				sb.append('_');
-			}
-			if(sb.length()>0) {
-				sb.deleteCharAt(sb.length()-1);
-			}
-			j.put("SENSORS", sb);
+			JSONArray ja = new JSONArray(sensors);
+			j.put("SENSORS", ja);
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
