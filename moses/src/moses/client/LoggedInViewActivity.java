@@ -62,7 +62,9 @@ public class LoggedInViewActivity extends Activity {
 	}
 	private Button btnLogout;
 	private Button btnSyncHW;
+	private Button btnGetHW; // used for getting hw configuration stored on the server
 	private Button btnSelectFilter;
+	
 	
 	private TextView txtSuccess;
 	
@@ -76,6 +78,15 @@ public class LoggedInViewActivity extends Activity {
 			editor.putBoolean("synchw", false);
 			editor.commit();
 		}
+	}
+	
+	/**
+	 * This method is called when getHW-Button is pushed
+	 * @param force
+	 */
+	private void getHardwareParameters() {
+		HardwareAbstraction hw = new HardwareAbstraction(this);
+		hw.getHardwareParameters();
 	}
 	
 	private void initControls() {
@@ -107,7 +118,15 @@ public class LoggedInViewActivity extends Activity {
 				startActivity(chooseSensors);
 			}
 		});
-
+		
+		btnGetHW = (Button) findViewById(R.id.gethw_button);
+		btnGetHW.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getHardwareParameters();
+			}
+		});
+		
 	}
 	
 	private Activity getInstance() {
