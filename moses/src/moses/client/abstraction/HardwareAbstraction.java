@@ -68,12 +68,13 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
+			alertDialog.setMessage("FAILURE: " + e.getMessage() + " " + e.getCause());
 			alertDialog.show();
 		}
 
 		@Override
 		public void postExecution(String s) {
+			System.out.println(s);
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);

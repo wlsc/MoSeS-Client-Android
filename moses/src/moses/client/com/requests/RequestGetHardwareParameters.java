@@ -24,7 +24,7 @@ public class RequestGetHardwareParameters {
 	 * @throws JSONException
 	 */
 	public static boolean parameterAcquiredFromServer(JSONObject j) throws JSONException {
-		if(j.getString("STATUS").equals("SUCCESS")) 
+		if(j.getString("MESSAGE").equals("HARDWARE_PARAMS")) 
 			return true;
 		return false;
 	}
