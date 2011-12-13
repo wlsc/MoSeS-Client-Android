@@ -104,8 +104,8 @@ public class HardwareAbstraction {
 
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
 				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
-						+ " " + Build.MODEL + " " + Build.FINGERPRINT,
-				Build.VERSION.SDK, sensors.toArray(new Integer[sensors.size()]));
+						+ " " + Build.MODEL + " " + Build.FINGERPRINT + "blub",
+				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
 
 	}
