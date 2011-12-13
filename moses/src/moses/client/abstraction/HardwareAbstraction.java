@@ -12,6 +12,7 @@ import moses.client.com.requests.RequestGetHardwareParameters;
 import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetHardwareParameters;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,7 +31,7 @@ import android.os.Build;
  */
 public class HardwareAbstraction {
 
-	private class ReqClassChooseSensors implements ReqTaskExecutor {
+	private class ReqClassSetHWParams implements ReqTaskExecutor {
 
 		@Override
 		public void handleException(Exception e) {
@@ -43,10 +44,66 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
+				// TODO handling
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
-					// TODO handling success
+					alertDialog.setMessage("Parameters set successfully, server returned positive response");
+					alertDialog.show();
 				} else {
-					// TODO handling errors
+					// TODO handling
+					alertDialog.setMessage("Parameters NOT set successfully! Server returned negative response");
+					alertDialog.show();
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				alertDialog.setMessage(c.c.toString());
+				alertDialog.show();
+			} else {
+				handleException(c.e);
+			}
+		}
+	}
+	
+	
+	private class ReqClassGetHWParams implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			alertDialog.setMessage("FAILURE: " + e.getMessage());
+			alertDialog.show();
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				// TODO handling
+				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
+					StringBuffer sb = new StringBuffer(256);
+					sb.append("Parameters retrived successfully from server");
+					sb.append("\n").append("Device id:").append(j.get("DEVICEID"));
+					sb.append("\n").append("Android version:").append(j.get("ANDVER"));
+					// parse the sensors from JSON Object
+					SensorManager senMan = (SensorManager) appContext
+							.getSystemService(Context.SENSOR_SERVICE);
+					JSONArray sensors = j.getJSONArray("SENSORS");
+					sb.append("\n").append("SENSORS:").append("\n");
+					for (int i=0; i<sensors.length(); i++) {
+						sb.append("\n");
+						sb.append(senMan.getDefaultSensor(sensors.getInt(i)).getName());
+					}
+					alertDialog.setMessage(sb.toString());
+					alertDialog.show();
+				} else {
+					// TODO handling
+					alertDialog.setMessage("Parameters NOT retrived successfully from server! :(");
+					alertDialog.show();
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -70,7 +127,7 @@ public class HardwareAbstraction {
 
 	public HardwareAbstraction(Context c) {
 		alertDialog = new AlertDialog.Builder(c).create();
-		alertDialog.setTitle("Error:");
+		alertDialog.setTitle("INFO:");
 		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok",
 				new DialogInterface.OnClickListener() {
 					@Override
@@ -105,7 +162,7 @@ public class HardwareAbstraction {
 		}
 
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
+				new ReqClassSetHWParams(), sessionID, Build.MANUFACTURER
 						+ " " + Build.MODEL + " " + Build.FINGERPRINT,
 				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
@@ -120,9 +177,8 @@ public class HardwareAbstraction {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 	
 		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
-				new ReqClassChooseSensors(), sessionID, Build.MANUFACTURER
+				new ReqClassGetHWParams(), sessionID, Build.MANUFACTURER
 						+ " " + Build.MODEL + " " + Build.FINGERPRINT);
 		rGetHWParams.send();
-	
 	}
 }
