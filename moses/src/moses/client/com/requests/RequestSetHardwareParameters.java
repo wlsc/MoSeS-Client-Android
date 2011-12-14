@@ -33,7 +33,7 @@ public class RequestSetHardwareParameters {
 		try {
 			j.put("MESSAGE", "SET_HARDWARE_PARAMS");
 			j.put("SESSIONID", sessionID);
-			j.put("DEVICEID", deviceID);
+			j.put("DEVICEID", "xxx"+deviceID);
 			j.put("ANDVER", androidVersion);
 			j.put("SENSORS", (new JSONArray(sensors)));
 		} catch (JSONException ex) {
