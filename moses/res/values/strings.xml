@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <string name="app_name">MoSeS</string>
-    <string name="standardaddr">http://test.jahofmann.de/test.php</string>
+    <string name="standardaddr">http://212.72.183.71/moses/test.php</string>
     <string name="username">Username</string>
     <string name="webaddr">Website address</string>
     <string name="password">Password</string>
