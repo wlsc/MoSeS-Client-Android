@@ -119,7 +119,7 @@ public class MosesActivity extends Activity {
 		txtUname.setText(settings.getString("uname", ""));
 		txtPW.setText(settings.getString("password", ""));
 		NetworkJSON.url = settings.getString("url",
-				"http://212.72.183.71/moses/test.php");
+				"212.72.183.71:80/moses/test.php");
 		chkLoginAuto.setChecked(settings.getBoolean("loginauto", false));
 		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
 	}
