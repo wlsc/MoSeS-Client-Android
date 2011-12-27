@@ -17,5 +17,7 @@
     <string name="synchw">Sync Hardware</string>
     <string name="selfilter">Select Filter</string>
     <string name="gethw_button">gethw_button</string>
+    <string name="setFilterButtonString">set filter on the server</string>
+    <string name="chooseSensorsGetFilterButton">get filter</string>
 
 </resources>

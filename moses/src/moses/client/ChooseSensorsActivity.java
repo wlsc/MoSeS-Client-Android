@@ -1,7 +1,9 @@
 package moses.client;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
+import moses.client.abstraction.HardwareAbstraction;
 import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -20,20 +22,29 @@ import android.widget.ListView;
 public class ChooseSensorsActivity extends Activity {
 	
 	ListView lstSensors;
-	private Button okBtn; // Ok button for confirming the chosen sensors
+	private List<Sensor> sensors=null; // list of all sensors for this device
+	private Button okBtn; // Ok button for exiting the view
+	private Button setFilterBtn; // for sending the filter to the server
+	private Button getFilterBtn; // for getting the filter from the server
 	
-	private String[] getSensors() {
-		LinkedList<String> l = new LinkedList<String>();
+	private List<Sensor> getSensors() {
+		if(sensors == null){
+			sensors = new ArrayList<Sensor>();
 		SensorManager s = (SensorManager) getSystemService(SENSOR_SERVICE);
-		for(Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) {
-			l.add(sen.getName());
+		for(Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) 
+			sensors.add(sen);
 		}
-		return l.toArray(new String[l.size()]);
+		
+		return sensors;
 	}
 	
 	private void initControls() {
 		lstSensors = (ListView)findViewById(R.id.sensorlist);
-		lstSensors.setAdapter(new ArrayAdapter<String>(this, R.layout.choosesensors_row, R.id.choose_sensors_txt, getSensors()));
+		String[] sensorNames = new String[getSensors().size()];
+		for(int i=0; i<sensors.size(); i++)
+			sensorNames[i] = sensors.get(i).getName();
+		
+		lstSensors.setAdapter(new ArrayAdapter<String>(this, R.layout.choosesensors_row, R.id.choose_sensors_txt, sensorNames));
 		
 		// implement the functionality of the "Ok" button
 		okBtn = (Button) findViewById(R.id.choosesensorsokbutton);
@@ -43,8 +54,54 @@ public class ChooseSensorsActivity extends Activity {
 				finish();
 			}
 		});
+		
+		
+		// functionality of the setFilterBtn
+		setFilterBtn = (Button) findViewById(R.id.shooseSensorsSetFilterButton);
+		setFilterBtn.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				// TODO this dummy values should be replaced with the real ones
+				// had some problems accessing the checkboxes
+				List<Integer> temp = new ArrayList<Integer>();
+				temp.add(1);
+				temp.add(2);
+				temp.add(3);
+				temp.add(10);
+				setFilter(temp);
+			}
+		});
+		
+		// functionality of the getFilterBtn
+		getFilterBtn = (Button) findViewById(R.id.chooseSensorsGetFilterButton);
+		getFilterBtn.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				getFilter();
+			}
+		});
+		
+		
 	}
 	
+	/**
+	 * This method is called in order to obtain the filter from the server
+	 */
+	protected void getFilter() {
+		HardwareAbstraction ha = new HardwareAbstraction(this);
+		ha.getFilter();
+	}
+
+	/**
+	 * This method is called for setting the filter on the server
+	 */
+	protected void setFilter(List<Integer> filter) {
+		HardwareAbstraction hw = new HardwareAbstraction(this);
+		hw.setFilter(filter);
+		
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
