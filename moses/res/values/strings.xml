@@ -19,5 +19,6 @@
     <string name="gethw_button">gethw_button</string>
     <string name="setFilterButtonString">set filter on the server</string>
     <string name="chooseSensorsGetFilterButton">get filter</string>
+    <string name="ping_button">ping_button</string>
 
 </resources>
