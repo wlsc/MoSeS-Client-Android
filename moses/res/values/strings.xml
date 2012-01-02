@@ -20,5 +20,6 @@
     <string name="setFilterButtonString">set filter on the server</string>
     <string name="chooseSensorsGetFilterButton">get filter</string>
     <string name="ping_button">ping_button</string>
+    <string name="listAPK_button">listAPK_button</string>
 
 </resources>

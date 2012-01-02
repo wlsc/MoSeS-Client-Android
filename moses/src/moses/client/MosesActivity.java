@@ -1,5 +1,6 @@
 package moses.client;
 
+import moses.client.R;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON;
 import moses.client.com.NetworkJSON.BackgroundException;

@@ -1,5 +1,7 @@
 package moses.client;
 
+import moses.client.R;
+import moses.client.abstraction.APKAbstraction;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.PingSender;
 import moses.client.com.ConnectionParam;
@@ -35,6 +37,9 @@ public class LoggedInViewActivity extends Activity {
 	
 	private Button btnPing; // used for sending "i am alive" messages
 	private PingSender pinger;
+	
+	private Button btnListAPK; // used for obtaining the list of APKs
+	private APKAbstraction apkAbstraction; 
 	
 	
 	private TextView txtSuccess;
@@ -109,6 +114,17 @@ public class LoggedInViewActivity extends Activity {
 			}
 		});
 		
+		/*
+		 * Implementing the functionality of the getListAPK buttong
+		 */
+		btnListAPK = (Button) findViewById(R.id.listAPK_button);
+		btnListAPK.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				apkAbstraction.getAPKs();
+			}
+		});
+		
 	}
 	
 	private Activity getInstance() {
@@ -130,6 +146,7 @@ public class LoggedInViewActivity extends Activity {
 		initControls();
 		checkHardware(false);
 		pinger = new PingSender(this);
+		apkAbstraction = new APKAbstraction(this);
 	}
 
 	private class ReqClassLogout implements ReqTaskExecutor {

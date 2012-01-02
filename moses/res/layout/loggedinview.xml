@@ -47,5 +47,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ping_button" />
+
+    <Button
+        android:id="@+id/listAPK_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/listAPK_button" />
 
 </LinearLayout>
