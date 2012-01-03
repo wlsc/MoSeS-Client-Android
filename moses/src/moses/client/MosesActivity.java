@@ -1,68 +1,34 @@
 package moses.client;
 
-import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON;
-import moses.client.com.NetworkJSON.BackgroundException;
-import moses.client.com.ReqTaskExecutor;
-import moses.client.com.requests.RequestLogin;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
+
 /**
- * This activity is the main activity of our app
- * providing login etc.
+ * This activity is the main activity of our app providing login etc.
+ * 
  * @author Jaco
- *
+ * 
  */
 public class MosesActivity extends Activity {
-	private class ReqClass implements ReqTaskExecutor {
 
-		@Override
-		public void handleException(Exception e) {
-			txtSuccess.setText("FAILURE: " + e.getMessage());
-		}
-
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestLogin.loginValid(j, txtUname.getText().toString())) {
-					Intent logoutDialog = new Intent(view,
-							LoggedInViewActivity.class);
-					startActivity(logoutDialog);
-				} else {
-					txtSuccess.setText("NOT GRANTED: " + j.toString());
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				txtSuccess.setText(c.c.toString());
-			} else {
-				handleException(c.e);
-			}
-		}
-	}
 	private EditText txtUname;
 
 	private EditText txtPW;
 
-	private TextView txtSuccess;
 	private Button btnconnect;
 
 	private Button btnExit;
@@ -72,7 +38,8 @@ public class MosesActivity extends Activity {
 
 	private SharedPreferences settings;
 
-	private Activity view = this;
+	public MosesService mService;
+	public static boolean mBound = false;
 
 	private void connect() {
 		SharedPreferences.Editor editor = settings.edit();
@@ -83,21 +50,26 @@ public class MosesActivity extends Activity {
 		editor.putBoolean("loginauto", chkLoginAuto.isChecked());
 		editor.putBoolean("saveunamepw", chkSaveUnamePW.isChecked());
 		editor.commit();
-		RequestLogin r = new RequestLogin(new ReqClass(), txtUname.getText()
-				.toString(), txtPW.getText().toString());
-		r.send();
+		// Wait till we're connected
+		// TODO: Less ugly implementation
+		mService.reloadSettings();
+		mService.login();
+		//while (!mService.isLoggedIn())
+		//	;
+		Intent mainDialog = new Intent(this, LoggedInViewActivity.class);
+		startActivity(mainDialog);
+
 	}
 
 	private void initControls() {
 		txtUname = (EditText) findViewById(R.id.uname);
 		txtPW = (EditText) findViewById(R.id.pword);
 
-		txtSuccess = (TextView) findViewById(R.id.success);
-
 		chkLoginAuto = (CheckBox) findViewById(R.id.loginauto);
 		chkSaveUnamePW = (CheckBox) findViewById(R.id.saveunamepw);
 
 		btnconnect = (Button) findViewById(R.id.connect_button);
+		btnconnect.setClickable(false);
 		btnconnect.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -123,7 +95,12 @@ public class MosesActivity extends Activity {
 		chkLoginAuto.setChecked(settings.getBoolean("loginauto", false));
 		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
 	}
-	
+
+	private void startAndBindService() {
+		Intent intent = new Intent(this, MosesService.class);
+		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -131,8 +108,37 @@ public class MosesActivity extends Activity {
 		setContentView(R.layout.main);
 		initControls();
 		loadConfig();
-		if (chkLoginAuto.isChecked())
-			connect();
 	}
+
+	protected void onStart() {
+		super.onStart();
+		startAndBindService();
+	}
+
+	protected void onStop() {
+		super.onStop();
+		if (mBound) {
+			unbindService(mConnection);
+			mBound = false;
+		}
+	}
+
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+			btnconnect.setClickable(true);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
 
 }
