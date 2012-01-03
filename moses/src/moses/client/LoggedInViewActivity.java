@@ -1,6 +1,9 @@
 package moses.client;
 
+import moses.client.R;
+import moses.client.abstraction.APKAbstraction;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.abstraction.PingSender;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -25,45 +28,18 @@ import android.widget.TextView;
  */
 public class LoggedInViewActivity extends Activity {
 	
-	private class ReqClassLogout implements ReqTaskExecutor {
-
-		@Override
-		public void handleException(Exception e) {
-			txtSuccess.setText("FAILURE: " + e.getMessage());
-		}
-
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestLogout.logoutValid(j)) {
-					Intent loginScreen = new Intent();
-					setResult(RESULT_OK, loginScreen);
-					finish();
-				} else {
-					// TODO handling!!
-					txtSuccess.setText("LOGOUT WAS REJECTED FROM SERVER"
-							+ j.toString());
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				txtSuccess.setText(c.toString());
-			} else {
-				handleException(c.e);
-			}
-		}
-	}
 	private Button btnLogout;
+	
 	private Button btnSyncHW;
 	private Button btnGetHW; // used for getting hw configuration stored on the server
+	
 	private Button btnSelectFilter;
+	
+	private Button btnPing; // used for sending "i am alive" messages
+	private PingSender pinger;
+	
+	private Button btnListAPK; // used for obtaining the list of APKs
+	private APKAbstraction apkAbstraction; 
 	
 	
 	private TextView txtSuccess;
@@ -127,6 +103,28 @@ public class LoggedInViewActivity extends Activity {
 			}
 		});
 		
+		/*
+		 * Implementing the functionality of the ping button
+		 */
+		btnPing = (Button) findViewById(R.id.ping_button);
+		btnPing.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				pinger.sendPing();
+			}
+		});
+		
+		/*
+		 * Implementing the functionality of the getListAPK buttong
+		 */
+		btnListAPK = (Button) findViewById(R.id.listAPK_button);
+		btnListAPK.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				apkAbstraction.getAPKs();
+			}
+		});
+		
 	}
 	
 	private Activity getInstance() {
@@ -147,6 +145,44 @@ public class LoggedInViewActivity extends Activity {
 		settings = getSharedPreferences("MoSeS.cfg", 0);
 		initControls();
 		checkHardware(false);
+		pinger = new PingSender(this);
+		apkAbstraction = new APKAbstraction(this);
+	}
+
+	private class ReqClassLogout implements ReqTaskExecutor {
+	
+		@Override
+		public void handleException(Exception e) {
+			txtSuccess.setText("FAILURE: " + e.getMessage());
+		}
+	
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				if (RequestLogout.logoutValid(j)) {
+					Intent loginScreen = new Intent();
+					setResult(RESULT_OK, loginScreen);
+					finish();
+				} else {
+					// TODO handling!!
+					txtSuccess.setText("LOGOUT WAS REJECTED FROM SERVER"
+							+ j.toString());
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+	
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				txtSuccess.setText(c.toString());
+			} else {
+				handleException(c.e);
+			}
+		}
 	}
 	
 

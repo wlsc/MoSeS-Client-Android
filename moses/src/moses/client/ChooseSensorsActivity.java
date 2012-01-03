@@ -3,6 +3,7 @@ package moses.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import moses.client.R;
 import moses.client.abstraction.HardwareAbstraction;
 import android.app.Activity;
 import android.hardware.Sensor;

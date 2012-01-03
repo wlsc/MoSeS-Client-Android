@@ -87,7 +87,7 @@ public class HardwareAbstraction {
 			try {
 				j = new JSONObject(s);
 				// TODO handling
-				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
+				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
 					StringBuffer sb = new StringBuffer(256);
 					sb.append("Parameters retrived successfully from server");
 					sb.append("\n").append("Device id:").append(j.get("DEVICEID"));
