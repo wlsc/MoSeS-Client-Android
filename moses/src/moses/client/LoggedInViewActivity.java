@@ -125,8 +125,7 @@ public class LoggedInViewActivity extends Activity {
 
 					@Override
 					public void execute() {
-						Intent loginScreen = new Intent();
-						setResult(RESULT_OK, loginScreen);
+						setResult(MosesActivity.results.RS_LOGGEDOUT.ordinal());
 						finish();
 					}
 				});
@@ -166,7 +165,9 @@ public class LoggedInViewActivity extends Activity {
 		btnPing.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				pinger.sendPing();
+				//pinger.sendPing();
+				setResult(MosesActivity.results.RS_CLOSE.ordinal());
+				finish();
 			}
 		});
 

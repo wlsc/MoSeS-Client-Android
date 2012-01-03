@@ -27,6 +27,10 @@ import android.widget.EditText;
  */
 public class MosesActivity extends Activity {
 
+	public enum results {
+		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
+	};
+
 	/** The txt uname. */
 	private EditText txtUname;
 
@@ -38,7 +42,7 @@ public class MosesActivity extends Activity {
 
 	/** The btn exit. */
 	private Button btnExit;
-	
+
 	/** The chk login auto. */
 	private CheckBox chkLoginAuto;
 
@@ -50,9 +54,15 @@ public class MosesActivity extends Activity {
 
 	/** The m service. */
 	public MosesService mService;
-	
+
 	/** The m bound. */
 	public static boolean mBound = false;
+
+	/**
+	 * This variable is true if the user has used the logout button so he won't
+	 * get logged in again
+	 */
+	private boolean overrideAutologin = false;
 
 	/** The m connection. */
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -68,8 +78,9 @@ public class MosesActivity extends Activity {
 			if (mService.isLoggedIn()) {
 				Intent mainDialog = new Intent(MosesActivity.this,
 						LoggedInViewActivity.class);
-				startActivity(mainDialog);
-			}
+				startActivityForResult(mainDialog, 0);
+			} else if (chkLoginAuto.isChecked() && !overrideAutologin)
+				connect();
 		}
 
 		@Override
@@ -77,6 +88,17 @@ public class MosesActivity extends Activity {
 			mBound = false;
 		}
 	};
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 0) {
+			if (resultCode == results.RS_CLOSE.ordinal()) {
+				// User wants to close the app without logging out
+				finish();
+			} else if(resultCode == results.RS_LOGGEDOUT.ordinal()) {
+				overrideAutologin = true;
+			}
+		}
+	}
 
 	/**
 	 * Connect.
@@ -97,7 +119,7 @@ public class MosesActivity extends Activity {
 			public void execute() {
 				Intent mainDialog = new Intent(MosesActivity.this,
 						LoggedInViewActivity.class);
-				startActivity(mainDialog);
+				startActivityForResult(mainDialog, 0);
 			}
 
 		});
@@ -133,7 +155,7 @@ public class MosesActivity extends Activity {
 
 	/**
 	 * Checks if is moses service running.
-	 *
+	 * 
 	 * @return true, if is moses service running
 	 */
 	private boolean isMosesServiceRunning() {
@@ -163,8 +185,9 @@ public class MosesActivity extends Activity {
 
 	/**
 	 * Called when the activity is first created.
-	 *
-	 * @param savedInstanceState the saved instance state
+	 * 
+	 * @param savedInstanceState
+	 *            the saved instance state
 	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -174,7 +197,9 @@ public class MosesActivity extends Activity {
 		loadConfig();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStart()
 	 */
 	@Override
@@ -183,7 +208,9 @@ public class MosesActivity extends Activity {
 		startAndBindService();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStop()
 	 */
 	@Override
