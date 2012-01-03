@@ -1,53 +1,99 @@
 package moses.client;
 
-import moses.client.R;
 import moses.client.abstraction.APKAbstraction;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.PingSender;
-import moses.client.com.ConnectionParam;
-import moses.client.com.NetworkJSON.BackgroundException;
-import moses.client.com.ReqTaskExecutor;
-import moses.client.com.requests.RequestLogin;
-import moses.client.com.requests.RequestLogout;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.Executor;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.Toast;
 
+// TODO: Auto-generated Javadoc
 /**
- * This activity resembles the view after logging in
- * @author Jaco
+ * This activity resembles the view after logging in.
  *
+ * @author Jaco
  */
 public class LoggedInViewActivity extends Activity {
-	
+
+	/** The btn logout. */
 	private Button btnLogout;
-	
+
+	/** The btn sync hw. */
 	private Button btnSyncHW;
-	private Button btnGetHW; // used for getting hw configuration stored on the server
 	
-	private Button btnSelectFilter;
-	
+	/** The btn get hw. */
+	private Button btnGetHW; // used for getting hw configuration stored on the
+								// server
+
+	/** The btn select filter. */
+								private Button btnSelectFilter;
+
+	/** The btn ping. */
 	private Button btnPing; // used for sending "i am alive" messages
+	
+	/** The pinger. */
 	private PingSender pinger;
-	
+
+	/** The btn list apk. */
 	private Button btnListAPK; // used for obtaining the list of APKs
-	private APKAbstraction apkAbstraction; 
 	
-	
-	private TextView txtSuccess;
-	
+	/** The apk abstraction. */
+	private APKAbstraction apkAbstraction;
+
+	/** The settings. */
 	private SharedPreferences settings;
+
+	/** The m service. */
+	public MosesService mService;
 	
+	/** The m bound. */
+	public static boolean mBound = false;
+
+	/** The m connection. */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
+	/**
+	 * Bind service.
+	 */
+	private void bindService() {
+		Intent intent = new Intent(this, MosesService.class);
+		bindService(intent, mConnection, 0);
+	}
+
+	/**
+	 * Check hardware.
+	 *
+	 * @param force the force
+	 */
 	private void checkHardware(boolean force) {
-		if(settings.getBoolean("synchw", true) || force) {
+		if (settings.getBoolean("synchw", true) || force) {
 			HardwareAbstraction hw = new HardwareAbstraction(this);
 			hw.checkHardwareParameters();
 			SharedPreferences.Editor editor = settings.edit();
@@ -55,28 +101,38 @@ public class LoggedInViewActivity extends Activity {
 			editor.commit();
 		}
 	}
-	
+
 	/**
-	 * This method is called when getHW-Button is pushed
-	 * @param force
+	 * This method is called when getHW-Button is pushed.
+	 *
+	 * @return the hardware parameters
 	 */
 	private void getHardwareParameters() {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
 		hw.getHardwareParameters();
 	}
-	
+
+	/**
+	 * Inits the controls.
+	 */
 	private void initControls() {
-		
-		txtSuccess = (TextView) findViewById(R.id.success);
-		
+
 		btnLogout = (Button) findViewById(R.id.logout_button);
 		btnLogout.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				logout();
+				mService.logout(new Executor() {
+
+					@Override
+					public void execute() {
+						Intent loginScreen = new Intent();
+						setResult(RESULT_OK, loginScreen);
+						finish();
+					}
+				});
 			}
 		});
-		
+
 		btnSyncHW = (Button) findViewById(R.id.synchw);
 		btnSyncHW.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -84,17 +140,17 @@ public class LoggedInViewActivity extends Activity {
 				checkHardware(true);
 			}
 		});
-		
+
 		btnSelectFilter = (Button) findViewById(R.id.selectfilter);
 		btnSelectFilter.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent chooseSensors = new Intent(getInstance(),
+				Intent chooseSensors = new Intent(LoggedInViewActivity.this,
 						ChooseSensorsActivity.class);
 				startActivity(chooseSensors);
 			}
 		});
-		
+
 		btnGetHW = (Button) findViewById(R.id.gethw_button);
 		btnGetHW.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -102,7 +158,7 @@ public class LoggedInViewActivity extends Activity {
 				getHardwareParameters();
 			}
 		});
-		
+
 		/*
 		 * Implementing the functionality of the ping button
 		 */
@@ -113,9 +169,9 @@ public class LoggedInViewActivity extends Activity {
 				pinger.sendPing();
 			}
 		});
-		
+
 		/*
-		 * Implementing the functionality of the getListAPK buttong
+		 * Implementing the functionality of the getListAPK button
 		 */
 		btnListAPK = (Button) findViewById(R.id.listAPK_button);
 		btnListAPK.setOnClickListener(new Button.OnClickListener() {
@@ -124,20 +180,29 @@ public class LoggedInViewActivity extends Activity {
 				apkAbstraction.getAPKs();
 			}
 		});
-		
+
 	}
-	
-	private Activity getInstance() {
-		return this;
+
+	/**
+	 * Checks if is moses service running.
+	 *
+	 * @return true, if is moses service running
+	 */
+	private boolean isMosesServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service
+					.getClassName())) {
+				return true;
+			}
+		}
+		return false;
 	}
-	
-	private void logout() {
-		String sessionID = RequestLogin.getSessionID();
-		RequestLogout rlogout = new RequestLogout(new ReqClassLogout(),
-				sessionID);
-		rlogout.send();
-	}
-	
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onCreate(android.os.Bundle)
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -145,45 +210,34 @@ public class LoggedInViewActivity extends Activity {
 		settings = getSharedPreferences("MoSeS.cfg", 0);
 		initControls();
 		checkHardware(false);
-		pinger = new PingSender(this);
+		pinger = new PingSender(new Executor() {
+			@Override
+			public void execute() {
+				Toast.makeText(LoggedInViewActivity.this, pinger.getLastMessage(), Toast.LENGTH_LONG);
+			}
+		});
 		apkAbstraction = new APKAbstraction(this);
 	}
 
-	private class ReqClassLogout implements ReqTaskExecutor {
-	
-		@Override
-		public void handleException(Exception e) {
-			txtSuccess.setText("FAILURE: " + e.getMessage());
-		}
-	
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestLogout.logoutValid(j)) {
-					Intent loginScreen = new Intent();
-					setResult(RESULT_OK, loginScreen);
-					finish();
-				} else {
-					// TODO handling!!
-					txtSuccess.setText("LOGOUT WAS REJECTED FROM SERVER"
-							+ j.toString());
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-	
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				txtSuccess.setText(c.toString());
-			} else {
-				handleException(c.e);
-			}
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
+	@Override
+	protected void onStart() {
+		super.onStart();
+		bindService();
+		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(),
+				Toast.LENGTH_LONG);
+	}
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStop()
+	 */
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mBound) {
+			unbindService(mConnection);
 		}
 	}
-	
-
 }

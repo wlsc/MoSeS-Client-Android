@@ -34,135 +34,6 @@ import android.os.Build;
  */
 public class HardwareAbstraction {
 
-	private class ReqClassSetHWParams implements ReqTaskExecutor {
-
-		@Override
-		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
-			alertDialog.show();
-		}
-
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				// TODO handling
-				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
-					alertDialog.setMessage("Parameters set successfully, server returned positive response");
-					alertDialog.show();
-				} else {
-					// TODO handling
-					alertDialog.setMessage("Parameters NOT set successfully! Server returned negative response");
-					alertDialog.show();
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
-			} else {
-				handleException(c.e);
-			}
-		}
-	}
-	
-	
-	private class ReqClassGetHWParams implements ReqTaskExecutor {
-
-		@Override
-		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
-			alertDialog.show();
-		}
-
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				// TODO handling
-				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
-					StringBuffer sb = new StringBuffer(256);
-					sb.append("Parameters retrived successfully from server");
-					sb.append("\n").append("Device id:").append(j.get("DEVICEID"));
-					sb.append("\n").append("Android version:").append(j.get("ANDVER"));
-					// parse the sensors from JSON Object
-					SensorManager senMan = (SensorManager) appContext
-							.getSystemService(Context.SENSOR_SERVICE);
-					JSONArray sensors = j.getJSONArray("SENSORS");
-					sb.append("\n").append("SENSORS:").append("\n");
-					for (int i=0; i<sensors.length(); i++) {
-						sb.append("\n");
-						sb.append(senMan.getDefaultSensor(sensors.getInt(i)).getName());
-					}
-					alertDialog.setMessage(sb.toString());
-					alertDialog.show();
-				} else {
-					// TODO handling
-					alertDialog.setMessage("Parameters NOT retrived successfully from server! :(");
-					alertDialog.show();
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
-			} else {
-				handleException(c.e);
-			}
-		}
-	}
-	
-	private class ReqClassSetFilter implements ReqTaskExecutor {
-
-		@Override
-		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE SETTING FILTER: " + e.getMessage());
-			alertDialog.show();
-		}
-
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				// TODO handling
-				if (RequestSetFilter.filterSetOnServer(j)) {
-					alertDialog.setMessage("Filter set successfully, server returned positive response");
-					alertDialog.show();
-				} else {
-					// TODO handling
-					alertDialog.setMessage("Filter NOT set successfully! Server returned negative response");
-					alertDialog.show();
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
-			} else {
-				handleException(c.e);
-			}
-		}
-	}
-	
-	
 	private class ReqClassGetFilter implements ReqTaskExecutor {
 
 		@Override
@@ -183,17 +54,20 @@ public class HardwareAbstraction {
 					sb.append("\n");
 					sb.append("stored filter:");
 					sb.append("\n");
-					SensorManager senMan = (SensorManager) appContext.getSystemService(Context.SENSOR_SERVICE);
+					SensorManager senMan = (SensorManager) appContext
+							.getSystemService(Context.SENSOR_SERVICE);
 					JSONArray filter = j.getJSONArray("FILTER");
-					for (int i=0; i<filter.length(); i++) {
+					for (int i = 0; i < filter.length(); i++) {
 						sb.append("\n");
-						sb.append(senMan.getDefaultSensor(filter.getInt(i)).getName());
+						sb.append(senMan.getDefaultSensor(filter.getInt(i))
+								.getName());
 					}
 					alertDialog.setMessage(sb.toString());
 					alertDialog.show();
 				} else {
 					// TODO handling
-					alertDialog.setMessage("Parameters NOT retrived successfully! Server returned negative response");
+					alertDialog
+							.setMessage("Parameters NOT retrived successfully! Server returned negative response");
 					alertDialog.show();
 				}
 			} catch (JSONException e) {
@@ -211,8 +85,142 @@ public class HardwareAbstraction {
 			}
 		}
 	}
-	
-	
+
+	private class ReqClassGetHWParams implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			alertDialog.setMessage("FAILURE: " + e.getMessage());
+			alertDialog.show();
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				// TODO handling
+				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
+					StringBuffer sb = new StringBuffer(256);
+					sb.append("Parameters retrived successfully from server");
+					sb.append("\n").append("Device id:")
+							.append(j.get("DEVICEID"));
+					sb.append("\n").append("Android version:")
+							.append(j.get("ANDVER"));
+					// parse the sensors from JSON Object
+					SensorManager senMan = (SensorManager) appContext
+							.getSystemService(Context.SENSOR_SERVICE);
+					JSONArray sensors = j.getJSONArray("SENSORS");
+					sb.append("\n").append("SENSORS:").append("\n");
+					for (int i = 0; i < sensors.length(); i++) {
+						sb.append("\n");
+						sb.append(senMan.getDefaultSensor(sensors.getInt(i))
+								.getName());
+					}
+					alertDialog.setMessage(sb.toString());
+					alertDialog.show();
+				} else {
+					// TODO handling
+					alertDialog
+							.setMessage("Parameters NOT retrived successfully from server! :(");
+					alertDialog.show();
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				alertDialog.setMessage(c.c.toString());
+				alertDialog.show();
+			} else {
+				handleException(c.e);
+			}
+		}
+	}
+
+	private class ReqClassSetFilter implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			alertDialog.setMessage("FAILURE SETTING FILTER: " + e.getMessage());
+			alertDialog.show();
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				// TODO handling
+				if (RequestSetFilter.filterSetOnServer(j)) {
+					alertDialog
+							.setMessage("Filter set successfully, server returned positive response");
+					alertDialog.show();
+				} else {
+					// TODO handling
+					alertDialog
+							.setMessage("Filter NOT set successfully! Server returned negative response");
+					alertDialog.show();
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				alertDialog.setMessage(c.c.toString());
+				alertDialog.show();
+			} else {
+				handleException(c.e);
+			}
+		}
+	}
+
+	private class ReqClassSetHWParams implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			alertDialog.setMessage("FAILURE: " + e.getMessage());
+			alertDialog.show();
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				j = new JSONObject(s);
+				// TODO handling
+				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
+					alertDialog
+							.setMessage("Parameters set successfully, server returned positive response");
+					alertDialog.show();
+				} else {
+					// TODO handling
+					alertDialog
+							.setMessage("Parameters NOT set successfully! Server returned negative response");
+					alertDialog.show();
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c != ConnectionParam.EXCEPTION) {
+				alertDialog.setMessage(c.c.toString());
+				alertDialog.show();
+			} else {
+				handleException(c.e);
+			}
+		}
+	}
+
 	private AlertDialog alertDialog;
 
 	private Context appContext;
@@ -239,6 +247,46 @@ public class HardwareAbstraction {
 	}
 
 	/**
+	 * This method sends a Request to the website for obtainint the filter
+	 * stored for this device
+	 */
+	public void getFilter() {
+		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+
+		RequestGetFilter rGetFilter = new RequestGetFilter(
+				new ReqClassGetFilter(), sessionID, Build.MANUFACTURER + " "
+						+ Build.MODEL + " " + Build.FINGERPRINT);
+		rGetFilter.send();
+
+	}
+
+	/**
+	 * This method reads the sensor list stored for the device on the server
+	 */
+	public void getHardwareParameters() {
+		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
+		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+
+		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
+				new ReqClassGetHWParams(), sessionID, Build.MANUFACTURER + " "
+						+ Build.MODEL + " " + Build.FINGERPRINT);
+		rGetHWParams.send();
+	}
+
+	/**
+	 * This method sends a set_filter Request to the website
+	 */
+	public void setFilter(List<Integer> filter) {
+		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
+		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+
+		RequestSetFilter rSetFilter = new RequestSetFilter(
+				new ReqClassSetFilter(), sessionID, Build.MANUFACTURER + " "
+						+ Build.MODEL + " " + Build.FINGERPRINT, filter);
+		rSetFilter.send();
+	}
+
+	/**
 	 * This method reads the sensors currently chosen by the user and send the
 	 * appropriate update to the MoSeS-Website
 	 */
@@ -254,50 +302,10 @@ public class HardwareAbstraction {
 		}
 
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassSetHWParams(), sessionID, Build.MANUFACTURER
-						+ " " + Build.MODEL + " " + Build.FINGERPRINT,
+				new ReqClassSetHWParams(), sessionID, Build.MANUFACTURER + " "
+						+ Build.MODEL + " " + Build.FINGERPRINT,
 				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
 
-	}
-
-	/**
-	 * This method reads the sensor list stored for the device on the server
-	 */
-	public void getHardwareParameters() {
-		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
-	
-		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
-				new ReqClassGetHWParams(), sessionID, Build.MANUFACTURER
-						+ " " + Build.MODEL + " " + Build.FINGERPRINT);
-		rGetHWParams.send();
-	}
-	
-	/**
-	 * This method sends a set_filter Request to the website
-	 */
-	public void setFilter(List<Integer> filter){
-		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-			String sessionID = RequestLogin.getSessionID(); // obtain the session id
-		
-			RequestSetFilter rSetFilter = new RequestSetFilter(
-					new ReqClassSetFilter(), sessionID, Build.MANUFACTURER
-					+ " " + Build.MODEL + " " + Build.FINGERPRINT, filter);
-			rSetFilter.send();
-	}
-
-	/**
-	 * This method sends a Request to the website for obtainint
-	 * the filter stored for this device
-	 */
-	public void getFilter() {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
-		
-		RequestGetFilter rGetFilter = new RequestGetFilter(
-				new ReqClassGetFilter(), sessionID, Build.MANUFACTURER
-				+ " " + Build.MODEL + " " + Build.FINGERPRINT);
-		rGetFilter.send();
-		
 	}
 }

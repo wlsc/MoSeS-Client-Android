@@ -8,6 +8,7 @@ import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestPing;
+import moses.client.service.helpers.Executor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,52 +19,22 @@ import android.content.DialogInterface;
 
 /**
  * This class offers methods for staying in touch with the server
+ * 
  * @author Zijad Maksuti
- *
+ * 
  */
 
 public class PingSender {
-	
-	private static AlertDialog infoDialog; // used for showing the results
-	
-	/**
-	 * Constructs a new PingSender
-	 * which methods can be used for periodical sending of pings to the server
-	 * @param c the Context in which the pinger should operate
-	 */
-	public PingSender(Context c) {
-		infoDialog = new AlertDialog.Builder(c).create();
-		infoDialog.setTitle("INFO:");
-		infoDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						infoDialog.dismiss();
-					}
-				});
-	}
-	
-	
-	/**
-	 * This method sends a Ping to the server in order
-	 * to refresh the session stored on the server
-	 */
-	public void sendPing() {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
-		
-		RequestPing rPing = new RequestPing(
-				new ReqClassPing(), sessionID);
-		rPing.send();
-	}
-	
-	
-	
+
+	private String lastMessage;
+	private Executor e;
+
 	private class ReqClassPing implements ReqTaskExecutor {
 
 		@Override
 		public void handleException(Exception e) {
-			infoDialog.setMessage("FAILURE ON SENDING PING: " + e.getMessage());
-			infoDialog.show();
+			lastMessage = "FAILURE ON SENDING PING: " + e.getMessage();
+			PingSender.this.e.execute();
 		}
 
 		@Override
@@ -73,12 +44,12 @@ public class PingSender {
 				j = new JSONObject(s);
 				// TODO handling
 				if (RequestPing.pingAccepted(j)) {
-					infoDialog.setMessage("Ping set successfully, server returned positive response");
-					infoDialog.show();
+					lastMessage = "Ping set successfully, server returned positive response";
+					PingSender.this.e.execute();
 				} else {
 					// TODO handling
-					infoDialog.setMessage("Ping NOT set successfully, server returned NEGATIVE response");
-					infoDialog.show();
+					lastMessage = "Ping NOT set successfully, server returned NEGATIVE response";
+					PingSender.this.e.execute();
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -88,13 +59,37 @@ public class PingSender {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				infoDialog.setMessage(c.c.toString());
-				infoDialog.show();
+				lastMessage = c.c.toString();
+				PingSender.this.e.execute();
 			} else {
 				handleException(c.e);
 			}
 		}
 	}
-	
-	
+
+	/**
+	 * Constructs a new PingSender which methods can be used for periodical
+	 * sending of pings to the server
+	 * 
+	 * @param c
+	 *            the Context in which the pinger should operate
+	 */
+	public PingSender(Executor e) {
+		this.e = e;
+	}
+
+	public String getLastMessage() {
+		return lastMessage;
+	}
+
+	/**
+	 * This method sends a Ping to the server in order to refresh the session
+	 * stored on the server
+	 */
+	public void sendPing() {
+		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+
+		new RequestPing(new ReqClassPing(), sessionID).send();
+	}
+
 }

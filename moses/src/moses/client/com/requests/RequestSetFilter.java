@@ -10,24 +10,25 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class is used for setting filter
- * it provides some basic methods for this
+ * This class is used for setting filter it provides some basic methods for this
+ * 
  * @author Zijad
- *
+ * 
  */
 public class RequestSetFilter {
 	public static boolean filterSetOnServer(JSONObject j) throws JSONException {
-		if(j.getString("STATUS").equals("SUCCESS")) {
+		if (j.getString("STATUS").equals("SUCCESS")) {
 			return true;
 		}
 		return false;
 	}
+
 	private JSONObject j;
-	
+
 	ReqTaskExecutor e;
-	
-	
-	public RequestSetFilter(ReqTaskExecutor e, String sessionID, String deviceID, List<Integer> filter) {
+
+	public RequestSetFilter(ReqTaskExecutor e, String sessionID,
+			String deviceID, List<Integer> filter) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -39,7 +40,7 @@ public class RequestSetFilter {
 			e.handleException(ex);
 		}
 	}
-	
+
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;

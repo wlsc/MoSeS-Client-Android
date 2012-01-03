@@ -7,30 +7,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class is used for logging in
- * it provides some basic methods for it
+ * This class is used for logging in it provides some basic methods for it
+ * 
  * @author Jaco
- *
+ * 
  */
 
 public class RequestLogin {
-	public static boolean loginValid(JSONObject j, String uname) throws JSONException {
-		String sessionID =  j.getString("SESSIONID");
-		if(!sessionID.equals("NULL")) {
-			SESSION_ID=sessionID;
+	public static boolean loginValid(JSONObject j, String uname)
+			throws JSONException {
+		String sessionID = j.getString("SESSIONID");
+		if (!sessionID.equals("NULL")) {
+			SESSION_ID = sessionID;
 			return j.getString("LOGIN").equals(uname);
 		}
 		return false;
 	}
+
 	private JSONObject j;
 	ReqTaskExecutor e;
-	
-	private static String SESSION_ID = null; // the id of login session given by the server
-	
+
+	private static String SESSION_ID = null; // the id of login session given by
+												// the server
+
 	public static String getSessionID() {
 		return SESSION_ID;
 	}
-	
+
 	public RequestLogin(ReqTaskExecutor e, String uname, String pw) {
 		j = new JSONObject();
 		this.e = e;
@@ -42,7 +45,7 @@ public class RequestLogin {
 			e.handleException(ex);
 		}
 	}
-	
+
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;

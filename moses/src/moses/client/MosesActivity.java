@@ -3,10 +3,11 @@ package moses.client;
 import moses.client.com.NetworkJSON;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
-
+import moses.client.service.helpers.Executor;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+// TODO: Auto-generated Javadoc
 /**
  * This activity is the main activity of our app providing login etc.
  * 
@@ -25,22 +27,60 @@ import android.widget.EditText;
  */
 public class MosesActivity extends Activity {
 
+	/** The txt uname. */
 	private EditText txtUname;
 
+	/** The txt pw. */
 	private EditText txtPW;
 
+	/** The btnconnect. */
 	private Button btnconnect;
 
+	/** The btn exit. */
 	private Button btnExit;
+	
+	/** The chk login auto. */
 	private CheckBox chkLoginAuto;
 
+	/** The chk save uname pw. */
 	private CheckBox chkSaveUnamePW;
 
+	/** The settings. */
 	private SharedPreferences settings;
 
+	/** The m service. */
 	public MosesService mService;
+	
+	/** The m bound. */
 	public static boolean mBound = false;
 
+	/** The m connection. */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+			btnconnect.setEnabled(true);
+			if (mService.isLoggedIn()) {
+				Intent mainDialog = new Intent(MosesActivity.this,
+						LoggedInViewActivity.class);
+				startActivity(mainDialog);
+			}
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
+	/**
+	 * Connect.
+	 */
 	private void connect() {
 		SharedPreferences.Editor editor = settings.edit();
 		if (chkSaveUnamePW.isChecked()) {
@@ -50,17 +90,22 @@ public class MosesActivity extends Activity {
 		editor.putBoolean("loginauto", chkLoginAuto.isChecked());
 		editor.putBoolean("saveunamepw", chkSaveUnamePW.isChecked());
 		editor.commit();
-		// Wait till we're connected
-		// TODO: Less ugly implementation
 		mService.reloadSettings();
-		mService.login();
-		//while (!mService.isLoggedIn())
-		//	;
-		Intent mainDialog = new Intent(this, LoggedInViewActivity.class);
-		startActivity(mainDialog);
+		mService.login(new Executor() {
 
+			@Override
+			public void execute() {
+				Intent mainDialog = new Intent(MosesActivity.this,
+						LoggedInViewActivity.class);
+				startActivity(mainDialog);
+			}
+
+		});
 	}
 
+	/**
+	 * Inits the controls.
+	 */
 	private void initControls() {
 		txtUname = (EditText) findViewById(R.id.uname);
 		txtPW = (EditText) findViewById(R.id.pword);
@@ -69,7 +114,7 @@ public class MosesActivity extends Activity {
 		chkSaveUnamePW = (CheckBox) findViewById(R.id.saveunamepw);
 
 		btnconnect = (Button) findViewById(R.id.connect_button);
-		btnconnect.setClickable(false);
+		btnconnect.setEnabled(false);
 		btnconnect.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -86,6 +131,26 @@ public class MosesActivity extends Activity {
 		});
 	}
 
+	/**
+	 * Checks if is moses service running.
+	 *
+	 * @return true, if is moses service running
+	 */
+	private boolean isMosesServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service
+					.getClassName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Load config.
+	 */
 	private void loadConfig() {
 		settings = getSharedPreferences("MoSeS.cfg", 0);
 		txtUname.setText(settings.getString("uname", ""));
@@ -96,12 +161,11 @@ public class MosesActivity extends Activity {
 		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
 	}
 
-	private void startAndBindService() {
-		Intent intent = new Intent(this, MosesService.class);
-		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	/** Called when the activity is first created. */
+	/**
+	 * Called when the activity is first created.
+	 *
+	 * @param savedInstanceState the saved instance state
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -110,35 +174,35 @@ public class MosesActivity extends Activity {
 		loadConfig();
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStart()
+	 */
+	@Override
 	protected void onStart() {
 		super.onStart();
 		startAndBindService();
 	}
 
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onStop()
+	 */
+	@Override
 	protected void onStop() {
 		super.onStop();
 		if (mBound) {
 			unbindService(mConnection);
-			mBound = false;
 		}
 	}
 
-	private ServiceConnection mConnection = new ServiceConnection() {
-
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			// We've bound to LocalService, cast the IBinder and get
-			// LocalService instance
-			LocalBinder binder = (LocalBinder) service;
-			mService = binder.getService();
-			mBound = true;
-			btnconnect.setClickable(true);
+	/**
+	 * Start and bind service.
+	 */
+	private void startAndBindService() {
+		Intent intent = new Intent(this, MosesService.class);
+		if (!isMosesServiceRunning()) {
+			startService(intent);
 		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			mBound = false;
-		}
-	};
+		bindService(intent, mConnection, 0);
+	}
 
 }

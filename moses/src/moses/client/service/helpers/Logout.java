@@ -3,7 +3,7 @@ package moses.client.service.helpers;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
-import moses.client.com.requests.RequestLogin;
+import moses.client.com.requests.RequestLogout;
 import moses.client.service.MosesService;
 
 import org.json.JSONException;
@@ -13,15 +13,16 @@ import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class Login.
+ * The Class Logout.
+ *
  * @author Jaco Hofmann
  */
-public class Login {
-
+public class Logout {
+	
 	/**
-	 * The Class LoginFunc.
+	 * The Class LogoutFunc.
 	 */
-	private class LoginFunc implements ReqTaskExecutor {
+	private class LogoutFunc implements ReqTaskExecutor {
 
 		/* (non-Javadoc)
 		 * @see moses.client.com.ReqTaskExecutor#handleException(java.lang.Exception)
@@ -40,12 +41,10 @@ public class Login {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				if (RequestLogin.loginValid(j, uname)) {
-					serv.loggedIn(j.getString("SESSIONID"));
+				// TODO: Handle unsuccessful logout
+				if (j.getString("MESSAGE").equals("LOGOUT_RESPONSE")) {
+					serv.loggedOut();
 					e.execute();
-				} else {
-					Toast.makeText(serv, "NOT GRANTED: " + j.toString(),
-							Toast.LENGTH_LONG).show();
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -69,29 +68,19 @@ public class Login {
 
 	/** The serv. */
 	private MosesService serv;
-	
-	/** The uname. */
-	private String uname;
-	
-	/** The pw. */
-	private String pw;
 
 	/** The e. */
 	private Executor e;
 
 	/**
-	 * Instantiates a new login.
+	 * Instantiates a new logout.
 	 *
-	 * @param username the username
-	 * @param password the password
 	 * @param serv the serv
 	 * @param e the e
 	 */
-	public Login(String username, String password, MosesService serv, Executor e) {
+	public Logout(MosesService serv, Executor e) {
 		this.serv = serv;
-		this.pw = password;
-		this.uname = username;
 		this.e = e;
-		new RequestLogin(new LoginFunc(), uname, pw).send();
+		new RequestLogout(new LogoutFunc(), serv.getSessionID()).send();
 	}
 }

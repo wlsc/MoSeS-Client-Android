@@ -7,39 +7,45 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class is used for getting hardware parameters
- * for this device and user, stored on the website
- * (not to be confused with filter)
- * it provides some basic methods for this
+ * This class is used for getting hardware parameters for this device and user,
+ * stored on the website (not to be confused with filter) it provides some basic
+ * methods for this
+ * 
  * @author Zijad
- *
+ * 
  */
 public class RequestGetHardwareParameters {
-	
+
 	/**
-	 * Returns true when the server has returned
-	 * the success-response
+	 * Returns true when the server has returned the success-response
+	 * 
 	 * @param j
 	 * @return true when the server has returned a success-response, else false
 	 * @throws JSONException
 	 */
-	public static boolean parameterAcquiredFromServer(JSONObject j) throws JSONException {
-		if(j.getString("MESSAGE").equals("HARDWARE_PARAMS")) 
+	public static boolean parameterAcquiredFromServer(JSONObject j)
+			throws JSONException {
+		if (j.getString("MESSAGE").equals("HARDWARE_PARAMS"))
 			return true;
 		return false;
 	}
+
 	private JSONObject j;
-	
+
 	ReqTaskExecutor e;
-	
-	
+
 	/**
-	 * Generates RequestGetHardwareParameters used for retrieving the hardware parameters stored for a device on the server
+	 * Generates RequestGetHardwareParameters used for retrieving the hardware
+	 * parameters stored for a device on the server
+	 * 
 	 * @param e
-	 * @param sessionID id of the session with the server
-	 * @param deviceID id of the device
+	 * @param sessionID
+	 *            id of the session with the server
+	 * @param deviceID
+	 *            id of the device
 	 */
-	public RequestGetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID) {
+	public RequestGetHardwareParameters(ReqTaskExecutor e, String sessionID,
+			String deviceID) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -50,7 +56,7 @@ public class RequestGetHardwareParameters {
 			e.handleException(ex);
 		}
 	}
-	
+
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;

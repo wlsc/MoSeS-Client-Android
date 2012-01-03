@@ -10,24 +10,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * This class is used for setting hardware parameters
- * it provides some basic methods for this
+ * This class is used for setting hardware parameters it provides some basic
+ * methods for this
+ * 
  * @author Zijad
- *
+ * 
  */
 public class RequestSetHardwareParameters {
-	public static boolean parameterSetOnServer(JSONObject j) throws JSONException {
-		if(j.getString("STATUS").equals("SUCCESS")) {
+	public static boolean parameterSetOnServer(JSONObject j)
+			throws JSONException {
+		if (j.getString("STATUS").equals("SUCCESS")) {
 			return true;
 		}
 		return false;
 	}
+
 	private JSONObject j;
-	
+
 	ReqTaskExecutor e;
-	
-	
-	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID, String androidVersion, List<Integer> sensors) {
+
+	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID,
+			String deviceID, String androidVersion, List<Integer> sensors) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -40,7 +43,7 @@ public class RequestSetHardwareParameters {
 			e.handleException(ex);
 		}
 	}
-	
+
 	public void send() {
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;
