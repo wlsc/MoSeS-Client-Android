@@ -1,5 +1,8 @@
 package moses.client;
 
+import java.io.IOException;
+
+import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
@@ -17,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -181,6 +185,12 @@ public class MosesActivity extends Activity {
 				"http://212.72.183.71:80/moses/test.php");
 		chkLoginAuto.setChecked(settings.getBoolean("loginauto", false));
 		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
+		
+		try {
+			InstalledExternalApplicationsManager.init(getApplicationContext());
+		} catch (IOException e) {
+			Toast.makeText(getApplicationContext(), "Could not load installed applications", Toast.LENGTH_LONG);
+		}
 	}
 
 	/**

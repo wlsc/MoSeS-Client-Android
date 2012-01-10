@@ -8,8 +8,10 @@ import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -78,6 +80,10 @@ public class LoggedInViewActivity extends Activity {
 			mBound = false;
 		}
 	};
+
+	private Button btnShowAvailableApks;
+
+	private Button btnShowInstalledApps;
 
 	/**
 	 * Bind service.
@@ -179,6 +185,28 @@ public class LoggedInViewActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				apkAbstraction.getAPKs();
+			}
+		});
+		
+		btnShowAvailableApks = (Button) findViewById(R.id.btnShowSensingApplications);
+		btnShowAvailableApks.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent showAvailableApkList = new Intent(LoggedInViewActivity.this,
+					ViewAvailableApkActivity.class);
+				startActivity(showAvailableApkList);
+
+			}
+		});
+		
+		btnShowInstalledApps = (Button) findViewById(R.id.btnShowInstalledApplications);
+		btnShowInstalledApps.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent showInstalledAppsList = new Intent(LoggedInViewActivity.this,
+					ViewInstalledApplicationsActivity.class);
+				startActivity(showInstalledAppsList);
+
 			}
 		});
 
