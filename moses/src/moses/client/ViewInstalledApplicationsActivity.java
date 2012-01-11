@@ -78,7 +78,7 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			app.startApplication(this);
 		} catch (NameNotFoundException e) {
 			Toast.makeText(this.getApplicationContext(),
-				"app was not found - maybe because it was uninstalled since last database refresh", Toast.LENGTH_LONG);
+				"app was not found - maybe because it was uninstalled since last database refresh", Toast.LENGTH_LONG).show();
 		}
 	}
 

@@ -190,7 +190,7 @@ public class MosesActivity extends Activity {
 		try {
 			InstalledExternalApplicationsManager.init(getApplicationContext());
 		} catch (IOException e) {
-			Toast.makeText(getApplicationContext(), "Could not load installed applications", Toast.LENGTH_LONG);
+			Toast.makeText(getApplicationContext(), "Could not load installed applications", Toast.LENGTH_LONG).show();
 		}
 	}
 

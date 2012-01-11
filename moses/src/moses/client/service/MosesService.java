@@ -3,6 +3,7 @@ package moses.client.service;
 import org.json.JSONArray;
 
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
@@ -74,6 +75,8 @@ public class MosesService extends android.app.Service {
 	
 	private KeepSessionAlive cKeepAlive;
 
+	private CheckForNewApplications checkForNewApplications;
+
 	/**
 	 * Gets the session id.
 	 *
@@ -138,6 +141,7 @@ public class MosesService extends android.app.Service {
 	public void login(Executor e) {
 		new Login(mset.username, mset.password, this, e);
 		keepSessionAlive(true);
+		checkForNewApplications.startChecking(true);
 	}
 
 	/**
@@ -170,8 +174,10 @@ public class MosesService extends android.app.Service {
 		super.onCreate();
 		initConfig();
 		cKeepAlive = new KeepSessionAlive();
+		checkForNewApplications = new CheckForNewApplications(this);
 		Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
 	}
+
 
 	/* (non-Javadoc)
 	 * @see android.app.Service#onDestroy()

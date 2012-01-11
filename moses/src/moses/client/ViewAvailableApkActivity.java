@@ -96,14 +96,14 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 			downloadTask.execute();
 		} catch (MalformedURLException e) {
 			Toast.makeText(getApplicationContext(),
-				"Server sent malformed url; could not download application: " + url, Toast.LENGTH_LONG);
+				"Server sent malformed url; could not download application: " + url, Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void apkDownloadLinkRequestFailed(Exception e) {
 		Toast.makeText(getApplicationContext(), "Downloadlink request failed:\n" + concatStacktrace(e),
-			Toast.LENGTH_LONG);
+			Toast.LENGTH_LONG).show();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 	@Override
 	public void apkDownloadFailed(ApkDownloadTask downloader) {
 		Toast.makeText(getApplicationContext(),
-			"Download failed.\n" + concatStacktrace(downloader.getDownloadException()), Toast.LENGTH_LONG);
+			"Download failed.\n" + concatStacktrace(downloader.getDownloadException()), Toast.LENGTH_LONG).show();
 	}
 
 	private void installDownloadedApk(File result, ExternalApplication externalAppRef) {
@@ -161,7 +161,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 	@Override
 	public void apkListRequestFailed(Exception e) {
 		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e.getMessage(),
-			Toast.LENGTH_LONG);
+			Toast.LENGTH_LONG).show();
 	}
 
 	private void populateList(List<ExternalApplication> applications) {

@@ -29,6 +29,8 @@
         </activity>
         <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
         </activity>
+        <activity android:name="moses.client.service.helpers.NotifyAboutNewApksActivity">
+        </activity>
             
         <receiver android:name="moses.client.service.StartupIntentReceiver" >
             <intent-filter >
