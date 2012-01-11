@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -74,7 +75,7 @@ public class ChooseSensorsActivity extends Activity {
 			sensorNames[i] = Integer.toString(sensors.get(i).getType());
 
 		lstSensors.setAdapter(new ArrayAdapter<String>(this,
-				R.layout.choosesensors_row, R.id.choose_sensors_txt,
+				android.R.layout.simple_list_item_multiple_choice,
 				sensorNames));
 
 		// implement the functionality of the "Ok" button
@@ -93,12 +94,11 @@ public class ChooseSensorsActivity extends Activity {
 			public void onClick(View v) {
 
 				List<Integer> temp = new ArrayList<Integer>();
-				for (int i = 0; i < lstSensors.getCount(); ++i) {
-
-					temp.add(Integer.parseInt((String) lstSensors.getAdapter()
-							.getItem(i)));
+				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
+				for(int i = 0; i < lstSensors.getCount(); ++i) {
+					if(b.valueAt(i)) 
+						temp.add(Integer.parseInt((String)lstSensors.getItemAtPosition(i)));
 				}
-				
 				setFilter(temp);
 			}
 		});
