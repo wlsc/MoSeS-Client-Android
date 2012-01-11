@@ -13,13 +13,13 @@ import java.util.List;
 
 import moses.client.abstraction.ApkMethods;
 import moses.client.util.FileLocationUtil;
-
 import android.app.Activity;
 import android.content.Context;
 
 /**
  * An InstalledExternalApplicationsManager holds references to installed
- * external applications. Should be initialized once at the start of the application.
+ * external applications. Should be initialized once at the start of the
+ * application.
  * 
  * @author Simon L
  * 
@@ -32,15 +32,19 @@ public class InstalledExternalApplicationsManager {
 	 * initializes the manager (if there is a file that contains an old manager,
 	 * this will be loaded; otherwise, an empty manager will be created.
 	 * 
-	 * @param appContext the application context
-	 * @throws IOException if something goes wrong with reading/parsing the manager file.
+	 * @param appContext
+	 *            the application context
+	 * @throws IOException
+	 *             if something goes wrong with reading/parsing the manager
+	 *             file.
 	 */
 	public static void init(Context appContext) throws IOException {
 		defaultInstance = loadAppDatabase(appContext);
 	}
-	
+
 	/**
-	 * returns the default manager. if the manager was not initialized once, this returns null.
+	 * returns the default manager. if the manager was not initialized once,
+	 * this returns null.
 	 * 
 	 * @return the default manager or null, if not initialized.
 	 */
@@ -93,7 +97,8 @@ public class InstalledExternalApplicationsManager {
 
 	/**
 	 * Add an installed application to this manager, if it was not already added
-	 * (In this case, the existing object will be removed before adding this one).
+	 * (In this case, the existing object will be removed before adding this
+	 * one).
 	 * 
 	 * @param app
 	 *            the reference object to the application
@@ -104,7 +109,7 @@ public class InstalledExternalApplicationsManager {
 		} else {
 			for (Iterator<InstalledExternalApplication> iterator = apps.iterator(); iterator.hasNext();) {
 				InstalledExternalApplication currentApp = iterator.next();
-				if(currentApp.getPackageName().equals(app.getPackageName())) {
+				if (currentApp.getPackageName().equals(app.getPackageName())) {
 					iterator.remove();
 				}
 			}
@@ -234,5 +239,9 @@ public class InstalledExternalApplicationsManager {
 	@Override
 	public String toString() {
 		return apps.toString();
+	}
+
+	public void reset() {
+		apps.clear();
 	}
 }

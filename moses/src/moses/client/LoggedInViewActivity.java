@@ -1,17 +1,18 @@
 package moses.client;
 
+import java.io.IOException;
+
 import moses.client.abstraction.APKAbstraction;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.PingSender;
+import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -24,7 +25,7 @@ import android.widget.Toast;
 // TODO: Auto-generated Javadoc
 /**
  * This activity resembles the view after logging in.
- *
+ * 
  * @author Jaco
  */
 public class LoggedInViewActivity extends Activity {
@@ -34,23 +35,23 @@ public class LoggedInViewActivity extends Activity {
 
 	/** The btn sync hw. */
 	private Button btnSyncHW;
-	
+
 	/** The btn get hw. */
 	private Button btnGetHW; // used for getting hw configuration stored on the
 								// server
 
 	/** The btn select filter. */
-								private Button btnSelectFilter;
+	private Button btnSelectFilter;
 
 	/** The btn ping. */
 	private Button btnPing; // used for sending "i am alive" messages
-	
+
 	/** The pinger. */
 	private PingSender pinger;
 
 	/** The btn list apk. */
 	private Button btnListAPK; // used for obtaining the list of APKs
-	
+
 	/** The apk abstraction. */
 	private APKAbstraction apkAbstraction;
 
@@ -59,7 +60,7 @@ public class LoggedInViewActivity extends Activity {
 
 	/** The m service. */
 	public MosesService mService;
-	
+
 	/** The m bound. */
 	public static boolean mBound = false;
 
@@ -85,6 +86,8 @@ public class LoggedInViewActivity extends Activity {
 
 	private Button btnShowInstalledApps;
 
+	private Button btnResetInstalledApps;
+
 	/**
 	 * Bind service.
 	 */
@@ -95,8 +98,9 @@ public class LoggedInViewActivity extends Activity {
 
 	/**
 	 * Check hardware.
-	 *
-	 * @param force the force
+	 * 
+	 * @param force
+	 *            the force
 	 */
 	private void checkHardware(boolean force) {
 		if (settings.getBoolean("synchw", true) || force) {
@@ -110,7 +114,7 @@ public class LoggedInViewActivity extends Activity {
 
 	/**
 	 * This method is called when getHW-Button is pushed.
-	 *
+	 * 
 	 * @return the hardware parameters
 	 */
 	private void getHardwareParameters() {
@@ -150,8 +154,7 @@ public class LoggedInViewActivity extends Activity {
 		btnSelectFilter.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent chooseSensors = new Intent(LoggedInViewActivity.this,
-						ChooseSensorsActivity.class);
+				Intent chooseSensors = new Intent(LoggedInViewActivity.this, ChooseSensorsActivity.class);
 				startActivity(chooseSensors);
 			}
 		});
@@ -171,7 +174,7 @@ public class LoggedInViewActivity extends Activity {
 		btnPing.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//pinger.sendPing();
+				// pinger.sendPing();
 				setResult(MosesActivity.results.RS_CLOSE.ordinal());
 				finish();
 			}
@@ -187,18 +190,17 @@ public class LoggedInViewActivity extends Activity {
 				apkAbstraction.getAPKs();
 			}
 		});
-		
+
 		btnShowAvailableApks = (Button) findViewById(R.id.btnShowSensingApplications);
 		btnShowAvailableApks.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent showAvailableApkList = new Intent(LoggedInViewActivity.this,
-					ViewAvailableApkActivity.class);
+				Intent showAvailableApkList = new Intent(LoggedInViewActivity.this, ViewAvailableApkActivity.class);
 				startActivity(showAvailableApkList);
 
 			}
 		});
-		
+
 		btnShowInstalledApps = (Button) findViewById(R.id.btnShowInstalledApplications);
 		btnShowInstalledApps.setOnClickListener(new Button.OnClickListener() {
 			@Override
@@ -209,27 +211,37 @@ public class LoggedInViewActivity extends Activity {
 
 			}
 		});
+		btnResetInstalledApps = (Button) findViewById(R.id.btnResetInstalledApplications);
+		btnResetInstalledApps.setOnClickListener(new Button.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				InstalledExternalApplicationsManager.getDefault().reset();
+				try {
+					InstalledExternalApplicationsManager.getDefault().saveToDisk(getApplicationContext());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 
 	}
 
 	/**
 	 * Checks if is moses service running.
-	 *
+	 * 
 	 * @return true, if is moses service running
 	 */
 	private boolean isMosesServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("moses.client.service.MosesService".equals(service.service
-					.getClassName())) {
-				return true;
-			}
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service.getClassName())) { return true; }
 		}
 		return false;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
 	 */
 	@Override
@@ -248,18 +260,21 @@ public class LoggedInViewActivity extends Activity {
 		apkAbstraction = new APKAbstraction(this);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStart()
 	 */
 	@Override
 	protected void onStart() {
 		super.onStart();
 		bindService();
-		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(),
-				Toast.LENGTH_LONG);
+		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(), Toast.LENGTH_LONG);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.app.Activity#onStop()
 	 */
 	@Override

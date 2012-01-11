@@ -8,14 +8,20 @@ public interface ApkDownloadObserver {
 	 * to the external application was set, it will be passed on as parameter,
 	 * otherwise this parameter will be null.
 	 * 
-	 * @param downloader the downloader which performed the download
-	 * @param result the file reference to the downloaded apk file
-	 * @param externalAppRef the external application reference, if it was set via {@link ApkDownloadTask#setExternalApplicationReference(ExternalApplication)}
+	 * @param downloader
+	 *            the downloader which performed the download
+	 * @param result
+	 *            the file reference to the downloaded apk file
+	 * @param externalAppRef
+	 *            the external application reference, if it was set via
+	 *            {@link ApkDownloadTask#setExternalApplicationReference(ExternalApplication)}
 	 */
 	public void apkDownloadFinished(ApkDownloadTask downloader, File result, ExternalApplication externalAppRef);
 
 	/**
-	 * Notifies the observer that the download failed; the exception that was thrown can be retrieved via {@link ApkDownloadTask#getDownloadException()}
+	 * Notifies the observer that the download failed; the exception that was
+	 * thrown can be retrieved via
+	 * {@link ApkDownloadTask#getDownloadException()}
 	 * 
 	 * @param downloader
 	 */

@@ -58,12 +58,17 @@
         android:id="@+id/btnShowSensingApplications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Installable sensing applications" />
+        android:text="Install an application" />
     
     <Button
         android:id="@+id/btnShowInstalledApplications"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start a sensing application..." />
+        android:text="Start an installed application" />
+    <Button
+        android:id="@+id/btnResetInstalledApplications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset all installed applications" />
 
 </LinearLayout>
