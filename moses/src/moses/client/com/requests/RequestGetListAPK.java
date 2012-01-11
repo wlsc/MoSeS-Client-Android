@@ -1,5 +1,6 @@
 package moses.client.com.requests;
 
+import moses.client.abstraction.HardwareAbstraction;
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
 
@@ -45,6 +46,7 @@ public class RequestGetListAPK {
 		try {
 			j.put("MESSAGE", "GET_APK_LIST_REQUEST");
 			j.put("SESSIONID", sessionID);
+			j.put("DEVICEID", HardwareAbstraction.extractDeviceId());
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
