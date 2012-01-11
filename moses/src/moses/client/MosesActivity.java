@@ -94,6 +94,7 @@ public class MosesActivity extends Activity {
 	};
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(!isMosesServiceRunning()) startAndBindService();
 		if (requestCode == 0) {
 			if (resultCode == results.RS_CLOSE.ordinal()) {
 				// User wants to close the app without logging out

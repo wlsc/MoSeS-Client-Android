@@ -1,9 +1,7 @@
 package moses.client.service.helpers;
 
 import android.os.Handler;
-import android.widget.Toast;
 import moses.client.abstraction.PingSender;
-import moses.client.service.MosesService;
 
 /**
  * @author Jaco Hofmann
@@ -14,7 +12,7 @@ public class KeepSessionAlive {
 	private boolean stopPosting = false;
 	private PingSender pinger;
 	
-	private final int pingTime = 10000;
+	private final int pingTime = 60000; // Every second
 
 	private Runnable mKeepAliveTask = new Runnable() {
 

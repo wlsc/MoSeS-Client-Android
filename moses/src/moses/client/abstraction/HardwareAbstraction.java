@@ -14,17 +14,23 @@ import moses.client.com.requests.RequestGetHardwareParameters;
 import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.IBinder;
 
 /**
  * This class provides basic support for hardware sync with server
@@ -49,21 +55,11 @@ public class HardwareAbstraction {
 				j = new JSONObject(s);
 				// TODO handling
 				if (RequestGetFilter.parameterAcquiredFromServer(j)) {
-					StringBuffer sb = new StringBuffer(256);
-					sb.append("Filter retrived successfully, server returned positive response");
-					sb.append("\n");
-					sb.append("stored filter:");
-					sb.append("\n");
-					SensorManager senMan = (SensorManager) appContext
-							.getSystemService(Context.SENSOR_SERVICE);
 					JSONArray filter = j.getJSONArray("FILTER");
-					for (int i = 0; i < filter.length(); i++) {
-						sb.append("\n");
-						sb.append(senMan.getDefaultSensor(filter.getInt(i))
-								.getName());
+					if (mBound) {
+						mService.setFilter(filter);
+						appContext.unbindService(mConnection);
 					}
-					alertDialog.setMessage(sb.toString());
-					alertDialog.show();
 				} else {
 					// TODO handling
 					alertDialog
@@ -246,12 +242,40 @@ public class HardwareAbstraction {
 		setHardwareParameters();
 	}
 
+	/** The m service. */
+	public MosesService mService;
+
+	/** The m bound. */
+	public static boolean mBound = false;
+
+	/** The m connection. */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			mBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
+
 	/**
 	 * This method sends a Request to the website for obtainint the filter
 	 * stored for this device
 	 */
 	public void getFilter() {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+		
+		// Connect to the service
+		Intent intent = new Intent(appContext, MosesService.class);
+		appContext.bindService(intent, mConnection, 0);
 
 		RequestGetFilter rGetFilter = new RequestGetFilter(
 				new ReqClassGetFilter(), sessionID, extractDeviceId());
@@ -307,7 +331,6 @@ public class HardwareAbstraction {
 	}
 
 	public static String extractDeviceId() {
-		return Build.MANUFACTURER + " "
-				+ Build.MODEL + " " + Build.FINGERPRINT;
+		return Build.MANUFACTURER + " " + Build.MODEL + " " + Build.FINGERPRINT;
 	}
 }

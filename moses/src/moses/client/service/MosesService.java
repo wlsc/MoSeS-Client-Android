@@ -1,5 +1,8 @@
 package moses.client.service;
 
+import org.json.JSONArray;
+
+import moses.client.abstraction.HardwareAbstraction;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
@@ -54,6 +57,9 @@ public class MosesService extends android.app.Service {
 
 		/** The logged in. */
 		public boolean loggedIn = false;
+		
+		/** Saves the used filter. */
+		public JSONArray filter = null;
 
 	}
 
@@ -97,6 +103,14 @@ public class MosesService extends android.app.Service {
 		return mset.loggedIn;
 	}
 
+	public void setFilter(JSONArray filter) {
+		mset.filter = filter;
+	}
+	
+	public JSONArray getFilter() {
+		return mset.filter;
+	}
+	
 	/**
 	 * Logged in.
 	 *
@@ -105,6 +119,7 @@ public class MosesService extends android.app.Service {
 	public void loggedIn(String sessionid) {
 		mset.loggedIn = true;
 		mset.sessionid = sessionid;
+		new HardwareAbstraction(this).getFilter();
 	}
 
 	/**

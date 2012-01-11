@@ -2,23 +2,30 @@ package moses.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -27,6 +34,45 @@ import android.widget.Toast;
  * @author Jaco
  */
 public class ChooseSensorsActivity extends Activity {
+
+	/** The m service. */
+	public MosesService mService;
+
+	/** The m bound. */
+	public static boolean mBound = false;
+
+	/** The m connection. */
+	private ServiceConnection mConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			// We've bound to LocalService, cast the IBinder and get
+			// LocalService instance
+			LocalBinder binder = (LocalBinder) service;
+			mService = binder.getService();
+			JSONArray filter = mService.getFilter();
+			HashSet<Integer> h = new HashSet<Integer>();
+			for(int i = 0; i < filter.length(); ++i) {
+				try {
+					h.add(filter.getInt(i));
+					Log.d("DEBUG APP", "" + filter.getInt(i));
+				} catch (JSONException e) {
+					// TODO: Handle exception
+				}
+			}
+			for(int i = 0; i < lstSensors.getCount(); ++i) {
+				if(h.contains(Integer.parseInt((String)lstSensors.getItemAtPosition(i)))) {
+					lstSensors.setItemChecked(i, true);
+				}
+			}
+			mBound = true;
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName arg0) {
+			mBound = false;
+		}
+	};
 
 	/** The lst sensors. */
 	ListView lstSensors;
@@ -68,7 +114,9 @@ public class ChooseSensorsActivity extends Activity {
 
 		return sensors;
 	}
-
+	
+	
+	
 	/**
 	 * Inits the controls.
 	 */
@@ -82,17 +130,19 @@ public class ChooseSensorsActivity extends Activity {
 		int[] ls = new int[l.size()];
 		int z = 0;
 		for (Integer i : l) {
-			ls[z] = i; ++z;
+			ls[z] = i;
+			++z;
 		}
-		
+
 		Arrays.sort(ls);
-		
+
 		LinkedList<String> s = new LinkedList<String>();
 		for (Integer i : ls)
 			s.add(i.toString());
-		
+
 		lstSensors.setAdapter(new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_multiple_choice, s));
+
 
 		// implement the functionality of the "Ok" button
 		okBtn = (Button) findViewById(R.id.choosesensorsokbutton);
@@ -112,7 +162,7 @@ public class ChooseSensorsActivity extends Activity {
 				List<Integer> temp = new ArrayList<Integer>();
 				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
 				for (int i = 0; i < lstSensors.getCount(); ++i) {
-					if (b.valueAt(i))
+					if (b.get(i))
 						temp.add(Integer.parseInt((String) lstSensors
 								.getItemAtPosition(i)));
 				}
@@ -140,7 +190,16 @@ public class ChooseSensorsActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.choosesensors);
+		Intent intent = new Intent(this, MosesService.class);
+		bindService(intent, mConnection, 0);
 		initControls();
+	}
+	
+	public void onDestroy() {
+		super.onDestroy();
+		if(mBound) {
+			unbindService(mConnection);
+		}
 	}
 
 	/**
@@ -152,7 +211,8 @@ public class ChooseSensorsActivity extends Activity {
 	protected void setFilter(List<Integer> filter) {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
 		hw.setFilter(filter);
-
+		JSONArray j = new JSONArray(filter);
+		mService.setFilter(j);
 	}
 
 }
