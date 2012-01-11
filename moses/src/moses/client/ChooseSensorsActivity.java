@@ -1,6 +1,10 @@
 package moses.client;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import moses.client.abstraction.HardwareAbstraction;
@@ -70,13 +74,25 @@ public class ChooseSensorsActivity extends Activity {
 	 */
 	private void initControls() {
 		lstSensors = (ListView) findViewById(R.id.sensorlist);
-		String[] sensorNames = new String[getSensors().size()];
+		HashSet<Integer> l = new HashSet<Integer>();
+		sensors = getSensors();
 		for (int i = 0; i < sensors.size(); i++)
-			sensorNames[i] = Integer.toString(sensors.get(i).getType());
+			l.add(sensors.get(i).getType());
 
+		int[] ls = new int[l.size()];
+		int z = 0;
+		for (Integer i : l) {
+			ls[z] = i; ++z;
+		}
+		
+		Arrays.sort(ls);
+		
+		LinkedList<String> s = new LinkedList<String>();
+		for (Integer i : ls)
+			s.add(i.toString());
+		
 		lstSensors.setAdapter(new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_multiple_choice,
-				sensorNames));
+				android.R.layout.simple_list_item_multiple_choice, s));
 
 		// implement the functionality of the "Ok" button
 		okBtn = (Button) findViewById(R.id.choosesensorsokbutton);
@@ -95,9 +111,10 @@ public class ChooseSensorsActivity extends Activity {
 
 				List<Integer> temp = new ArrayList<Integer>();
 				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
-				for(int i = 0; i < lstSensors.getCount(); ++i) {
-					if(b.valueAt(i)) 
-						temp.add(Integer.parseInt((String)lstSensors.getItemAtPosition(i)));
+				for (int i = 0; i < lstSensors.getCount(); ++i) {
+					if (b.valueAt(i))
+						temp.add(Integer.parseInt((String) lstSensors
+								.getItemAtPosition(i)));
 				}
 				setFilter(temp);
 			}
