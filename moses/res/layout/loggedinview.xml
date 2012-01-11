@@ -70,5 +70,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Reset all installed applications" />
+    <Button
+        android:id="@+id/btnShowNotification"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showNotificationHandler"
+        android:text="Show Notification" />
 
 </LinearLayout>

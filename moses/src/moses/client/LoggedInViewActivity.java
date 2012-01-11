@@ -8,10 +8,15 @@ import moses.client.abstraction.PingSender;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
+import moses.client.service.helpers.NotifyAboutNewApksActivity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -30,6 +35,8 @@ import android.widget.Toast;
  */
 public class LoggedInViewActivity extends Activity {
 
+	private static String YOURAPP_NOTIFICATION_ID = "new_installed_apk_notification_id";
+	
 	/** The btn logout. */
 	private Button btnLogout;
 
@@ -238,6 +245,14 @@ public class LoggedInViewActivity extends Activity {
 		}
 		return false;
 	}
+	
+	public void showNotificationHandler(View v) {
+//		showNotification("New sensing applications are available!\nClick here to view all applications", "MoSeS", false, 123);
+		Intent intent = new Intent(this, NotifyAboutNewApksActivity.class);
+		this.startActivity(intent);
+	}
+	
+	
 
 	/*
 	 * (non-Javadoc)
@@ -254,7 +269,7 @@ public class LoggedInViewActivity extends Activity {
 		pinger = new PingSender(new Executor() {
 			@Override
 			public void execute() {
-				Toast.makeText(LoggedInViewActivity.this, pinger.getLastMessage(), Toast.LENGTH_LONG);
+				Toast.makeText(LoggedInViewActivity.this, pinger.getLastMessage(), Toast.LENGTH_LONG).show();
 			}
 		});
 		apkAbstraction = new APKAbstraction(this);
@@ -269,7 +284,7 @@ public class LoggedInViewActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		bindService();
-		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(), Toast.LENGTH_LONG);
+//		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(), Toast.LENGTH_LONG).show();
 	}
 
 	/*

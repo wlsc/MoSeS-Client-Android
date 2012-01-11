@@ -1,9 +1,12 @@
 package moses.client.service;
 
+import moses.client.service.helpers.NotifyAboutNewApksActivity;
+import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -68,6 +71,8 @@ public class MosesService extends android.app.Service {
 	
 	private KeepSessionAlive cKeepAlive;
 
+	private CheckForNewApplications checkForNewApplications;
+
 	/**
 	 * Gets the session id.
 	 *
@@ -123,6 +128,7 @@ public class MosesService extends android.app.Service {
 	public void login(Executor e) {
 		new Login(mset.username, mset.password, this, e);
 		keepSessionAlive(true);
+		checkForNewApplications.startChecking(true);
 	}
 
 	/**
@@ -155,8 +161,10 @@ public class MosesService extends android.app.Service {
 		super.onCreate();
 		initConfig();
 		cKeepAlive = new KeepSessionAlive();
+		checkForNewApplications = new CheckForNewApplications(this);
 		Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
 	}
+
 
 	/* (non-Javadoc)
 	 * @see android.app.Service#onDestroy()

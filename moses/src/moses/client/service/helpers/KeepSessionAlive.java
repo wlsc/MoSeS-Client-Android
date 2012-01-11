@@ -1,9 +1,7 @@
 package moses.client.service.helpers;
 
 import android.os.Handler;
-import android.widget.Toast;
 import moses.client.abstraction.PingSender;
-import moses.client.service.MosesService;
 
 /**
  * @author Jaco Hofmann
