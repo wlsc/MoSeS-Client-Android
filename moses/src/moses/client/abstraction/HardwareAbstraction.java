@@ -254,8 +254,7 @@ public class HardwareAbstraction {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
 		RequestGetFilter rGetFilter = new RequestGetFilter(
-				new ReqClassGetFilter(), sessionID, Build.MANUFACTURER + " "
-						+ Build.MODEL + " " + Build.FINGERPRINT);
+				new ReqClassGetFilter(), sessionID, extractDeviceId());
 		rGetFilter.send();
 
 	}
@@ -268,8 +267,7 @@ public class HardwareAbstraction {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
 		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
-				new ReqClassGetHWParams(), sessionID, Build.MANUFACTURER + " "
-						+ Build.MODEL + " " + Build.FINGERPRINT);
+				new ReqClassGetHWParams(), sessionID, extractDeviceId());
 		rGetHWParams.send();
 	}
 
@@ -281,8 +279,7 @@ public class HardwareAbstraction {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
 		RequestSetFilter rSetFilter = new RequestSetFilter(
-				new ReqClassSetFilter(), sessionID, Build.MANUFACTURER + " "
-						+ Build.MODEL + " " + Build.FINGERPRINT, filter);
+				new ReqClassSetFilter(), sessionID, extractDeviceId(), filter);
 		rSetFilter.send();
 	}
 
@@ -301,11 +298,16 @@ public class HardwareAbstraction {
 			sensors.add(sen.getType());
 		}
 
+		String deviceID = extractDeviceId();
 		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassSetHWParams(), sessionID, Build.MANUFACTURER + " "
-						+ Build.MODEL + " " + Build.FINGERPRINT,
+				new ReqClassSetHWParams(), sessionID, deviceID,
 				Build.VERSION.SDK, sensors);
 		rSetHWParams.send();
 
+	}
+
+	public static String extractDeviceId() {
+		return Build.MANUFACTURER + " "
+				+ Build.MODEL + " " + Build.FINGERPRINT;
 	}
 }
