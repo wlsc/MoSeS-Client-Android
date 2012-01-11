@@ -14,20 +14,20 @@
         android:label="@string/app_name" >
         <activity
             android:label="@string/app_name"
-            android:name=".MosesActivity" >
+            android:name="moses.client.MosesActivity" >
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoggedInViewActivity" >
+        <activity android:name="moses.client.LoggedInViewActivity" >
         </activity>
-        <activity android:name=".ChooseSensorsActivity" >
+        <activity android:name="moses.client.ChooseSensorsActivity" >
         </activity>
-		<activity android:name=".ViewAvailableApkActivity" >
+		<activity android:name="moses.client.ViewAvailableApkActivity" >
         </activity>
-        <activity android:name=".ViewInstalledApplicationsActivity" >
+        <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
         </activity>
             
         <receiver android:name="moses.client.service.StartupIntentReceiver" >
