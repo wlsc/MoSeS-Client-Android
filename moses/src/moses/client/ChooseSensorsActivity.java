@@ -56,9 +56,8 @@ public class ChooseSensorsActivity extends Activity {
 			for(int i = 0; i < filter.length(); ++i) {
 				try {
 					h.add(filter.getInt(i));
-					Log.d("DEBUG APP", "" + filter.getInt(i));
 				} catch (JSONException e) {
-					// TODO: Handle exception
+					Log.d("MoSeS.CHOOSE_SENSORS", "Illegal JSON String: " + filter.toString());
 				}
 			}
 			for(int i = 0; i < lstSensors.getCount(); ++i) {

@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -25,7 +26,9 @@ import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
- * This activity is the main activity of our app providing login etc.
+ * This activity shows a login field to the user.
+ * 
+ * It's the first activity a user sees who starts our app.
  * 
  * @author Jaco
  * 
@@ -36,40 +39,44 @@ public class MosesActivity extends Activity {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
 	};
 
-	/** The txt uname. */
+	/** Shows the currently typed in username **/
 	private EditText txtUname;
 
-	/** The txt pw. */
+	/** Shows the currently typed in password **/
 	private EditText txtPW;
 
-	/** The btnconnect. */
+	/** A click on this button connects the user to our server **/
 	private Button btnconnect;
 
-	/** The btn exit. */
+	/** Closes the app **/
 	private Button btnExit;
 
-	/** The chk login auto. */
+	/**
+	 * If this box is checked the application doesn't wait for user input to
+	 * connect to our server
+	 **/
 	private CheckBox chkLoginAuto;
 
-	/** The chk save uname pw. */
+	/** If this box is checked username and password are saved on the device. **/
 	private CheckBox chkSaveUnamePW;
 
-	/** The settings. */
+	/** All our settings are handled and saved to filesystem over this object **/
 	private SharedPreferences settings;
 
-	/** The m service. */
+	/** This Object represents the underlying service. **/
 	public MosesService mService;
 
-	/** The m bound. */
+	/** If this variable is true the activity is connected to the service. **/
 	public static boolean mBound = false;
 
 	/**
-	 * This variable is true if the user has used the logout button so he won't
-	 * get logged in again
+	 * This variable is true if the activity is accessed with a return value and
+	 * the app isn't intended to log back in. E.g. after a logout has been
+	 * performed.
 	 */
 	private boolean overrideAutologin = false;
 
-	/** The m connection. */
+	/** This object handles connection and disconnection of the service **/
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
@@ -80,6 +87,9 @@ public class MosesActivity extends Activity {
 			mService = binder.getService();
 			mBound = true;
 			btnconnect.setEnabled(true);
+
+			// We want, that the logged in view is shown to the user after a
+			// login has been successful.
 			mService.postLoginHook(new Executor() {
 
 				@Override
@@ -89,9 +99,11 @@ public class MosesActivity extends Activity {
 					startActivityForResult(mainDialog, 0);
 				}
 			});
+			// If we're already logged in or the user wants auto login start
+			// logged in view
 			if (chkLoginAuto.isChecked() && !overrideAutologin)
 				connect();
-			else if (mService.isLoggedIn()) {
+			else if (mService.isLoggedIn() && !overrideAutologin) {
 				Intent mainDialog = new Intent(MosesActivity.this,
 						LoggedInViewActivity.class);
 				startActivityForResult(mainDialog, 0);
@@ -104,14 +116,21 @@ public class MosesActivity extends Activity {
 		}
 	};
 
+	/**
+	 * Disconnect from the service if it is connected and stop logged in check
+	 */
 	private void disconnectService() {
 		stopPosting = true;
+		mHandler.removeCallbacks(mIsServiceAliveTask);
 		if (mBound) {
 			mService.postLoginHook(null);
 			unbindService(mConnection);
 		}
 	}
 
+	/**
+	 * User comes back from another activity
+	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (!isMosesServiceRunning())
 			startAndBindService();
@@ -126,7 +145,7 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * Connect.
+	 * Connect to the server and save (changed) settings
 	 */
 	private void connect() {
 		SharedPreferences.Editor editor = settings.edit();
@@ -138,6 +157,7 @@ public class MosesActivity extends Activity {
 		editor.putBoolean("saveunamepw", chkSaveUnamePW.isChecked());
 		editor.commit();
 		mService.reloadSettings();
+		// Login if not already or just start logged in view if present
 		if (!mService.isLoggedIn()) {
 			mService.login();
 		} else {
@@ -149,7 +169,7 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * Inits the controls.
+	 * Initialise controls.
 	 */
 	private void initControls() {
 		txtUname = (EditText) findViewById(R.id.uname);
@@ -177,7 +197,7 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * Checks if is moses service running.
+	 * Checks if is MoSeS service running.
 	 * 
 	 * @return true, if is moses service running
 	 */
@@ -194,7 +214,7 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * Load config.
+	 * Load configuration from file MoSeS.cfg using SharedPreferences
 	 */
 	private void loadConfig() {
 		settings = getSharedPreferences("MoSeS.cfg", 0);
@@ -208,9 +228,7 @@ public class MosesActivity extends Activity {
 		try {
 			InstalledExternalApplicationsManager.init(getApplicationContext());
 		} catch (IOException e) {
-			Toast.makeText(getApplicationContext(),
-					"Could not load installed applications", Toast.LENGTH_LONG)
-					.show();
+			Log.d("MoSeS.LOGIN_ACTIVITY", "Could not load installed applications");
 		}
 	}
 
@@ -228,10 +246,10 @@ public class MosesActivity extends Activity {
 		loadConfig();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onStart()
+	/**
+	 * When first started this activity stars a Task that keeps
+	 * the connection with the service alive and restarts it if 
+	 * necessary.
 	 */
 	@Override
 	protected void onStart() {
@@ -242,17 +260,20 @@ public class MosesActivity extends Activity {
 		startAndBindService();
 	}
 
+	/** 
+	 * We're back, so get everything going again.
+	 */
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		startAndBindService();
+		mHandler.removeCallbacks(mIsServiceAliveTask);
+		mHandler.postDelayed(mIsServiceAliveTask, 1000);
 	}
 
 	private Handler mHandler = new Handler();
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.app.Activity#onStop()
+	/**
+	 * Disconnect service so android won't get angry.
 	 */
 	@Override
 	protected void onStop() {
