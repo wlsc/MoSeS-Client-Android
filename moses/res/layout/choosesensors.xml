@@ -18,18 +18,6 @@
         android:layout_height="wrap_content"
         android:text="@string/choosesensorsokbutton" />
 
-    <Button
-        android:id="@+id/shooseSensorsSetFilterButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/setFilterButtonString" />
-
-    <Button
-        android:id="@+id/chooseSensorsGetFilterButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/chooseSensorsGetFilterButton" />
-
     <TextView
         android:id="@+id/choosesensorstext"
         android:layout_width="wrap_content"

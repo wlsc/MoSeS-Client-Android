@@ -9,8 +9,11 @@ import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -136,6 +139,8 @@ public class MosesService extends android.app.Service {
 		mset.loggingIn = false;
 		mset.sessionid = sessionid;
 		new HardwareAbstraction(this).getFilter();
+		keepSessionAlive(true);
+		checkForNewApplications.startChecking(true);
 	}
 
 	/**
@@ -153,11 +158,15 @@ public class MosesService extends android.app.Service {
 	 *            the e
 	 */
 	public void login() {
-		if (!mset.loggedIn && !mset.loggingIn) {
-			mset.loggingIn = true;
-			new Login(mset.username, mset.password, this, mset.postLoginHook);
-			keepSessionAlive(true);
-			checkForNewApplications.startChecking(true);
+		if (isOnline()) {
+			if (!mset.loggedIn && !mset.loggingIn) {
+				mset.loggingIn = true;
+				new Login(mset.username, mset.password, this,
+						mset.postLoginHook);
+			}
+		} else {
+			Log.d("MoSeS.SERVICE",
+					"Tried logging in but no internet connection was present.");
 		}
 	}
 
@@ -274,4 +283,14 @@ public class MosesService extends android.app.Service {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
 		hw.syncDeviceInformation(c2dmRegistrationId, getSessionID());
 	}
+
+	public boolean isOnline() {
+		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+			return true;
+		}
+		return false;
+	}
+
 }
