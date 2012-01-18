@@ -162,7 +162,15 @@ public class MosesService extends android.app.Service {
 			if (!mset.loggedIn && !mset.loggingIn) {
 				mset.loggingIn = true;
 				new Login(mset.username, mset.password, this,
-						mset.postLoginHook);
+						new Executor() {
+							@Override
+							public void execute() {
+								mset.postLoginHook.execute();
+								if(cKeepAlive.isPingTimeShortened()) {
+									cKeepAlive.shortenPingTime(false);
+								}
+							}
+						});
 			}
 		} else {
 			Log.d("MoSeS.SERVICE",
@@ -209,6 +217,7 @@ public class MosesService extends android.app.Service {
 			@Override
 			public void execute() {
 				loggedOut();
+				cKeepAlive.shortenPingTime(true);
 				login();
 			}
 		});

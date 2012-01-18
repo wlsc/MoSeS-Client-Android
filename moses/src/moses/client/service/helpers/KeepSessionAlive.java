@@ -13,6 +13,7 @@ public class KeepSessionAlive {
 	private PingSender pinger;
 
 	private final int pingTime = 60000; // Every minute
+	private final int pingTimeShort = 1000;
 
 	private Runnable mKeepAliveTask = new Runnable() {
 
@@ -20,13 +21,27 @@ public class KeepSessionAlive {
 		public void run() {
 			pinger.sendPing();
 			if (!stopPosting)
-				mHandler.postDelayed(this, pingTime);
+				if (bShortenPingTime) {
+					mHandler.postDelayed(this, pingTimeShort);
+				} else
+					mHandler.postDelayed(this, pingTime);
 		}
 
 	};
+	private boolean bShortenPingTime = false;
+	
+	public boolean isPingTimeShortened() {
+		return bShortenPingTime;
+	}
 
 	public KeepSessionAlive(Executor e) {
 		pinger = new PingSender(e);
+	}
+
+	public void shortenPingTime(boolean b) {
+		this.bShortenPingTime = b;
+		mHandler.removeCallbacks(mKeepAliveTask);
+		mHandler.postDelayed(mKeepAliveTask, pingTimeShort);
 	}
 
 	public void keepAlive(boolean b) {
