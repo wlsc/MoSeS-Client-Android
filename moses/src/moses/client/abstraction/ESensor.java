@@ -8,7 +8,16 @@ package moses.client.abstraction;
  * @author Zijad
  *
  */
-public enum Sensors {
+public enum ESensor {
+	
+	/*
+	 * Just a dummy value, because on android, sensor ordinals start with 1 
+	 */
+	UNKNOWN {
+		public String toString(){
+			return "Unknown sensor";
+		}
+	},
 	
 	ACCELEROMETER {
 		public String toString(){
@@ -88,8 +97,5 @@ public enum Sensors {
 		}
 	};
 	
-	public int index() {
-	    return ordinal() + 1;
-	  }
 	
 }
