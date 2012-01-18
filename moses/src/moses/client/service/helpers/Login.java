@@ -47,8 +47,10 @@ public class Login {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, uname)) {
 					serv.loggedIn(j.getString("SESSIONID"));
-					Log.d("MoSeS.LOGIN", "ACCESS GRANTED: " + j.getString("SESSIONID"));
-					e.execute();
+					Log.d("MoSeS.LOGIN",
+							"ACCESS GRANTED: " + j.getString("SESSIONID"));
+					if (e != null)
+						e.execute();
 				} else {
 					Log.d("MoSeS.LOGIN", "NOT GRANTED: " + j.toString());
 				}

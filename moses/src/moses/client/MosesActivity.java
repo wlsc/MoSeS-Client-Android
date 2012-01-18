@@ -80,9 +80,18 @@ public class MosesActivity extends Activity {
 			mService = binder.getService();
 			mBound = true;
 			btnconnect.setEnabled(true);
+			mService.postLoginHook(new Executor() {
+
+				@Override
+				public void execute() {
+					Intent mainDialog = new Intent(MosesActivity.this,
+							LoggedInViewActivity.class);
+					startActivityForResult(mainDialog, 0);
+				}
+			});
 			if (chkLoginAuto.isChecked() && !overrideAutologin)
 				connect();
-			else if(mService.isLoggedIn()) {
+			else if (mService.isLoggedIn()) {
 				Intent mainDialog = new Intent(MosesActivity.this,
 						LoggedInViewActivity.class);
 				startActivityForResult(mainDialog, 0);
@@ -94,6 +103,14 @@ public class MosesActivity extends Activity {
 			mBound = false;
 		}
 	};
+
+	private void disconnectService() {
+		stopPosting = true;
+		if (mBound) {
+			mService.postLoginHook(null);
+			unbindService(mConnection);
+		}
+	}
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (!isMosesServiceRunning())
@@ -122,16 +139,7 @@ public class MosesActivity extends Activity {
 		editor.commit();
 		mService.reloadSettings();
 		if (!mService.isLoggedIn()) {
-			mService.login(new Executor() {
-
-				@Override
-				public void execute() {
-					Intent mainDialog = new Intent(MosesActivity.this,
-							LoggedInViewActivity.class);
-					startActivityForResult(mainDialog, 0);
-				}
-
-			});
+			mService.login();
 		} else {
 			stopPosting = true;
 			Intent mainDialog = new Intent(MosesActivity.this,
@@ -249,10 +257,7 @@ public class MosesActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		stopPosting = true;
-		if (mBound) {
-			unbindService(mConnection);
-		}
+		disconnectService();
 	}
 
 	private boolean stopPosting;

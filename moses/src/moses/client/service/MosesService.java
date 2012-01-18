@@ -58,11 +58,13 @@ public class MosesService extends android.app.Service {
 
 		/** The logged in. */
 		public boolean loggedIn = false;
-		
+
 		public boolean loggingIn = false;
 
 		/** Saves the used filter. */
 		public JSONArray filter = null;
+
+		public Executor postLoginHook = null;
 
 	}
 
@@ -98,11 +100,7 @@ public class MosesService extends android.app.Service {
 		mset.username = settingsFile.getString("uname", "");
 		mset.password = settingsFile.getString("password", "");
 		if (mset.loginauto)
-			login(new Executor() {
-				@Override
-				public void execute() {
-				}
-			});
+			login();
 	}
 
 	/**
@@ -149,10 +147,10 @@ public class MosesService extends android.app.Service {
 	 * @param e
 	 *            the e
 	 */
-	public void login(Executor e) {
+	public void login() {
 		if (!mset.loggedIn && !mset.loggingIn) {
 			mset.loggingIn = true;
-			new Login(mset.username, mset.password, this, e);
+			new Login(mset.username, mset.password, this, mset.postLoginHook);
 			keepSessionAlive(true);
 			checkForNewApplications.startChecking(true);
 		}
@@ -197,16 +195,16 @@ public class MosesService extends android.app.Service {
 			@Override
 			public void execute() {
 				loggedOut();
-				login(new Executor() {
-					@Override
-					public void execute() {
-					}
-				});
+				login();
 			}
 		});
 		checkForNewApplications = new CheckForNewApplications(this);
 		initConfig();
 		Log.d("MoSeS.SERVICE", "Service Created");
+	}
+
+	public void postLoginHook(Executor e) {
+		mset.postLoginHook = e;
 	}
 
 	/*
