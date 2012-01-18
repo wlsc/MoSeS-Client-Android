@@ -8,6 +8,7 @@ import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
@@ -20,6 +21,8 @@ import android.widget.Toast;
  * @author Jaco Hofmann
  */
 public class MosesService extends android.app.Service {
+
+	private static final String MOSES_TUD_GOOGLEMAIL_COM = "moses.tud@googlemail.com";
 
 	/**
 	 * The Class LocalBinder.
@@ -176,8 +179,16 @@ public class MosesService extends android.app.Service {
 		cKeepAlive = new KeepSessionAlive();
 		checkForNewApplications = new CheckForNewApplications(this);
 		Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
+		registerC2DM();
 	}
 
+
+	private void registerC2DM() {
+		Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
+		registrationIntent.putExtra("app", PendingIntent.getBroadcast(this, 0, new Intent(), 0)); // boilerplate
+		registrationIntent.putExtra("sender", MOSES_TUD_GOOGLEMAIL_COM);
+		startService(registrationIntent);
+	}
 
 	/* (non-Javadoc)
 	 * @see android.app.Service#onDestroy()
