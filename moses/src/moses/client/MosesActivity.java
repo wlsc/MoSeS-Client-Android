@@ -22,9 +22,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * This activity shows a login field to the user.
  * 
@@ -116,33 +115,21 @@ public class MosesActivity extends Activity {
 		}
 	};
 
-	/**
-	 * Disconnect from the service if it is connected and stop logged in check
-	 */
-	private void disconnectService() {
-		stopPosting = true;
-		mHandler.removeCallbacks(mIsServiceAliveTask);
-		if (mBound) {
-			mService.postLoginHook(null);
-			unbindService(mConnection);
-		}
-	}
+	private Handler mHandler = new Handler();
 
-	/**
-	 * User comes back from another activity
-	 */
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (!isMosesServiceRunning())
-			startAndBindService();
-		if (requestCode == 0) {
-			if (resultCode == results.RS_CLOSE.ordinal()) {
-				// User wants to close the app without logging out
-				finish();
-			} else if (resultCode == results.RS_LOGGEDOUT.ordinal()) {
-				overrideAutologin = true;
-			}
+	private boolean stopPosting;
+
+	private Runnable mIsServiceAliveTask = new Runnable() {
+
+		@Override
+		public void run() {
+			if (!isMosesServiceRunning())
+				startAndBindService();
+			if (!stopPosting)
+				mHandler.postDelayed(this, 1000);
 		}
-	}
+
+	};
 
 	/**
 	 * Connect to the server and save (changed) settings
@@ -165,6 +152,18 @@ public class MosesActivity extends Activity {
 			Intent mainDialog = new Intent(MosesActivity.this,
 					LoggedInViewActivity.class);
 			startActivityForResult(mainDialog, 0);
+		}
+	}
+
+	/**
+	 * Disconnect from the service if it is connected and stop logged in check
+	 */
+	private void disconnectService() {
+		stopPosting = true;
+		mHandler.removeCallbacks(mIsServiceAliveTask);
+		if (mBound) {
+			mService.postLoginHook(null);
+			unbindService(mConnection);
 		}
 	}
 
@@ -228,8 +227,35 @@ public class MosesActivity extends Activity {
 		try {
 			InstalledExternalApplicationsManager.init(getApplicationContext());
 		} catch (IOException e) {
-			Log.d("MoSeS.LOGIN_ACTIVITY", "Could not load installed applications");
+			Log.d("MoSeS.LOGIN_ACTIVITY",
+					"Could not load installed applications");
 		}
+	}
+
+	/**
+	 * User comes back from another activity
+	 */
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (!isMosesServiceRunning())
+			startAndBindService();
+		if (requestCode == 0) {
+			if (resultCode == results.RS_CLOSE.ordinal()) {
+				// User wants to close the app without logging out
+				finish();
+			} else if (resultCode == results.RS_LOGGEDOUT.ordinal()) {
+				overrideAutologin = true;
+			}
+		}
+	}
+
+	/**
+	 * We're back, so get everything going again.
+	 */
+	public void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		startAndBindService();
+		mHandler.removeCallbacks(mIsServiceAliveTask);
+		mHandler.postDelayed(mIsServiceAliveTask, 1000);
 	}
 
 	/**
@@ -247,9 +273,8 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * When first started this activity stars a Task that keeps
-	 * the connection with the service alive and restarts it if 
-	 * necessary.
+	 * When first started this activity stars a Task that keeps the connection
+	 * with the service alive and restarts it if necessary.
 	 */
 	@Override
 	protected void onStart() {
@@ -260,18 +285,6 @@ public class MosesActivity extends Activity {
 		startAndBindService();
 	}
 
-	/** 
-	 * We're back, so get everything going again.
-	 */
-	public void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		startAndBindService();
-		mHandler.removeCallbacks(mIsServiceAliveTask);
-		mHandler.postDelayed(mIsServiceAliveTask, 1000);
-	}
-
-	private Handler mHandler = new Handler();
-
 	/**
 	 * Disconnect service so android won't get angry.
 	 */
@@ -280,20 +293,6 @@ public class MosesActivity extends Activity {
 		super.onStop();
 		disconnectService();
 	}
-
-	private boolean stopPosting;
-
-	private Runnable mIsServiceAliveTask = new Runnable() {
-
-		@Override
-		public void run() {
-			if (!isMosesServiceRunning())
-				startAndBindService();
-			if (!stopPosting)
-				mHandler.postDelayed(this, 1000);
-		}
-
-	};
 
 	/**
 	 * Start and bind service.

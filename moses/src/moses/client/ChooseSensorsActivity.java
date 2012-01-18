@@ -6,13 +6,14 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import moses.client.abstraction.ESensor;
+import moses.client.abstraction.HardwareAbstraction;
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import moses.client.abstraction.HardwareAbstraction;
-import moses.client.abstraction.ESensor;
-import moses.client.service.MosesService;
-import moses.client.service.MosesService.LocalBinder;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -36,13 +37,13 @@ import android.widget.ListView;
  */
 public class ChooseSensorsActivity extends Activity {
 
-	/** The m service. */
+	/** Represents the MoSeS service */
 	public MosesService mService;
 
-	/** The m bound. */
+	/** This variable is true if this activity is bound to MoSeS Service */
 	public static boolean mBound = false;
 
-	/** The m connection. */
+	/** Handles connection with MoSeS Service */
 	private ServiceConnection mConnection = new ServiceConnection() {
 
 		@Override
@@ -53,15 +54,17 @@ public class ChooseSensorsActivity extends Activity {
 			mService = binder.getService();
 			JSONArray filter = mService.getFilter();
 			HashSet<Integer> h = new HashSet<Integer>();
-			for(int i = 0; i < filter.length(); ++i) {
+			for (int i = 0; i < filter.length(); ++i) {
 				try {
 					h.add(filter.getInt(i));
 				} catch (JSONException e) {
-					Log.d("MoSeS.CHOOSE_SENSORS", "Illegal JSON String: " + filter.toString());
+					Log.d("MoSeS.CHOOSE_SENSORS", "Illegal JSON String: "
+							+ filter.toString());
 				}
 			}
-			for(int i = 0; i < lstSensors.getCount(); ++i) {
-				if(h.contains(((ESensor)lstSensors.getItemAtPosition(i)).ordinal())) {
+			for (int i = 0; i < lstSensors.getCount(); ++i) {
+				if (h.contains(((ESensor) lstSensors.getItemAtPosition(i))
+						.ordinal())) {
 					lstSensors.setItemChecked(i, true);
 				}
 			}
@@ -74,19 +77,21 @@ public class ChooseSensorsActivity extends Activity {
 		}
 	};
 
-	/** The lst sensors. */
+	/** List of all sensors to display on the screen. */
 	ListView lstSensors;
 
-	/** The sensors. */
-	private List<Sensor> sensors = null; // list of all sensors for this device
-
-	/** The ok btn. */
-	private Button okBtn; // Ok button for exiting the view
+	/** List of all sensors on this device */
+	private List<Sensor> sensors = null;
 
 	/**
-	 * This method is called in order to obtain the filter from the server.
-	 * 
-	 * @return the filter
+	 * Pressing this button sends the currently selected filters to the server
+	 * and closes this activity
+	 **/
+	private Button okBtn;
+
+	/**
+	 * This method is called in order to obtain the current filter from the
+	 * server.
 	 */
 	protected void getFilter() {
 		HardwareAbstraction ha = new HardwareAbstraction(this);
@@ -94,9 +99,9 @@ public class ChooseSensorsActivity extends Activity {
 	}
 
 	/**
-	 * Gets the sensors.
+	 * Get all available sensors from the operating system.
 	 * 
-	 * @return the sensors
+	 * @return All available sensors on this device
 	 */
 	private List<Sensor> getSensors() {
 		if (sensors == null) {
@@ -108,11 +113,9 @@ public class ChooseSensorsActivity extends Activity {
 
 		return sensors;
 	}
-	
-	
-	
+
 	/**
-	 * Inits the controls.
+	 * Initialise the controls.
 	 */
 	private void initControls() {
 		lstSensors = (ListView) findViewById(R.id.sensorlist);
@@ -137,7 +140,6 @@ public class ChooseSensorsActivity extends Activity {
 		lstSensors.setAdapter(new ArrayAdapter<ESensor>(this,
 				android.R.layout.simple_list_item_multiple_choice, s));
 
-
 		// implement the functionality of the "Ok" button
 		okBtn = (Button) findViewById(R.id.choosesensorsokbutton);
 		okBtn.setOnClickListener(new Button.OnClickListener() {
@@ -147,8 +149,8 @@ public class ChooseSensorsActivity extends Activity {
 				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
 				for (int i = 0; i < lstSensors.getCount(); ++i) {
 					if (b.get(i))
-						temp.add(((ESensor) lstSensors
-								.getItemAtPosition(i)).ordinal());
+						temp.add(((ESensor) lstSensors.getItemAtPosition(i))
+								.ordinal());
 				}
 				setFilter(temp);
 				finish();
@@ -170,10 +172,10 @@ public class ChooseSensorsActivity extends Activity {
 		bindService(intent, mConnection, 0);
 		initControls();
 	}
-	
+
 	public void onDestroy() {
 		super.onDestroy();
-		if(mBound) {
+		if (mBound) {
 			unbindService(mConnection);
 		}
 	}
