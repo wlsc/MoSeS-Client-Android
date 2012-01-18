@@ -11,8 +11,8 @@ public class KeepSessionAlive {
 	private Handler mHandler = new Handler();
 	private boolean stopPosting = false;
 	private PingSender pinger;
-	
-	private final int pingTime = 60000; // Every second
+
+	private final int pingTime = 60000; // Every minute
 
 	private Runnable mKeepAliveTask = new Runnable() {
 
@@ -25,12 +25,8 @@ public class KeepSessionAlive {
 
 	};
 
-	public KeepSessionAlive() {
-		pinger = new PingSender(new Executor() {
-		@Override
-		public void execute() {
-			// TODO: Message handling
-		}});
+	public KeepSessionAlive(Executor e) {
+		pinger = new PingSender(e);
 	}
 
 	public void keepAlive(boolean b) {

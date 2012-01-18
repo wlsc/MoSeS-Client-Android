@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
@@ -79,12 +80,22 @@ public class MosesActivity extends Activity {
 			mService = binder.getService();
 			mBound = true;
 			btnconnect.setEnabled(true);
-			if (mService.isLoggedIn()) {
+			mService.postLoginHook(new Executor() {
+
+				@Override
+				public void execute() {
+					Intent mainDialog = new Intent(MosesActivity.this,
+							LoggedInViewActivity.class);
+					startActivityForResult(mainDialog, 0);
+				}
+			});
+			if (chkLoginAuto.isChecked() && !overrideAutologin)
+				connect();
+			else if (mService.isLoggedIn()) {
 				Intent mainDialog = new Intent(MosesActivity.this,
 						LoggedInViewActivity.class);
 				startActivityForResult(mainDialog, 0);
-			} else if (chkLoginAuto.isChecked() && !overrideAutologin)
-				connect();
+			}
 		}
 
 		@Override
@@ -93,13 +104,22 @@ public class MosesActivity extends Activity {
 		}
 	};
 
+	private void disconnectService() {
+		stopPosting = true;
+		if (mBound) {
+			mService.postLoginHook(null);
+			unbindService(mConnection);
+		}
+	}
+
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(!isMosesServiceRunning()) startAndBindService();
+		if (!isMosesServiceRunning())
+			startAndBindService();
 		if (requestCode == 0) {
 			if (resultCode == results.RS_CLOSE.ordinal()) {
 				// User wants to close the app without logging out
 				finish();
-			} else if(resultCode == results.RS_LOGGEDOUT.ordinal()) {
+			} else if (resultCode == results.RS_LOGGEDOUT.ordinal()) {
 				overrideAutologin = true;
 			}
 		}
@@ -118,16 +138,14 @@ public class MosesActivity extends Activity {
 		editor.putBoolean("saveunamepw", chkSaveUnamePW.isChecked());
 		editor.commit();
 		mService.reloadSettings();
-		mService.login(new Executor() {
-
-			@Override
-			public void execute() {
-				Intent mainDialog = new Intent(MosesActivity.this,
-						LoggedInViewActivity.class);
-				startActivityForResult(mainDialog, 0);
-			}
-
-		});
+		if (!mService.isLoggedIn()) {
+			mService.login();
+		} else {
+			stopPosting = true;
+			Intent mainDialog = new Intent(MosesActivity.this,
+					LoggedInViewActivity.class);
+			startActivityForResult(mainDialog, 0);
+		}
 	}
 
 	/**
@@ -186,11 +204,13 @@ public class MosesActivity extends Activity {
 				"http://212.72.183.71:80/moses/test.php");
 		chkLoginAuto.setChecked(settings.getBoolean("loginauto", false));
 		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
-		
+
 		try {
 			InstalledExternalApplicationsManager.init(getApplicationContext());
 		} catch (IOException e) {
-			Toast.makeText(getApplicationContext(), "Could not load installed applications", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(),
+					"Could not load installed applications", Toast.LENGTH_LONG)
+					.show();
 		}
 	}
 
@@ -216,8 +236,18 @@ public class MosesActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		stopPosting = false;
+		mHandler.removeCallbacks(mIsServiceAliveTask);
+		mHandler.postDelayed(mIsServiceAliveTask, 1000);
 		startAndBindService();
 	}
+
+	public void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		startAndBindService();
+	}
+
+	private Handler mHandler = new Handler();
 
 	/*
 	 * (non-Javadoc)
@@ -227,10 +257,22 @@ public class MosesActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (mBound) {
-			unbindService(mConnection);
-		}
+		disconnectService();
 	}
+
+	private boolean stopPosting;
+
+	private Runnable mIsServiceAliveTask = new Runnable() {
+
+		@Override
+		public void run() {
+			if (!isMosesServiceRunning())
+				startAndBindService();
+			if (!stopPosting)
+				mHandler.postDelayed(this, 1000);
+		}
+
+	};
 
 	/**
 	 * Start and bind service.

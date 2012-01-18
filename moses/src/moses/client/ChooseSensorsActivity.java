@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.abstraction.ESensor;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import android.app.Activity;
@@ -61,7 +62,7 @@ public class ChooseSensorsActivity extends Activity {
 				}
 			}
 			for(int i = 0; i < lstSensors.getCount(); ++i) {
-				if(h.contains(Integer.parseInt((String)lstSensors.getItemAtPosition(i)))) {
+				if(h.contains(((ESensor)lstSensors.getItemAtPosition(i)).ordinal())) {
 					lstSensors.setItemChecked(i, true);
 				}
 			}
@@ -122,25 +123,25 @@ public class ChooseSensorsActivity extends Activity {
 	 */
 	private void initControls() {
 		lstSensors = (ListView) findViewById(R.id.sensorlist);
-		HashSet<Integer> l = new HashSet<Integer>();
+		HashSet<ESensor> l = new HashSet<ESensor>();
 		sensors = getSensors();
 		for (int i = 0; i < sensors.size(); i++)
-			l.add(sensors.get(i).getType());
+			l.add(ESensor.values()[sensors.get(i).getType()]);
 
-		int[] ls = new int[l.size()];
+		ESensor[] ls = new ESensor[l.size()];
 		int z = 0;
-		for (Integer i : l) {
+		for (ESensor i : l) {
 			ls[z] = i;
 			++z;
 		}
 
 		Arrays.sort(ls);
 
-		LinkedList<String> s = new LinkedList<String>();
-		for (Integer i : ls)
-			s.add(i.toString());
+		LinkedList<ESensor> s = new LinkedList<ESensor>();
+		for (ESensor i : ls)
+			s.add(i);
 
-		lstSensors.setAdapter(new ArrayAdapter<String>(this,
+		lstSensors.setAdapter(new ArrayAdapter<ESensor>(this,
 				android.R.layout.simple_list_item_multiple_choice, s));
 
 
@@ -163,8 +164,8 @@ public class ChooseSensorsActivity extends Activity {
 				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
 				for (int i = 0; i < lstSensors.getCount(); ++i) {
 					if (b.get(i))
-						temp.add(Integer.parseInt((String) lstSensors
-								.getItemAtPosition(i)));
+						temp.add(((ESensor) lstSensors
+								.getItemAtPosition(i)).ordinal());
 				}
 				setFilter(temp);
 			}

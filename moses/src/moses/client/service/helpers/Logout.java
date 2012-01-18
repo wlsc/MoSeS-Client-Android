@@ -9,6 +9,7 @@ import moses.client.service.MosesService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
 import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
@@ -18,22 +19,26 @@ import android.widget.Toast;
  * @author Jaco Hofmann
  */
 public class Logout {
-	
+
 	/**
 	 * The Class LogoutFunc.
 	 */
 	private class LogoutFunc implements ReqTaskExecutor {
 
-		/* (non-Javadoc)
-		 * @see moses.client.com.ReqTaskExecutor#handleException(java.lang.Exception)
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see
+		 * moses.client.com.ReqTaskExecutor#handleException(java.lang.Exception)
 		 */
 		@Override
 		public void handleException(Exception e) {
-			Toast.makeText(serv, "FAILURE: " + e.getMessage(),
-					Toast.LENGTH_LONG).show();
+			Log.d("MoSeS.LOGOUT", "FAILURE: " + e.getMessage());
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 *
 		 * @see moses.client.com.ReqTaskExecutor#postExecution(java.lang.String)
 		 */
 		@Override
@@ -52,8 +57,12 @@ public class Logout {
 
 		}
 
-		/* (non-Javadoc)
-		 * @see moses.client.com.ReqTaskExecutor#updateExecution(moses.client.com.NetworkJSON.BackgroundException)
+		/*
+		 * (non-Javadoc)
+		 *
+		 * @see
+		 * moses.client.com.ReqTaskExecutor#updateExecution(moses.client.com
+		 * .NetworkJSON.BackgroundException)
 		 */
 		@Override
 		public void updateExecution(BackgroundException c) {
@@ -75,8 +84,10 @@ public class Logout {
 	/**
 	 * Instantiates a new logout.
 	 *
-	 * @param serv the serv
-	 * @param e the e
+	 * @param serv
+	 *            the serv
+	 * @param e
+	 *            the e
 	 */
 	public Logout(MosesService serv, Executor e) {
 		this.serv = serv;

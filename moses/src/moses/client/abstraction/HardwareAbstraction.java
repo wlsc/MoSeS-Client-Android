@@ -24,13 +24,13 @@ import org.json.JSONObject;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * This class provides basic support for hardware sync with server
@@ -44,8 +44,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
-			alertDialog.show();
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 		}
 
 		@Override
@@ -53,7 +52,6 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestGetFilter.parameterAcquiredFromServer(j)) {
 					JSONArray filter = j.getJSONArray("FILTER");
 					if (mBound) {
@@ -61,10 +59,8 @@ public class HardwareAbstraction {
 						appContext.unbindService(mConnection);
 					}
 				} else {
-					// TODO handling
-					alertDialog
-							.setMessage("Parameters NOT retrived successfully! Server returned negative response");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Parameters NOT retrived successfully! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -74,8 +70,7 @@ public class HardwareAbstraction {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
+				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
 			} else {
 				handleException(c.e);
 			}
@@ -86,8 +81,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
-			alertDialog.show();
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 		}
 
 		@Override
@@ -113,13 +107,10 @@ public class HardwareAbstraction {
 						sb.append(senMan.getDefaultSensor(sensors.getInt(i))
 								.getName());
 					}
-					alertDialog.setMessage(sb.toString());
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
 				} else {
-					// TODO handling
-					alertDialog
-							.setMessage("Parameters NOT retrived successfully from server! :(");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Parameters NOT retrived successfully from server! :(");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -129,8 +120,7 @@ public class HardwareAbstraction {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
+				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
 			} else {
 				handleException(c.e);
 			}
@@ -141,8 +131,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE SETTING FILTER: " + e.getMessage());
-			alertDialog.show();
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE SETTING FILTER: " + e.getMessage());
 		}
 
 		@Override
@@ -152,14 +141,11 @@ public class HardwareAbstraction {
 				j = new JSONObject(s);
 				// TODO handling
 				if (RequestSetFilter.filterSetOnServer(j)) {
-					alertDialog
-							.setMessage("Filter set successfully, server returned positive response");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Filter set successfully, server returned positive response");
 				} else {
-					// TODO handling
-					alertDialog
-							.setMessage("Filter NOT set successfully! Server returned negative response");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Filter NOT set successfully! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -169,8 +155,7 @@ public class HardwareAbstraction {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
+				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
 			} else {
 				handleException(c.e);
 			}
@@ -181,8 +166,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			alertDialog.setMessage("FAILURE: " + e.getMessage());
-			alertDialog.show();
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 		}
 
 		@Override
@@ -190,16 +174,10 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
-					alertDialog
-							.setMessage("Parameters set successfully, server returned positive response");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters set successfully, server returned positive response");
 				} else {
-					// TODO handling
-					alertDialog
-							.setMessage("Parameters NOT set successfully! Server returned negative response");
-					alertDialog.show();
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -209,28 +187,16 @@ public class HardwareAbstraction {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				alertDialog.setMessage(c.c.toString());
-				alertDialog.show();
+				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
 			} else {
 				handleException(c.e);
 			}
 		}
 	}
 
-	private AlertDialog alertDialog;
-
 	private Context appContext;
 
 	public HardwareAbstraction(Context c) {
-		alertDialog = new AlertDialog.Builder(c).create();
-		alertDialog.setTitle("INFO:");
-		alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						alertDialog.dismiss();
-					}
-				});
 		appContext = c;
 	}
 
@@ -272,7 +238,7 @@ public class HardwareAbstraction {
 	 */
 	public void getFilter() {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
-		
+
 		// Connect to the service
 		Intent intent = new Intent(appContext, MosesService.class);
 		appContext.bindService(intent, mConnection, 0);
