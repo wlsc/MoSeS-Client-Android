@@ -1,5 +1,7 @@
 package moses.client.service.helpers;
 
+import java.net.UnknownHostException;
+
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -32,7 +34,11 @@ public class Login {
 		 */
 		@Override
 		public void handleException(Exception e) {
-			Log.d("MoSeS.LOGIN", "FAILURE: " + e.getMessage());
+			if (e instanceof UnknownHostException || e instanceof JSONException) {
+				Log.d("MoSeS.LOGIN",
+						"No internet connection present (or DNS problems.)");
+			} else
+				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString() + " " + e.getMessage());
 		}
 
 		/*

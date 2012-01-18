@@ -84,12 +84,6 @@ public class ChooseSensorsActivity extends Activity {
 	/** The ok btn. */
 	private Button okBtn; // Ok button for exiting the view
 
-	/** The set filter btn. */
-	private Button setFilterBtn; // for sending the filter to the server
-
-	/** The get filter btn. */
-	private Button getFilterBtn; // for getting the filter from the server
-
 	/**
 	 * This method is called in order to obtain the filter from the server.
 	 * 
@@ -150,16 +144,6 @@ public class ChooseSensorsActivity extends Activity {
 		okBtn.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
-			}
-		});
-
-		// functionality of the setFilterBtn
-		setFilterBtn = (Button) findViewById(R.id.shooseSensorsSetFilterButton);
-		setFilterBtn.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-
 				List<Integer> temp = new ArrayList<Integer>();
 				SparseBooleanArray b = lstSensors.getCheckedItemPositions();
 				for (int i = 0; i < lstSensors.getCount(); ++i) {
@@ -168,15 +152,7 @@ public class ChooseSensorsActivity extends Activity {
 								.getItemAtPosition(i)).ordinal());
 				}
 				setFilter(temp);
-			}
-		});
-
-		// functionality of the getFilterBtn
-		getFilterBtn = (Button) findViewById(R.id.chooseSensorsGetFilterButton);
-		getFilterBtn.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getFilter();
+				finish();
 			}
 		});
 

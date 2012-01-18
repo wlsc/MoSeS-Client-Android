@@ -1,5 +1,7 @@
 package moses.client.service.helpers;
 
+import java.net.UnknownHostException;
+
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -33,7 +35,11 @@ public class Logout {
 		 */
 		@Override
 		public void handleException(Exception e) {
-			Log.d("MoSeS.LOGOUT", "FAILURE: " + e.getMessage());
+			if (e instanceof UnknownHostException || e instanceof JSONException) {
+				Log.d("MoSeS.LOGOUT",
+						"No internet connection present (or DNS problems.)");
+			} else
+				Log.d("MoSeS.LOGOUT", "FAILURE: " + e.getMessage());
 		}
 
 		/*

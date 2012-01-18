@@ -3,6 +3,8 @@
  */
 package moses.client.abstraction;
 
+import java.net.UnknownHostException;
+
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -30,8 +32,13 @@ public class PingSender {
 
 		@Override
 		public void handleException(Exception e) {
-			Log.d("MoSeS.PING", "FAILURE WHILE SENDING PING: " + e.getMessage());
-			PingSender.this.e.execute();
+			if (e instanceof UnknownHostException || e instanceof JSONException) {
+				Log.d("MoSeS.PING",
+						"No internet connection present (or DNS problems.)");
+			} else {
+				Log.d("MoSeS.PING", "FAILURE WHILE SENDING PING: " + e.getMessage());
+				PingSender.this.e.execute();
+			}
 		}
 
 		@Override
