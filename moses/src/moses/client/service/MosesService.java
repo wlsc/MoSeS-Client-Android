@@ -12,11 +12,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.util.Log;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class MosesService.
+ *
  * @author Jaco Hofmann
  */
 public class MosesService extends android.app.Service {
@@ -25,7 +25,7 @@ public class MosesService extends android.app.Service {
 	 * The Class LocalBinder.
 	 */
 	public class LocalBinder extends Binder {
-		
+
 		/**
 		 * Gets the service.
 		 *
@@ -40,16 +40,16 @@ public class MosesService extends android.app.Service {
 	 * The Class MosesSettings.
 	 */
 	public class MosesSettings {
-		
+
 		/** The loginauto. */
 		public boolean loginauto;
-		
+
 		/** The saveunamepw. */
 		public boolean saveunamepw;
 
 		/** The username. */
 		public String username;
-		
+
 		/** The password. */
 		public String password;
 
@@ -59,6 +59,8 @@ public class MosesService extends android.app.Service {
 		/** The logged in. */
 		public boolean loggedIn = false;
 		
+		public boolean loggingIn = false;
+
 		/** Saves the used filter. */
 		public JSONArray filter = null;
 
@@ -72,7 +74,7 @@ public class MosesService extends android.app.Service {
 
 	/** The mset. */
 	private MosesSettings mset = new MosesSettings();
-	
+
 	private KeepSessionAlive cKeepAlive;
 
 	private CheckForNewApplications checkForNewApplications;
@@ -95,6 +97,12 @@ public class MosesService extends android.app.Service {
 		mset.loginauto = settingsFile.getBoolean("loginauto", false);
 		mset.username = settingsFile.getString("uname", "");
 		mset.password = settingsFile.getString("password", "");
+		if (mset.loginauto)
+			login(new Executor() {
+				@Override
+				public void execute() {
+				}
+			});
 	}
 
 	/**
@@ -109,18 +117,20 @@ public class MosesService extends android.app.Service {
 	public void setFilter(JSONArray filter) {
 		mset.filter = filter;
 	}
-	
+
 	public JSONArray getFilter() {
 		return mset.filter;
 	}
-	
+
 	/**
 	 * Logged in.
 	 *
-	 * @param sessionid the sessionid
+	 * @param sessionid
+	 *            the sessionid
 	 */
 	public void loggedIn(String sessionid) {
 		mset.loggedIn = true;
+		mset.loggingIn = false;
 		mset.sessionid = sessionid;
 		new HardwareAbstraction(this).getFilter();
 	}
@@ -136,29 +146,37 @@ public class MosesService extends android.app.Service {
 	/**
 	 * Login.
 	 *
-	 * @param e the e
+	 * @param e
+	 *            the e
 	 */
 	public void login(Executor e) {
-		new Login(mset.username, mset.password, this, e);
-		keepSessionAlive(true);
-		checkForNewApplications.startChecking(true);
+		if (!mset.loggedIn && !mset.loggingIn) {
+			mset.loggingIn = true;
+			new Login(mset.username, mset.password, this, e);
+			keepSessionAlive(true);
+			checkForNewApplications.startChecking(true);
+		}
 	}
 
 	/**
 	 * Logout.
 	 *
-	 * @param e the e
+	 * @param e
+	 *            the e
 	 */
 	public void logout(Executor e) {
 		new Logout(this, e);
 		keepSessionAlive(false);
+		checkForNewApplications.startChecking(false);
 	}
-	
+
 	public void keepSessionAlive(boolean b) {
 		cKeepAlive.keepAlive(b);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see android.app.Service#onBind(android.content.Intent)
 	 */
 	@Override
@@ -166,31 +184,47 @@ public class MosesService extends android.app.Service {
 		return mBinder;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see android.app.Service#onCreate()
 	 */
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		initConfig();
-		cKeepAlive = new KeepSessionAlive();
+		cKeepAlive = new KeepSessionAlive(new Executor() {
+
+			@Override
+			public void execute() {
+				loggedOut();
+				login(new Executor() {
+					@Override
+					public void execute() {
+					}
+				});
+			}
+		});
 		checkForNewApplications = new CheckForNewApplications(this);
-		Toast.makeText(this, "Service Created", Toast.LENGTH_LONG).show();
+		initConfig();
+		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see android.app.Service#onDestroy()
 	 */
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
 
-		Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
+		Log.d("MoSeS.SERVICE", "Service Destroyed");
 
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see android.app.Service#onStart(android.content.Intent, int)
 	 */
 	@Override
@@ -198,7 +232,7 @@ public class MosesService extends android.app.Service {
 
 		super.onStart(intent, startId);
 
-		Toast.makeText(this, "Service Started", Toast.LENGTH_LONG).show();
+		Log.d("MoSeS.SERVICE", "Service Started");
 	}
 
 	/**
