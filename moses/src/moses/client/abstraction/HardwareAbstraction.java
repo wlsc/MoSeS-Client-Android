@@ -117,15 +117,11 @@ public class HardwareAbstraction {
 							.append(j.get("DEVICEID"));
 					sb.append("\n").append("Android version:")
 							.append(j.get("ANDVER"));
-					// parse the sensors from JSON Object
-					SensorManager senMan = (SensorManager) appContext
-							.getSystemService(Context.SENSOR_SERVICE);
 					JSONArray sensors = j.getJSONArray("SENSORS");
 					sb.append("\n").append("SENSORS:").append("\n");
 					for (int i = 0; i < sensors.length(); i++) {
 						sb.append("\n");
-						sb.append(senMan.getDefaultSensor(sensors.getInt(i))
-								.getName());
+						sb.append(ESensor.values()[sensors.getInt(i)]);
 					}
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
 				} else {
