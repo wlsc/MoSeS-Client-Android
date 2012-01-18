@@ -39,7 +39,27 @@ import android.util.Log;
  * 
  */
 public class HardwareAbstraction {
-
+	
+	public static class HardwareInfo {
+		private String deviceID;
+		private String sdkbuildversion;
+		private List<Integer> sensors;
+		public HardwareInfo(String deviceID, String sdkbuildversion, List<Integer> sensors) {
+			super();
+			this.sdkbuildversion = sdkbuildversion;
+			this.sensors = sensors;
+		}
+		public String getDeviceID() {
+			return deviceID;
+		}
+		public String getSdkbuildversion() {
+			return sdkbuildversion;
+		}
+		public List<Integer> getSensors() {
+			return sensors;
+		}
+	}
+	
 	private class ReqClassGetFilter implements ReqTaskExecutor {
 
 		@Override
@@ -200,14 +220,6 @@ public class HardwareAbstraction {
 		appContext = c;
 	}
 
-	/**
-	 * TODO: Implement this function with getHardwareParameters to check if the
-	 * information on the server has to be updated
-	 */
-	public void checkHardwareParameters() {
-		setHardwareParameters();
-	}
-
 	/** The m service. */
 	public MosesService mService;
 
@@ -274,12 +286,10 @@ public class HardwareAbstraction {
 	}
 
 	/**
-	 * This method reads the sensors currently chosen by the user and send the
-	 * appropriate update to the MoSeS-Website
+	 * This method reads the sensors currently chosen by the user and returns them
 	 */
-	private void setHardwareParameters() {
+	private HardwareInfo retrieveHardwareParameters() {
 		// *** SENDING SET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
 		LinkedList<Integer> sensors = new LinkedList<Integer>();
 		SensorManager s = (SensorManager) appContext
@@ -289,14 +299,26 @@ public class HardwareAbstraction {
 		}
 
 		String deviceID = extractDeviceId();
-		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassSetHWParams(), sessionID, deviceID,
-				Build.VERSION.SDK, sensors);
-		rSetHWParams.send();
-
+		return new HardwareInfo(deviceID, Build.VERSION.SDK, sensors);
+	}
+	
+	public void sendDeviceInformationToMosesServer(HardwareInfo hardware, String c2dmRegistrationId, String sessionId) {
 	}
 
 	public static String extractDeviceId() {
 		return Build.MANUFACTURER + " " + Build.MODEL + " " + Build.FINGERPRINT;
+	}
+
+	/**
+	 * Device informations like hardware parameters, and cloud notification (c2dm) identification/connection tokens are sent to the moses server
+	 * 
+	 * @param c2dmRegistrationId
+	 * @param sessionID
+	 */
+	public void syncDeviceInformation(String c2dmRegistrationId, String sessionID) {
+		HardwareInfo hwInfo = retrieveHardwareParameters();
+		
+		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, c2dmRegistrationId, sessionID);
+		rSetHWParams.send();
 	}
 }

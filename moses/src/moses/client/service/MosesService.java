@@ -14,10 +14,11 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 /**
  * The Class MosesService.
- *
+ * 
  * @author Jaco Hofmann
  */
 public class MosesService extends android.app.Service {
@@ -31,7 +32,7 @@ public class MosesService extends android.app.Service {
 
 		/**
 		 * Gets the service.
-		 *
+		 * 
 		 * @return the service
 		 */
 		public MosesService getService() {
@@ -84,9 +85,11 @@ public class MosesService extends android.app.Service {
 
 	private CheckForNewApplications checkForNewApplications;
 
+	private String c2dmRegistrationId;
+
 	/**
 	 * Gets the session id.
-	 *
+	 * 
 	 * @return the session id
 	 */
 	public String getSessionID() {
@@ -102,13 +105,12 @@ public class MosesService extends android.app.Service {
 		mset.loginauto = settingsFile.getBoolean("loginauto", false);
 		mset.username = settingsFile.getString("uname", "");
 		mset.password = settingsFile.getString("password", "");
-		if (mset.loginauto)
-			login();
+		if (mset.loginauto) login();
 	}
 
 	/**
 	 * Checks if is logged in.
-	 *
+	 * 
 	 * @return true, if is logged in
 	 */
 	public boolean isLoggedIn() {
@@ -125,7 +127,7 @@ public class MosesService extends android.app.Service {
 
 	/**
 	 * Logged in.
-	 *
+	 * 
 	 * @param sessionid
 	 *            the sessionid
 	 */
@@ -146,7 +148,7 @@ public class MosesService extends android.app.Service {
 
 	/**
 	 * Login.
-	 *
+	 * 
 	 * @param e
 	 *            the e
 	 */
@@ -161,7 +163,7 @@ public class MosesService extends android.app.Service {
 
 	/**
 	 * Logout.
-	 *
+	 * 
 	 * @param e
 	 *            the e
 	 */
@@ -177,7 +179,7 @@ public class MosesService extends android.app.Service {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see android.app.Service#onBind(android.content.Intent)
 	 */
 	@Override
@@ -187,7 +189,7 @@ public class MosesService extends android.app.Service {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see android.app.Service#onCreate()
 	 */
 	@Override
@@ -204,6 +206,8 @@ public class MosesService extends android.app.Service {
 		checkForNewApplications = new CheckForNewApplications(this);
 		registerC2DM();
 		initConfig();
+		// sync hardware would go somewhere here, but the c2dm registration ID
+		// has to arrive yet.
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
@@ -218,7 +222,8 @@ public class MosesService extends android.app.Service {
 		startService(registrationIntent);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
 	 * 
 	 * @see android.app.Service#onDestroy()
 	 */
@@ -232,7 +237,7 @@ public class MosesService extends android.app.Service {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see android.app.Service#onStart(android.content.Intent, int)
 	 */
 	@Override
@@ -250,4 +255,23 @@ public class MosesService extends android.app.Service {
 		initConfig();
 	}
 
+	public void setC2DMReceiverId(String registrationId) {
+		this.c2dmRegistrationId = registrationId;
+		syncDeviceInformation(c2dmRegistrationId);
+	}
+
+	/**
+	 * sends device information to the moses server
+	 * 
+	 * @param c2dmRegistrationId
+	 *            the id which identifies this device in the c2dm
+	 * @param force
+	 *            the Force is a binding, metaphysical and ubiquitous power in
+	 *            the fictional universe of the Star Wars galaxy created by
+	 *            George Lucas. 
+	 */
+	private void syncDeviceInformation(String c2dmRegistrationId) {
+		HardwareAbstraction hw = new HardwareAbstraction(this);
+		hw.syncDeviceInformation(c2dmRegistrationId, getSessionID());
+	}
 }

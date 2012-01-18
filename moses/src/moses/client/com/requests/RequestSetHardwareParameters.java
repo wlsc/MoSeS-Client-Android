@@ -2,6 +2,7 @@ package moses.client.com.requests;
 
 import java.util.List;
 
+import moses.client.abstraction.HardwareAbstraction.HardwareInfo;
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
 
@@ -29,16 +30,16 @@ public class RequestSetHardwareParameters {
 
 	ReqTaskExecutor e;
 
-	public RequestSetHardwareParameters(ReqTaskExecutor e, String sessionID,
-			String deviceID, String androidVersion, List<Integer> sensors) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, String c2dmRegistrationId, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {
 			j.put("MESSAGE", "SET_HARDWARE_PARAMS");
 			j.put("SESSIONID", sessionID);
-			j.put("DEVICEID", deviceID);
-			j.put("ANDVER", androidVersion);
-			j.put("SENSORS", (new JSONArray(sensors)));
+			j.put("DEVICEID", hwInfo.getDeviceID());
+			j.put("ANDVER", hwInfo.getSdkbuildversion());
+			j.put("C2DMID", c2dmRegistrationId);
+			j.put("SENSORS", (new JSONArray(hwInfo.getSensors())));
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}

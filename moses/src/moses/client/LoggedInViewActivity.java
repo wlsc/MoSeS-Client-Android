@@ -101,22 +101,6 @@ public class LoggedInViewActivity extends Activity {
 	}
 
 	/**
-	 * Check hardware.
-	 * 
-	 * @param force
-	 *            the force
-	 */
-	private void checkHardware(boolean force) {
-		if (settings.getBoolean("synchw", true) || force) {
-			HardwareAbstraction hw = new HardwareAbstraction(this);
-			hw.checkHardwareParameters();
-			SharedPreferences.Editor editor = settings.edit();
-			editor.putBoolean("synchw", false);
-			editor.commit();
-		}
-	}
-
-	/**
 	 * This method is called when getHW-Button is pushed.
 	 * 
 	 * @return the hardware parameters
@@ -150,7 +134,7 @@ public class LoggedInViewActivity extends Activity {
 		btnSyncHW.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				checkHardware(true);
+				//checkHardware(true);
 			}
 		});
 
@@ -262,7 +246,6 @@ public class LoggedInViewActivity extends Activity {
 		setContentView(R.layout.loggedinview);
 		settings = getSharedPreferences("MoSeS.cfg", 0);
 		initControls();
-		checkHardware(false);
 		apkAbstraction = new APKAbstraction(this);
 	}
 
