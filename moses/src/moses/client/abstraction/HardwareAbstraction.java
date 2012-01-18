@@ -31,6 +31,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * This class provides basic support for hardware sync with server
