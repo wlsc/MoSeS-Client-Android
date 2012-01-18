@@ -34,6 +34,7 @@ public class KeepSessionAlive {
 			mHandler.removeCallbacks(mKeepAliveTask);
 			mHandler.postDelayed(mKeepAliveTask, pingTime);
 		} else {
+			mHandler.removeCallbacks(mKeepAliveTask);
 			stopPosting = true;
 		}
 	}
