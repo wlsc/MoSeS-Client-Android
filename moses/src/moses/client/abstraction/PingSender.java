@@ -13,6 +13,8 @@ import moses.client.service.helpers.Executor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 /**
  * This class offers methods for staying in touch with the server
  * 
@@ -22,14 +24,13 @@ import org.json.JSONObject;
 
 public class PingSender {
 
-	private String lastMessage;
 	private Executor e;
 
 	private class ReqClassPing implements ReqTaskExecutor {
 
 		@Override
 		public void handleException(Exception e) {
-			lastMessage = "FAILURE ON SENDING PING: " + e.getMessage();
+			Log.d("MoSeS.PING", "FAILURE WHILE SENDING PING: " + e.getMessage());
 			PingSender.this.e.execute();
 		}
 
@@ -38,13 +39,10 @@ public class PingSender {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestPing.pingAccepted(j)) {
-					lastMessage = "Ping set successfully, server returned positive response";
-					PingSender.this.e.execute();
+					Log.d("MoSeS.PING", "Ping set successfully, server returned positive response");
 				} else {
-					// TODO handling
-					lastMessage = "Ping NOT set successfully, server returned NEGATIVE response";
+					Log.d("MoSeS.PING", "Ping NOT set successfully, server returned NEGATIVE response");
 					PingSender.this.e.execute();
 				}
 			} catch (JSONException e) {
@@ -55,7 +53,7 @@ public class PingSender {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				lastMessage = c.c.toString();
+				Log.d("MoSeS.PING", c.c.toString());
 				PingSender.this.e.execute();
 			} else {
 				handleException(c.e);
@@ -72,10 +70,6 @@ public class PingSender {
 	 */
 	public PingSender(Executor e) {
 		this.e = e;
-	}
-
-	public String getLastMessage() {
-		return lastMessage;
 	}
 
 	/**

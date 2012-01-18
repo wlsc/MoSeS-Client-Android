@@ -53,9 +53,6 @@ public class LoggedInViewActivity extends Activity {
 	/** The btn ping. */
 	private Button btnPing; // used for sending "i am alive" messages
 
-	/** The pinger. */
-	private PingSender pinger;
-
 	/** The btn list apk. */
 	private Button btnListAPK; // used for obtaining the list of APKs
 
@@ -266,12 +263,6 @@ public class LoggedInViewActivity extends Activity {
 		settings = getSharedPreferences("MoSeS.cfg", 0);
 		initControls();
 		checkHardware(false);
-		pinger = new PingSender(new Executor() {
-			@Override
-			public void execute() {
-				Toast.makeText(LoggedInViewActivity.this, pinger.getLastMessage(), Toast.LENGTH_LONG).show();
-			}
-		});
 		apkAbstraction = new APKAbstraction(this);
 	}
 
