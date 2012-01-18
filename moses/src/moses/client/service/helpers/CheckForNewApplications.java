@@ -5,7 +5,6 @@ import java.util.List;
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
 import moses.client.abstraction.apks.ExternalApplication;
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -15,25 +14,13 @@ import android.os.Handler;
  * 
  */
 public class CheckForNewApplications implements ApkListRequestObserver {
-	private static boolean debug = true; // shows the notification for 1 time
-											// ca. 20seconds after the start.
-	private static int counterDebug = 0;
 	private Handler mHandler = new Handler();
 	private boolean stopChecking = false;
 
 	List<ExternalApplication> lastApplicationList;
 
 	private final int checkInterval = 1000 * 60 * 60; // every hour
-	private final int checkIntervalNotInitialized = 1000 * 10;// debugmode:
-																// every 10
-																// seconds --
-																// after 20
-																// seconds, the
-																// first
-																// motification
-																// should show
-																// //every
-																// minute
+	private final int checkIntervalNotInitialized = 1000 * 60; //every minute
 
 	private Runnable checkTask = new Runnable() {
 		@Override
@@ -91,10 +78,6 @@ public class CheckForNewApplications implements ApkListRequestObserver {
 
 	private static boolean newApplicationsInDiff(List<ExternalApplication> newApplicationList,
 		List<ExternalApplication> lastApplicationList) {
-		if (debug && (counterDebug < 2)) {
-			counterDebug++;
-			return true;
-		}
 		for (ExternalApplication newerApp : newApplicationList) {
 			boolean found = false;
 			for (ExternalApplication olderApp : lastApplicationList) {
