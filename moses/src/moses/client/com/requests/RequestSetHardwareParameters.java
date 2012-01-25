@@ -38,7 +38,6 @@ public class RequestSetHardwareParameters {
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", hwInfo.getDeviceID());
 			j.put("ANDVER", hwInfo.getSdkbuildversion());
-			j.put("C2DMID", "");
 			j.put("SENSORS", (new JSONArray(hwInfo.getSensors())));
 		} catch (JSONException ex) {
 			e.handleException(ex);
