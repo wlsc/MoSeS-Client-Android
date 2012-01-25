@@ -311,10 +311,10 @@ public class HardwareAbstraction {
 	 * @param c2dmRegistrationId
 	 * @param sessionID
 	 */
-	public void syncDeviceInformation(String c2dmRegistrationId, String sessionID) {
+	public void syncDeviceInformation(String sessionID) {
 		HardwareInfo hwInfo = retrieveHardwareParameters();
 		
-		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, c2dmRegistrationId, sessionID);
+		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, sessionID);
 		rSetHWParams.send();
 	}
 }

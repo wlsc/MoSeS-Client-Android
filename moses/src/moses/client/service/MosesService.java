@@ -224,8 +224,7 @@ public class MosesService extends android.app.Service {
 		checkForNewApplications = new CheckForNewApplications(this);
 		registerC2DM();
 		initConfig();
-		// sync hardware would go somewhere here, but the c2dm registration ID
-		// has to arrive yet.
+		syncDeviceInformation();
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
@@ -274,8 +273,23 @@ public class MosesService extends android.app.Service {
 	}
 
 	public void setC2DMReceiverId(String registrationId) {
-		this.c2dmRegistrationId = registrationId;
-		syncDeviceInformation(c2dmRegistrationId);
+		//TODO: if the c2dm id changed, resend? 
+		boolean setNewC2DMID = false;
+		if(registrationId != null) {
+			if(this.c2dmRegistrationId == null) {
+				setNewC2DMID = true;
+			} else {
+				if(! registrationId.equals(this.c2dmRegistrationId)) {
+					setNewC2DMID = true;
+				}
+			}
+		} else {
+			//TODO: unexpected error.. registrationId == null (should never occur thou)
+		}
+		if(setNewC2DMID) {
+			this.c2dmRegistrationId = registrationId;
+			//TODO: sync id
+		}
 	}
 
 	/**
@@ -288,9 +302,9 @@ public class MosesService extends android.app.Service {
 	 *            the fictional universe of the Star Wars galaxy created by
 	 *            George Lucas. 
 	 */
-	private void syncDeviceInformation(String c2dmRegistrationId) {
+	private void syncDeviceInformation() {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
-		hw.syncDeviceInformation(c2dmRegistrationId, getSessionID());
+		hw.syncDeviceInformation(getSessionID());
 	}
 
 	public boolean isOnline() {
@@ -303,9 +317,10 @@ public class MosesService extends android.app.Service {
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
+	public int onStartCommand(Intent intent, int flags, int startId) { 
 		String c2dmIdExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
-		if(c2dmIdExtra != null) {
+		if(c2dmIdExtra != null) { 
+			Toast.makeText(getApplicationContext(), "C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
 			setC2DMReceiverId(c2dmIdExtra);
 		}
 		return super.onStartCommand(intent, flags, startId);

@@ -30,7 +30,7 @@ public class RequestSetHardwareParameters {
 
 	ReqTaskExecutor e;
 
-	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, String c2dmRegistrationId, String sessionID) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -38,7 +38,7 @@ public class RequestSetHardwareParameters {
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", hwInfo.getDeviceID());
 			j.put("ANDVER", hwInfo.getSdkbuildversion());
-			j.put("C2DMID", c2dmRegistrationId);
+			j.put("C2DMID", "");
 			j.put("SENSORS", (new JSONArray(hwInfo.getSensors())));
 		} catch (JSONException ex) {
 			e.handleException(ex);
