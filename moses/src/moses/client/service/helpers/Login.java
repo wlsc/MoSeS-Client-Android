@@ -16,7 +16,7 @@ import android.util.Log;
 // TODO: Auto-generated Javadoc
 /**
  * The Class Login.
- *
+ * 
  * @author Jaco Hofmann
  */
 public class Login {
@@ -28,22 +28,25 @@ public class Login {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * moses.client.com.ReqTaskExecutor#handleException(java.lang.Exception)
 		 */
 		@Override
 		public void handleException(Exception e) {
+			if (error != null)
+				error.execute();
 			if (e instanceof UnknownHostException || e instanceof JSONException) {
 				Log.d("MoSeS.LOGIN",
 						"No internet connection present (or DNS problems.)");
 			} else
-				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString() + " " + e.getMessage());
+				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString()
+						+ " " + e.getMessage());
 		}
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see moses.client.com.ReqTaskExecutor#postExecution(java.lang.String)
 		 */
 		@Override
@@ -56,10 +59,12 @@ public class Login {
 					serv.loggedIn(j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
-					if (e != null)
-						e.execute();
+					if (postExecute != null)
+						postExecute.execute();
 				} else {
 					Log.d("MoSeS.LOGIN", "NOT GRANTED: " + j.toString());
+					if (error != null)
+						error.execute();
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -68,7 +73,7 @@ public class Login {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * moses.client.com.ReqTaskExecutor#updateExecution(moses.client.com
 		 * .NetworkJSON.BackgroundException)
@@ -94,11 +99,12 @@ public class Login {
 	private String pw;
 
 	/** The e. */
-	private Executor e;
+	private Executor postExecute;
+	private Executor error;
 
 	/**
 	 * Instantiates a new login.
-	 *
+	 * 
 	 * @param username
 	 *            the username
 	 * @param password
@@ -108,11 +114,13 @@ public class Login {
 	 * @param e
 	 *            the e
 	 */
-	public Login(String username, String password, MosesService serv, Executor e) {
+	public Login(String username, String password, MosesService serv,
+			Executor postExecute, Executor error) {
 		this.serv = serv;
 		this.pw = password;
 		this.uname = username;
-		this.e = e;
+		this.postExecute = postExecute;
+		this.error = error;
 		new RequestLogin(new LoginFunc(), uname, pw).send();
 	}
 }

@@ -183,6 +183,12 @@ public class MosesService extends android.app.Service implements
 							cKeepAlive.shortenPingTime(false);
 						}
 					}
+				}, new Executor() {
+					
+					@Override
+					public void execute() {
+						mset.loggingIn = false;
+					}
 				});
 			}
 		} else {

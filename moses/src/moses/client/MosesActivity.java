@@ -97,8 +97,10 @@ public class MosesActivity extends Activity {
 	private void connect() {
 		// Login if not already or just start logged in view if present
 		Log.d("MoSeS.ACTIVITY", "Connect button pressed.");
-		if (!mService.isLoggedIn()) {
-			mService.login();
+		if(mService != null) {
+			if (!mService.isLoggedIn()) {
+				mService.login();
+			}
 		}
 	}
 
