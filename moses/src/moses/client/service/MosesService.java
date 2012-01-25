@@ -48,7 +48,6 @@ public class MosesService extends android.app.Service {
 	 * The Class MosesSettings.
 	 */
 	public class MosesSettings {
-
 		/** The loginauto. */
 		public boolean loginauto;
 
