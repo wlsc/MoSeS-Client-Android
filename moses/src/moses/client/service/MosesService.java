@@ -95,6 +95,8 @@ public class MosesService extends android.app.Service {
 
 	private String c2dmRegistrationId;
 
+	private boolean alreadySuccessfullySentC2DMID;
+
 	/**
 	 * Gets the session id.
 	 * 
@@ -152,6 +154,9 @@ public class MosesService extends android.app.Service {
 		new HardwareAbstraction(this).getFilter();
 		keepSessionAlive(true);
 		checkForNewApplications.startChecking(true);
+		if(! alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null && !(getSessionID().equals("")||getSessionID()==null)) {
+			sendC2DMIdToServer(this.c2dmRegistrationId);
+		}
 	}
 
 	/**
@@ -300,7 +305,10 @@ public class MosesService extends android.app.Service {
 		}
 		if (setNewC2DMID) {
 			this.c2dmRegistrationId = registrationId;
-			sendC2DMIdToServer(registrationId);
+			if(! alreadySuccessfullySentC2DMID && !(getSessionID().equals("")||getSessionID()==null)) {
+				sendC2DMIdToServer(registrationId);
+			}
+				
 		}
 	}
 
@@ -314,6 +322,7 @@ public class MosesService extends android.app.Service {
 			@Override
 			public void postExecution(String s) {
 				//request sent!
+				alreadySuccessfullySentC2DMID = true;
 			}
 			@Override
 			public void handleException(Exception e) {
@@ -323,6 +332,7 @@ public class MosesService extends android.app.Service {
 		}, getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
 		
 		request.send();
+		Toast.makeText(getApplicationContext(), "C2DM ID sent!", Toast.LENGTH_LONG).show();
 	}
 
 	/**
