@@ -225,12 +225,12 @@ public class MosesService extends android.app.Service {
 		checkForNewApplications = new CheckForNewApplications(this);
 		registerC2DM();
 		initConfig();
-		syncDeviceInformation();
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
 	public void postLoginHook(Executor e) {
 		mset.postLoginHook = e;
+		syncDeviceInformation();
 	}
 
 	private void registerC2DM() {
