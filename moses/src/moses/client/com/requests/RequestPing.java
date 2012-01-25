@@ -36,7 +36,7 @@ public class RequestPing {
 		this.e = e;
 		try {
 			j.put("MESSAGE", "STILL_ALIVE");
-			j.put("C2DMID", c2dmId==null?"NOID":c2dmId);
+//			j.put("C2DMID", c2dmId==null?"NOID":c2dmId);
 			j.put("SESSIONID", sessionID);
 		} catch (JSONException ex) {
 			e.handleException(ex);
