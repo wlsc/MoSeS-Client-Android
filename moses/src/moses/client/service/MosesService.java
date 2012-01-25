@@ -196,7 +196,7 @@ public class MosesService extends android.app.Service implements
 							cKeepAlive.shortenPingTime(false);
 						}
 					}
-				}, new Executor() {
+				}, new Executor() { 
 					
 					@Override
 					public void execute() {
@@ -415,17 +415,16 @@ public class MosesService extends android.app.Service implements
 	}
 
 	private void invokeUserStudyNotificationProcess(String apkId) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		OnClickListener dialogClickListener = new OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
-			}
-		};
-		builder.setMessage("User study notification with App id = " + apkId).setPositiveButton("Yes", dialogClickListener)
-		    .setNegativeButton("No", dialogClickListener).show();
-		
-		
+//		AlertDialog ad = new AlertDialog.Builder(this).create();  
+//		ad.setCancelable(false); // This blocks the 'BACK' button  
+//		ad.setMessage("Notification about user study; Apk id: " + apkId);  
+//		ad.setButton("OK", new DialogInterface.OnClickListener() {  
+//		    @Override  
+//		    public void onClick(DialogInterface dialog, int which) {  
+//		        dialog.dismiss();                      
+//		    }  
+//		});  
+//		ad.show();  
 	}
 
 	@Override
