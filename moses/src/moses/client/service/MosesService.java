@@ -1,6 +1,8 @@
 package moses.client.service;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.com.C2DMReceiver;
@@ -331,7 +333,21 @@ public class MosesService extends android.app.Service implements
 			@Override
 			public void postExecution(String s) {
 				//request sent!
-				alreadySuccessfullySentC2DMID = true;
+				try {
+					JSONObject j = new JSONObject(s);
+					if(RequestC2DM.C2DMRequestAccepted(j)) {
+						alreadySuccessfullySentC2DMID = true;
+						Toast.makeText(getApplicationContext(), "C2DM send request returned POSITIVE", Toast.LENGTH_LONG).show();
+					} else {
+						Toast.makeText(getApplicationContext(), "C2DM send request returned NEGATIVE", Toast.LENGTH_LONG).show();
+						Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
+					}
+					
+					
+				} catch (JSONException e) {
+					Toast.makeText(getApplicationContext(), "C2DMToMosesServer returned malformed message", Toast.LENGTH_LONG).show();
+					Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
+				}
 			}
 			@Override
 			public void handleException(Exception e) {
@@ -341,7 +357,6 @@ public class MosesService extends android.app.Service implements
 		}, getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
 		
 		request.send();
-		Toast.makeText(getApplicationContext(), "C2DM ID sent!", Toast.LENGTH_LONG).show();
 	}
 
 	/**
@@ -373,17 +388,25 @@ public class MosesService extends android.app.Service implements
 		if (intent != null) {
 			String c2dmIdExtra = intent
 					.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
+			String userStudyNotificationExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_USERSTUDY_NOTIFICATION);
+			
+			//if this startCommand was meant to notify about arrived c2dm id
 			if (c2dmIdExtra != null) {
-				Toast.makeText(getApplicationContext(),
-						"C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
 				setC2DMReceiverId(c2dmIdExtra);
+			}
+			
+			//if this startCommand was meant to notify about user study
+			if (userStudyNotificationExtra != null) {
+				String apkId = userStudyNotificationExtra;
+				invokeUserStudyNotificationProcess(apkId);
 			}
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private void showUserStudyNotification(UserStudyNotification notification) {
-
+	private void invokeUserStudyNotificationProcess(String apkId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

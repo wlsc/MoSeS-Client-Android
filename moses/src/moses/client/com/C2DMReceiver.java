@@ -8,10 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
+	public static final String EXTRAFIELD_USERSTUDY_NOTIFICATION = "UserStudyNotification";
+	private static final String C2DN_MESSAGETYPE_FIELD = "MESSAGE";
+	private static final String C2DN_USERSTUDY_APKID_FIELD = "APKID";
 	public static final String EXTRAFIELD_C2DM_ID = "c2dmId";
 	private boolean isRegistered;
 
@@ -25,11 +29,27 @@ public class C2DMReceiver extends BroadcastReceiver {
 	}
 
 	private void handleMessage(Context context, Intent intent) {
-		String msgtype = intent.getExtras().getString(C2DMConfig.FIELD_MSGTYPE);
-	    String msg = intent.getExtras().getString(C2DMConfig.FIELD_MSG);
-	    if(msgtype.equals(C2DMConfig.MSGTYPE_TOAST)) {
-	    	Toast.makeText(context, "Message received: " + msg, Toast.LENGTH_LONG);
-	    }
+		String messagetype = intent.getExtras().getString(C2DN_MESSAGETYPE_FIELD);
+		String apkidString = intent.getExtras().getString(C2DN_USERSTUDY_APKID_FIELD);
+		boolean receivedGoodThing = false;
+		if(messagetype != null) {
+			if(apkidString != null) {
+				Log.i("MoSeS.C2DM", "User study notification received!! APK ID = " + apkidString);
+				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
+				receivedGoodThing = true;
+			} else {
+				Log.i("MoSeS.C2DM", "User study notification received but bad apkid (null)");
+			}
+		} else {
+			Log.i("MoSeS.C2DM", "Notification received but bad MESSAGE String (null)");
+		}
+		
+		if(receivedGoodThing) {
+			Intent mosesServiceStartIntent = new Intent(context, MosesService.class);
+			intent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION, apkidString);
+			// this directs to "onStartCommand(Intent, int, int)" in the service
+			context.startService(intent);
+		}
 	}
 
 	private void handleRegistration(Context context, Intent intent) {

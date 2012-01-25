@@ -13,7 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
  */
 public class InstalledExternalApplication extends ExternalApplication {
 
-	private static final String SEPARATOR = "###";
+	private static final String SEPARATOR = "#IEA#";
 	private String packageName;
 
 	/**
@@ -86,12 +86,12 @@ public class InstalledExternalApplication extends ExternalApplication {
 	}
 
 	public String asOnelineString() {
-		return this.getPackageName()+SEPARATOR+this.getID();
+		return super.asOnelineString()+SEPARATOR+this.getPackageName();
 	}
 	
 	public static InstalledExternalApplication fromOnelineString(String s) {
-		String[] split = s.split("###");
-		return new InstalledExternalApplication(split[0], split[1]);
+		String[] split = s.split(SEPARATOR);
+		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]));
 	}
 
 }

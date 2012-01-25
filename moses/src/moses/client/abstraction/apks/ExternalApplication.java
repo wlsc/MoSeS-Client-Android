@@ -97,5 +97,13 @@ public class ExternalApplication {
 	public boolean isNameSet() {
 		return name != null;
 	}
+	
+	public String asOnelineString() {
+		return this.ID;
+	}
+	
+	public static ExternalApplication fromOnelineString(String s) {
+		return new ExternalApplication(s);
+	}
 
 }
