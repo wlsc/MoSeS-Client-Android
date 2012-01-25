@@ -9,6 +9,7 @@ import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
+import moses.client.userstudy.UserStudyNotification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -288,7 +289,7 @@ public class MosesService extends android.app.Service {
 		}
 		if(setNewC2DMID) {
 			this.c2dmRegistrationId = registrationId;
-			//TODO: sync id
+			cKeepAlive.setC2DMId(registrationId);
 		}
 	}
 
@@ -324,5 +325,9 @@ public class MosesService extends android.app.Service {
 			setC2DMReceiverId(c2dmIdExtra);
 		}
 		return super.onStartCommand(intent, flags, startId);
+	}
+	
+	private void showUserStudyNotification(UserStudyNotification notification) {
+		
 	}
 }

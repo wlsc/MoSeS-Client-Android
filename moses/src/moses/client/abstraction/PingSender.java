@@ -27,6 +27,7 @@ import android.util.Log;
 public class PingSender {
 
 	private Executor e;
+	private String c2dmId;
 
 	private class ReqClassPing implements ReqTaskExecutor {
 
@@ -76,7 +77,20 @@ public class PingSender {
 	 *            the Context in which the pinger should operate
 	 */
 	public PingSender(Executor e) {
-		this.e = e;
+		this(e, null);
+	}
+
+	/**
+	 * @param e2 the context
+	 * @param c2dmId the c2dmId that can be sent along with every ping (set null to not send it along; c2dmId can be set later in the setter {@link #setC2dmId(String)} 
+	 */
+	public PingSender(Executor e, String c2dmId) {
+		this.e=e;
+		this.c2dmId = c2dmId;
+	}
+
+	public void setC2dmId(String c2dmId) {
+		this.c2dmId = c2dmId;
 	}
 
 	/**
@@ -86,7 +100,7 @@ public class PingSender {
 	public void sendPing() {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
-		new RequestPing(new ReqClassPing(), sessionID).send();
+		new RequestPing(new ReqClassPing(), sessionID, c2dmId).send();
 	}
 
 }

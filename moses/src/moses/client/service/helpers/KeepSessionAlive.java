@@ -14,6 +14,8 @@ public class KeepSessionAlive {
 
 	private final int pingTime = 60000; // Every minute
 	private final int pingTimeShort = 1000;
+	
+	private String c2dmId;
 
 	private Runnable mKeepAliveTask = new Runnable() {
 
@@ -35,7 +37,17 @@ public class KeepSessionAlive {
 	}
 
 	public KeepSessionAlive(Executor e) {
-		pinger = new PingSender(e);
+		this(e, null);
+	}
+	
+	public KeepSessionAlive(Executor e, String c2dmId) {
+		setC2DMId(c2dmId);
+		pinger = new PingSender(e, c2dmId);
+	}
+
+	public void setC2DMId(String c2dmId) {
+		this.c2dmId = c2dmId;
+		pinger.setC2dmId(c2dmId);
 	}
 
 	public void shortenPingTime(boolean b) {

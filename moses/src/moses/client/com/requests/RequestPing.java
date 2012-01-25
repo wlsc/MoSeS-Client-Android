@@ -26,11 +26,17 @@ public class RequestPing {
 	private JSONObject j;
 	ReqTaskExecutor e;
 
-	public RequestPing(ReqTaskExecutor e, String sessionID) {
+	/**
+	 * @param e the executor
+	 * @param sessionID the session id
+	 * @param c2dmId (null if the c2dm id is not know yet) the c2dm id
+	 */
+	public RequestPing(ReqTaskExecutor e, String sessionID, String c2dmId) {
 		j = new JSONObject();
 		this.e = e;
 		try {
 			j.put("MESSAGE", "STILL_ALIVE");
+			j.put("C2DMID", c2dmId==null?"NOID":c2dmId);
 			j.put("SESSIONID", sessionID);
 		} catch (JSONException ex) {
 			e.handleException(ex);
