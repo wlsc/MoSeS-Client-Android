@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -104,12 +105,13 @@ public class MosesService extends android.app.Service {
 	 * Inits the config.
 	 */
 	private void initConfig() {
-		settingsFile = getSharedPreferences("MoSeS.cfg", 0);
+		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		mset.saveunamepw = settingsFile.getBoolean("saveunamepw", false);
 		mset.loginauto = settingsFile.getBoolean("loginauto", false);
 		mset.username = settingsFile.getString("uname", "");
 		mset.password = settingsFile.getString("password", "");
-		if (mset.loginauto) login();
+		if (mset.loginauto)
+			login();
 	}
 
 	/**
@@ -127,6 +129,10 @@ public class MosesService extends android.app.Service {
 
 	public JSONArray getFilter() {
 		return mset.filter;
+	}
+
+	public Context getServiceContext() {
+		return this;
 	}
 
 	/**
@@ -163,16 +169,15 @@ public class MosesService extends android.app.Service {
 		if (isOnline()) {
 			if (!mset.loggedIn && !mset.loggingIn) {
 				mset.loggingIn = true;
-				new Login(mset.username, mset.password, this,
-						new Executor() {
-							@Override
-							public void execute() {
-								mset.postLoginHook.execute();
-								if(cKeepAlive.isPingTimeShortened()) {
-									cKeepAlive.shortenPingTime(false);
-								}
-							}
-						});
+				new Login(mset.username, mset.password, this, new Executor() {
+					@Override
+					public void execute() {
+						mset.postLoginHook.execute();
+						if (cKeepAlive.isPingTimeShortened()) {
+							cKeepAlive.shortenPingTime(false);
+						}
+					}
+				});
 			}
 		} else {
 			Log.d("MoSeS.SERVICE",
@@ -234,8 +239,10 @@ public class MosesService extends android.app.Service {
 	}
 
 	private void registerC2DM() {
-		Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
-		registrationIntent.putExtra("app", PendingIntent.getBroadcast(this, 0, new Intent(), 0)); // boilerplate
+		Intent registrationIntent = new Intent(
+				"com.google.android.c2dm.intent.REGISTER");
+		registrationIntent.putExtra("app",
+				PendingIntent.getBroadcast(this, 0, new Intent(), 0)); // boilerplate
 		registrationIntent.putExtra("sender", MOSES_TUD_GOOGLEMAIL_COM);
 		startService(registrationIntent);
 	}
@@ -274,20 +281,21 @@ public class MosesService extends android.app.Service {
 	}
 
 	public void setC2DMReceiverId(String registrationId) {
-		//TODO: if the c2dm id changed, resend? 
+		// TODO: if the c2dm id changed, resend?
 		boolean setNewC2DMID = false;
-		if(registrationId != null) {
-			if(this.c2dmRegistrationId == null) {
+		if (registrationId != null) {
+			if (this.c2dmRegistrationId == null) {
 				setNewC2DMID = true;
 			} else {
-				if(! registrationId.equals(this.c2dmRegistrationId)) {
+				if (!registrationId.equals(this.c2dmRegistrationId)) {
 					setNewC2DMID = true;
 				}
 			}
 		} else {
-			//TODO: unexpected error.. registrationId == null (should never occur thou)
+			// TODO: unexpected error.. registrationId == null (should never
+			// occur thou)
 		}
-		if(setNewC2DMID) {
+		if (setNewC2DMID) {
 			this.c2dmRegistrationId = registrationId;
 			cKeepAlive.setC2DMId(registrationId);
 		}
@@ -301,7 +309,7 @@ public class MosesService extends android.app.Service {
 	 * @param force
 	 *            the Force is a binding, metaphysical and ubiquitous power in
 	 *            the fictional universe of the Star Wars galaxy created by
-	 *            George Lucas. 
+	 *            George Lucas.
 	 */
 	private void syncDeviceInformation() {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
@@ -318,18 +326,20 @@ public class MosesService extends android.app.Service {
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) { 
-		if(intent != null) {
-			String c2dmIdExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
-			if(c2dmIdExtra != null) { 
-				Toast.makeText(getApplicationContext(), "C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		if (intent != null) {
+			String c2dmIdExtra = intent
+					.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
+			if (c2dmIdExtra != null) {
+				Toast.makeText(getApplicationContext(),
+						"C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
 				setC2DMReceiverId(c2dmIdExtra);
 			}
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
-	
+
 	private void showUserStudyNotification(UserStudyNotification notification) {
-		
+
 	}
 }
