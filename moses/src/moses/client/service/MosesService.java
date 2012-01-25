@@ -3,6 +3,7 @@ package moses.client.service;
 import org.json.JSONArray;
 
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.com.C2DMReceiver;
 import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
@@ -293,4 +294,12 @@ public class MosesService extends android.app.Service {
 		return false;
 	}
 
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		String c2dmIdExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
+		if(c2dmIdExtra != null) {
+			setC2DMReceiverId(c2dmIdExtra);
+		}
+		return super.onStartCommand(intent, flags, startId);
+	}
 }

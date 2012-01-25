@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
+	public static final String EXTRAFIELD_C2DM_ID = "c2dmId";
 	private boolean isRegistered;
 
 	@Override
@@ -60,22 +61,9 @@ public class C2DMReceiver extends BroadcastReceiver {
 	}
 
 	private void sendRegisteredMsgToService(final String registrationId, Context context) {
-//		ServiceConnection mConnection = new ServiceConnection() {
-//			@Override
-//			public void onServiceConnected(ComponentName className, IBinder service) {
-//				// We've bound to LocalService, cast the IBinder and get
-//				// LocalService instance
-//				LocalBinder binder = (LocalBinder) service;
-//				MosesService mService = binder.getService();
-//				//notify service about registration id
-//				mService.setC2DMReceiverId(registrationId);
-//			}
-//			@Override
-//			public void onServiceDisconnected(ComponentName arg0) {
-//			}
-//		};
-//		// Connect to the service
-//		Intent intent = new Intent(context, MosesService.class);
-//		context.bindService(intent, mConnection, 0);
+		Intent intent = new Intent(context, MosesService.class);
+		intent.putExtra(EXTRAFIELD_C2DM_ID, registrationId);
+		// this directs to "onStartCommand(Intent, int, int)" in the service
+		context.startService(intent);
 	}
 }

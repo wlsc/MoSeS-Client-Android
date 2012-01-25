@@ -27,7 +27,7 @@
 
         <!-- Only C2DM servers can send messages for the app. If permission is not set - any other app can generate it -->
         <receiver
-            android:name=".com.C2DMReceiver"
+            android:name="moses.client.com.C2DMReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
 
             <!-- Receive the actual message -->
