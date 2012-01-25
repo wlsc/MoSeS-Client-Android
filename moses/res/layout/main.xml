@@ -3,69 +3,11 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/username"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/uname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/username_text" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/password"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <EditText
-        android:id="@+id/pword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:text="@string/userpassword_text" />
-
-    <CheckBox
-        android:id="@+id/loginauto"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/loginauto" />
-
-    <CheckBox
-        android:id="@+id/saveunamepw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/saveunamepw" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/connect_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/connect" />
-
-        <Button
-            android:id="@+id/exitbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/exit" />
-    </LinearLayout>
-
+
     <TextView
         android:id="@+id/success"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="" />
 
 </LinearLayout>

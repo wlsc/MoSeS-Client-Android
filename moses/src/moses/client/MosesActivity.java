@@ -1,9 +1,5 @@
 package moses.client;
 
-import java.io.IOException;
-
-import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-import moses.client.com.NetworkJSON;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
@@ -13,17 +9,17 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-
+import android.widget.TextView;
 
 /**
  * This activity shows a login field to the user.
@@ -39,42 +35,11 @@ public class MosesActivity extends Activity {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
 	};
 
-	/** Shows the currently typed in username **/
-	private EditText txtUname;
-
-	/** Shows the currently typed in password **/
-	private EditText txtPW;
-
-	/** A click on this button connects the user to our server **/
-	private Button btnconnect;
-
-	/** Closes the app **/
-	private Button btnExit;
-
-	/**
-	 * If this box is checked the application doesn't wait for user input to
-	 * connect to our server
-	 **/
-	private CheckBox chkLoginAuto;
-
-	/** If this box is checked username and password are saved on the device. **/
-	private CheckBox chkSaveUnamePW;
-
-	/** All our settings are handled and saved to filesystem over this object **/
-	private SharedPreferences settings;
-
 	/** This Object represents the underlying service. **/
 	public MosesService mService;
 
 	/** If this variable is true the activity is connected to the service. **/
 	public static boolean mBound = false;
-
-	/**
-	 * This variable is true if the activity is accessed with a return value and
-	 * the app isn't intended to log back in. E.g. after a logout has been
-	 * performed.
-	 */
-	private boolean overrideAutologin = false;
 
 	/** This object handles connection and disconnection of the service **/
 	private ServiceConnection mConnection = new ServiceConnection() {
@@ -86,28 +51,21 @@ public class MosesActivity extends Activity {
 			LocalBinder binder = (LocalBinder) service;
 			mService = binder.getService();
 			mBound = true;
-			btnconnect.setEnabled(true);
-			loadConfig();
 
 			// We want, that the logged in view is shown to the user after a
 			// login has been successful.
 			mService.postLoginHook(new Executor() {
-
 				@Override
 				public void execute() {
-					Intent mainDialog = new Intent(MosesActivity.this,
-							LoggedInViewActivity.class);
-					startActivityForResult(mainDialog, 0);
+					((TextView) findViewById(R.id.success)).setText("Online");
 				}
 			});
 			// If we're already logged in or the user wants auto login start
 			// logged in view
-			if (chkLoginAuto.isChecked() && !overrideAutologin)
+			if (mService.isAutoLogin())
 				connect();
-			else if (mService.isLoggedIn() && !overrideAutologin) {
-				Intent mainDialog = new Intent(MosesActivity.this,
-						LoggedInViewActivity.class);
-				startActivityForResult(mainDialog, 0);
+			if (mService.isLoggedIn()) {
+				((TextView) findViewById(R.id.success)).setText("Online");
 			}
 		}
 
@@ -130,30 +88,16 @@ public class MosesActivity extends Activity {
 			if (!stopPosting)
 				mHandler.postDelayed(this, 1000);
 		}
-
 	};
 
 	/**
 	 * Connect to the server and save (changed) settings
 	 */
 	private void connect() {
-		SharedPreferences.Editor editor = settings.edit();
-		if (chkSaveUnamePW.isChecked()) {
-			editor.putString("uname", txtUname.getText().toString());
-			editor.putString("password", txtPW.getText().toString());
-		}
-		editor.putBoolean("loginauto", chkLoginAuto.isChecked());
-		editor.putBoolean("saveunamepw", chkSaveUnamePW.isChecked());
-		editor.commit();
-		mService.reloadSettings();
 		// Login if not already or just start logged in view if present
+		Log.d("MoSeS.ACTIVITY", "Connect button pressed.");
 		if (!mService.isLoggedIn()) {
 			mService.login();
-		} else {
-			stopPosting = true;
-			Intent mainDialog = new Intent(MosesActivity.this,
-					LoggedInViewActivity.class);
-			startActivityForResult(mainDialog, 0);
 		}
 	}
 
@@ -167,37 +111,6 @@ public class MosesActivity extends Activity {
 			mService.postLoginHook(null);
 			unbindService(mConnection);
 		}
-	}
-
-	/**
-	 * Initialise controls.
-	 */
-	private void initControls() {
-		txtUname = (EditText) findViewById(R.id.uname);
-		txtPW = (EditText) findViewById(R.id.pword);
-
-		chkLoginAuto = (CheckBox) findViewById(R.id.loginauto);
-		chkSaveUnamePW = (CheckBox) findViewById(R.id.saveunamepw);
-
-		btnconnect = (Button) findViewById(R.id.connect_button);
-		btnconnect.setEnabled(false);
-		btnconnect.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				connect();
-				/*Intent mainDialog = new Intent(MosesActivity.this,
-						MosesPreferences.class);
-				startActivityForResult(mainDialog, 0);*/
-			}
-		});
-
-		btnExit = (Button) findViewById(R.id.exitbutton);
-		btnExit.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
 	}
 
 	/**
@@ -218,38 +131,12 @@ public class MosesActivity extends Activity {
 	}
 
 	/**
-	 * Load configuration from file MoSeS.cfg using SharedPreferences
-	 */
-	private void loadConfig() {
-		settings = PreferenceManager.getDefaultSharedPreferences(mService.getServiceContext());
-		txtUname.setText(settings.getString("uname", ""));
-		txtPW.setText(settings.getString("password", ""));
-		NetworkJSON.url = settings.getString("url",
-				"http://212.72.183.71:80/moses/test.php");
-		chkLoginAuto.setChecked(settings.getBoolean("loginauto", false));
-		chkSaveUnamePW.setChecked(settings.getBoolean("saveunamepw", false));
-
-		try {
-			InstalledExternalApplicationsManager.init(getApplicationContext());
-		} catch (IOException e) {
-			Log.d("MoSeS.LOGIN_ACTIVITY",
-					"Could not load installed applications");
-		}
-	}
-
-	/**
 	 * User comes back from another activity
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (!isMosesServiceRunning())
 			startAndBindService();
 		if (requestCode == 0) {
-			if (resultCode == results.RS_CLOSE.ordinal()) {
-				// User wants to close the app without logging out
-				finish();
-			} else if (resultCode == results.RS_LOGGEDOUT.ordinal()) {
-				overrideAutologin = true;
-			}
 		}
 	}
 
@@ -273,7 +160,7 @@ public class MosesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		initControls();
+		((TextView) findViewById(R.id.success)).setText("Offline");
 	}
 
 	/**
@@ -303,10 +190,36 @@ public class MosesActivity extends Activity {
 	 */
 	private void startAndBindService() {
 		Intent intent = new Intent(this, MosesService.class);
-		if (!isMosesServiceRunning()) {
+		if (!isMosesServiceRunning())
 			startService(intent);
-		}
 		bindService(intent, mConnection, 0);
+	}
+
+	public void settings() {
+		Intent mainDialog = new Intent(MosesActivity.this,
+				MosesPreferences.class);
+		startActivityForResult(mainDialog, 0);
+	}
+
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.item_connect:
+			connect();
+			break;
+		case R.id.item_settings:
+			settings();
+			break;
+		case R.id.item_exit:
+			finish();
+			break;
+		}
+		return true;
 	}
 
 }

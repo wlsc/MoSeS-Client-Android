@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory android:title="@string/account_prefs" >
+        <EditTextPreference
+            android:dialogTitle="@string/dialog_title_username_pref"
+            android:key="username_pref"
+            android:summary="@string/summary_username_pref"
+            android:title="@string/title_username_pref" android:dialogMessage="@string/summary_username_pref"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/device_prefs" >
+    </PreferenceCategory>
+
+</PreferenceScreen>

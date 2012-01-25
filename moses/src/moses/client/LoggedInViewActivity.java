@@ -29,6 +29,9 @@ import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
+ * 
+ * DEPRECATED!!!!!
+ * 
  * This activity resembles the view after logging in.
  * 
  * @author Jaco

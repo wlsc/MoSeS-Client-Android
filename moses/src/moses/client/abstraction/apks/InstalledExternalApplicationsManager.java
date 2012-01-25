@@ -173,7 +173,7 @@ public class InstalledExternalApplicationsManager {
 			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
 			bufWriter = new BufferedWriter(writer);
 			for (InstalledExternalApplication app : apps) {
-				bufWriter.append(app.getPackageName() + "\n" + app.getID() + "\n");
+				bufWriter.append(app.asOnelineString() + "\n");
 			}
 		} catch (IOException e) {
 			throw e;
@@ -205,19 +205,10 @@ public class InstalledExternalApplicationsManager {
 				reader = new FileReader(settingsFile);
 				bufReader = new BufferedReader(reader);
 				String line;
-				String pckg = null;
-				String ID = null;
 				while ((line = bufReader.readLine()) != null) {
-					if (!line.equals("")) {
-						if (pckg == null) {
-							pckg = line;
-						} else {
-							ID = line;
-							InstalledExternalApplication appRef = new InstalledExternalApplication(pckg, ID);
-							manager.addExternalApplication(appRef);
-							pckg = null;
-							ID = null;
-						}
+					if (!line.trim().equals("")) {
+						InstalledExternalApplication appRef = InstalledExternalApplication.fromOnelineString(line);
+						manager.addExternalApplication(appRef);
 					}
 				}
 				return manager;
