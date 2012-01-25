@@ -129,6 +129,10 @@ public class MosesService extends android.app.Service {
 		return mset.filter;
 	}
 
+	public Context getServiceContext() {
+		return this;
+	}
+	
 	/**
 	 * Logged in.
 	 * 
