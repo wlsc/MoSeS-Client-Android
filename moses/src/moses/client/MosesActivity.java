@@ -17,6 +17,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -86,6 +87,7 @@ public class MosesActivity extends Activity {
 			mService = binder.getService();
 			mBound = true;
 			btnconnect.setEnabled(true);
+			loadConfig();
 
 			// We want, that the logged in view is shown to the user after a
 			// login has been successful.
@@ -183,6 +185,9 @@ public class MosesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				connect();
+				/*Intent mainDialog = new Intent(MosesActivity.this,
+						MosesPreferences.class);
+				startActivityForResult(mainDialog, 0);*/
 			}
 		});
 
@@ -216,7 +221,7 @@ public class MosesActivity extends Activity {
 	 * Load configuration from file MoSeS.cfg using SharedPreferences
 	 */
 	private void loadConfig() {
-		settings = getSharedPreferences("MoSeS.cfg", 0);
+		settings = PreferenceManager.getDefaultSharedPreferences(mService.getServiceContext());
 		txtUname.setText(settings.getString("uname", ""));
 		txtPW.setText(settings.getString("password", ""));
 		NetworkJSON.url = settings.getString("url",
@@ -269,7 +274,6 @@ public class MosesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		initControls();
-		loadConfig();
 	}
 
 	/**
