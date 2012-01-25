@@ -16,8 +16,11 @@ import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
 import moses.client.userstudy.UserStudyNotification;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface.OnClickListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -344,6 +347,7 @@ public class MosesService extends android.app.Service implements
 					if(RequestC2DM.C2DMRequestAccepted(j)) {
 						alreadySuccessfullySentC2DMID = true;
 						Toast.makeText(getApplicationContext(), "C2DM send request returned POSITIVE", Toast.LENGTH_LONG).show();
+						Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
 					} else {
 						Toast.makeText(getApplicationContext(), "C2DM send request returned NEGATIVE", Toast.LENGTH_LONG).show();
 						Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
@@ -411,7 +415,16 @@ public class MosesService extends android.app.Service implements
 	}
 
 	private void invokeUserStudyNotificationProcess(String apkId) {
-		// TODO Auto-generated method stub
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		OnClickListener dialogClickListener = new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		};
+		builder.setMessage("User study notification with App id = " + apkId).setPositiveButton("Yes", dialogClickListener)
+		    .setNegativeButton("No", dialogClickListener).show();
+		
 		
 	}
 

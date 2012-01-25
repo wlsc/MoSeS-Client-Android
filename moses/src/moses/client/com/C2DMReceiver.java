@@ -46,9 +46,9 @@ public class C2DMReceiver extends BroadcastReceiver {
 		
 		if(receivedGoodThing) {
 			Intent mosesServiceStartIntent = new Intent(context, MosesService.class);
-			intent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION, apkidString);
+			mosesServiceStartIntent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION, apkidString);
 			// this directs to "onStartCommand(Intent, int, int)" in the service
-			context.startService(intent);
+			context.startService(mosesServiceStartIntent);
 		}
 	}
 
