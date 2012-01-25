@@ -3,10 +3,18 @@
 
     <PreferenceCategory android:title="@string/account_prefs" >
         <EditTextPreference
+            android:dialogMessage="@string/summary_username_pref"
             android:dialogTitle="@string/dialog_title_username_pref"
             android:key="username_pref"
             android:summary="@string/summary_username_pref"
-            android:title="@string/title_username_pref" android:dialogMessage="@string/summary_username_pref"/>
+            android:title="@string/title_username_pref" />
+        <EditTextPreference
+            android:dialogMessage="@string/summary_password_pref"
+            android:dialogTitle="@string/dialog_title_password_pref"
+            android:key="password_pref"
+            android:summary="@string/summary_password_pref"
+            android:title="@string/title_password_pref" />
+        <CheckBoxPreference android:title="@string/title_autologin_pref" android:summary="@string/summary_autologin_pref" android:key="autologin_pref"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/device_prefs" >
     </PreferenceCategory>
