@@ -36,13 +36,13 @@ public class KeepSessionAlive {
 		return bShortenPingTime;
 	}
 
-	public KeepSessionAlive(Executor e) {
+	public KeepSessionAlive(Executor e) { 
 		this(e, null);
 	}
 	
-	public KeepSessionAlive(Executor e, String c2dmId) {
-		setC2DMId(c2dmId);
+	public KeepSessionAlive(Executor e, String c2dmId) { 
 		pinger = new PingSender(e, c2dmId);
+		setC2DMId(c2dmId);
 	}
 
 	public void setC2DMId(String c2dmId) {

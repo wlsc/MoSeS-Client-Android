@@ -139,6 +139,7 @@ public class MosesService extends android.app.Service {
 		mset.loggedIn = true;
 		mset.loggingIn = false;
 		mset.sessionid = sessionid;
+		syncDeviceInformation();
 		new HardwareAbstraction(this).getFilter();
 		keepSessionAlive(true);
 		checkForNewApplications.startChecking(true);
@@ -230,7 +231,6 @@ public class MosesService extends android.app.Service {
 
 	public void postLoginHook(Executor e) {
 		mset.postLoginHook = e;
-		syncDeviceInformation();
 	}
 
 	private void registerC2DM() {
@@ -319,10 +319,12 @@ public class MosesService extends android.app.Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) { 
-		String c2dmIdExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
-		if(c2dmIdExtra != null) { 
-			Toast.makeText(getApplicationContext(), "C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
-			setC2DMReceiverId(c2dmIdExtra);
+		if(intent != null) {
+			String c2dmIdExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
+			if(c2dmIdExtra != null) { 
+				Toast.makeText(getApplicationContext(), "C2DM-ID: " + c2dmIdExtra, Toast.LENGTH_LONG).show();
+				setC2DMReceiverId(c2dmIdExtra);
+			}
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}

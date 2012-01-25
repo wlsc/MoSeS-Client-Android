@@ -46,6 +46,7 @@ public class HardwareAbstraction {
 		private List<Integer> sensors;
 		public HardwareInfo(String deviceID, String sdkbuildversion, List<Integer> sensors) {
 			super();
+			this.deviceID = deviceID;
 			this.sdkbuildversion = sdkbuildversion;
 			this.sensors = sensors;
 		}
