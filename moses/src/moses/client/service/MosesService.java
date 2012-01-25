@@ -4,6 +4,7 @@ import org.json.JSONArray;
 
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.com.C2DMReceiver;
+import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
@@ -14,6 +15,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
@@ -27,7 +29,8 @@ import android.widget.Toast;
  * 
  * @author Jaco Hofmann
  */
-public class MosesService extends android.app.Service {
+public class MosesService extends android.app.Service implements
+		OnSharedPreferenceChangeListener {
 
 	private static final String MOSES_TUD_GOOGLEMAIL_COM = "moses.tud@googlemail.com";
 
@@ -53,9 +56,6 @@ public class MosesService extends android.app.Service {
 		/** The loginauto. */
 		public boolean loginauto;
 
-		/** The saveunamepw. */
-		public boolean saveunamepw;
-
 		/** The username. */
 		public String username;
 
@@ -74,6 +74,8 @@ public class MosesService extends android.app.Service {
 		public JSONArray filter = null;
 
 		public Executor postLoginHook = null;
+		
+		public String url = "http://www.da-sense.de/moses/test.php";
 
 	}
 
@@ -106,11 +108,9 @@ public class MosesService extends android.app.Service {
 	 */
 	private void initConfig() {
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		mset.saveunamepw = settingsFile.getBoolean("saveunamepw", false);
-		mset.loginauto = settingsFile.getBoolean("loginauto", false);
-		mset.username = settingsFile.getString("uname", "");
-		mset.password = settingsFile.getString("password", "");
-		Log.d("MoSeS.SERVICE", settingsFile.getString("username_pref",""));
+		mset.loginauto = settingsFile.getBoolean("autologin_pref", false);
+		mset.username = settingsFile.getString("username_pref", "");
+		mset.password = settingsFile.getString("password_pref", "");
 		if (mset.loginauto)
 			login();
 	}
@@ -118,7 +118,7 @@ public class MosesService extends android.app.Service {
 	public boolean isAutoLogin() {
 		return mset.loginauto;
 	}
-	
+
 	/**
 	 * Checks if is logged in.
 	 * 
@@ -234,6 +234,9 @@ public class MosesService extends android.app.Service {
 				login();
 			}
 		});
+		NetworkJSON.url = mset.url;
+		PreferenceManager.getDefaultSharedPreferences(this)
+				.registerOnSharedPreferenceChangeListener(this);
 		checkForNewApplications = new CheckForNewApplications(this);
 		registerC2DM();
 		initConfig();
@@ -347,5 +350,12 @@ public class MosesService extends android.app.Service {
 
 	private void showUserStudyNotification(UserStudyNotification notification) {
 
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+			String key) {
+		Log.d("MoSeS.SERVICE", "Settings changed - reloading them");
+		reloadSettings();
 	}
 }

@@ -48,6 +48,7 @@ public class Login {
 		 */
 		@Override
 		public void postExecution(String s) {
+			Log.d("MoSeS.LOGIN", "Returned: " + s);
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
@@ -63,7 +64,6 @@ public class Login {
 			} catch (JSONException e) {
 				this.handleException(e);
 			}
-
 		}
 
 		/*

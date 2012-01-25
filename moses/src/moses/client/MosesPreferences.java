@@ -10,5 +10,6 @@ public class MosesPreferences extends PreferenceActivity {
 
 		addPreferencesFromResource(R.xml.moses_pref);
 	}
+
 	
 }

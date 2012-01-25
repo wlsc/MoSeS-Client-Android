@@ -27,5 +27,10 @@
     <string name="title_username_pref">Username</string>
     <string name="device_prefs">Device settings</string>
     <string name="settings_button">Settings</string>
+    <string name="title_autologin_pref">Login automatically?</string>
+    <string name="summary_autologin_pref">Please tick this checkbox if you want to login to the service on each program start.</string>
+    <string name="dialog_title_password_pref">Password</string>
+    <string name="summary_password_pref">Please enter your MoSeS password.</string>
+    <string name="title_password_pref">Password</string>
 
 </resources>

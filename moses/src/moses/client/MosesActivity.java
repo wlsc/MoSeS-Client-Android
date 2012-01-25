@@ -57,7 +57,6 @@ public class MosesActivity extends Activity {
 			mService.postLoginHook(new Executor() {
 				@Override
 				public void execute() {
-					Log.d("MoSeS.ACTIVITY", "ONLINE");
 					((TextView) findViewById(R.id.success)).setText("Online");
 				}
 			});
@@ -161,6 +160,7 @@ public class MosesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		((TextView) findViewById(R.id.success)).setText("Offline");
 	}
 
 	/**
