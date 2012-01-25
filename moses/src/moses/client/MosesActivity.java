@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -161,6 +162,15 @@ public class MosesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		((TextView) findViewById(R.id.success)).setText("Offline");
+		((Button)findViewById(R.id.testfield_button)).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent mainDialog = new Intent(MosesActivity.this,
+						LoggedInViewActivity.class);
+				startActivityForResult(mainDialog, 0);
+			}
+		});
 	}
 
 	/**

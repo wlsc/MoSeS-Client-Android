@@ -3,6 +3,12 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/testfield_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/testfield_button" />
 
     <TextView
         android:id="@+id/success"

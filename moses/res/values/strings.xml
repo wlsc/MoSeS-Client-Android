@@ -32,5 +32,6 @@
     <string name="dialog_title_password_pref">Password</string>
     <string name="summary_password_pref">Please enter your MoSeS password.</string>
     <string name="title_password_pref">Password</string>
+    <string name="testfield_button">Testfield</string>
 
 </resources>
