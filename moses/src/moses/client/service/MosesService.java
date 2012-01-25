@@ -110,10 +110,15 @@ public class MosesService extends android.app.Service {
 		mset.loginauto = settingsFile.getBoolean("loginauto", false);
 		mset.username = settingsFile.getString("uname", "");
 		mset.password = settingsFile.getString("password", "");
+		Log.d("MoSeS.SERVICE", settingsFile.getString("username_pref",""));
 		if (mset.loginauto)
 			login();
 	}
 
+	public boolean isAutoLogin() {
+		return mset.loginauto;
+	}
+	
 	/**
 	 * Checks if is logged in.
 	 * 
@@ -168,6 +173,7 @@ public class MosesService extends android.app.Service {
 	public void login() {
 		if (isOnline()) {
 			if (!mset.loggedIn && !mset.loggingIn) {
+				Log.d("MoSeS.SERVICE", "Logging in...");
 				mset.loggingIn = true;
 				new Login(mset.username, mset.password, this, new Executor() {
 					@Override

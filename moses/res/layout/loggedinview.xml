@@ -36,11 +36,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/gethw_button" />
-
-    <TextView
-        android:id="@+id/success"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <Button
         android:id="@+id/ping_button"
