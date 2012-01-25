@@ -4,6 +4,9 @@ import org.json.JSONArray;
 
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.com.C2DMReceiver;
+import moses.client.com.ReqTaskExecutor;
+import moses.client.com.NetworkJSON.BackgroundException;
+import moses.client.com.requests.RequestC2DM;
 import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
@@ -297,8 +300,29 @@ public class MosesService extends android.app.Service {
 		}
 		if (setNewC2DMID) {
 			this.c2dmRegistrationId = registrationId;
-			cKeepAlive.setC2DMId(registrationId);
+			sendC2DMIdToServer(registrationId);
 		}
+	}
+
+	//TODO: make very sure that the id is really sent to the server!
+	//TODO: what if session id is yet unknown?
+	private void sendC2DMIdToServer(String registrationId) {
+		RequestC2DM request = new RequestC2DM(new ReqTaskExecutor() {
+			@Override
+			public void updateExecution(BackgroundException c) {
+			}
+			@Override
+			public void postExecution(String s) {
+				//request sent!
+			}
+			@Override
+			public void handleException(Exception e) {
+				//TODO: make very sure that the id is really sent to the server!
+				Toast.makeText(getApplicationContext(), "sendC2DM failed: "+e.getMessage(), Toast.LENGTH_LONG).show();
+			}
+		}, getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
+		
+		request.send();
 	}
 
 	/**
