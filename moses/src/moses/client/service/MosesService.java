@@ -442,7 +442,7 @@ public class MosesService extends android.app.Service implements
 			Intent intent = new Intent(this, ViewUserStudiesActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, notification.getApplication().getID());
-			intent.putExtra("sid", getSessionID()); //TODO: preliminary
+			intent.putExtra("sid", getSessionID()); //TODO: passing session id: should be handled differently later
 			Log.i("MoSeS.Service", "starting intent to display user study notification");
 			this.startActivity(intent);
 		} else {
