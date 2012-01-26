@@ -59,6 +59,8 @@
         </activity>
         <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
         </activity>
+        <activity android:name="moses.client.ViewUserStudiesActivity" >
+        </activity>
         <activity android:name="moses.client.service.helpers.NotifyAboutNewApksActivity" >
         </activity>
         <activity android:name="moses.client.MosesPreferences" >

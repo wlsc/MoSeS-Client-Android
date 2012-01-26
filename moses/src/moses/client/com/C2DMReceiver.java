@@ -35,12 +35,6 @@ public class C2DMReceiver extends BroadcastReceiver {
 		if(messagetype != null) {
 			if(apkidString != null) {
 				Log.i("MoSeS.C2DM", "User study notification received!! APK ID = " + apkidString);
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
-				Toast.makeText(context, "User study notification received!! APK ID = " + apkidString, Toast.LENGTH_LONG).show();
 				receivedGoodThing = true;
 			} else {
 				Log.i("MoSeS.C2DM", "User study notification received but bad apkid (null)");

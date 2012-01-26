@@ -54,7 +54,7 @@ public class UserstudyNotificationManager {
 			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
 			bufWriter = new BufferedWriter(writer);
 			for (UserStudyNotification notification : notifications) {
-//				bufWriter.append(notification.asOnelineString() + "\n");TODO:
+				bufWriter.append(notification.asOnelineString() + "\n");
 			}
 		} catch (IOException e) {
 			throw e;
@@ -88,8 +88,8 @@ public class UserstudyNotificationManager {
 				String line;
 				while ((line = bufReader.readLine()) != null) {
 					if (!line.trim().equals("")) {
-//						UserStudyNotification notification = UserStudyNotification.fromOnelineString(line);TODO:
-//						manager.addNotification(notification);//TODO:
+						UserStudyNotification notification = UserStudyNotification.fromOnelineString(line);
+						manager.addNotification(notification);
 					}
 				}
 				return manager;
@@ -109,7 +109,34 @@ public class UserstudyNotificationManager {
 	}
 
 	public void addNotification(UserStudyNotification notification) {
-		notifications.add(notification);
+		if(getNotificationForApkId(notification.getApplication().getID())!= null) {
+			removeNotificationWithApkId(notification.getApplication().getID());
+			notifications.add(notification);
+		} else {
+			notifications.add(notification);
+		}
 		//TODO: notify view?
+	}
+
+	private void removeNotificationWithApkId(String id) {
+		UserStudyNotification notificationToRemove = null;
+		for(UserStudyNotification notification: notifications) {
+			if(notification.getApplication().getID().equals(id)) {
+				notificationToRemove = notification;
+			}
+		}
+		
+		if(notificationToRemove != null) {
+			notifications.remove(notificationToRemove);
+		}
+	}
+
+	public UserStudyNotification getNotificationForApkId(String userstudyId) {
+		for(UserStudyNotification notification: notifications) {
+			if(notification.getApplication().getID().equals(userstudyId)) {
+				return notification;
+			}
+		}
+		return null;
 	}
 }

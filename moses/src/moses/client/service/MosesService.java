@@ -1,10 +1,14 @@
 package moses.client.service;
 
+import java.io.IOException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import moses.client.ViewUserStudiesActivity;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.com.C2DMReceiver;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.NetworkJSON.BackgroundException;
@@ -15,7 +19,9 @@ import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
+import moses.client.service.helpers.NotifyAboutNewApksActivity;
 import moses.client.userstudy.UserStudyNotification;
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -408,23 +414,40 @@ public class MosesService extends android.app.Service implements
 			//if this startCommand was meant to notify about user study
 			if (userStudyNotificationExtra != null) {
 				String apkId = userStudyNotificationExtra;
-				invokeUserStudyNotificationProcess(apkId);
+				handleNeUserStudyNotificationFor(apkId);
 			}
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
 
-	private void invokeUserStudyNotificationProcess(String apkId) {
-//		AlertDialog ad = new AlertDialog.Builder(this).create();  
-//		ad.setCancelable(false); // This blocks the 'BACK' button  
-//		ad.setMessage("Notification about user study; Apk id: " + apkId);  
-//		ad.setButton("OK", new DialogInterface.OnClickListener() {  
-//		    @Override  
-//		    public void onClick(DialogInterface dialog, int which) {  
-//		        dialog.dismiss();                      
-//		    }  
-//		});  
-//		ad.show();  
+	private void handleNeUserStudyNotificationFor(String apkId) {
+		Log.i("MoSeS.Service", "saving user study notification to the manager");
+		if(UserstudyNotificationManager.getInstance() == null) {
+			try {
+				UserstudyNotificationManager.init(this);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(UserstudyNotificationManager.getInstance() != null) {
+			UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(apkId));
+			UserstudyNotificationManager.getInstance().addNotification(notification);
+			try {
+				UserstudyNotificationManager.getInstance().saveToDisk(getApplicationContext());
+			} catch (IOException e) {
+				Log.e("MoSeS", "Error when saving user study notifications");
+			}
+			
+			Intent intent = new Intent(this, ViewUserStudiesActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, notification.getApplication().getID());
+			intent.putExtra("sid", getSessionID()); //TODO: preliminary
+			Log.i("MoSeS.Service", "starting intent to display user study notification");
+			this.startActivity(intent);
+		} else {
+			Log.e("MoSeS.Service", "cannot display user study notification because user notification manager could not be initialized.");
+		}
 	}
 
 	@Override

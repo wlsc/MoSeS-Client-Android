@@ -105,5 +105,5 @@ public class ViewInstalledApplicationsActivity extends Activity {
 		}
 		return stackTrace;
 	}
-
+	
 }

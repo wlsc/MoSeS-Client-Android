@@ -39,25 +39,13 @@ public class UserStudyNotification {
 		//TODO: Meldung an Server
 	}
 
-//	public static UserStudyNotification fromOnelineString(String line) {
-//		String externalApplicationOnelineString = line;
-//		int lastSeparator = -2;
-//		return null; //TODO
-//		while((lastSeparator = line.indexOf(SEPARATOR)))
-//		statusString = line.sub
-//		
-//		return ExternalApplication.fromOnelineString(externalApplicationOnelineString);
-//	}
-//
-//	public String asOnelineString() {
-//		return application.asOnelineString()+SEPARATOR+this.status.toString()+this.date.getTime();
-//	}
-//	
-//	public static UserStudyNotification fromOnelineString(String s) {
-//		String[] split = s.split(UserStudyNotification.SEPARATOR);
-//		
-//		Status.
-//		return new UserStudyNotification(application, split[1], Long.parseLong(split[2]));
-//	}
+	public String asOnelineString() {
+		return application.asOnelineString()+SEPARATOR+this.status.toString()+this.date.getTime();
+	}
+	
+	public static UserStudyNotification fromOnelineString(String s) {
+		String[] split = s.split(UserStudyNotification.SEPARATOR);
+		return new UserStudyNotification(ExternalApplication.fromOnelineString(split[0]), Status.valueOf(split[1]), new Date(Long.parseLong(split[2])));
+	}
 
 }

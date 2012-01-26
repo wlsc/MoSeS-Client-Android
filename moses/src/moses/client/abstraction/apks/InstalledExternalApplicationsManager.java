@@ -186,6 +186,7 @@ public class InstalledExternalApplicationsManager {
 		}
 	}
 
+	static boolean reset = true;
 	/**
 	 * loads an InstalledExternalApplicationsManager from the standard file (see
 	 * Util.getAppdatabaseFile). If this file does not exist, this method
@@ -198,7 +199,7 @@ public class InstalledExternalApplicationsManager {
 	public static InstalledExternalApplicationsManager loadAppDatabase(Context context) throws IOException {
 		File settingsFile = FileLocationUtil.getAppDatabaseFile(context);
 		InstalledExternalApplicationsManager manager = new InstalledExternalApplicationsManager();
-		if (settingsFile.exists()) {
+		if (!reset && settingsFile.exists()) {
 			FileReader reader = null;
 			BufferedReader bufReader = null;
 			try {
