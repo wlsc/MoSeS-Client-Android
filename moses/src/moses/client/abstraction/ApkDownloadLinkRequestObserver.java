@@ -15,7 +15,8 @@ public interface ApkDownloadLinkRequestObserver {
 	 * @param the
 	 *            external application object which belongs to the download link
 	 */
-	public void apkDownloadLinkRequestFinished(String url, ExternalApplication app);
+	public void apkDownloadLinkRequestFinished(String url,
+			ExternalApplication app);
 
 	/**
 	 * Notifies the observer that the request failed

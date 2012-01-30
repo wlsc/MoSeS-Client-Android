@@ -2,9 +2,6 @@ package moses.client.com.requests;
 
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
-import moses.client.service.MosesService;
-import moses.client.service.helpers.Executor;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,15 +13,18 @@ import org.json.JSONObject;
  */
 
 public class RequestC2DM {
-	public static boolean C2DMRequestAccepted(JSONObject j) throws JSONException {
+	public static boolean C2DMRequestAccepted(JSONObject j)
+			throws JSONException {
 		String messageTitle = j.getString("MESSAGE");
-		return messageTitle.equals("C2DM") && j.getString("STATUS").equals("SUCCESS");
+		return messageTitle.equals("C2DM")
+				&& j.getString("STATUS").equals("SUCCESS");
 	}
 
 	private JSONObject j;
 	ReqTaskExecutor e;
 
-	public RequestC2DM(ReqTaskExecutor e, String sessionID, String deviceId, String c2dmId) {
+	public RequestC2DM(ReqTaskExecutor e, String sessionID, String deviceId,
+			String c2dmId) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -38,7 +38,7 @@ public class RequestC2DM {
 	}
 
 	public void send() {
-		
+
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;
 		req = task.new APIRequest();

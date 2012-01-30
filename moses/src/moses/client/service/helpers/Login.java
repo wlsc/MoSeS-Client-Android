@@ -1,7 +1,7 @@
 package moses.client.service.helpers;
 
 import java.net.UnknownHostException;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
@@ -105,16 +105,16 @@ public class Login {
 	private String pw;
 
 	/** The e. */
-	private LinkedList<Executor> postExecuteSuccess;
-	private LinkedList<Executor> postExecuteFailure;
-	private LinkedList<Executor> loginStart;
-	private LinkedList<Executor> loginEnd;
+	private ConcurrentLinkedQueue<Executor> postExecuteSuccess;
+	private ConcurrentLinkedQueue<Executor> postExecuteFailure;
+	private ConcurrentLinkedQueue<Executor> loginStart;
+	private ConcurrentLinkedQueue<Executor> loginEnd;
 	
-	private static long lastLoggedIn = -1;
+	public static long lastLoggedIn = -1;
 	
 	private final long sessionAliveTime = 120000;
 
-	private void executeAll(LinkedList<Executor> el) {
+	private void executeAll(ConcurrentLinkedQueue<Executor> el) {
 		for(Executor e : el) {
 			e.execute();
 		}
@@ -148,8 +148,8 @@ public class Login {
 	 *            the e
 	 */
 	public Login(String username, String password, 
-			LinkedList<Executor> postExecuteSuccess, LinkedList<Executor> postExecuteFailure,
-			LinkedList<Executor> loginStart, LinkedList<Executor> loginEnd) {
+			ConcurrentLinkedQueue<Executor> postExecuteSuccess, ConcurrentLinkedQueue<Executor> postExecuteFailure,
+			ConcurrentLinkedQueue<Executor> loginStart, ConcurrentLinkedQueue<Executor> loginEnd) {
 		this.pw = password;
 		this.uname = username;
 		this.postExecuteSuccess = postExecuteSuccess;

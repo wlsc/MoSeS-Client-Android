@@ -2,7 +2,6 @@ package moses.client;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 
 public class MosesPreferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
@@ -11,5 +10,4 @@ public class MosesPreferences extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.moses_pref);
 	}
 
-	
 }

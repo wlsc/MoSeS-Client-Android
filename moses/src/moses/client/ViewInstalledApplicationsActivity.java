@@ -32,8 +32,8 @@ public class ViewInstalledApplicationsActivity extends Activity {
 	}
 
 	private void refreshInstalledApplications() {
-		installedApps = new LinkedList<InstalledExternalApplication>(InstalledExternalApplicationsManager.getDefault()
-			.getApps());
+		installedApps = new LinkedList<InstalledExternalApplication>(
+				InstalledExternalApplicationsManager.getDefault().getApps());
 		populateList(installedApps);
 	}
 
@@ -77,8 +77,10 @@ public class ViewInstalledApplicationsActivity extends Activity {
 		try {
 			app.startApplication(this);
 		} catch (NameNotFoundException e) {
-			Toast.makeText(this.getApplicationContext(),
-				"app was not found - maybe because it was uninstalled since last database refresh", Toast.LENGTH_LONG).show();
+			Toast.makeText(
+					this.getApplicationContext(),
+					"app was not found - maybe because it was uninstalled since last database refresh",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -92,8 +94,9 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			items[counter] = app.getName();
 			counter++;
 		}
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.installedapplistitem,
-			R.id.installedAppListItemText, items) {
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+				R.layout.installedapplistitem, R.id.installedAppListItemText,
+				items) {
 		};
 		listView.setAdapter(arrayAdapter);
 	}
@@ -105,5 +108,5 @@ public class ViewInstalledApplicationsActivity extends Activity {
 		}
 		return stackTrace;
 	}
-	
+
 }

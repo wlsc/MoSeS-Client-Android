@@ -1,15 +1,10 @@
 package moses.client.com;
 
 import moses.client.service.MosesService;
-import moses.client.service.MosesService.LocalBinder;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
@@ -21,31 +16,41 @@ public class C2DMReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		if (intent.getAction().equals("com.google.android.c2dm.intent.REGISTRATION")) {
+		if (intent.getAction().equals(
+				"com.google.android.c2dm.intent.REGISTRATION")) {
 			handleRegistration(context, intent);
-		} else if (intent.getAction().equals("com.google.android.c2dm.intent.RECEIVE")) {
+		} else if (intent.getAction().equals(
+				"com.google.android.c2dm.intent.RECEIVE")) {
 			handleMessage(context, intent);
 		}
 	}
 
 	private void handleMessage(Context context, Intent intent) {
-		String messagetype = intent.getExtras().getString(C2DN_MESSAGETYPE_FIELD);
-		String apkidString = intent.getExtras().getString(C2DN_USERSTUDY_APKID_FIELD);
+		String messagetype = intent.getExtras().getString(
+				C2DN_MESSAGETYPE_FIELD);
+		String apkidString = intent.getExtras().getString(
+				C2DN_USERSTUDY_APKID_FIELD);
 		boolean receivedGoodThing = false;
-		if(messagetype != null) {
-			if(apkidString != null) {
-				Log.i("MoSeS.C2DM", "User study notification received!! APK ID = " + apkidString);
+		if (messagetype != null) {
+			if (apkidString != null) {
+				Log.i("MoSeS.C2DM",
+						"User study notification received!! APK ID = "
+								+ apkidString);
 				receivedGoodThing = true;
 			} else {
-				Log.i("MoSeS.C2DM", "User study notification received but bad apkid (null)");
+				Log.i("MoSeS.C2DM",
+						"User study notification received but bad apkid (null)");
 			}
 		} else {
-			Log.i("MoSeS.C2DM", "Notification received but bad MESSAGE String (null)");
+			Log.i("MoSeS.C2DM",
+					"Notification received but bad MESSAGE String (null)");
 		}
-		
-		if(receivedGoodThing) {
-			Intent mosesServiceStartIntent = new Intent(context, MosesService.class);
-			mosesServiceStartIntent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION, apkidString);
+
+		if (receivedGoodThing) {
+			Intent mosesServiceStartIntent = new Intent(context,
+					MosesService.class);
+			mosesServiceStartIntent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION,
+					apkidString);
 			// this directs to "onStartCommand(Intent, int, int)" in the service
 			context.startService(mosesServiceStartIntent);
 		}
@@ -79,7 +84,8 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private void sendRegisteredMsgToService(final String registrationId, Context context) {
+	private void sendRegisteredMsgToService(final String registrationId,
+			Context context) {
 		Intent intent = new Intent(context, MosesService.class);
 		intent.putExtra(EXTRAFIELD_C2DM_ID, registrationId);
 		// this directs to "onStartCommand(Intent, int, int)" in the service

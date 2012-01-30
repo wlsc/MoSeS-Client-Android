@@ -73,19 +73,17 @@ public class ApkMethods {
 		}
 	}
 
-	public static void getDownloadLinkFor(ExternalApplication app,
-			ApkDownloadLinkRequestObserver observer) {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+	public static void getDownloadLinkFor(final ExternalApplication app,
+			final ApkDownloadLinkRequestObserver observer) {
 
-		final RequestDownloadlink rGetListAPK = new RequestDownloadlink(
-				new RequestDownloadLinkExecutor(observer, app), sessionID,
-				app.getID());
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
 
 				@Override
 				public void execute() {
-					rGetListAPK.send();
+					new RequestDownloadlink(new RequestDownloadLinkExecutor(
+							observer, app), RequestLogin.getSessionID(), app
+							.getID()).send();
 				}
 			});
 	}
@@ -145,13 +143,18 @@ public class ApkMethods {
 		}
 	}
 
-	public static void getExternalApplications(ApkListRequestObserver observer) {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+	public static void getExternalApplications(
+			final ApkListRequestObserver observer) {
 
-		RequestGetListAPK rGetListAPK = new RequestGetListAPK(
-				new RequestApkListExecutor(observer), sessionID);
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		rGetListAPK.send();
+				@Override
+				public void execute() {
+					new RequestGetListAPK(new RequestApkListExecutor(observer),
+							RequestLogin.getSessionID()).send();
+				}
+			});
 	}
 
 	/**

@@ -9,5 +9,5 @@ public class C2DMConfig {
 	 * the messagetype for displaying c2dm messages as toast
 	 */
 	public static final String MSGTYPE_TOAST = "arg";
-	
+
 }

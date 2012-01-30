@@ -21,17 +21,13 @@ import moses.client.com.ReqTaskExecutor;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.requests.RequestGetApkInfo;
 import moses.client.service.MosesService;
-import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -320,8 +316,6 @@ public class ViewUserStudiesActivity extends Activity implements
 	}
 
 	private void requestExternalApplications() {
-		List<ExternalApplication> apps;
-
 		ApkMethods.getExternalApplications(this);
 	}
 

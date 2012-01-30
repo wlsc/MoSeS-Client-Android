@@ -1,7 +1,7 @@
 package moses.client.service;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,15 +83,15 @@ public class MosesService extends android.app.Service implements
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
-		public LinkedList<Executor> postLoginSuccessHook = new LinkedList<Executor>();
+		public ConcurrentLinkedQueue<Executor> postLoginSuccessHook = new ConcurrentLinkedQueue<Executor>();
 
-		public LinkedList<Executor> postLoginFailureHook = new LinkedList<Executor>();
+		public ConcurrentLinkedQueue<Executor> postLoginFailureHook = new ConcurrentLinkedQueue<Executor>();
 
-		public LinkedList<Executor> loginStartHook = new LinkedList<Executor>();
+		public ConcurrentLinkedQueue<Executor> loginStartHook = new ConcurrentLinkedQueue<Executor>();
 
-		public LinkedList<Executor> loginEndHook = new LinkedList<Executor>();
+		public ConcurrentLinkedQueue<Executor> loginEndHook = new ConcurrentLinkedQueue<Executor>();
 
-		public LinkedList<Executor> postLogoutHook = new LinkedList<Executor>();
+		public ConcurrentLinkedQueue<Executor> postLogoutHook = new ConcurrentLinkedQueue<Executor>();
 
 		public String url = "http://www.da-sense.de/moses/test.php";
 
@@ -111,9 +111,9 @@ public class MosesService extends android.app.Service implements
 	private String c2dmRegistrationId;
 
 	private boolean alreadySuccessfullySentC2DMID;
-	
+
 	private static MosesService thisInstance = null;
-	
+
 	public static MosesService getInstance() {
 		return thisInstance;
 	}
@@ -172,8 +172,6 @@ public class MosesService extends android.app.Service implements
 		mset.loggedIn = true;
 		mset.loggingIn = false;
 		mset.sessionid = sessionid;
-		syncDeviceInformation();
-		new HardwareAbstraction(this).getFilter();
 		checkForNewApplications.startChecking(true);
 		if (!alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null
 				&& !(getSessionID().equals("") || getSessionID() == null)) {
@@ -253,9 +251,11 @@ public class MosesService extends android.app.Service implements
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 		checkForNewApplications = new CheckForNewApplications(this);
+
 		registerC2DM();
 		initConfig();
-		login();
+		syncDeviceInformation();
+		new HardwareAbstraction(MosesService.this).getFilter();
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
@@ -460,8 +460,7 @@ public class MosesService extends android.app.Service implements
 	 *            George Lucas.
 	 */
 	private void syncDeviceInformation() {
-		HardwareAbstraction hw = new HardwareAbstraction(this);
-		hw.syncDeviceInformation(getSessionID());
+		new HardwareAbstraction(this).syncDeviceInformation();
 	}
 
 	public boolean isOnline() {

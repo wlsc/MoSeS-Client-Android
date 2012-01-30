@@ -1,7 +1,5 @@
 package moses.client.com.requests;
 
-import java.util.List;
-
 import moses.client.abstraction.HardwareAbstraction.HardwareInfo;
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
@@ -30,7 +28,8 @@ public class RequestSetHardwareParameters {
 
 	ReqTaskExecutor e;
 
-	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, String sessionID) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo,
+			String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {

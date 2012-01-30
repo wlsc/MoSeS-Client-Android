@@ -4,19 +4,13 @@ import java.io.IOException;
 
 import moses.client.abstraction.APKAbstraction;
 import moses.client.abstraction.HardwareAbstraction;
-import moses.client.abstraction.PingSender;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
-import moses.client.service.helpers.CheckForNewApplications;
-import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.NotifyAboutNewApksActivity;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -25,7 +19,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**

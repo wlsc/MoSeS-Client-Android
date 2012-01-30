@@ -22,7 +22,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -247,19 +246,18 @@ public class HardwareAbstraction {
 	 * stored for this device
 	 */
 	public void getFilter() {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
-
 		// Connect to the service
 		Intent intent = new Intent(appContext, MosesService.class);
 		appContext.bindService(intent, mConnection, 0);
 
-		final RequestGetFilter rGetFilter = new RequestGetFilter(
-				new ReqClassGetFilter(), sessionID, extractDeviceId());
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
 
 				@Override
 				public void execute() {
+					final RequestGetFilter rGetFilter = new RequestGetFilter(
+							new ReqClassGetFilter(), RequestLogin
+									.getSessionID(), extractDeviceId());
 					rGetFilter.send();
 				}
 			});
@@ -270,11 +268,16 @@ public class HardwareAbstraction {
 	 */
 	public void getHardwareParameters() {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		RequestGetHardwareParameters rGetHWParams = new RequestGetHardwareParameters(
-				new ReqClassGetHWParams(), sessionID, extractDeviceId());
-		rGetHWParams.send();
+				@Override
+				public void execute() {
+					new RequestGetHardwareParameters(new ReqClassGetHWParams(),
+							RequestLogin.getSessionID(), extractDeviceId())
+							.send();
+				}
+			});
 	}
 
 	/**
@@ -282,14 +285,15 @@ public class HardwareAbstraction {
 	 */
 	public void setFilter(final List<Integer> filter) {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		
+
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
 
 				@Override
 				public void execute() {
 					RequestSetFilter rSetFilter = new RequestSetFilter(
-							new ReqClassSetFilter(), RequestLogin.getSessionID(), extractDeviceId(), filter);
+							new ReqClassSetFilter(), RequestLogin
+									.getSessionID(), extractDeviceId(), filter);
 					rSetFilter.send();
 				}
 			});
@@ -328,11 +332,16 @@ public class HardwareAbstraction {
 	 * @param c2dmRegistrationId
 	 * @param sessionID
 	 */
-	public void syncDeviceInformation(String sessionID) {
-		HardwareInfo hwInfo = retrieveHardwareParameters();
+	public void syncDeviceInformation() {
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
-				new ReqClassSetHWParams(), hwInfo, sessionID);
-		rSetHWParams.send();
+				@Override
+				public void execute() {
+					HardwareInfo hwInfo = retrieveHardwareParameters();
+					new RequestSetHardwareParameters(new ReqClassSetHWParams(),
+							hwInfo, RequestLogin.getSessionID()).send();
+				}
+			});
 	}
 }

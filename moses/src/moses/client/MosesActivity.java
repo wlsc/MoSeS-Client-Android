@@ -19,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -76,9 +75,9 @@ public class MosesActivity extends Activity {
 			((TextView) findViewById(R.id.success)).setText("Connected");
 		}
 	};
-	
+
 	Executor postLogoutHook = new Executor() {
-		
+
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "postLogoutHook");
@@ -111,7 +110,7 @@ public class MosesActivity extends Activity {
 			mService.registerLoginStartHook(loginStartHook);
 
 			mService.registerLoginEndHook(loginEndHook);
-			
+
 			mService.registerPostLogoutHook(postLogoutHook);
 
 			// If we're already logged in or the user wants auto login start
@@ -132,9 +131,9 @@ public class MosesActivity extends Activity {
 			mService.unregisterLoginStartHook(loginStartHook);
 
 			mService.unregisterLoginEndHook(loginEndHook);
-			
+
 			mService.unregisterPostLogoutHook(postLogoutHook);
-			
+
 			mBound = false;
 		}
 	};

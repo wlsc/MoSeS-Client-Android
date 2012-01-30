@@ -1,7 +1,7 @@
 package moses.client.service.helpers;
 
 import java.net.UnknownHostException;
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
-import android.widget.Toast;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -56,6 +55,7 @@ public class Logout {
 				// TODO: Handle unsuccessful logout
 				if (j.getString("MESSAGE").equals("LOGOUT_RESPONSE")) {
 					serv.loggedOut();
+					Login.lastLoggedIn = -1;
 					for(Executor ex : e) {
 						ex.execute();
 					}
@@ -86,7 +86,7 @@ public class Logout {
 	private MosesService serv;
 
 	/** The e. */
-	private LinkedList<Executor> e;
+	private ConcurrentLinkedQueue<Executor> e;
 
 	/**
 	 * Instantiates a new logout.
@@ -96,7 +96,7 @@ public class Logout {
 	 * @param e
 	 *            the e
 	 */
-	public Logout(MosesService serv, LinkedList<Executor> e) {
+	public Logout(MosesService serv, ConcurrentLinkedQueue<Executor> e) {
 		this.serv = serv;
 		this.e = e;
 		new RequestLogout(new LogoutFunc(), serv.getSessionID()).send();

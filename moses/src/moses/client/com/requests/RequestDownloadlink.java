@@ -2,8 +2,6 @@ package moses.client.com.requests;
 
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
-import moses.client.service.MosesService;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +13,8 @@ import org.json.JSONObject;
  */
 
 public class RequestDownloadlink {
-	public static boolean downloadLinkRequestAccepted(JSONObject j) throws JSONException {
+	public static boolean downloadLinkRequestAccepted(JSONObject j)
+			throws JSONException {
 		String messageTitle = j.getString("MESSAGE");
 		return messageTitle.equals("DOWNLOAD_RESPONSE");
 	}

@@ -8,6 +8,8 @@ import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestGetListAPK;
 import moses.client.com.requests.RequestLogin;
+import moses.client.service.MosesService;
+import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,12 +116,16 @@ public class APKAbstraction {
 	 * available APKs (for the specified filter
 	 */
 	public void getAPKs() {
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
-		RequestGetListAPK rGetListAPK = new RequestGetListAPK(
-				new ReqClassGetListAPK(), sessionID);
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		rGetListAPK.send();
+				@Override
+				public void execute() {
+					new RequestGetListAPK(new ReqClassGetListAPK(),
+							RequestLogin.getSessionID()).send();
+				}
+			});
 	}
 
 }

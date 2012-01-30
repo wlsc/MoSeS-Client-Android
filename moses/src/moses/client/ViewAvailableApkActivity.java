@@ -26,8 +26,9 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewAvailableApkActivity extends Activity implements ApkDownloadObserver, ApkListRequestObserver,
-	ApkDownloadLinkRequestObserver {
+public class ViewAvailableApkActivity extends Activity implements
+		ApkDownloadObserver, ApkListRequestObserver,
+		ApkDownloadLinkRequestObserver {
 
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
@@ -87,49 +88,63 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 	}
 
 	@Override
-	public void apkDownloadLinkRequestFinished(String url, ExternalApplication app) {
+	public void apkDownloadLinkRequestFinished(String url,
+			ExternalApplication app) {
 		// fire download of apk
 		try {
-			ApkDownloadTask downloadTask = new ApkDownloadTask(this, new URL(url), this.getApplicationContext(),
-				generateApkFileNameFor(app));
+			ApkDownloadTask downloadTask = new ApkDownloadTask(this, new URL(
+					url), this.getApplicationContext(),
+					generateApkFileNameFor(app));
 			downloadTask.setExternalApplicationReference(app);
 			downloadTask.execute();
 		} catch (MalformedURLException e) {
-			Toast.makeText(getApplicationContext(),
-				"Server sent malformed url; could not download application: " + url, Toast.LENGTH_LONG).show();
+			Toast.makeText(
+					getApplicationContext(),
+					"Server sent malformed url; could not download application: "
+							+ url, Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void apkDownloadLinkRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Downloadlink request failed:\n" + concatStacktrace(e),
-			Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(),
+				"Downloadlink request failed:\n" + concatStacktrace(e),
+				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
-	public void apkDownloadFinished(ApkDownloadTask downloader, File result, ExternalApplication externalAppRef) {
+	public void apkDownloadFinished(ApkDownloadTask downloader, File result,
+			ExternalApplication externalAppRef) {
 		installDownloadedApk(result, externalAppRef);
 	}
 
 	@Override
 	public void apkDownloadFailed(ApkDownloadTask downloader) {
-		Toast.makeText(getApplicationContext(),
-			"Download failed.\n" + concatStacktrace(downloader.getDownloadException()), Toast.LENGTH_LONG).show();
+		Toast.makeText(
+				getApplicationContext(),
+				"Download failed.\n"
+						+ concatStacktrace(downloader.getDownloadException()),
+				Toast.LENGTH_LONG).show();
 	}
 
-	private void installDownloadedApk(File result, ExternalApplication externalAppRef) {
+	private void installDownloadedApk(File result,
+			ExternalApplication externalAppRef) {
 		ApkMethods.installApk(result, this);
 		try {
 			if (InstalledExternalApplicationsManager.getDefault() == null) {
-				InstalledExternalApplicationsManager.init(getApplicationContext());
+				InstalledExternalApplicationsManager
+						.init(getApplicationContext());
 			}
-			String packageName = ApkMethods.getPackageNameFromApk(result, getApplicationContext());
+			String packageName = ApkMethods.getPackageNameFromApk(result,
+					getApplicationContext());
 
-			InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(packageName,
-				externalAppRef);
-			InstalledExternalApplicationsManager.getDefault().addExternalApplication(installedExternalApp);
+			InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(
+					packageName, externalAppRef);
+			InstalledExternalApplicationsManager.getDefault()
+					.addExternalApplication(installedExternalApp);
 
-			InstalledExternalApplicationsManager.getDefault().saveToDisk(getApplicationContext());
+			InstalledExternalApplicationsManager.getDefault().saveToDisk(
+					getApplicationContext());
 		} catch (IOException e) {
 			// TODO: the package name could not be read from the apk file,
 			// or there was a problem with saving the installed-app-manager. to
@@ -160,8 +175,10 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e.getMessage(),
-			Toast.LENGTH_LONG).show();
+		Toast.makeText(
+				getApplicationContext(),
+				"Error when loading the list of applications: "
+						+ e.getMessage(), Toast.LENGTH_LONG).show();
 	}
 
 	private void populateList(List<ExternalApplication> applications) {
@@ -172,8 +189,8 @@ public class ViewAvailableApkActivity extends Activity implements ApkDownloadObs
 			items[counter] = app.getName();
 			counter++;
 		}
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
-			R.id.apklistitemtext, items) {
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+				R.layout.availableabkslistitem, R.id.apklistitemtext, items) {
 		};
 		listView.setAdapter(arrayAdapter);
 	}

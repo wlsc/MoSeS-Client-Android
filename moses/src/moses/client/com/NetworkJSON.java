@@ -16,7 +16,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 /**
  * This class gives basic request capability.
