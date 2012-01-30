@@ -33,5 +33,12 @@
     <string name="summary_password_pref">Please enter your MoSeS password.</string>
     <string name="title_password_pref">Password</string>
     <string name="testfield_button">Testfield</string>
+    <string name="menu_more">More</string>
+    <string name="menu_exit">Exit</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_connect">Dis-/connect</string>
+    <string name="menu_hardware_info">Hardware infos</string>
+    <string name="list_avail_apps">List installed apps.</string>
+    <string name="browse_avail">Browse available apps.</string>
 
 </resources>

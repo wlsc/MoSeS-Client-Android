@@ -172,7 +172,6 @@ public class MosesService extends android.app.Service implements
 		mset.loggedIn = true;
 		mset.loggingIn = false;
 		mset.sessionid = sessionid;
-		checkForNewApplications.startChecking(true);
 		if (!alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null
 				&& !(getSessionID().equals("") || getSessionID() == null)) {
 			sendC2DMIdToServer(this.c2dmRegistrationId);
@@ -217,7 +216,6 @@ public class MosesService extends android.app.Service implements
 	 */
 	public void logout() {
 		new Logout(this, mset.postLogoutHook);
-		checkForNewApplications.startChecking(false);
 	}
 
 	/*
@@ -256,6 +254,7 @@ public class MosesService extends android.app.Service implements
 		initConfig();
 		syncDeviceInformation();
 		new HardwareAbstraction(MosesService.this).getFilter();
+		checkForNewApplications.startChecking(true);
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 

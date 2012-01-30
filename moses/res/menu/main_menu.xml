@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/item_connect" android:title="Connect"></item>
-    <item android:id="@+id/item_settings" android:title="Settings"></item>
-    <item android:id="@+id/item_exit" android:title="Exit"></item>
+    <item android:id="@+id/item_connect" android:title="@string/menu_connect"></item>
+    <item android:id="@+id/item_settings" android:title="@string/menu_settings"></item>
+    <item android:id="@+id/item_exit" android:title="@string/menu_exit"></item>
+    <item android:id="@+id/item_more" android:title="@string/menu_more">
+        <menu>
+            <item android:id="@+id/item_hardware_info" android:title="@string/menu_hardware_info"/>
+        </menu>
+    </item>
    
 </menu>

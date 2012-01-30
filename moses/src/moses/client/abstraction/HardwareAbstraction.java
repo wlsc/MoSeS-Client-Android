@@ -22,8 +22,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.Sensor;
@@ -113,7 +115,6 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
 					StringBuffer sb = new StringBuffer(256);
 					sb.append("Parameters retrived successfully from server");
@@ -128,6 +129,16 @@ public class HardwareAbstraction {
 						sb.append(ESensor.values()[sensors.getInt(i)]);
 					}
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
+					AlertDialog ad = new AlertDialog.Builder(appContext).create();  
+					ad.setCancelable(false); // This blocks the 'BACK' button  
+					ad.setMessage(sb.toString());  
+					ad.setButton("OK", new DialogInterface.OnClickListener() {  
+					    @Override  
+					    public void onClick(DialogInterface dialog, int which) {  
+					        dialog.dismiss();                      
+					    }  
+					});  
+					ad.show();
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Parameters NOT retrived successfully from server! :(");

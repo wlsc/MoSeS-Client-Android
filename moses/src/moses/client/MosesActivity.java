@@ -1,5 +1,7 @@
 package moses.client;
 
+import moses.client.R.id;
+import moses.client.abstraction.HardwareAbstraction;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
@@ -62,7 +64,6 @@ public class MosesActivity extends Activity {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
 			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
 					.setVisibility(View.VISIBLE);
-			((TextView) findViewById(R.id.success)).setText("Connecting");
 		}
 	};
 
@@ -224,6 +225,34 @@ public class MosesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		initControls();
+	}
+
+	private void initControls() {
+		((Button) findViewById(R.id.btn_browse_available_apps))
+				.setOnClickListener(new Button.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent showAvailableApkList = new Intent(
+								MosesActivity.this,
+								ViewAvailableApkActivity.class);
+						startActivity(showAvailableApkList);
+
+					}
+				});
+
+		((Button) findViewById(R.id.btn_list_installed_apps))
+				.setOnClickListener(new Button.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent showInstalledAppsList = new Intent(
+								MosesActivity.this,
+								ViewInstalledApplicationsActivity.class);
+						startActivity(showInstalledAppsList);
+
+					}
+				});
+
 		((TextView) findViewById(R.id.success)).setText("Offline");
 		((Button) findViewById(R.id.testfield_button))
 				.setOnClickListener(new OnClickListener() {
@@ -266,8 +295,11 @@ public class MosesActivity extends Activity {
 	 */
 	private void startAndBindService() {
 		Intent intent = new Intent(this, MosesService.class);
-		if (!isMosesServiceRunning())
-			startService(intent);
+		if(isMosesServiceRunning() && mBound) {
+			Log.d("MoSeS.ACTIVITY", "Service crashed - restarting.");
+			stopService(intent);
+		}
+		startService(intent);
 		bindService(intent, mConnection, 0);
 	}
 
@@ -286,13 +318,21 @@ public class MosesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_connect:
-			connect();
-			break;
+			if(mBound) {
+				if (mService.isLoggedIn())
+					mService.logout();
+				else
+					connect();
+				break;
+			}
 		case R.id.item_settings:
 			settings();
 			break;
 		case R.id.item_exit:
 			finish();
+			break;
+		case R.id.item_hardware_info:
+			new HardwareAbstraction(this).getHardwareParameters();
 			break;
 		}
 		return true;
