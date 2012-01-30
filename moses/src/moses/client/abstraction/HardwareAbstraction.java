@@ -280,13 +280,19 @@ public class HardwareAbstraction {
 	/**
 	 * This method sends a set_filter Request to the website
 	 */
-	public void setFilter(List<Integer> filter) {
+	public void setFilter(final List<Integer> filter) {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		String sessionID = RequestLogin.getSessionID(); // obtain the session id
+		
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		RequestSetFilter rSetFilter = new RequestSetFilter(
-				new ReqClassSetFilter(), sessionID, extractDeviceId(), filter);
-		rSetFilter.send();
+				@Override
+				public void execute() {
+					RequestSetFilter rSetFilter = new RequestSetFilter(
+							new ReqClassSetFilter(), RequestLogin.getSessionID(), extractDeviceId(), filter);
+					rSetFilter.send();
+				}
+			});
 	}
 
 	/**

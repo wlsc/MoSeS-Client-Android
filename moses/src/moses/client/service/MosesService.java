@@ -274,13 +274,14 @@ public class MosesService extends android.app.Service implements
 	}
 
 	public void registerPostLoginSuccessOneTimeHook(final Executor e) {
-		mset.postLoginSuccessHook.add(new Executor() {
+		Executor n = new Executor() {
 			@Override
 			public void execute() {
 				e.execute();
-				unregisterPostLoginSuccessHook(e);
+				unregisterPostLoginSuccessHook(this);
 			}
-		});
+		};
+		mset.postLoginSuccessHook.add(n);
 	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
