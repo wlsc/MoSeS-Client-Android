@@ -81,7 +81,7 @@ public class MosesService extends android.app.Service implements
 		public boolean loggingIn = false;
 
 		/** Saves the used filter. */
-		public JSONArray filter = null;
+		public JSONArray filter = new JSONArray();
 
 		public LinkedList<Executor> postLoginSuccessHook = new LinkedList<Executor>();
 
@@ -90,7 +90,7 @@ public class MosesService extends android.app.Service implements
 		public LinkedList<Executor> loginStartHook = new LinkedList<Executor>();
 
 		public LinkedList<Executor> loginEndHook = new LinkedList<Executor>();
-		
+
 		public LinkedList<Executor> postLogoutHook = new LinkedList<Executor>();
 
 		public String url = "http://www.da-sense.de/moses/test.php";
@@ -111,6 +111,12 @@ public class MosesService extends android.app.Service implements
 	private String c2dmRegistrationId;
 
 	private boolean alreadySuccessfullySentC2DMID;
+	
+	private static MosesService thisInstance = null;
+	
+	public static MosesService getInstance() {
+		return thisInstance;
+	}
 
 	/**
 	 * Gets the session id.
@@ -194,7 +200,8 @@ public class MosesService extends android.app.Service implements
 			if (!mset.loggedIn && !mset.loggingIn) {
 				Log.d("MoSeS.SERVICE", "Logging in...");
 				mset.loggingIn = true;
-				new Login(mset.username, mset.password, this,
+				Login.setService(this);
+				new Login(mset.username, mset.password,
 						mset.postLoginSuccessHook, mset.postLoginFailureHook,
 						mset.loginStartHook, mset.loginEndHook);
 			}
@@ -233,7 +240,7 @@ public class MosesService extends android.app.Service implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
+		thisInstance = this;
 		registerPostLoginFailureHook(new Executor() {
 
 			@Override
@@ -248,7 +255,17 @@ public class MosesService extends android.app.Service implements
 		checkForNewApplications = new CheckForNewApplications(this);
 		registerC2DM();
 		initConfig();
+		login();
 		Log.d("MoSeS.SERVICE", "Service Created");
+	}
+
+	public void executeLoggedIn(Executor e) {
+		if (isLoggedIn())
+			e.execute();
+		else {
+			registerPostLoginSuccessOneTimeHook(e);
+			login();
+		}
 	}
 
 	public void registerPostLoginSuccessHook(Executor e) {
@@ -258,11 +275,12 @@ public class MosesService extends android.app.Service implements
 
 	public void registerPostLoginSuccessOneTimeHook(final Executor e) {
 		mset.postLoginSuccessHook.add(new Executor() {
-		@Override
-		public void execute() {
-			e.execute();
-			unregisterPostLoginSuccessHook(e);
-		}});
+			@Override
+			public void execute() {
+				e.execute();
+				unregisterPostLoginSuccessHook(e);
+			}
+		});
 	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
@@ -295,12 +313,12 @@ public class MosesService extends android.app.Service implements
 	public void unregisterLoginEndHook(Executor e) {
 		mset.loginEndHook.remove();
 	}
-	
+
 	public void registerPostLogoutHook(Executor e) {
-		if(!mset.postLogoutHook.contains(e)) 
+		if (!mset.postLogoutHook.contains(e))
 			mset.postLogoutHook.add(e);
 	}
-	
+
 	public void unregisterPostLogoutHook(Executor e) {
 		mset.postLogoutHook.remove(e);
 	}
@@ -374,7 +392,7 @@ public class MosesService extends android.app.Service implements
 	// TODO: make very sure that the id is really sent to the server!
 	// TODO: what if session id is yet unknown?
 	private void sendC2DMIdToServer(String registrationId) {
-		RequestC2DM request = new RequestC2DM(
+		final RequestC2DM request = new RequestC2DM(
 				new ReqTaskExecutor() {
 					@Override
 					public void updateExecution(BackgroundException c) {
@@ -421,8 +439,13 @@ public class MosesService extends android.app.Service implements
 					}
 				}, getSessionID(), HardwareAbstraction.extractDeviceId(),
 				registrationId);
+		executeLoggedIn(new Executor() {
 
-		request.send();
+			@Override
+			public void execute() {
+				request.send();
+			}
+		});
 	}
 
 	/**

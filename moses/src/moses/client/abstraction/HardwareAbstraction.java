@@ -16,6 +16,7 @@ import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,28 +40,33 @@ import android.util.Log;
  * 
  */
 public class HardwareAbstraction {
-	
+
 	public static class HardwareInfo {
 		private String deviceID;
 		private String sdkbuildversion;
 		private List<Integer> sensors;
-		public HardwareInfo(String deviceID, String sdkbuildversion, List<Integer> sensors) {
+
+		public HardwareInfo(String deviceID, String sdkbuildversion,
+				List<Integer> sensors) {
 			super();
 			this.deviceID = deviceID;
 			this.sdkbuildversion = sdkbuildversion;
 			this.sensors = sensors;
 		}
+
 		public String getDeviceID() {
 			return deviceID;
 		}
+
 		public String getSdkbuildversion() {
 			return sdkbuildversion;
 		}
+
 		public List<Integer> getSensors() {
 			return sensors;
 		}
 	}
-	
+
 	private class ReqClassGetFilter implements ReqTaskExecutor {
 
 		@Override
@@ -144,7 +150,8 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE SETTING FILTER: " + e.getMessage());
+			Log.d("MoSeS.HARDWARE_ABSTRACTION",
+					"FAILURE SETTING FILTER: " + e.getMessage());
 		}
 
 		@Override
@@ -186,9 +193,11 @@ public class HardwareAbstraction {
 			try {
 				j = new JSONObject(s);
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters set successfully, server returned positive response");
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Parameters set successfully, server returned positive response");
 				} else {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Server returned negative response");
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Parameters NOT set successfully! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -244,10 +253,16 @@ public class HardwareAbstraction {
 		Intent intent = new Intent(appContext, MosesService.class);
 		appContext.bindService(intent, mConnection, 0);
 
-		RequestGetFilter rGetFilter = new RequestGetFilter(
+		final RequestGetFilter rGetFilter = new RequestGetFilter(
 				new ReqClassGetFilter(), sessionID, extractDeviceId());
-		rGetFilter.send();
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
+				@Override
+				public void execute() {
+					rGetFilter.send();
+				}
+			});
 	}
 
 	/**
@@ -275,7 +290,8 @@ public class HardwareAbstraction {
 	}
 
 	/**
-	 * This method reads the sensors currently chosen by the user and returns them
+	 * This method reads the sensors currently chosen by the user and returns
+	 * them
 	 */
 	private HardwareInfo retrieveHardwareParameters() {
 		// *** SENDING SET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
@@ -290,8 +306,9 @@ public class HardwareAbstraction {
 		String deviceID = extractDeviceId();
 		return new HardwareInfo(deviceID, Build.VERSION.SDK, sensors);
 	}
-	
-	public void sendDeviceInformationToMosesServer(HardwareInfo hardware, String c2dmRegistrationId, String sessionId) {
+
+	public void sendDeviceInformationToMosesServer(HardwareInfo hardware,
+			String c2dmRegistrationId, String sessionId) {
 	}
 
 	public static String extractDeviceId() {
@@ -299,15 +316,17 @@ public class HardwareAbstraction {
 	}
 
 	/**
-	 * Device informations like hardware parameters, and cloud notification (c2dm) identification/connection tokens are sent to the moses server
+	 * Device informations like hardware parameters, and cloud notification
+	 * (c2dm) identification/connection tokens are sent to the moses server
 	 * 
 	 * @param c2dmRegistrationId
 	 * @param sessionID
 	 */
 	public void syncDeviceInformation(String sessionID) {
 		HardwareInfo hwInfo = retrieveHardwareParameters();
-		
-		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, sessionID);
+
+		RequestSetHardwareParameters rSetHWParams = new RequestSetHardwareParameters(
+				new ReqClassSetHWParams(), hwInfo, sessionID);
 		rSetHWParams.send();
 	}
 }

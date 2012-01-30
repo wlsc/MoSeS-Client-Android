@@ -12,6 +12,8 @@ import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestDownloadlink;
 import moses.client.com.requests.RequestGetListAPK;
 import moses.client.com.requests.RequestLogin;
+import moses.client.service.MosesService;
+import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +34,8 @@ public class ApkMethods {
 		private ApkDownloadLinkRequestObserver observer;
 		private ExternalApplication app;
 
-		public RequestDownloadLinkExecutor(ApkDownloadLinkRequestObserver observer, ExternalApplication app) {
+		public RequestDownloadLinkExecutor(
+				ApkDownloadLinkRequestObserver observer, ExternalApplication app) {
 			this.observer = observer;
 			this.app = app;
 		}
@@ -53,7 +56,8 @@ public class ApkMethods {
 					observer.apkDownloadLinkRequestFinished(url, app);
 
 				} else {
-					Log.d("MoSeS.APK_METHODS", "Request not successful! Server returned negative response");
+					Log.d("MoSeS.APK_METHODS",
+							"Request not successful! Server returned negative response");
 					this.handleException(new RuntimeException("abc"));
 				}
 			} catch (JSONException e) {
@@ -69,13 +73,21 @@ public class ApkMethods {
 		}
 	}
 
-	public static void getDownloadLinkFor(ExternalApplication app, ApkDownloadLinkRequestObserver observer) {
+	public static void getDownloadLinkFor(ExternalApplication app,
+			ApkDownloadLinkRequestObserver observer) {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
-		RequestDownloadlink rGetListAPK = new RequestDownloadlink(new RequestDownloadLinkExecutor(observer, app),
-			sessionID, app.getID());
+		final RequestDownloadlink rGetListAPK = new RequestDownloadlink(
+				new RequestDownloadLinkExecutor(observer, app), sessionID,
+				app.getID());
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
 
-		rGetListAPK.send();
+				@Override
+				public void execute() {
+					rGetListAPK.send();
+				}
+			});
 	}
 
 	private static class RequestApkListExecutor implements ReqTaskExecutor {
@@ -101,12 +113,14 @@ public class ApkMethods {
 
 					JSONArray apkInformations = j.getJSONArray("APK_LIST");
 					for (int i = 0; i < apkInformations.length(); i++) {
-						JSONObject apkInformation = apkInformations.getJSONObject(i);
+						JSONObject apkInformation = apkInformations
+								.getJSONObject(i);
 						String id = apkInformation.getString("ID");
 						String name = apkInformation.getString("NAME");
 						String description = apkInformation.getString("DESCR");
 
-						ExternalApplication externalApplication = new ExternalApplication(id);
+						ExternalApplication externalApplication = new ExternalApplication(
+								id);
 						externalApplication.setName(name);
 						externalApplication.setDescription(description);
 						apps.add(externalApplication);
@@ -115,7 +129,8 @@ public class ApkMethods {
 					observer.apkListRequestFinished(apps);
 
 				} else {
-					Log.d("MoSeS.APK_METHODS","Request not successful! Server returned negative response");
+					Log.d("MoSeS.APK_METHODS",
+							"Request not successful! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -133,7 +148,8 @@ public class ApkMethods {
 	public static void getExternalApplications(ApkListRequestObserver observer) {
 		String sessionID = RequestLogin.getSessionID(); // obtain the session id
 
-		RequestGetListAPK rGetListAPK = new RequestGetListAPK(new RequestApkListExecutor(observer), sessionID);
+		RequestGetListAPK rGetListAPK = new RequestGetListAPK(
+				new RequestApkListExecutor(observer), sessionID);
 
 		rGetListAPK.send();
 	}
@@ -147,7 +163,8 @@ public class ApkMethods {
 	public static void installApk(File apk, Activity baseActivity) {
 		Intent promptInstall = new Intent(Intent.ACTION_VIEW);
 		if (apk.exists()) {
-			promptInstall.setDataAndType(Uri.fromFile(apk), "application/vnd.android.package-archive");
+			promptInstall.setDataAndType(Uri.fromFile(apk),
+					"application/vnd.android.package-archive");
 			try {
 				baseActivity.startActivity(promptInstall);
 			} catch (ActivityNotFoundException e) {
@@ -159,8 +176,10 @@ public class ApkMethods {
 		}
 	}
 
-	public static void startApplication(String packageName, Activity baseActivity) throws NameNotFoundException {
-		Intent intent = baseActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(packageName);
+	public static void startApplication(String packageName,
+			Activity baseActivity) throws NameNotFoundException {
+		Intent intent = baseActivity.getApplicationContext()
+				.getPackageManager().getLaunchIntentForPackage(packageName);
 		baseActivity.startActivity(intent);
 	}
 
@@ -175,12 +194,15 @@ public class ApkMethods {
 	 * @throws IOException
 	 *             if the apk file could not be parsed correctly
 	 */
-	public static String getPackageNameFromApk(File apk, Context appContext) throws IOException {
-		PackageInfo appInfo = appContext.getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+	public static String getPackageNameFromApk(File apk, Context appContext)
+			throws IOException {
+		PackageInfo appInfo = appContext.getPackageManager()
+				.getPackageArchiveInfo(apk.getAbsolutePath(), 0);
 		if (appInfo != null) {
 			return appInfo.packageName;
 		} else {
-			throw new IOException("the given package could not be parsed correctly");
+			throw new IOException(
+					"the given package could not be parsed correctly");
 		}
 	}
 
@@ -192,7 +214,8 @@ public class ApkMethods {
 	 * @param context
 	 * @return
 	 */
-	public static boolean isApplicationInstalled(String packageName, Context context) {
+	public static boolean isApplicationInstalled(String packageName,
+			Context context) {
 		try {
 			context.getPackageManager().getApplicationInfo(packageName, 0);
 		} catch (NameNotFoundException e) {

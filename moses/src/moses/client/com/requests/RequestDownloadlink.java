@@ -2,6 +2,7 @@ package moses.client.com.requests;
 
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+import moses.client.service.MosesService;
 
 import org.json.JSONException;
 import org.json.JSONObject;

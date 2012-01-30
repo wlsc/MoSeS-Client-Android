@@ -20,12 +20,18 @@ import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.requests.RequestGetApkInfo;
+import moses.client.service.MosesService;
+import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.Executor;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -37,8 +43,9 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewUserStudiesActivity extends Activity implements ApkDownloadObserver, ApkListRequestObserver,
-	ApkDownloadLinkRequestObserver {
+public class ViewUserStudiesActivity extends Activity implements
+		ApkDownloadObserver, ApkListRequestObserver,
+		ApkDownloadLinkRequestObserver {
 
 	public static final String EXTRA_USER_STUDY_APK_ID = "UserStudyApkId";
 	private ListView listView;
@@ -54,10 +61,12 @@ public class ViewUserStudiesActivity extends Activity implements ApkDownloadObse
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		String studyApkId = getIntent().getExtras().getString(EXTRA_USER_STUDY_APK_ID);
+		String studyApkId = getIntent().getExtras().getString(
+				EXTRA_USER_STUDY_APK_ID);
 		sid = getIntent().getExtras().getString("sid");
-		if(studyApkId != null) {
-			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(studyApkId);
+		if (studyApkId != null) {
+			UserStudyNotification notification = UserstudyNotificationManager
+					.getInstance().getNotificationForApkId(studyApkId);
 			showActivityForNotification(notification);
 		} else {
 			showActivityForNotification(null);
@@ -65,105 +74,135 @@ public class ViewUserStudiesActivity extends Activity implements ApkDownloadObse
 	}
 
 	private void showActivityForNotification(UserStudyNotification notification) {
-//		setContentView(R.layout.availableapklist);
-//		initControls();
+		// setContentView(R.layout.availableapklist);
+		// initControls();
 
-		if(notification != null) {
+		if (notification != null) {
 			this.handleSingleNotificationData = notification;
 			requestApkInfo(notification.getApplication().getID());
 		}
-		
-		
-		
-		
-		
-//		AlertDialog ad = new AlertDialog.Builder(this).create();
-//		ad.setCancelable(false); // This blocks the 'BACK' button
-//		ad.setMessage("Hello World " + notification!=null?notification.asOnelineString():"null...");
-//		ad.setButton("OK", new DialogInterface.OnClickListener() {
-//		    @Override
-//		    public void onClick(DialogInterface dialog, int which) {
-//		        dialog.dismiss();
-//		        ViewUserStudiesActivity.this.finish();
-//		    }
-//		});
-//		ad.show();
+
+		// AlertDialog ad = new AlertDialog.Builder(this).create();
+		// ad.setCancelable(false); // This blocks the 'BACK' button
+		// ad.setMessage("Hello World " +
+		// notification!=null?notification.asOnelineString():"null...");
+		// ad.setButton("OK", new DialogInterface.OnClickListener() {
+		// @Override
+		// public void onClick(DialogInterface dialog, int which) {
+		// dialog.dismiss();
+		// ViewUserStudiesActivity.this.finish();
+		// }
+		// });
+		// ad.show();
 	}
 
 	private void requestApkInfo(String id) {
-		new RequestGetApkInfo(new ReqTaskExecutor() {
-			@Override
-			public void updateExecution(BackgroundException c) {
-				// TODO Auto-generated method stub
-				
-			}
-			@Override
-			public void postExecution(String s) {
-				try {
-					JSONObject j = new JSONObject(s);
-					if(RequestGetApkInfo.isInfoRetrived(j)) {
-						String name = j.getString("NAME");
-						String descr = j.getString("DESCR");
-						handleSingleNotificationData.getApplication().setName(name);
-						handleSingleNotificationData.getApplication().setDescription(descr);
-						
-						showDescisionDialog(handleSingleNotificationData);
-					} else {
-						Log.e("MoSeS.UserStudy", "user study info request: Server returned negative" + j.toString());
-						Toast.makeText(getApplicationContext(), "user study info request: Server returned negative" + j.toString(), Toast.LENGTH_LONG).show();
+		final RequestGetApkInfo r = new RequestGetApkInfo(
+				new ReqTaskExecutor() {
+					@Override
+					public void updateExecution(BackgroundException c) {
+						// TODO Auto-generated method stub
+
 					}
-				} catch (JSONException e) {
-					Log.e("MoSeS.UserStudy", "requesting study information: json exception" + e.getMessage());
-					Toast.makeText(getApplicationContext(), "requesting study information: json exception" + e.getMessage(), Toast.LENGTH_LONG).show();
+
+					@Override
+					public void postExecution(String s) {
+						try {
+							JSONObject j = new JSONObject(s);
+							if (RequestGetApkInfo.isInfoRetrived(j)) {
+								String name = j.getString("NAME");
+								String descr = j.getString("DESCR");
+								handleSingleNotificationData.getApplication()
+										.setName(name);
+								handleSingleNotificationData.getApplication()
+										.setDescription(descr);
+
+								showDescisionDialog(handleSingleNotificationData);
+							} else {
+								Log.e("MoSeS.UserStudy",
+										"user study info request: Server returned negative"
+												+ j.toString());
+								Toast.makeText(
+										getApplicationContext(),
+										"user study info request: Server returned negative"
+												+ j.toString(),
+										Toast.LENGTH_LONG).show();
+							}
+						} catch (JSONException e) {
+							Log.e("MoSeS.UserStudy",
+									"requesting study information: json exception"
+											+ e.getMessage());
+							Toast.makeText(
+									getApplicationContext(),
+									"requesting study information: json exception"
+											+ e.getMessage(), Toast.LENGTH_LONG)
+									.show();
+						}
+					}
+
+					@Override
+					public void handleException(Exception e) {
+						Log.e("MoSeS.UserStudy",
+								"couldn't load user study information"
+										+ e.getMessage());
+						Toast.makeText(
+								getApplicationContext(),
+								"couldn't load user study information"
+										+ e.getMessage(), Toast.LENGTH_LONG)
+								.show();
+					}
+				}, id, sid);
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(new Executor() {
+
+				@Override
+				public void execute() {
+					r.send();
 				}
-			}
-			@Override
-			public void handleException(Exception e) {
-				Log.e("MoSeS.UserStudy", "couldn't load user study information" + e.getMessage());
-				Toast.makeText(getApplicationContext(), "couldn't load user study information" + e.getMessage(), Toast.LENGTH_LONG).show();
-			}
-		}, id, sid).send();
+			});
 	}
 
 	protected void showDescisionDialog(final UserStudyNotification notification) {
-		String message = "A new user study is avalable for you!\n\nName: "+
-			notification.getApplication().getName()+"\n\n"+notification.getApplication().getDescription()+"\n\nDo you want to participate by installing the external application for this study?";
+		String message = "A new user study is avalable for you!\n\nName: "
+				+ notification.getApplication().getName()
+				+ "\n\n"
+				+ notification.getApplication().getDescription()
+				+ "\n\nDo you want to participate by installing the external application for this study?";
 		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-		    @Override
-		    public void onClick(DialogInterface dialog, int which) {
-		        switch (which){
-		        case DialogInterface.BUTTON_POSITIVE:
-		        	requestUrlForApplication(notification.getApplication());
-			    	dialog.dismiss();
-		            break;
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				switch (which) {
+				case DialogInterface.BUTTON_POSITIVE:
+					requestUrlForApplication(notification.getApplication());
+					dialog.dismiss();
+					break;
 
-		        case DialogInterface.BUTTON_NEGATIVE:
-		        	ViewUserStudiesActivity.this.finish();
-		            break;
-		        }
-		    }
+				case DialogInterface.BUTTON_NEGATIVE:
+					ViewUserStudiesActivity.this.finish();
+					break;
+				}
+			}
 		};
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(message).setPositiveButton("Yes", dialogClickListener)
-		    .setNegativeButton("No", dialogClickListener).show();
-		
-		
-		
-//		Dialog d = new 
-//		AlertDialog ad = new AlertDialog.Builder(this).create();
-//		ad.setCancelable(false); // This blocks the 'BACK' button
-//		ad.setMessage("New user study avalable!\n"+
-//		notification.getApplication().getName()+"\n\n"+notification.getApplication().getDescription());
-//		ad.setButton("OK", new DialogInterface.OnClickListener() {
-//		    @Override
-//		    public void onClick(DialogInterface dialog, int which) {
-//		        requestUrlForApplication(notification.getApplication());
-//		    	dialog.dismiss();
-////		        ViewUserStudiesActivity.this.finish();
-//		    }
-//		});
-//		ad.show();
+		builder.setMessage(message)
+				.setPositiveButton("Yes", dialogClickListener)
+				.setNegativeButton("No", dialogClickListener).show();
+
+		// Dialog d = new
+		// AlertDialog ad = new AlertDialog.Builder(this).create();
+		// ad.setCancelable(false); // This blocks the 'BACK' button
+		// ad.setMessage("New user study avalable!\n"+
+		// notification.getApplication().getName()+"\n\n"+notification.getApplication().getDescription());
+		// ad.setButton("OK", new DialogInterface.OnClickListener() {
+		// @Override
+		// public void onClick(DialogInterface dialog, int which) {
+		// requestUrlForApplication(notification.getApplication());
+		// dialog.dismiss();
+		// // ViewUserStudiesActivity.this.finish();
+		// }
+		// });
+		// ad.show();
 	}
 
 	public void apkInstallClickHandler(View v) {
@@ -208,57 +247,71 @@ public class ViewUserStudiesActivity extends Activity implements ApkDownloadObse
 	}
 
 	@Override
-	public void apkDownloadLinkRequestFinished(String url, ExternalApplication app) {
+	public void apkDownloadLinkRequestFinished(String url,
+			ExternalApplication app) {
 		// fire download of apk
 		try {
-			ApkDownloadTask downloadTask = new ApkDownloadTask(this, new URL(url), this.getApplicationContext(),
-				generateApkFileNameFor(app));
+			ApkDownloadTask downloadTask = new ApkDownloadTask(this, new URL(
+					url), this.getApplicationContext(),
+					generateApkFileNameFor(app));
 			downloadTask.setExternalApplicationReference(app);
 			downloadTask.execute();
 		} catch (MalformedURLException e) {
-			Toast.makeText(getApplicationContext(),
-				"Server sent malformed url; could not download application: " + url, Toast.LENGTH_LONG).show();
+			Toast.makeText(
+					getApplicationContext(),
+					"Server sent malformed url; could not download application: "
+							+ url, Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void apkDownloadLinkRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Downloadlink request failed:\n" + concatStacktrace(e),
-			Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(),
+				"Downloadlink request failed:\n" + concatStacktrace(e),
+				Toast.LENGTH_LONG).show();
 	}
 
 	@Override
-	public void apkDownloadFinished(ApkDownloadTask downloader, File result, ExternalApplication externalAppRef) {
+	public void apkDownloadFinished(ApkDownloadTask downloader, File result,
+			ExternalApplication externalAppRef) {
 		installDownloadedApk(result, externalAppRef);
 	}
 
 	@Override
 	public void apkDownloadFailed(ApkDownloadTask downloader) {
-		Toast.makeText(getApplicationContext(),
-			"Download failed.\n" + concatStacktrace(downloader.getDownloadException()), Toast.LENGTH_LONG).show();
+		Toast.makeText(
+				getApplicationContext(),
+				"Download failed.\n"
+						+ concatStacktrace(downloader.getDownloadException()),
+				Toast.LENGTH_LONG).show();
 	}
 
-	private void installDownloadedApk(File result, ExternalApplication externalAppRef) {
+	private void installDownloadedApk(File result,
+			ExternalApplication externalAppRef) {
 		ApkMethods.installApk(result, this);
 		try {
 			if (InstalledExternalApplicationsManager.getDefault() == null) {
-				InstalledExternalApplicationsManager.init(getApplicationContext());
+				InstalledExternalApplicationsManager
+						.init(getApplicationContext());
 			}
-			String packageName = ApkMethods.getPackageNameFromApk(result, getApplicationContext());
+			String packageName = ApkMethods.getPackageNameFromApk(result,
+					getApplicationContext());
 
-			InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(packageName,
-				externalAppRef);
-			InstalledExternalApplicationsManager.getDefault().addExternalApplication(installedExternalApp);
+			InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(
+					packageName, externalAppRef);
+			InstalledExternalApplicationsManager.getDefault()
+					.addExternalApplication(installedExternalApp);
 
-			InstalledExternalApplicationsManager.getDefault().saveToDisk(getApplicationContext());
+			InstalledExternalApplicationsManager.getDefault().saveToDisk(
+					getApplicationContext());
 		} catch (IOException e) {
 			// TODO: the package name could not be read from the apk file,
 			// or there was a problem with saving the installed-app-manager. to
 			// be programmed yet!
 			// TODO: program check that installation was really successful
-			e.printStackTrace(); 
+			e.printStackTrace();
 		}
-		
+
 		finish();
 	}
 
@@ -280,8 +333,10 @@ public class ViewUserStudiesActivity extends Activity implements ApkDownloadObse
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e.getMessage(),
-			Toast.LENGTH_LONG).show();
+		Toast.makeText(
+				getApplicationContext(),
+				"Error when loading the list of applications: "
+						+ e.getMessage(), Toast.LENGTH_LONG).show();
 	}
 
 	private void populateList(List<ExternalApplication> applications) {
@@ -292,8 +347,8 @@ public class ViewUserStudiesActivity extends Activity implements ApkDownloadObse
 			items[counter] = app.getName();
 			counter++;
 		}
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
-			R.id.apklistitemtext, items) {
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+				R.layout.availableabkslistitem, R.id.apklistitemtext, items) {
 		};
 		listView.setAdapter(arrayAdapter);
 	}

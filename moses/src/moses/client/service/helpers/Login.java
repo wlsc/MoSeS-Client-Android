@@ -12,6 +12,7 @@ import moses.client.service.MosesService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Handler;
 import android.util.Log;
 
 // TODO: Auto-generated Javadoc
@@ -21,7 +22,7 @@ import android.util.Log;
  * @author Jaco Hofmann
  */
 public class Login {
-
+	
 	/**
 	 * The Class LoginFunc.
 	 */
@@ -57,6 +58,9 @@ public class Login {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, uname)) {
 					serv.loggedIn(j.getString("SESSIONID"));
+					mHandler.removeCallbacks(logoutTask);
+					mHandler.postDelayed(logoutTask, sessionAliveTime-1000);
+					lastLoggedIn = System.currentTimeMillis();
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
 					executeAll(postExecuteSuccess);
@@ -92,7 +96,7 @@ public class Login {
 	}
 
 	/** The serv. */
-	private MosesService serv;
+	private static MosesService serv;
 
 	/** The uname. */
 	private String uname;
@@ -105,11 +109,30 @@ public class Login {
 	private LinkedList<Executor> postExecuteFailure;
 	private LinkedList<Executor> loginStart;
 	private LinkedList<Executor> loginEnd;
+	
+	private static long lastLoggedIn = -1;
+	
+	private final long sessionAliveTime = 120000;
 
 	private void executeAll(LinkedList<Executor> el) {
 		for(Executor e : el) {
 			e.execute();
 		}
+	}
+	
+	private static Handler mHandler = new Handler();
+	
+	private static Runnable logoutTask = new Runnable() {
+		
+		@Override
+		public void run() {
+			Log.d("MoSeS.LOGIN", "Session is now invalid.");
+			serv.logout();
+		}
+	};
+	
+	public static void setService(MosesService s) {
+		serv = s;
 	}
 	
 	/**
@@ -124,16 +147,20 @@ public class Login {
 	 * @param e
 	 *            the e
 	 */
-	public Login(String username, String password, MosesService serv,
+	public Login(String username, String password, 
 			LinkedList<Executor> postExecuteSuccess, LinkedList<Executor> postExecuteFailure,
 			LinkedList<Executor> loginStart, LinkedList<Executor> loginEnd) {
-		this.serv = serv;
 		this.pw = password;
 		this.uname = username;
 		this.postExecuteSuccess = postExecuteSuccess;
 		this.postExecuteFailure = postExecuteFailure;
 		this.loginEnd = loginEnd;
 		this.loginStart = loginStart;
-		new RequestLogin(new LoginFunc(), uname, pw).send();
+		if(System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
+			new RequestLogin(new LoginFunc(), uname, pw).send();
+		} else {
+			executeAll(postExecuteSuccess);
+			Log.d("MoSeS.LOGIN", "Session still active.");
+		}
 	}
 }

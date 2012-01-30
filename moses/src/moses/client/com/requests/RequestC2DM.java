@@ -2,6 +2,8 @@ package moses.client.com.requests;
 
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+import moses.client.service.MosesService;
+import moses.client.service.helpers.Executor;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +38,7 @@ public class RequestC2DM {
 	}
 
 	public void send() {
+		
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;
 		req = task.new APIRequest();
