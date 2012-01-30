@@ -79,7 +79,6 @@ public class Login {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.LOGIN", c.c.toString());
 				if(c.c == ConnectionParam.CONNECTING) {
 					executeAll(loginStart);
 				} else if(c.c == ConnectionParam.CONNECTED) {

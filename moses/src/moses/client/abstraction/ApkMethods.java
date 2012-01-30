@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.util.Log;
 
 public class ApkMethods {
 
@@ -52,7 +53,7 @@ public class ApkMethods {
 					observer.apkDownloadLinkRequestFinished(url, app);
 
 				} else {
-					System.err.println("Request not successful! Server returned negative response");
+					Log.d("MoSeS.APK_METHODS", "Request not successful! Server returned negative response");
 					this.handleException(new RuntimeException("abc"));
 				}
 			} catch (JSONException e) {
@@ -62,9 +63,7 @@ public class ApkMethods {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				System.out.println(c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}
@@ -116,7 +115,7 @@ public class ApkMethods {
 					observer.apkListRequestFinished(apps);
 
 				} else {
-					System.err.println("Request not successful! Server returned negative response");
+					Log.d("MoSeS.APK_METHODS","Request not successful! Server returned negative response");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -125,9 +124,7 @@ public class ApkMethods {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				System.out.println(c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}

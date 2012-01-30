@@ -72,9 +72,7 @@ public class Logout {
 		 */
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Toast.makeText(serv, c.c.toString(), Toast.LENGTH_LONG).show();
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}

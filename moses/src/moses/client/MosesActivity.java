@@ -36,6 +36,43 @@ public class MosesActivity extends Activity {
 	public enum results {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
 	};
+	/**
+	 * Login hooks
+	 */
+	Executor postLoginSuccessHook = new Executor() {
+		@Override
+		public void execute() {
+			Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
+			((TextView) findViewById(R.id.success)).setText("Online");
+		}
+	};
+	
+	Executor postLoginFailureHook = new Executor() {
+		@Override
+		public void execute() {
+			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
+			((TextView) findViewById(R.id.success)).setText("Error while logging in.");
+		}
+	};
+	
+	Executor loginStartHook = new Executor() {
+		@Override
+		public void execute() {
+			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
+			((TextView) findViewById(R.id.success)).setText("Connecting");
+		}
+	};
+	
+	Executor loginEndHook = new Executor() {
+		@Override
+		public void execute() {
+			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
+			((TextView) findViewById(R.id.success)).setText("Connected");
+		}
+	};
+	
 
 	/** This Object represents the underlying service. **/
 	public MosesService mService;
@@ -54,41 +91,14 @@ public class MosesActivity extends Activity {
 			mService = binder.getService();
 			mBound = true;
 
-			// We want, that the logged in view is shown to the user after a
-			// login has been successful.
-			mService.registerPostLoginSuccessHook(new Executor() {
-				@Override
-				public void execute() {
-					Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
-					((TextView) findViewById(R.id.success)).setText("Online");
-				}
-			});
+			// Add hooks
+			mService.registerPostLoginSuccessHook(postLoginSuccessHook);
 			
-			mService.registerPostLoginFailureHook(new Executor() {
-				@Override
-				public void execute() {
-					Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
-					((TextView) findViewById(R.id.success)).setText("Error while logging in.");
-				}
-			});
+			mService.registerPostLoginFailureHook(postLoginFailureHook);
 			
-			mService.registerLoginStartHook(new Executor() {
-				@Override
-				public void execute() {
-					Log.d("MoSeS.ACTIVITY", "LoginStartHook");
-					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
-					((TextView) findViewById(R.id.success)).setText("Connecting");
-				}
-			});
+			mService.registerLoginStartHook(loginStartHook);
 			
-			mService.registerLoginEndHook(new Executor() {
-				@Override
-				public void execute() {
-					Log.d("MoSeS.ACTIVITY", "PostLoginEndHook");
-					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
-					((TextView) findViewById(R.id.success)).setText("Connected");
-				}
-			});
+			mService.registerLoginEndHook(loginEndHook);
 			
 			// If we're already logged in or the user wants auto login start
 			// logged in view
@@ -101,6 +111,13 @@ public class MosesActivity extends Activity {
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
+			mService.unregisterPostLoginSuccessHook(postLoginSuccessHook);
+			
+			mService.unregisterPostLoginFailureHook(postLoginFailureHook);
+			
+			mService.unregisterLoginStartHook(loginStartHook);
+			
+			mService.unregisterLoginEndHook(loginEndHook);
 			mBound = false;
 		}
 	};

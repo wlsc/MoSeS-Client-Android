@@ -60,10 +60,7 @@ public class PingSender {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.PING", c.c.toString());
-				PingSender.this.e.execute();
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}

@@ -90,9 +90,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}
@@ -136,9 +134,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}
@@ -171,9 +167,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}
@@ -203,9 +197,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if (c.c != ConnectionParam.EXCEPTION) {
-				Log.d("MoSeS.HARDWARE_ABSTRACTION", c.c.toString());
-			} else {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}
