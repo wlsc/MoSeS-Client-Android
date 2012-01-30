@@ -122,14 +122,7 @@ public class LoggedInViewActivity extends Activity {
 		btnLogout.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				mService.logout(new Executor() {
-
-					@Override
-					public void execute() {
-						setResult(MosesActivity.results.RS_LOGGEDOUT.ordinal());
-						finish();
-					}
-				});
+				mService.logout();
 			}
 		});
 

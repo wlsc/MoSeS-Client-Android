@@ -17,17 +17,12 @@ import moses.client.com.requests.RequestC2DM;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
-import moses.client.service.helpers.KeepSessionAlive;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
-import moses.client.service.helpers.NotifyAboutNewApksActivity;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface.OnClickListener;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -95,6 +90,8 @@ public class MosesService extends android.app.Service implements
 		public LinkedList<Executor> loginStartHook = new LinkedList<Executor>();
 
 		public LinkedList<Executor> loginEndHook = new LinkedList<Executor>();
+		
+		public LinkedList<Executor> postLogoutHook = new LinkedList<Executor>();
 
 		public String url = "http://www.da-sense.de/moses/test.php";
 
@@ -108,8 +105,6 @@ public class MosesService extends android.app.Service implements
 
 	/** The mset. */
 	private MosesSettings mset = new MosesSettings();
-
-	private KeepSessionAlive cKeepAlive;
 
 	private CheckForNewApplications checkForNewApplications;
 
@@ -134,8 +129,6 @@ public class MosesService extends android.app.Service implements
 		mset.loginauto = settingsFile.getBoolean("autologin_pref", false);
 		mset.username = settingsFile.getString("username_pref", "");
 		mset.password = settingsFile.getString("password_pref", "");
-		if (mset.loginauto)
-			login();
 	}
 
 	public boolean isAutoLogin() {
@@ -175,7 +168,6 @@ public class MosesService extends android.app.Service implements
 		mset.sessionid = sessionid;
 		syncDeviceInformation();
 		new HardwareAbstraction(this).getFilter();
-		keepSessionAlive(true);
 		checkForNewApplications.startChecking(true);
 		if (!alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null
 				&& !(getSessionID().equals("") || getSessionID() == null)) {
@@ -218,14 +210,9 @@ public class MosesService extends android.app.Service implements
 	 * @param e
 	 *            the e
 	 */
-	public void logout(Executor e) {
-		new Logout(this, e);
-		keepSessionAlive(false);
+	public void logout() {
+		new Logout(this, mset.postLogoutHook);
 		checkForNewApplications.startChecking(false);
-	}
-
-	public void keepSessionAlive(boolean b) {
-		cKeepAlive.keepAlive(b);
 	}
 
 	/*
@@ -246,16 +233,7 @@ public class MosesService extends android.app.Service implements
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		cKeepAlive = new KeepSessionAlive(new Executor() {
 
-			@Override
-			public void execute() {
-				loggedOut();
-				cKeepAlive.shortenPingTime(true);
-				login();
-			}
-		});
-		
 		registerPostLoginFailureHook(new Executor() {
 
 			@Override
@@ -263,14 +241,7 @@ public class MosesService extends android.app.Service implements
 				mset.loggingIn = false;
 			}
 		});
-		registerPostLoginSuccessHook(new Executor() {
-			@Override
-			public void execute() {
-				if (cKeepAlive.isPingTimeShortened()) {
-					cKeepAlive.shortenPingTime(false);
-				}
-			}
-		});
+
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -283,6 +254,15 @@ public class MosesService extends android.app.Service implements
 	public void registerPostLoginSuccessHook(Executor e) {
 		if (!mset.postLoginSuccessHook.contains(e))
 			mset.postLoginSuccessHook.add(e);
+	}
+
+	public void registerPostLoginSuccessOneTimeHook(final Executor e) {
+		mset.postLoginSuccessHook.add(new Executor() {
+		@Override
+		public void execute() {
+			e.execute();
+			unregisterPostLoginSuccessHook(e);
+		}});
 	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
@@ -314,6 +294,15 @@ public class MosesService extends android.app.Service implements
 
 	public void unregisterLoginEndHook(Executor e) {
 		mset.loginEndHook.remove();
+	}
+	
+	public void registerPostLogoutHook(Executor e) {
+		if(!mset.postLogoutHook.contains(e)) 
+			mset.postLogoutHook.add(e);
+	}
+	
+	public void unregisterPostLogoutHook(Executor e) {
+		mset.postLogoutHook.remove(e);
 	}
 
 	private void registerC2DM() {

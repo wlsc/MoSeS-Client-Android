@@ -36,6 +36,7 @@ public class MosesActivity extends Activity {
 	public enum results {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
 	};
+
 	/**
 	 * Login hooks
 	 */
@@ -46,33 +47,44 @@ public class MosesActivity extends Activity {
 			((TextView) findViewById(R.id.success)).setText("Online");
 		}
 	};
-	
+
 	Executor postLoginFailureHook = new Executor() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
-			((TextView) findViewById(R.id.success)).setText("Error while logging in.");
+			((TextView) findViewById(R.id.success))
+					.setText("Error while logging in.");
 		}
 	};
-	
+
 	Executor loginStartHook = new Executor() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
+					.setVisibility(View.VISIBLE);
 			((TextView) findViewById(R.id.success)).setText("Connecting");
 		}
 	};
-	
+
 	Executor loginEndHook = new Executor() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
+					.setVisibility(View.GONE);
 			((TextView) findViewById(R.id.success)).setText("Connected");
 		}
 	};
 	
+	Executor postLogoutHook = new Executor() {
+		
+		@Override
+		public void execute() {
+			Log.d("MoSeS.ACTIVITY", "postLogoutHook");
+			((TextView) findViewById(R.id.success)).setText("Offline");
+		}
+	};
 
 	/** This Object represents the underlying service. **/
 	public MosesService mService;
@@ -93,13 +105,15 @@ public class MosesActivity extends Activity {
 
 			// Add hooks
 			mService.registerPostLoginSuccessHook(postLoginSuccessHook);
-			
+
 			mService.registerPostLoginFailureHook(postLoginFailureHook);
-			
+
 			mService.registerLoginStartHook(loginStartHook);
-			
+
 			mService.registerLoginEndHook(loginEndHook);
 			
+			mService.registerPostLogoutHook(postLogoutHook);
+
 			// If we're already logged in or the user wants auto login start
 			// logged in view
 			if (mService.isAutoLogin())
@@ -112,12 +126,15 @@ public class MosesActivity extends Activity {
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
 			mService.unregisterPostLoginSuccessHook(postLoginSuccessHook);
-			
+
 			mService.unregisterPostLoginFailureHook(postLoginFailureHook);
-			
+
 			mService.unregisterLoginStartHook(loginStartHook);
-			
+
 			mService.unregisterLoginEndHook(loginEndHook);
+			
+			mService.unregisterPostLogoutHook(postLogoutHook);
+			
 			mBound = false;
 		}
 	};
@@ -143,7 +160,7 @@ public class MosesActivity extends Activity {
 	private void connect() {
 		// Login if not already or just start logged in view if present
 		Log.d("MoSeS.ACTIVITY", "Connect button pressed.");
-		if(mService != null) {
+		if (mService != null) {
 			if (!mService.isLoggedIn()) {
 				mService.login();
 			}
@@ -209,15 +226,16 @@ public class MosesActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		((TextView) findViewById(R.id.success)).setText("Offline");
-		((Button)findViewById(R.id.testfield_button)).setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent mainDialog = new Intent(MosesActivity.this,
-						LoggedInViewActivity.class);
-				startActivityForResult(mainDialog, 0);
-			}
-		});
+		((Button) findViewById(R.id.testfield_button))
+				.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						Intent mainDialog = new Intent(MosesActivity.this,
+								LoggedInViewActivity.class);
+						startActivityForResult(mainDialog, 0);
+					}
+				});
 	}
 
 	/**
@@ -230,7 +248,8 @@ public class MosesActivity extends Activity {
 		stopPosting = false;
 		mHandler.removeCallbacks(mIsServiceAliveTask);
 		mHandler.postDelayed(mIsServiceAliveTask, 1000);
-		((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
+		((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
+				.setVisibility(View.GONE);
 		startAndBindService();
 	}
 
