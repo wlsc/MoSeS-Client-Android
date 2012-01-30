@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -55,12 +56,40 @@ public class MosesActivity extends Activity {
 
 			// We want, that the logged in view is shown to the user after a
 			// login has been successful.
-			mService.postLoginHook(new Executor() {
+			mService.registerPostLoginSuccessHook(new Executor() {
 				@Override
 				public void execute() {
+					Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
 					((TextView) findViewById(R.id.success)).setText("Online");
 				}
 			});
+			
+			mService.registerPostLoginFailureHook(new Executor() {
+				@Override
+				public void execute() {
+					Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
+					((TextView) findViewById(R.id.success)).setText("Error while logging in.");
+				}
+			});
+			
+			mService.registerLoginStartHook(new Executor() {
+				@Override
+				public void execute() {
+					Log.d("MoSeS.ACTIVITY", "LoginStartHook");
+					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
+					((TextView) findViewById(R.id.success)).setText("Connecting");
+				}
+			});
+			
+			mService.registerLoginEndHook(new Executor() {
+				@Override
+				public void execute() {
+					Log.d("MoSeS.ACTIVITY", "PostLoginEndHook");
+					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
+					((TextView) findViewById(R.id.success)).setText("Connected");
+				}
+			});
+			
 			// If we're already logged in or the user wants auto login start
 			// logged in view
 			if (mService.isAutoLogin())
@@ -111,7 +140,6 @@ public class MosesActivity extends Activity {
 		stopPosting = true;
 		mHandler.removeCallbacks(mIsServiceAliveTask);
 		if (mBound) {
-			mService.postLoginHook(null);
 			unbindService(mConnection);
 		}
 	}
@@ -185,6 +213,7 @@ public class MosesActivity extends Activity {
 		stopPosting = false;
 		mHandler.removeCallbacks(mIsServiceAliveTask);
 		mHandler.postDelayed(mIsServiceAliveTask, 1000);
+		((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
 		startAndBindService();
 	}
 

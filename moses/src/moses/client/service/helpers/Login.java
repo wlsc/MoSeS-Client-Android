@@ -1,6 +1,7 @@
 package moses.client.service.helpers;
 
 import java.net.UnknownHostException;
+import java.util.LinkedList;
 
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
@@ -34,8 +35,7 @@ public class Login {
 		 */
 		@Override
 		public void handleException(Exception e) {
-			if (error != null)
-				error.execute();
+			executeAll(postExecuteFailure);
 			if (e instanceof UnknownHostException || e instanceof JSONException) {
 				Log.d("MoSeS.LOGIN",
 						"No internet connection present (or DNS problems.)");
@@ -59,12 +59,10 @@ public class Login {
 					serv.loggedIn(j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
-					if (postExecute != null)
-						postExecute.execute();
+					executeAll(postExecuteSuccess);
 				} else {
 					Log.d("MoSeS.LOGIN", "NOT GRANTED: " + j.toString());
-					if (error != null)
-						error.execute();
+					executeAll(postExecuteFailure);
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -82,6 +80,11 @@ public class Login {
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
 				Log.d("MoSeS.LOGIN", c.c.toString());
+				if(c.c == ConnectionParam.CONNECTING) {
+					executeAll(loginStart);
+				} else if(c.c == ConnectionParam.CONNECTED) {
+					executeAll(loginEnd);
+				}
 			} else {
 				handleException(c.e);
 			}
@@ -99,9 +102,17 @@ public class Login {
 	private String pw;
 
 	/** The e. */
-	private Executor postExecute;
-	private Executor error;
+	private LinkedList<Executor> postExecuteSuccess;
+	private LinkedList<Executor> postExecuteFailure;
+	private LinkedList<Executor> loginStart;
+	private LinkedList<Executor> loginEnd;
 
+	private void executeAll(LinkedList<Executor> el) {
+		for(Executor e : el) {
+			e.execute();
+		}
+	}
+	
 	/**
 	 * Instantiates a new login.
 	 * 
@@ -115,12 +126,15 @@ public class Login {
 	 *            the e
 	 */
 	public Login(String username, String password, MosesService serv,
-			Executor postExecute, Executor error) {
+			LinkedList<Executor> postExecuteSuccess, LinkedList<Executor> postExecuteFailure,
+			LinkedList<Executor> loginStart, LinkedList<Executor> loginEnd) {
 		this.serv = serv;
 		this.pw = password;
 		this.uname = username;
-		this.postExecute = postExecute;
-		this.error = error;
+		this.postExecuteSuccess = postExecuteSuccess;
+		this.postExecuteFailure = postExecuteFailure;
+		this.loginEnd = loginEnd;
+		this.loginStart = loginStart;
 		new RequestLogin(new LoginFunc(), uname, pw).send();
 	}
 }

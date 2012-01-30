@@ -1,6 +1,7 @@
 package moses.client.service;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -87,8 +88,14 @@ public class MosesService extends android.app.Service implements
 		/** Saves the used filter. */
 		public JSONArray filter = null;
 
-		public Executor postLoginHook = null;
-		
+		public LinkedList<Executor> postLoginSuccessHook = new LinkedList<Executor>();
+
+		public LinkedList<Executor> postLoginFailureHook = new LinkedList<Executor>();
+
+		public LinkedList<Executor> loginStartHook = new LinkedList<Executor>();
+
+		public LinkedList<Executor> loginEndHook = new LinkedList<Executor>();
+
 		public String url = "http://www.da-sense.de/moses/test.php";
 
 	}
@@ -170,7 +177,8 @@ public class MosesService extends android.app.Service implements
 		new HardwareAbstraction(this).getFilter();
 		keepSessionAlive(true);
 		checkForNewApplications.startChecking(true);
-		if(! alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null && !(getSessionID().equals("")||getSessionID()==null)) {
+		if (!alreadySuccessfullySentC2DMID && this.c2dmRegistrationId != null
+				&& !(getSessionID().equals("") || getSessionID() == null)) {
 			sendC2DMIdToServer(this.c2dmRegistrationId);
 		}
 	}
@@ -194,21 +202,9 @@ public class MosesService extends android.app.Service implements
 			if (!mset.loggedIn && !mset.loggingIn) {
 				Log.d("MoSeS.SERVICE", "Logging in...");
 				mset.loggingIn = true;
-				new Login(mset.username, mset.password, this, new Executor() {
-					@Override
-					public void execute() {
-						mset.postLoginHook.execute();
-						if (cKeepAlive.isPingTimeShortened()) {
-							cKeepAlive.shortenPingTime(false);
-						}
-					}
-				}, new Executor() { 
-					
-					@Override
-					public void execute() {
-						mset.loggingIn = false;
-					}
-				});
+				new Login(mset.username, mset.password, this,
+						mset.postLoginSuccessHook, mset.postLoginFailureHook,
+						mset.loginStartHook, mset.loginEndHook);
 			}
 		} else {
 			Log.d("MoSeS.SERVICE",
@@ -259,6 +255,22 @@ public class MosesService extends android.app.Service implements
 				login();
 			}
 		});
+		
+		registerPostLoginFailureHook(new Executor() {
+
+			@Override
+			public void execute() {
+				mset.loggingIn = false;
+			}
+		});
+		registerPostLoginSuccessHook(new Executor() {
+			@Override
+			public void execute() {
+				if (cKeepAlive.isPingTimeShortened()) {
+					cKeepAlive.shortenPingTime(false);
+				}
+			}
+		});
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -268,8 +280,40 @@ public class MosesService extends android.app.Service implements
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
-	public void postLoginHook(Executor e) {
-		mset.postLoginHook = e;
+	public void registerPostLoginSuccessHook(Executor e) {
+		if (!mset.postLoginSuccessHook.contains(e))
+			mset.postLoginSuccessHook.add(e);
+	}
+
+	public void unregisterPostLoginSuccessHook(Executor e) {
+		mset.postLoginSuccessHook.remove(e);
+	}
+
+	public void registerPostLoginFailureHook(Executor e) {
+		if (!mset.postLoginFailureHook.contains(e))
+			mset.postLoginFailureHook.add(e);
+	}
+
+	public void unregisterPostLoginFailureHook(Executor e) {
+		mset.postLoginFailureHook.remove(e);
+	}
+
+	public void registerLoginStartHook(Executor e) {
+		if (!mset.loginStartHook.contains(e))
+			mset.loginStartHook.add(e);
+	}
+
+	public void unregisterLoginStartHook(Executor e) {
+		mset.loginStartHook.remove(e);
+	}
+
+	public void registerLoginEndHook(Executor e) {
+		if (!mset.loginEndHook.contains(e))
+			mset.loginEndHook.add(e);
+	}
+
+	public void unregisterLoginEndHook(Executor e) {
+		mset.loginEndHook.remove();
 	}
 
 	private void registerC2DM() {
@@ -303,7 +347,6 @@ public class MosesService extends android.app.Service implements
 	public void onStart(Intent intent, int startId) {
 
 		super.onStart(intent, startId);
-
 		Log.d("MoSeS.SERVICE", "Service Started");
 	}
 
@@ -331,47 +374,65 @@ public class MosesService extends android.app.Service implements
 		}
 		if (setNewC2DMID) {
 			this.c2dmRegistrationId = registrationId;
-			if(! alreadySuccessfullySentC2DMID && !(getSessionID().equals("")||getSessionID()==null)) {
+			if (!alreadySuccessfullySentC2DMID
+					&& !(getSessionID().equals("") || getSessionID() == null)) {
 				sendC2DMIdToServer(registrationId);
 			}
-				
+
 		}
 	}
 
-	//TODO: make very sure that the id is really sent to the server!
-	//TODO: what if session id is yet unknown?
+	// TODO: make very sure that the id is really sent to the server!
+	// TODO: what if session id is yet unknown?
 	private void sendC2DMIdToServer(String registrationId) {
-		RequestC2DM request = new RequestC2DM(new ReqTaskExecutor() {
-			@Override
-			public void updateExecution(BackgroundException c) {
-			}
-			@Override
-			public void postExecution(String s) {
-				//request sent!
-				try {
-					JSONObject j = new JSONObject(s);
-					if(RequestC2DM.C2DMRequestAccepted(j)) {
-						alreadySuccessfullySentC2DMID = true;
-						Toast.makeText(getApplicationContext(), "C2DM send request returned POSITIVE", Toast.LENGTH_LONG).show();
-						Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
-					} else {
-						Toast.makeText(getApplicationContext(), "C2DM send request returned NEGATIVE", Toast.LENGTH_LONG).show();
-						Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
+		RequestC2DM request = new RequestC2DM(
+				new ReqTaskExecutor() {
+					@Override
+					public void updateExecution(BackgroundException c) {
 					}
-					
-					
-				} catch (JSONException e) {
-					Toast.makeText(getApplicationContext(), "C2DMToMosesServer returned malformed message", Toast.LENGTH_LONG).show();
-					Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
-				}
-			}
-			@Override
-			public void handleException(Exception e) {
-				//TODO: make very sure that the id is really sent to the server!
-				Toast.makeText(getApplicationContext(), "sendC2DM failed: "+e.getMessage(), Toast.LENGTH_LONG).show();
-			}
-		}, getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
-		
+
+					@Override
+					public void postExecution(String s) {
+						// request sent!
+						try {
+							JSONObject j = new JSONObject(s);
+							if (RequestC2DM.C2DMRequestAccepted(j)) {
+								alreadySuccessfullySentC2DMID = true;
+								Toast.makeText(getApplicationContext(),
+										"C2DM send request returned POSITIVE",
+										Toast.LENGTH_LONG).show();
+								Log.i("MoSeS.C2DM",
+										"synchronized c2dm id with moses server.");
+							} else {
+								Toast.makeText(getApplicationContext(),
+										"C2DM send request returned NEGATIVE",
+										Toast.LENGTH_LONG).show();
+								Log.w("MoSeS.C2DM",
+										"C2DM request returned NEGATIVE response: "
+												+ s);
+							}
+
+						} catch (JSONException e) {
+							Toast.makeText(
+									getApplicationContext(),
+									"C2DMToMosesServer returned malformed message",
+									Toast.LENGTH_LONG).show();
+							Log.e("MoSeS.C2DM",
+									"C2DMToMosesServer returned malformed message");
+						}
+					}
+
+					@Override
+					public void handleException(Exception e) {
+						// TODO: make very sure that the id is really sent to
+						// the server!
+						Toast.makeText(getApplicationContext(),
+								"sendC2DM failed: " + e.getMessage(),
+								Toast.LENGTH_LONG).show();
+					}
+				}, getSessionID(), HardwareAbstraction.extractDeviceId(),
+				registrationId);
+
 		request.send();
 	}
 
@@ -404,14 +465,15 @@ public class MosesService extends android.app.Service implements
 		if (intent != null) {
 			String c2dmIdExtra = intent
 					.getStringExtra(C2DMReceiver.EXTRAFIELD_C2DM_ID);
-			String userStudyNotificationExtra = intent.getStringExtra(C2DMReceiver.EXTRAFIELD_USERSTUDY_NOTIFICATION);
-			
-			//if this startCommand was meant to notify about arrived c2dm id
+			String userStudyNotificationExtra = intent
+					.getStringExtra(C2DMReceiver.EXTRAFIELD_USERSTUDY_NOTIFICATION);
+
+			// if this startCommand was meant to notify about arrived c2dm id
 			if (c2dmIdExtra != null) {
 				setC2DMReceiverId(c2dmIdExtra);
 			}
-			
-			//if this startCommand was meant to notify about user study
+
+			// if this startCommand was meant to notify about user study
 			if (userStudyNotificationExtra != null) {
 				String apkId = userStudyNotificationExtra;
 				handleNeUserStudyNotificationFor(apkId);
@@ -422,31 +484,39 @@ public class MosesService extends android.app.Service implements
 
 	private void handleNeUserStudyNotificationFor(String apkId) {
 		Log.i("MoSeS.Service", "saving user study notification to the manager");
-		if(UserstudyNotificationManager.getInstance() == null) {
+		if (UserstudyNotificationManager.getInstance() == null) {
 			try {
 				UserstudyNotificationManager.init(this);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		if(UserstudyNotificationManager.getInstance() != null) {
-			UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(apkId));
-			UserstudyNotificationManager.getInstance().addNotification(notification);
+
+		if (UserstudyNotificationManager.getInstance() != null) {
+			UserStudyNotification notification = new UserStudyNotification(
+					new ExternalApplication(apkId));
+			UserstudyNotificationManager.getInstance().addNotification(
+					notification);
 			try {
-				UserstudyNotificationManager.getInstance().saveToDisk(getApplicationContext());
+				UserstudyNotificationManager.getInstance().saveToDisk(
+						getApplicationContext());
 			} catch (IOException e) {
 				Log.e("MoSeS", "Error when saving user study notifications");
 			}
-			
+
 			Intent intent = new Intent(this, ViewUserStudiesActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, notification.getApplication().getID());
-			intent.putExtra("sid", getSessionID()); //TODO: passing session id: should be handled differently later
-			Log.i("MoSeS.Service", "starting intent to display user study notification");
+			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID,
+					notification.getApplication().getID());
+			intent.putExtra("sid", getSessionID()); // TODO: passing session id:
+													// should be handled
+													// differently later
+			Log.i("MoSeS.Service",
+					"starting intent to display user study notification");
 			this.startActivity(intent);
 		} else {
-			Log.e("MoSeS.Service", "cannot display user study notification because user notification manager could not be initialized.");
+			Log.e("MoSeS.Service",
+					"cannot display user study notification because user notification manager could not be initialized.");
 		}
 	}
 

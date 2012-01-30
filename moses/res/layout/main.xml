@@ -2,18 +2,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="bottom"
     android:orientation="vertical" >
-
+
     <Button
         android:id="@+id/testfield_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/testfield_button" />
-
-    <TextView
-        android:id="@+id/success"
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0.00" >
+
+        <TextView
+            android:id="@+id/success"
+            android:layout_width="256dp"
+            android:layout_height="48dp" />
+
+        <ProgressBar
+            android:id="@+id/main_spinning_progress_bar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>

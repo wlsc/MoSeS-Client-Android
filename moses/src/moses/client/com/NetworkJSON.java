@@ -20,7 +20,7 @@ import android.util.Log;
 
 /**
  * This class gives basic request capability.
- *
+ * 
  * @author Jaco Hofmann
  */
 
@@ -32,10 +32,10 @@ public class NetworkJSON
 	 * The Class APIRequest.
 	 */
 	public class APIRequest {
-		
+
 		/** The request. */
 		public JSONObject request;
-		
+
 		/** The e. */
 		public ReqTaskExecutor e;
 	}
@@ -44,18 +44,20 @@ public class NetworkJSON
 	 * The Class BackgroundException.
 	 */
 	public class BackgroundException {
-		
+
 		/** The c. */
 		public ConnectionParam c;
-		
+
 		/** The e. */
 		public Exception e;
 
 		/**
 		 * Instantiates a new background exception.
-		 *
-		 * @param c the c
-		 * @param e the e
+		 * 
+		 * @param c
+		 *            the c
+		 * @param e
+		 *            the e
 		 */
 		public BackgroundException(ConnectionParam c, Exception e) {
 			this.c = c;
@@ -69,7 +71,9 @@ public class NetworkJSON
 	/** The e. */
 	private ReqTaskExecutor e;
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.os.AsyncTask#doInBackground(Params[])
 	 */
 	@Override
@@ -93,12 +97,16 @@ public class NetworkJSON
 
 	/**
 	 * Do post.
-	 *
-	 * @param url the url
-	 * @param j the j
+	 * 
+	 * @param url
+	 *            the url
+	 * @param j
+	 *            the j
 	 * @return the http response
-	 * @throws ClientProtocolException the client protocol exception
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws ClientProtocolException
+	 *             the client protocol exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
 	private HttpResponse doPost(String url, JSONObject j)
 			throws ClientProtocolException, IOException {
@@ -116,7 +124,9 @@ public class NetworkJSON
 		return response;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
 	 */
 	@Override
@@ -126,10 +136,12 @@ public class NetworkJSON
 
 	/**
 	 * On progress update.
-	 *
-	 * @param c the c
+	 * 
+	 * @param c
+	 *            the c
 	 */
-	protected void onProgressUpdate(BackgroundException c) {
-		e.updateExecution(c);
+	protected void onProgressUpdate(BackgroundException... c) {
+		if (c != null && e != null)
+			e.updateExecution(c[0]);
 	}
 }
