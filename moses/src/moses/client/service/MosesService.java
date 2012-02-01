@@ -265,11 +265,10 @@ public class MosesService extends android.app.Service implements
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 		checkForNewApplications = new CheckForNewApplications(this);
-
+		firstLogin();
 		registerC2DM();
 		initConfig();
-		syncDeviceInformation();
-		new HardwareAbstraction(MosesService.this).getFilter();
+		
 		checkForNewApplications.startChecking(true);
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
@@ -547,6 +546,11 @@ public class MosesService extends android.app.Service implements
 		}
 	}
 	
+	private void firstLogin() {
+		syncDeviceInformation();
+		new HardwareAbstraction(MosesService.this).getFilter();
+	}
+	
 	private void uploadFilter() {
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		String s = settingsFile.getString("sensor_data", "[]");
@@ -561,9 +565,14 @@ public class MosesService extends android.app.Service implements
 			Log.d("MoSeS.SERVICE", "Sensor filter changed to: "
 					+ sharedPreferences.getString("sensor_data", ""));
 			uploadFilter();
-		} else {
-			Log.d("MoSeS.SERVICE", "Settings changed - reloading them");
-			reloadSettings();
+		} else if(key.equals("username_pref")) {
+			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
+			mset.username = settingsFile.getString("username_pref", "");
+			firstLogin();
+		}else if(key.equals("password_pref")) {
+			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
+			mset.password = settingsFile.getString("password_pref", "");
+			firstLogin();
 		}
 	}
 }
