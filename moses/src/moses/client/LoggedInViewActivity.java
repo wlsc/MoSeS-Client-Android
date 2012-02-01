@@ -32,7 +32,7 @@ import android.widget.Button;
 public class LoggedInViewActivity extends Activity {
 
 	private static String YOURAPP_NOTIFICATION_ID = "new_installed_apk_notification_id";
-	
+
 	/** The btn logout. */
 	private Button btnLogout;
 
@@ -123,7 +123,7 @@ public class LoggedInViewActivity extends Activity {
 		btnSyncHW.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//checkHardware(true);
+				// checkHardware(true);
 			}
 		});
 
@@ -155,7 +155,9 @@ public class LoggedInViewActivity extends Activity {
 		btnShowAvailableApks.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent showAvailableApkList = new Intent(LoggedInViewActivity.this, ViewAvailableApkActivity.class);
+				Intent showAvailableApkList = new Intent(
+						LoggedInViewActivity.this,
+						ViewAvailableApkActivity.class);
 				startActivity(showAvailableApkList);
 
 			}
@@ -165,8 +167,9 @@ public class LoggedInViewActivity extends Activity {
 		btnShowInstalledApps.setOnClickListener(new Button.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent showInstalledAppsList = new Intent(LoggedInViewActivity.this,
-					ViewInstalledApplicationsActivity.class);
+				Intent showInstalledAppsList = new Intent(
+						LoggedInViewActivity.this,
+						ViewInstalledApplicationsActivity.class);
 				startActivity(showInstalledAppsList);
 
 			}
@@ -177,7 +180,8 @@ public class LoggedInViewActivity extends Activity {
 			public void onClick(View v) {
 				InstalledExternalApplicationsManager.getDefault().reset();
 				try {
-					InstalledExternalApplicationsManager.getDefault().saveToDisk(getApplicationContext());
+					InstalledExternalApplicationsManager.getDefault()
+							.saveToDisk(getApplicationContext());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -193,19 +197,22 @@ public class LoggedInViewActivity extends Activity {
 	 */
 	private boolean isMosesServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if ("moses.client.service.MosesService".equals(service.service.getClassName())) { return true; }
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service
+					.getClassName())) {
+				return true;
+			}
 		}
 		return false;
 	}
-	
+
 	public void showNotificationHandler(View v) {
-//		showNotification("New sensing applications are available!\nClick here to view all applications", "MoSeS", false, 123);
+		// showNotification("New sensing applications are available!\nClick here to view all applications",
+		// "MoSeS", false, 123);
 		Intent intent = new Intent(this, NotifyAboutNewApksActivity.class);
 		this.startActivity(intent);
 	}
-	
-	
 
 	/*
 	 * (non-Javadoc)
@@ -230,7 +237,8 @@ public class LoggedInViewActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		bindService();
-//		Toast.makeText(LoggedInViewActivity.this, "" + isMosesServiceRunning(), Toast.LENGTH_LONG).show();
+		// Toast.makeText(LoggedInViewActivity.this, "" +
+		// isMosesServiceRunning(), Toast.LENGTH_LONG).show();
 	}
 
 	/*
