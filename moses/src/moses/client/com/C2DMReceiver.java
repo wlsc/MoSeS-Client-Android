@@ -1,10 +1,13 @@
 package moses.client.com;
 
 import moses.client.service.MosesService;
+import moses.client.service.helpers.C2DMManager;
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
@@ -12,7 +15,6 @@ public class C2DMReceiver extends BroadcastReceiver {
 	private static final String C2DN_MESSAGETYPE_FIELD = "MESSAGE";
 	private static final String C2DN_USERSTUDY_APKID_FIELD = "APKID";
 	public static final String EXTRAFIELD_C2DM_ID = "c2dmId";
-	private boolean isRegistered;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -25,7 +27,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private void handleMessage(Context context, Intent intent) {
+	private static void handleMessage(Context context, Intent intent) {
 		String messagetype = intent.getExtras().getString(
 				C2DN_MESSAGETYPE_FIELD);
 		String apkidString = intent.getExtras().getString(
@@ -47,16 +49,11 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 
 		if (receivedGoodThing) {
-			Intent mosesServiceStartIntent = new Intent(context,
-					MosesService.class);
-			mosesServiceStartIntent.putExtra(EXTRAFIELD_USERSTUDY_NOTIFICATION,
-					apkidString);
-			// this directs to "onStartCommand(Intent, int, int)" in the service
-			context.startService(mosesServiceStartIntent);
+			UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
 		}
 	}
 
-	private void handleRegistration(Context context, Intent intent) {
+	private static void handleRegistration(Context context, Intent intent) {
 		String registrationId = intent.getStringExtra("registration_id");
 		if (intent.getStringExtra("error") != null) {
 			// TODO: handle errors
@@ -79,16 +76,17 @@ public class C2DMReceiver extends BroadcastReceiver {
 		} else if (intent.getStringExtra("unregistered") != null) {
 			// unregistration done
 		} else if (registrationId != null) {
-			isRegistered = true;
-			sendRegisteredMsgToService(registrationId, context);
+			Toast.makeText(MosesService.getInstance().getApplicationContext(), "C2dm!", Toast.LENGTH_LONG).show();
+			notifyAboutC2DMId(registrationId, context);
 		}
 	}
 
-	private void sendRegisteredMsgToService(final String registrationId,
+	private static void notifyAboutC2DMId(final String registrationId,
 			Context context) {
-		Intent intent = new Intent(context, MosesService.class);
-		intent.putExtra(EXTRAFIELD_C2DM_ID, registrationId);
-		// this directs to "onStartCommand(Intent, int, int)" in the service
-		context.startService(intent);
+//		Intent intent = new Intent(context, MosesService.class);
+//		intent.putExtra(EXTRAFIELD_C2DM_ID, registrationId);
+//		// this directs to "onStartCommand(Intent, int, int)" in the service
+//		context.startService(intent);
+		C2DMManager.setC2DMReceiverId(registrationId);
 	}
 }

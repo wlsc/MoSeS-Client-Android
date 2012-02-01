@@ -10,8 +10,13 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import moses.client.ViewUserStudiesActivity;
+import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.service.MosesService;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 
 public class UserstudyNotificationManager {
 	private static UserstudyNotificationManager instance;
@@ -35,38 +40,6 @@ public class UserstudyNotificationManager {
 			return instance;
 	}
 	
-	public UserstudyNotificationManager() {
-		this.notifications = new LinkedList<UserStudyNotification>();
-	}
-
-	/**
-	 * Saves all managed references to external apps to the default file (see
-	 * Util.getAppdatabaseFile)
-	 * 
-	 * @param appContext
-	 * @throws IOException
-	 *             if there went something wrong at opening or writing the file.
-	 */
-	public void saveToDisk(Context appContext) throws IOException {
-		FileWriter writer;
-		BufferedWriter bufWriter = null;
-		try {
-			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
-			bufWriter = new BufferedWriter(writer);
-			for (UserStudyNotification notification : notifications) {
-				bufWriter.append(notification.asOnelineString() + "\n");
-			}
-		} catch (IOException e) {
-			throw e;
-		} finally {
-			try {
-				if (bufWriter != null) bufWriter.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	/**
 	 * loads an InstalledExternalApplicationsManager from the standard file (see
 	 * Util.getAppdatabaseFile). If this file does not exist, this method
@@ -108,6 +81,38 @@ public class UserstudyNotificationManager {
 		}
 	}
 
+	public UserstudyNotificationManager() {
+		this.notifications = new LinkedList<UserStudyNotification>();
+	}
+
+	/**
+	 * Saves all managed references to external apps to the default file (see
+	 * Util.getAppdatabaseFile)
+	 * 
+	 * @param appContext
+	 * @throws IOException
+	 *             if there went something wrong at opening or writing the file.
+	 */
+	public void saveToDisk(Context appContext) throws IOException {
+		FileWriter writer;
+		BufferedWriter bufWriter = null;
+		try {
+			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
+			bufWriter = new BufferedWriter(writer);
+			for (UserStudyNotification notification : notifications) {
+				bufWriter.append(notification.asOnelineString() + "\n");
+			}
+		} catch (IOException e) {
+			throw e;
+		} finally {
+			try {
+				if (bufWriter != null) bufWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public void addNotification(UserStudyNotification notification) {
 		if(getNotificationForApkId(notification.getApplication().getID())!= null) {
 			removeNotificationWithApkId(notification.getApplication().getID());
@@ -134,9 +139,49 @@ public class UserstudyNotificationManager {
 	public UserStudyNotification getNotificationForApkId(String userstudyId) {
 		for(UserStudyNotification notification: notifications) {
 			if(notification.getApplication().getID().equals(userstudyId)) {
-				return notification;
+				return notification; 
 			}
 		}
 		return null;
+	}
+	
+	
+	public static void userStudyNotificationArrived(String apkId) {
+		handleUserStudyNotificationFor(apkId);
+	}
+	
+	private static void handleUserStudyNotificationFor(String apkId) {
+		Log.i("MoSeS.Service", "saving user study notification to the manager");
+		if (UserstudyNotificationManager.getInstance() == null) {
+			try {
+				UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (UserstudyNotificationManager.getInstance() != null) {
+			UserStudyNotification notification = new UserStudyNotification(
+					new ExternalApplication(apkId));
+			UserstudyNotificationManager.getInstance().addNotification(
+					notification);
+			try {
+				UserstudyNotificationManager.getInstance().saveToDisk(
+					MosesService.getInstance().getApplicationContext());
+			} catch (IOException e) {
+				Log.e("MoSeS", "Error when saving user study notifications");
+			}
+
+			Intent intent = new Intent(MosesService.getInstance(), ViewUserStudiesActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID,
+					notification.getApplication().getID());
+			Log.i("MoSeS.Service",
+					"starting intent to display user study notification");
+			MosesService.getInstance().startActivity(intent);
+		} else {
+			Log.e("MoSeS.Service",
+					"cannot display user study notification because user notification manager could not be initialized.");
+		}
 	}
 }

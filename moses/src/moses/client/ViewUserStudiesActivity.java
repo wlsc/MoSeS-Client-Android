@@ -59,7 +59,7 @@ public class ViewUserStudiesActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		String studyApkId = getIntent().getExtras().getString(
 				EXTRA_USER_STUDY_APK_ID);
-		sid = getIntent().getExtras().getString("sid");
+		sid = MosesService.getInstance().getSessionID();
 		if (studyApkId != null) {
 			UserStudyNotification notification = UserstudyNotificationManager
 					.getInstance().getNotificationForApkId(studyApkId);
