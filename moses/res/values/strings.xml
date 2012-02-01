@@ -40,5 +40,6 @@
     <string name="menu_hardware_info">Hardware infos</string>
     <string name="list_avail_apps">List installed apps.</string>
     <string name="browse_avail">Browse available apps.</string>
+    <string name="no_username_password">Please enter your username and password before logging in.</string>
 
 </resources>

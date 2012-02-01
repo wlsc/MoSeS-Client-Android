@@ -17,10 +17,12 @@ import moses.client.com.requests.RequestC2DM;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
+import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
+import android.R;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -63,14 +65,12 @@ public class MosesService extends android.app.Service implements
 	 * The Class MosesSettings.
 	 */
 	public class MosesSettings {
-		/** The loginauto. */
-		public boolean loginauto;
 
 		/** The username. */
-		public String username;
+		public String username = "";
 
 		/** The password. */
-		public String password;
+		public String password = "";
 
 		/** The sessionid. */
 		public String sessionid = "";
@@ -94,6 +94,8 @@ public class MosesService extends android.app.Service implements
 		public ConcurrentLinkedQueue<Executor> postLogoutHook = new ConcurrentLinkedQueue<Executor>();
 
 		public String url = "http://www.da-sense.de/moses/test.php";
+
+		public ConcurrentLinkedQueue<ExecutorWithObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutorWithObject>();
 
 	}
 
@@ -132,13 +134,8 @@ public class MosesService extends android.app.Service implements
 	 */
 	private void initConfig() {
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		mset.loginauto = settingsFile.getBoolean("autologin_pref", false);
 		mset.username = settingsFile.getString("username_pref", "");
 		mset.password = settingsFile.getString("password_pref", "");
-	}
-
-	public boolean isAutoLogin() {
-		return mset.loginauto;
 	}
 
 	/**
@@ -186,6 +183,15 @@ public class MosesService extends android.app.Service implements
 		mset.sessionid = "";
 	}
 
+	public void registerChangeTextFieldHook(ExecutorWithObject e) {
+		if(!mset.changeTextFieldHook.contains(e))
+			mset.changeTextFieldHook.add(e);
+	}
+	
+	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
+		mset.changeTextFieldHook.remove(e);
+	}
+	
 	/**
 	 * Login.
 	 * 
@@ -193,6 +199,12 @@ public class MosesService extends android.app.Service implements
 	 *            the e
 	 */
 	public void login() {
+		if(mset.username.equals("") || mset.password.equals("")) {
+			for(ExecutorWithObject e : mset.changeTextFieldHook) {
+				e.execute(getString(moses.client.R.string.no_username_password));
+			}
+			return;
+		}
 		if (isOnline()) {
 			if (!mset.loggedIn && !mset.loggingIn) {
 				Log.d("MoSeS.SERVICE", "Logging in...");

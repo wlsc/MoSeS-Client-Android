@@ -5,6 +5,7 @@ import moses.client.abstraction.HardwareAbstraction;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
+import moses.client.service.helpers.ExecutorWithObject;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
@@ -85,6 +86,16 @@ public class MosesActivity extends Activity {
 			((TextView) findViewById(R.id.success)).setText("Offline");
 		}
 	};
+	
+	ExecutorWithObject changeTextFieldHook = new ExecutorWithObject() {
+		
+		@Override
+		public void execute(Object o) {
+			if(o instanceof String) {
+				((TextView) findViewById(R.id.success)).setText((String)o);
+			}
+		}
+	};
 
 	/** This Object represents the underlying service. **/
 	public MosesService mService;
@@ -113,13 +124,13 @@ public class MosesActivity extends Activity {
 			mService.registerLoginEndHook(loginEndHook);
 
 			mService.registerPostLogoutHook(postLogoutHook);
+			
+			mService.registerChangeTextFieldHook(changeTextFieldHook);
 
-			// If we're already logged in or the user wants auto login start
-			// logged in view
-			if (mService.isAutoLogin())
-				connect();
 			if (mService.isLoggedIn()) {
 				((TextView) findViewById(R.id.success)).setText("Online");
+			} else {
+				((TextView) findViewById(R.id.success)).setText("Offline");
 			}
 		}
 
@@ -135,22 +146,9 @@ public class MosesActivity extends Activity {
 
 			mService.unregisterPostLogoutHook(postLogoutHook);
 
+			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
+			
 			mBound = false;
-		}
-	};
-
-	private Handler mHandler = new Handler();
-
-	private boolean stopPosting;
-
-	private Runnable mIsServiceAliveTask = new Runnable() {
-
-		@Override
-		public void run() {
-			if (!isMosesServiceRunning())
-				startAndBindService();
-			if (!stopPosting)
-				mHandler.postDelayed(this, 1000);
 		}
 	};
 
@@ -171,8 +169,6 @@ public class MosesActivity extends Activity {
 	 * Disconnect from the service if it is connected and stop logged in check
 	 */
 	private void disconnectService() {
-		stopPosting = true;
-		mHandler.removeCallbacks(mIsServiceAliveTask);
 		if (mBound) {
 			unbindService(mConnection);
 		}
@@ -211,8 +207,6 @@ public class MosesActivity extends Activity {
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		startAndBindService();
-		mHandler.removeCallbacks(mIsServiceAliveTask);
-		mHandler.postDelayed(mIsServiceAliveTask, 1000);
 	}
 
 	/**
@@ -273,9 +267,6 @@ public class MosesActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		stopPosting = false;
-		mHandler.removeCallbacks(mIsServiceAliveTask);
-		mHandler.postDelayed(mIsServiceAliveTask, 1000);
 		((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
 				.setVisibility(View.GONE);
 		startAndBindService();
@@ -295,11 +286,10 @@ public class MosesActivity extends Activity {
 	 */
 	private void startAndBindService() {
 		Intent intent = new Intent(this, MosesService.class);
-		if(isMosesServiceRunning() && mBound) {
-			Log.d("MoSeS.ACTIVITY", "Service crashed - restarting.");
+		if(null == startService(intent)) {
 			stopService(intent);
+			startService(intent);
 		}
-		startService(intent);
 		bindService(intent, mConnection, 0);
 	}
 
