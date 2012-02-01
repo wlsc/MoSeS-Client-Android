@@ -29,7 +29,7 @@ import android.util.Log;
  * @author Jaco Hofmann
  */
 public class MosesService extends android.app.Service implements
-		OnSharedPreferenceChangeListener {
+		OnSharedPreferenceChangeListener { 
 
 
 	/**
