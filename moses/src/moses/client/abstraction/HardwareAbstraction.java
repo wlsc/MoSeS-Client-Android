@@ -3,6 +3,7 @@
  */
 package moses.client.abstraction;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -103,6 +104,25 @@ public class HardwareAbstraction {
 		}
 	}
 
+	/**
+	 * Get all available sensors from the operating system.
+	 * 
+	 * @return All available sensors on this device
+	 */
+	public static List<Sensor> getSensors() {
+		if (MosesService.getInstance() != null) {
+			List<Sensor> sensors = new ArrayList<Sensor>();
+			SensorManager s = (SensorManager) MosesService.getInstance()
+					.getSystemService(Context.SENSOR_SERVICE);
+			for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL))
+				sensors.add(sen);
+
+			return sensors;
+		} else {
+			return null;
+		}
+	}
+
 	private class ReqClassGetHWParams implements ReqTaskExecutor {
 
 		@Override
@@ -129,15 +149,16 @@ public class HardwareAbstraction {
 						sb.append(ESensor.values()[sensors.getInt(i)]);
 					}
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
-					AlertDialog ad = new AlertDialog.Builder(appContext).create();  
-					ad.setCancelable(false); // This blocks the 'BACK' button  
-					ad.setMessage(sb.toString());  
-					ad.setButton("OK", new DialogInterface.OnClickListener() {  
-					    @Override  
-					    public void onClick(DialogInterface dialog, int which) {  
-					        dialog.dismiss();                      
-					    }  
-					});  
+					AlertDialog ad = new AlertDialog.Builder(appContext)
+							.create();
+					ad.setCancelable(false); // This blocks the 'BACK' button
+					ad.setMessage(sb.toString());
+					ad.setButton("OK", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
 					ad.show();
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
@@ -294,7 +315,7 @@ public class HardwareAbstraction {
 	/**
 	 * This method sends a set_filter Request to the website
 	 */
-	public void setFilter(final List<Integer> filter) {
+	public void setFilter(final String filter) {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 
 		if (MosesService.getInstance() != null)

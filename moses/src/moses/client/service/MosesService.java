@@ -27,6 +27,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -149,6 +150,8 @@ public class MosesService extends android.app.Service implements
 
 	public void setFilter(JSONArray filter) {
 		mset.filter = filter;
+		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
+		settingsFile.edit().putString("sensor_data", filter.toString()).commit();
 	}
 
 	public JSONArray getFilter() {
@@ -184,14 +187,14 @@ public class MosesService extends android.app.Service implements
 	}
 
 	public void registerChangeTextFieldHook(ExecutorWithObject e) {
-		if(!mset.changeTextFieldHook.contains(e))
+		if (!mset.changeTextFieldHook.contains(e))
 			mset.changeTextFieldHook.add(e);
 	}
-	
+
 	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
 		mset.changeTextFieldHook.remove(e);
 	}
-	
+
 	/**
 	 * Login.
 	 * 
@@ -199,8 +202,8 @@ public class MosesService extends android.app.Service implements
 	 *            the e
 	 */
 	public void login() {
-		if(mset.username.equals("") || mset.password.equals("")) {
-			for(ExecutorWithObject e : mset.changeTextFieldHook) {
+		if (mset.username.equals("") || mset.password.equals("")) {
+			for (ExecutorWithObject e : mset.changeTextFieldHook) {
 				e.execute(getString(moses.client.R.string.no_username_password));
 			}
 			return;
@@ -542,11 +545,24 @@ public class MosesService extends android.app.Service implements
 					"cannot display user study notification because user notification manager could not be initialized.");
 		}
 	}
+	
+	private void uploadFilter() {
+		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
+		String s = settingsFile.getString("sensor_data", "[]");
+		HardwareAbstraction ha = new HardwareAbstraction(this);
+		ha.setFilter(s);
+	}
 
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-		Log.d("MoSeS.SERVICE", "Settings changed - reloading them");
-		reloadSettings();
+		if (key.equals("sensor_data")) {
+			Log.d("MoSeS.SERVICE", "Sensor filter changed to: "
+					+ sharedPreferences.getString("sensor_data", ""));
+			uploadFilter();
+		} else {
+			Log.d("MoSeS.SERVICE", "Settings changed - reloading them");
+			reloadSettings();
+		}
 	}
 }

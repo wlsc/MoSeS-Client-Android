@@ -15,7 +15,16 @@
             android:summary="@string/summary_password_pref"
             android:title="@string/title_password_pref" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/device_prefs" >
+    <PreferenceCategory android:title="@string/device_prefs">
+        <moses.client.preferences.ListPreferenceMultiSelect
+            android:key="sensor_data"
+            android:title="@string/sensor_data_pref_title"
+            android:dialogTitle="@string/sensor_data_pref_dialog_title"
+            android:defaultValue="[]"
+            android:summary="@string/sensor_data_pref_summary"
+            android:entries="@array/entries" 
+            android:entryValues="@array/entryValues"
+            />
     </PreferenceCategory>
 
 </PreferenceScreen>

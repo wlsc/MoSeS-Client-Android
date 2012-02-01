@@ -188,8 +188,8 @@ public class ChooseSensorsActivity extends Activity {
 	 */
 	protected void setFilter(List<Integer> filter) {
 		HardwareAbstraction hw = new HardwareAbstraction(this);
-		hw.setFilter(filter);
 		JSONArray j = new JSONArray(filter);
+		hw.setFilter(j.toString());
 		mService.setFilter(j);
 	}
 

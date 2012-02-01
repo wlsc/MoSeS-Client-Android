@@ -28,14 +28,14 @@ public class RequestSetFilter {
 	ReqTaskExecutor e;
 
 	public RequestSetFilter(ReqTaskExecutor e, String sessionID,
-			String deviceID, List<Integer> filter) {
+			String deviceID, String filter) {
 		j = new JSONObject();
 		this.e = e;
 		try {
 			j.put("MESSAGE", "SET_FILTER");
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", deviceID);
-			j.put("FILTER", (new JSONArray(filter)));
+			j.put("FILTER", filter);
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
