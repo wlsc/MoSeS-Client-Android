@@ -152,6 +152,7 @@ public class MosesService extends android.app.Service implements
 		mset.filter = filter;
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		settingsFile.edit().putString("sensor_data", filter.toString()).commit();
+		Log.d("MoSeS.SERVICE","Set data to: " + settingsFile.getString("sensor_data", "[]"));
 	}
 
 	public JSONArray getFilter() {

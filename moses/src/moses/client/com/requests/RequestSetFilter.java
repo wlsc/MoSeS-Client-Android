@@ -35,7 +35,7 @@ public class RequestSetFilter {
 			j.put("MESSAGE", "SET_FILTER");
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", deviceID);
-			j.put("FILTER", filter);
+			j.put("FILTER", new JSONArray(filter));
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
