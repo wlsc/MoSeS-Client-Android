@@ -352,7 +352,7 @@ public class MosesService extends android.app.Service implements
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
+		thisInstance = null;
 		Log.d("MoSeS.SERVICE", "Service Destroyed");
 
 	}
