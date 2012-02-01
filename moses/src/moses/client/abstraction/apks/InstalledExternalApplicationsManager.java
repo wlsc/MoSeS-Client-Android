@@ -15,6 +15,7 @@ import moses.client.abstraction.ApkMethods;
 import moses.client.util.FileLocationUtil;
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * An InstalledExternalApplicationsManager holds references to installed
@@ -38,7 +39,7 @@ public class InstalledExternalApplicationsManager {
 	 *             if something goes wrong with reading/parsing the manager
 	 *             file.
 	 */
-	public static void init(Context appContext) throws IOException {
+	public static void init(Context appContext) {
 		defaultInstance = loadAppDatabase(appContext);
 	}
 
@@ -196,7 +197,7 @@ public class InstalledExternalApplicationsManager {
 	 * @return the loaded manager
 	 * @throws IOException
 	 */
-	public static InstalledExternalApplicationsManager loadAppDatabase(Context context) throws IOException {
+	public static InstalledExternalApplicationsManager loadAppDatabase(Context context) {
 		File settingsFile = FileLocationUtil.getAppDatabaseFile(context);
 		InstalledExternalApplicationsManager manager = new InstalledExternalApplicationsManager();
 		if (!reset && settingsFile.exists()) {
@@ -214,13 +215,16 @@ public class InstalledExternalApplicationsManager {
 				}
 				return manager;
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 				return new InstalledExternalApplicationsManager();
 			} catch (IOException e) {
-				throw e;
+				return new InstalledExternalApplicationsManager();
 			} finally {
 				if (reader != null) {
-					if (bufReader != null) bufReader.close();
+					if (bufReader != null) try {
+						bufReader.close();
+					} catch (IOException e) {
+						Log.i("MoSeS.IO", "couldn't close reader");
+					}
 				}
 			}
 		} else {

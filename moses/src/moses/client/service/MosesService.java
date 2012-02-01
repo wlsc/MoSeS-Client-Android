@@ -13,6 +13,7 @@ import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -239,11 +240,8 @@ public class MosesService extends android.app.Service implements
 			}
 		});
 		
-		try {
-			InstalledExternalApplicationsManager.init(this);
-		} catch (IOException e) {
-			Log.d("MoSeS.SERVICE", "Couldn't initialise application manager: " + e.toString());
-		}
+		InstalledExternalApplicationsManager.init(this);
+		UserstudyNotificationManager.init(this);
 		
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)

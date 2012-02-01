@@ -32,7 +32,7 @@ public class UserstudyNotificationManager {
 	 *             if something goes wrong with reading/parsing the manager
 	 *             file.
 	 */
-	public static void init(Context appContext) throws IOException {
+	public static void init(Context appContext) {
 		instance = loadInstance(appContext);
 	}
 	
@@ -47,9 +47,8 @@ public class UserstudyNotificationManager {
 	 * 
 	 * @param context
 	 * @return the loaded manager
-	 * @throws IOException
 	 */
-	public static UserstudyNotificationManager loadInstance(Context context) throws IOException {
+	public static UserstudyNotificationManager loadInstance(Context context) {
 		File settingsFile = FileLocationUtil.getNotificationDatabaseFile(context);
 		UserstudyNotificationManager manager = new UserstudyNotificationManager();
 		if (settingsFile.exists()) {
@@ -67,13 +66,16 @@ public class UserstudyNotificationManager {
 				}
 				return manager;
 			} catch (FileNotFoundException e) {
-				e.printStackTrace();
 				return new UserstudyNotificationManager();
 			} catch (IOException e) {
-				throw e;
+				return new UserstudyNotificationManager();
 			} finally {
 				if (reader != null) {
-					if (bufReader != null) bufReader.close();
+					if (bufReader != null) try {
+						bufReader.close();
+					} catch (IOException e) {
+						Log.i("MoSeS.IO", "couldn't close reader");
+					}
 				}
 			}
 		} else {
@@ -153,11 +155,7 @@ public class UserstudyNotificationManager {
 	private static void handleUserStudyNotificationFor(String apkId) {
 		Log.i("MoSeS.Service", "saving user study notification to the manager");
 		if (UserstudyNotificationManager.getInstance() == null) {
-			try {
-				UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
 		}
 
 		if (UserstudyNotificationManager.getInstance() != null) {
