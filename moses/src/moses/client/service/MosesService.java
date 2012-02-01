@@ -66,6 +66,8 @@ public class MosesService extends android.app.Service implements
 
 		public boolean loggingIn = false;
 
+		public boolean firstStart = true;
+
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
@@ -240,6 +242,8 @@ public class MosesService extends android.app.Service implements
 		InstalledExternalApplicationsManager.init(this);
 		UserstudyNotificationManager.init(this);
 		
+		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("first_start", true);
+
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
