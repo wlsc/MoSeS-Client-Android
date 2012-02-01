@@ -1,9 +1,11 @@
 package moses.client.service;
 
+import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONArray;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.C2DMManager;
 import moses.client.service.helpers.CheckForNewApplications;
@@ -236,7 +238,13 @@ public class MosesService extends android.app.Service implements
 				mset.loggingIn = false;
 			}
 		});
-
+		
+		try {
+			InstalledExternalApplicationsManager.init(this);
+		} catch (IOException e) {
+			Log.d("MoSeS.SERVICE", "Couldn't initialise application manager: " + e.toString());
+		}
+		
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
