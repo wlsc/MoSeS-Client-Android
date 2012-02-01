@@ -127,23 +127,6 @@ public class LoggedInViewActivity extends Activity {
 			}
 		});
 
-		btnSelectFilter = (Button) findViewById(R.id.selectfilter);
-		btnSelectFilter.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Intent chooseSensors = new Intent(LoggedInViewActivity.this, ChooseSensorsActivity.class);
-				startActivity(chooseSensors);
-			}
-		});
-
-		btnGetHW = (Button) findViewById(R.id.gethw_button);
-		btnGetHW.setOnClickListener(new Button.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				getHardwareParameters();
-			}
-		});
-
 		/*
 		 * Implementing the functionality of the ping button
 		 */
