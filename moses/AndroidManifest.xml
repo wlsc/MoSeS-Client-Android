@@ -63,7 +63,7 @@
         </activity>
         <activity android:name="moses.client.service.helpers.NotifyAboutNewApksActivity" >
         </activity>
-        <activity android:name="moses.client.MosesPreferences" >
+        <activity android:name=".preferences.MosesPreferences" >
         </activity>
         
         <receiver android:name="moses.client.service.StartupIntentReceiver" >

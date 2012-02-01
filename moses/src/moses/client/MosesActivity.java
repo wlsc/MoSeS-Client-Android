@@ -2,6 +2,7 @@ package moses.client;
 
 import moses.client.R.id;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
