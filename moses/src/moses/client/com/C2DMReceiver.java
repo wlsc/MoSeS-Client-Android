@@ -19,7 +19,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals(
-				"com.google.android.c2dm.intent.REGISTRATION")) {
+				"com.google.android.c2dm.intent.REGISTRATION")) { 
 			handleRegistration(context, intent);
 		} else if (intent.getAction().equals(
 				"com.google.android.c2dm.intent.RECEIVE")) {

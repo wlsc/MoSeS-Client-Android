@@ -1,6 +1,5 @@
 package moses.client.service;
 
-import java.io.IOException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONArray;
@@ -8,7 +7,6 @@ import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.C2DMManager;
-import moses.client.service.helpers.CheckForNewApplications;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.service.helpers.Login;
@@ -96,7 +94,6 @@ public class MosesService extends android.app.Service implements
 	/** The mset. */
 	private MosesSettings mset = new MosesSettings();
 
-	private CheckForNewApplications checkForNewApplications;
 
 	private static MosesService thisInstance = null;
 
@@ -246,12 +243,10 @@ public class MosesService extends android.app.Service implements
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
-		checkForNewApplications = new CheckForNewApplications(this);
 		C2DMManager.requestC2DMId(MosesService.this);
 		firstLogin();
 		initConfig();
 		
-		checkForNewApplications.startChecking(true);
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 

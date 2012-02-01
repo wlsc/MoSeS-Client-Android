@@ -31,7 +31,7 @@ public class C2DMManager {
 
 	public static void setC2DMReceiverId(String registrationId) {
 		// TODO: if the c2dm id changed, resend?
-		Log.i("MoSeS.C2DM", "received C2DM ~~~");
+		Log.i("MoSeS.C2DM", "received C2DM " + registrationId);
 		boolean setNewC2DMID = false;
 		if (registrationId != null) {
 			if (c2dmRegistrationId == null) {
