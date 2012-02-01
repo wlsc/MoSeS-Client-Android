@@ -73,6 +73,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 			// device side.
 			// INVALID_SENDER The sender account is not recognized.
 			// PHONE_REGISTRATION_ERROR
+			Log.e("MoSeS.C2DM", "C2DM-error: " + intent.getStringExtra("error"));
 		} else if (intent.getStringExtra("unregistered") != null) {
 			// unregistration done
 		} else if (registrationId != null) {

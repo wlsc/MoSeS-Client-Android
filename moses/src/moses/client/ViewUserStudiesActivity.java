@@ -26,12 +26,15 @@ import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -47,7 +50,6 @@ public class ViewUserStudiesActivity extends Activity implements
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
 	private UserStudyNotification handleSingleNotificationData;
-	private String sid;
 
 	/*
 	 * (non-Javadoc)
@@ -59,7 +61,6 @@ public class ViewUserStudiesActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		String studyApkId = getIntent().getExtras().getString(
 				EXTRA_USER_STUDY_APK_ID);
-		sid = MosesService.getInstance().getSessionID();
 		if (studyApkId != null) {
 			UserStudyNotification notification = UserstudyNotificationManager
 					.getInstance().getNotificationForApkId(studyApkId);
@@ -92,113 +93,145 @@ public class ViewUserStudiesActivity extends Activity implements
 		// ad.show();
 	}
 
-	private void requestApkInfo(String id) {
-		final RequestGetApkInfo r = new RequestGetApkInfo(
-				new ReqTaskExecutor() {
-					@Override
-					public void updateExecution(BackgroundException c) {
-						// TODO Auto-generated method stub
-
-					}
-
-					@Override
-					public void postExecution(String s) {
-						try {
-							JSONObject j = new JSONObject(s);
-							if (RequestGetApkInfo.isInfoRetrived(j)) {
-								String name = j.getString("NAME");
-								String descr = j.getString("DESCR");
-								handleSingleNotificationData.getApplication()
-										.setName(name);
-								handleSingleNotificationData.getApplication()
-										.setDescription(descr);
-
-								showDescisionDialog(handleSingleNotificationData);
-							} else {
-								Log.e("MoSeS.UserStudy",
-										"user study info request: Server returned negative"
-												+ j.toString());
-								Toast.makeText(
-										getApplicationContext(),
-										"user study info request: Server returned negative"
-												+ j.toString(),
-										Toast.LENGTH_LONG).show();
-							}
-						} catch (JSONException e) {
-							Log.e("MoSeS.UserStudy",
-									"requesting study information: json exception"
-											+ e.getMessage());
-							Toast.makeText(
-									getApplicationContext(),
-									"requesting study information: json exception"
-											+ e.getMessage(), Toast.LENGTH_LONG)
-									.show();
-						}
-					}
-
-					@Override
-					public void handleException(Exception e) {
-						Log.e("MoSeS.UserStudy",
-								"couldn't load user study information"
-										+ e.getMessage());
-						Toast.makeText(
-								getApplicationContext(),
-								"couldn't load user study information"
-										+ e.getMessage(), Toast.LENGTH_LONG)
-								.show();
-					}
-				}, id, sid);
+	private void requestApkInfo(final String id) {
+		
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
-
+				
 				@Override
 				public void execute() {
+					final RequestGetApkInfo r = new RequestGetApkInfo(
+						new ReqTaskExecutor() {
+							@Override
+							public void updateExecution(BackgroundException c) {
+								// TODO Auto-generated method stub
+
+							}
+
+							@Override
+							public void postExecution(String s) {
+								try {
+									JSONObject j = new JSONObject(s);
+									if (RequestGetApkInfo.isInfoRetrived(j)) {
+										String name = j.getString("NAME");
+										String descr = j.getString("DESCR");
+										handleSingleNotificationData.getApplication()
+												.setName(name);
+										handleSingleNotificationData.getApplication()
+												.setDescription(descr);
+
+										showDescisionDialog(handleSingleNotificationData);
+									} else {
+										Log.e("MoSeS.UserStudy",
+												"user study info request: Server returned negative"
+														+ j.toString());
+										Toast.makeText(
+												getApplicationContext(),
+												"user study info request: Server returned negative"
+														+ j.toString(),
+												Toast.LENGTH_LONG).show();
+										ViewUserStudiesActivity.this.finish(); //TODO: better handling, but for now,,
+									}
+								} catch (JSONException e) {
+									Log.e("MoSeS.UserStudy",
+											"requesting study information: json exception"
+													+ e.getMessage());
+									Toast.makeText(
+											getApplicationContext(),
+											"requesting study information: json exception"
+													+ e.getMessage(), Toast.LENGTH_LONG)
+											.show();
+									ViewUserStudiesActivity.this.finish(); //TODO: better handling, but for now,,
+								}
+							}
+
+							@Override
+							public void handleException(Exception e) {
+								Log.e("MoSeS.UserStudy",
+										"couldn't load user study information"
+												+ e.getMessage());
+								Toast.makeText(
+										getApplicationContext(),
+										"couldn't load user study information"
+												+ e.getMessage(), Toast.LENGTH_LONG)
+										.show();
+							}
+						}, id, MosesService.getInstance().getSessionID());
+					
 					r.send();
 				}
 			});
 	}
 
+	public void dialogClickLater(View view) {
+		Log.i("MoSeS.Userstudy", "click listener works");
+	}
+	
 	protected void showDescisionDialog(final UserStudyNotification notification) {
-		String message = "A new user study is avalable for you!\n\nName: "
-				+ notification.getApplication().getName()
-				+ "\n\n"
-				+ notification.getApplication().getDescription()
-				+ "\n\nDo you want to participate by installing the external application for this study?";
-		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		Log.i("MoSeS.Userstudy", notification.getApplication().getID());
+		final Dialog myDialog = new Dialog(this);
+		myDialog.setContentView(R.layout.userstudynotificationdialog);
+		myDialog.setTitle("A new user study of the sensing app " + notification.getApplication().getName() + " is available for you");
+		((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: " + notification.getApplication().getName());
+		((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText("" + notification.getApplication().getDescription());
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(new View.OnClickListener() {
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				switch (which) {
-				case DialogInterface.BUTTON_POSITIVE:
-					requestUrlForApplication(notification.getApplication());
-					dialog.dismiss();
-					break;
-
-				case DialogInterface.BUTTON_NEGATIVE:
-					ViewUserStudiesActivity.this.finish();
-					break;
-				}
+			public void onClick(View v) {
+				Log.i("MoSes.Userstudy", "starting download process...");
+				requestUrlForApplication(notification.getApplication());
+				myDialog.dismiss();
 			}
-		};
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage(message)
-				.setPositiveButton("Yes", dialogClickListener)
-				.setNegativeButton("No", dialogClickListener).show();
-
-		// Dialog d = new
-		// AlertDialog ad = new AlertDialog.Builder(this).create();
-		// ad.setCancelable(false); // This blocks the 'BACK' button
-		// ad.setMessage("New user study avalable!\n"+
-		// notification.getApplication().getName()+"\n\n"+notification.getApplication().getDescription());
-		// ad.setButton("OK", new DialogInterface.OnClickListener() {
-		// @Override
-		// public void onClick(DialogInterface dialog, int which) {
-		// requestUrlForApplication(notification.getApplication());
-		// dialog.dismiss();
-		// // ViewUserStudiesActivity.this.finish();
-		// }
-		// });
-		// ad.show();
+		});
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				myDialog.dismiss();
+			}
+		});
+		
+		myDialog.setOwnerActivity(this);
+		myDialog.show();
+		
+//		String message = "A new user study is avalable for you!\n\nName: "
+//				+ notification.getApplication().getName()
+//				+ "\n\n"
+//				+ notification.getApplication().getDescription()
+//				+ "\n\nDo you want to participate by installing the external application for this study?";
+//		DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				switch (which) {
+//				case DialogInterface.BUTTON_POSITIVE:
+//					requestUrlForApplication(notification.getApplication());
+//					dialog.dismiss();
+//					break;
+//
+//				case DialogInterface.BUTTON_NEGATIVE:
+//					ViewUserStudiesActivity.this.finish();
+//					break;
+//				}
+//			}
+//		};
+//
+//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//		builder.setMessage(message)
+//				.setPositiveButton("Yes", dialogClickListener)
+//				.setNegativeButton("No", dialogClickListener).show();
+//
+//		// Dialog d = new
+//		// AlertDialog ad = new AlertDialog.Builder(this).create();
+//		// ad.setCancelable(false); // This blocks the 'BACK' button
+//		// ad.setMessage("New user study avalable!\n"+
+//		// notification.getApplication().getName()+"\n\n"+notification.getApplication().getDescription());
+//		// ad.setButton("OK", new DialogInterface.OnClickListener() {
+//		// @Override
+//		// public void onClick(DialogInterface dialog, int which) {
+//		// requestUrlForApplication(notification.getApplication());
+//		// dialog.dismiss();
+//		// // ViewUserStudiesActivity.this.finish();
+//		// }
+//		// });
+//		// ad.show();
 	}
 
 	public void apkInstallClickHandler(View v) {
@@ -265,6 +298,7 @@ public class ViewUserStudiesActivity extends Activity implements
 		Toast.makeText(getApplicationContext(),
 				"Downloadlink request failed:\n" + concatStacktrace(e),
 				Toast.LENGTH_LONG).show();
+		this.finish(); //TODO: better handling, but for now,,
 	}
 
 	@Override
@@ -280,6 +314,7 @@ public class ViewUserStudiesActivity extends Activity implements
 				"Download failed.\n"
 						+ concatStacktrace(downloader.getDownloadException()),
 				Toast.LENGTH_LONG).show();
+		this.finish(); //TODO: better handling, but for now,,
 	}
 
 	private void installDownloadedApk(File result,
