@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/item_connect" android:title="@string/menu_connect"></item>
-    <item android:id="@+id/item_settings" android:title="@string/menu_settings"></item>
-    <item android:id="@+id/item_exit" android:title="@string/menu_exit"></item>
-    <item android:id="@+id/item_more" android:title="@string/menu_more">
+
+    <item
+        android:id="@+id/item_connect"
+        android:title="@string/menu_connect" android:icon="@drawable/ic_menu_login">
+    </item>
+    <item
+        android:id="@+id/item_settings"
+        android:title="@string/menu_settings" android:icon="@drawable/ic_menu_preferences">
+    </item>
+    <item
+        android:id="@+id/item_exit"
+        android:title="@string/menu_exit" android:icon="@drawable/ic_menu_close_clear_cancel">
+    </item>
+    <item
+        android:id="@+id/item_more"
+        android:title="@string/menu_more" android:icon="@drawable/ic_menu_more">
         <menu>
-            <item android:id="@+id/item_hardware_info" android:title="@string/menu_hardware_info"/>
+            <item
+                android:id="@+id/item_hardware_info"
+                android:title="@string/menu_hardware_info" android:icon="@drawable/ic_menu_info_details"/>
         </menu>
     </item>
-   
+
 </menu>
