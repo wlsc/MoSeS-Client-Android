@@ -252,8 +252,6 @@ public class HardwareAbstraction {
 	 * stored for this device
 	 */
 	public void getFilter() {
-		// Connect to the service
-		Intent intent = new Intent(appContext, MosesService.class);
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
