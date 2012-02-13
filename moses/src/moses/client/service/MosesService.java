@@ -244,14 +244,24 @@ public class MosesService extends android.app.Service implements
 		
 		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("first_start", true);
 
+		if(mset.firstStart) {
+			Log.d("MoSeS.SERVICE", "First login.");
+			startedFirstTime();
+			PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("first_start", false).commit();
+		}
+		
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
-		C2DMManager.requestC2DMId(MosesService.this);
 		firstLogin();
 		initConfig();
 		
 		Log.d("MoSeS.SERVICE", "Service Created");
+	}
+	
+	private void startedFirstTime() {
+		C2DMManager.requestC2DMId(MosesService.this);
+		syncDeviceInformation();
 	}
 
 	public void executeLoggedIn(Executor e) {
@@ -372,7 +382,6 @@ public class MosesService extends android.app.Service implements
 	}
 
 	private void firstLogin() {
-		syncDeviceInformation();
 		new HardwareAbstraction(MosesService.this).getFilter();
 	}
 	
