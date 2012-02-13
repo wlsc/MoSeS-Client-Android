@@ -52,4 +52,5 @@
     <string name="dialog_duplicated_devid_cancle">Cancle</string>
     <string name="pref_deviceid">Device ID</string>
     <string name="pref_deviceid_message">Please chose a device id.</string>
+    <string name="no_deviceid">No device id entered.</string>
 </resources>

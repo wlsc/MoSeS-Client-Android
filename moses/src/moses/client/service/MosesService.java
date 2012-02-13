@@ -29,8 +29,7 @@ import android.util.Log;
  * @author Jaco Hofmann
  */
 public class MosesService extends android.app.Service implements
-		OnSharedPreferenceChangeListener { 
-
+		OnSharedPreferenceChangeListener {
 
 	/**
 	 * The Class LocalBinder.
@@ -96,7 +95,6 @@ public class MosesService extends android.app.Service implements
 	/** The mset. */
 	private MosesSettings mset = new MosesSettings();
 
-
 	private static MosesService thisInstance = null;
 
 	public static MosesService getInstance() {
@@ -133,8 +131,10 @@ public class MosesService extends android.app.Service implements
 	public void setFilter(JSONArray filter) {
 		mset.filter = filter;
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		settingsFile.edit().putString("sensor_data", filter.toString()).commit();
-		Log.d("MoSeS.SERVICE","Set data to: " + settingsFile.getString("sensor_data", "[]"));
+		settingsFile.edit().putString("sensor_data", filter.toString())
+				.commit();
+		Log.d("MoSeS.SERVICE",
+				"Set data to: " + settingsFile.getString("sensor_data", "[]"));
 	}
 
 	public JSONArray getFilter() {
@@ -184,6 +184,12 @@ public class MosesService extends android.app.Service implements
 		if (mset.username.equals("") || mset.password.equals("")) {
 			for (ExecutorWithObject e : mset.changeTextFieldHook) {
 				e.execute(getString(moses.client.R.string.no_username_password));
+			}
+			return;
+		}
+		if (!PreferenceManager.getDefaultSharedPreferences(this).contains("deviceid_pref")) {
+			for (ExecutorWithObject e : mset.changeTextFieldHook) {
+				e.execute(getString(moses.client.R.string.no_deviceid));
 			}
 			return;
 		}
@@ -238,27 +244,29 @@ public class MosesService extends android.app.Service implements
 				mset.loggingIn = false;
 			}
 		});
-		
+
 		InstalledExternalApplicationsManager.init(this);
 		UserstudyNotificationManager.init(this);
-		
-		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("first_start", true);
 
-		if(mset.firstStart) {
+		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this)
+				.getBoolean("first_start", true);
+
+		if (mset.firstStart) {
 			Log.d("MoSeS.SERVICE", "First login.");
 			startedFirstTime();
-			PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("first_start", false).commit();
+			PreferenceManager.getDefaultSharedPreferences(this).edit()
+					.putBoolean("first_start", false).commit();
 		}
-		
+
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
 		firstLogin();
 		initConfig();
-		
+
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
-	
+
 	private void startedFirstTime() {
 		C2DMManager.requestC2DMId(MosesService.this);
 		syncDeviceInformation(false);
@@ -361,9 +369,6 @@ public class MosesService extends android.app.Service implements
 		initConfig();
 	}
 
-
-
-
 	/**
 	 * sends device information to the moses server
 	 * 
@@ -384,7 +389,7 @@ public class MosesService extends android.app.Service implements
 	private void firstLogin() {
 		new HardwareAbstraction(MosesService.this).getFilter();
 	}
-	
+
 	private void uploadFilter() {
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		String s = settingsFile.getString("sensor_data", "[]");
@@ -399,15 +404,15 @@ public class MosesService extends android.app.Service implements
 			Log.d("MoSeS.SERVICE", "Sensor filter changed to: "
 					+ sharedPreferences.getString("sensor_data", ""));
 			uploadFilter();
-		} else if(key.equals("username_pref")) {
+		} else if (key.equals("username_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
 			mset.username = sharedPreferences.getString("username_pref", "");
 			firstLogin();
-		} else if(key.equals("password_pref")) {
+		} else if (key.equals("password_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
 			mset.password = sharedPreferences.getString("password_pref", "");
 			firstLogin();
-		} else if(key.equals("deviceid_pref")) {
+		} else if (key.equals("deviceid_pref")) {
 			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 			syncDeviceInformation(false);
 			uploadFilter();
