@@ -29,12 +29,15 @@ public class RequestSetHardwareParameters {
 	ReqTaskExecutor e;
 
 	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo,
-			String sessionID) {
+			boolean force, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {
 			j.put("MESSAGE", "SET_HARDWARE_PARAMS");
 			j.put("SESSIONID", sessionID);
+			j.put("FORCE", force);
+			j.put("VENDOR_NAME", hwInfo.getDeviceVendor());
+			j.put("MODEL_NAME", hwInfo.getDeviceModel());
 			j.put("DEVICEID", hwInfo.getDeviceID());
 			j.put("ANDVER", hwInfo.getSdkbuildversion());
 			j.put("SENSORS", (new JSONArray(hwInfo.getSensors())));

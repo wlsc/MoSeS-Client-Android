@@ -261,7 +261,7 @@ public class MosesService extends android.app.Service implements
 	
 	private void startedFirstTime() {
 		C2DMManager.requestC2DMId(MosesService.this);
-		syncDeviceInformation();
+		syncDeviceInformation(false);
 	}
 
 	public void executeLoggedIn(Executor e) {
@@ -368,8 +368,8 @@ public class MosesService extends android.app.Service implements
 	 * sends device information to the moses server
 	 * 
 	 */
-	private void syncDeviceInformation() {
-		new HardwareAbstraction(this).syncDeviceInformation();
+	public void syncDeviceInformation(boolean force) {
+		new HardwareAbstraction(this).syncDeviceInformation(force);
 	}
 
 	public boolean isOnline() {
@@ -401,12 +401,16 @@ public class MosesService extends android.app.Service implements
 			uploadFilter();
 		} else if(key.equals("username_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-			mset.username = settingsFile.getString("username_pref", "");
+			mset.username = sharedPreferences.getString("username_pref", "");
 			firstLogin();
-		}else if(key.equals("password_pref")) {
+		} else if(key.equals("password_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-			mset.password = settingsFile.getString("password_pref", "");
+			mset.password = sharedPreferences.getString("password_pref", "");
 			firstLogin();
+		} else if(key.equals("deviceid_pref")) {
+			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
+			syncDeviceInformation(false);
+			uploadFilter();
 		}
 	}
 }
