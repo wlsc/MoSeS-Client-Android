@@ -83,10 +83,8 @@ public class HardwareAbstraction {
 				j = new JSONObject(s);
 				if (RequestGetFilter.parameterAcquiredFromServer(j)) {
 					JSONArray filter = j.getJSONArray("FILTER");
-					if (mBound) {
-						mService.setFilter(filter);
-						appContext.unbindService(mConnection);
-					}
+					if (MosesService.getInstance() != null)
+						MosesService.getInstance().setFilter(filter);
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Parameters NOT retrived successfully! Server returned negative response");
@@ -249,30 +247,6 @@ public class HardwareAbstraction {
 		appContext = c;
 	}
 
-	/** The m service. */
-	public MosesService mService;
-
-	/** The m bound. */
-	public static boolean mBound = false;
-
-	/** The m connection. */
-	private ServiceConnection mConnection = new ServiceConnection() {
-
-		@Override
-		public void onServiceConnected(ComponentName className, IBinder service) {
-			// We've bound to LocalService, cast the IBinder and get
-			// LocalService instance
-			LocalBinder binder = (LocalBinder) service;
-			mService = binder.getService();
-			mBound = true;
-		}
-
-		@Override
-		public void onServiceDisconnected(ComponentName arg0) {
-			mBound = false;
-		}
-	};
-
 	/**
 	 * This method sends a Request to the website for obtainint the filter
 	 * stored for this device
@@ -280,7 +254,6 @@ public class HardwareAbstraction {
 	public void getFilter() {
 		// Connect to the service
 		Intent intent = new Intent(appContext, MosesService.class);
-		appContext.bindService(intent, mConnection, 0);
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(new Executor() {
