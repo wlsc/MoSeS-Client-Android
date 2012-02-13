@@ -16,7 +16,6 @@ import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
-import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -24,15 +23,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.os.IBinder;
 import android.util.Log;
 
 /**
