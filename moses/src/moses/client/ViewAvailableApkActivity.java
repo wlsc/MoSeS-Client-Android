@@ -9,6 +9,7 @@ import java.util.List;
 import moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadObserver;
 import moses.client.abstraction.apks.ApkDownloadTask;
 import moses.client.abstraction.apks.ExternalApplication;
@@ -145,6 +146,7 @@ public class ViewAvailableApkActivity extends Activity implements
 
 			InstalledExternalApplicationsManager.getDefault().saveToDisk(
 					getApplicationContext());
+			new APKInstalled(externalAppRef.getID());
 		} catch (IOException e) {
 			// TODO: the package name could not be read from the apk file,
 			// or there was a problem with saving the installed-app-manager. to

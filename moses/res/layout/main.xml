@@ -4,30 +4,24 @@
     android:layout_height="fill_parent"
     android:gravity="bottom"
     android:orientation="vertical" >
-
+
     <Button
         android:id="@+id/btn_list_installed_apps"
         style="@android:style/TextAppearance.Inverse"
         android:layout_width="match_parent"
-        android:layout_height="81dp"
+        android:layout_height="80dp"
         android:text="@string/list_avail_apps" />
-
+
     <Button
         android:id="@+id/btn_browse_available_apps"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dip"
         android:text="@string/browse_avail" />
-
-    <Button
-        android:id="@+id/testfield_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/testfield_button" />
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dip"
         android:layout_weight="0.00" >
 
         <TextView

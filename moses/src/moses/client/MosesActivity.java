@@ -247,18 +247,6 @@ public class MosesActivity extends Activity {
 
 					}
 				});
-
-		((TextView) findViewById(R.id.success)).setText("Offline");
-		((Button) findViewById(R.id.testfield_button))
-				.setOnClickListener(new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						Intent mainDialog = new Intent(MosesActivity.this,
-								LoggedInViewActivity.class);
-						startActivityForResult(mainDialog, 0);
-					}
-				});
 	}
 
 	/**
@@ -303,6 +291,16 @@ public class MosesActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
+		return true;
+	}
+	
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(mBound) {
+			if (mService.isLoggedIn())
+				menu.getItem(0).setTitle(R.string.menu_disconnect);
+			else
+				menu.getItem(0).setTitle(R.string.menu_connect);
+		}
 		return true;
 	}
 

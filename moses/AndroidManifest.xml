@@ -51,10 +51,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="moses.client.LoggedInViewActivity" >
-        </activity>
-        <activity android:name="moses.client.ChooseSensorsActivity" >
-        </activity>
         <activity android:name="moses.client.ViewAvailableApkActivity" >
         </activity>
         <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
