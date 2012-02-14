@@ -1,20 +1,15 @@
 package moses.client;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
-import moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
-import moses.client.abstraction.apks.APKInstalled;
-import moses.client.abstraction.apks.ApkDownloadObserver;
-import moses.client.abstraction.apks.ApkDownloadTask;
+import moses.client.abstraction.apks.ApkDownloadManager;
+import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
-import moses.client.abstraction.apks.InstalledExternalApplication;
-import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,8 +23,7 @@ import android.widget.Toast;
  * @author Simon L
  */
 public class ViewAvailableApkActivity extends Activity implements
-		ApkDownloadObserver, ApkListRequestObserver,
-		ApkDownloadLinkRequestObserver {
+		ApkListRequestObserver {
 
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
@@ -78,94 +72,42 @@ public class ViewAvailableApkActivity extends Activity implements
 	}
 
 	private void handleInstallApp(ExternalApplication app) {
-		// showMessageBox("Installing: \"" + app.getName()+"\"");
-		// request Url for app
-		requestUrlForApplication(app);
-	}
-
-	private void requestUrlForApplication(ExternalApplication app) {
-		ApkMethods.getDownloadLinkFor(app, this);
-		// appUrlReceived(app, "http://simlei.de/external.apk");
-	}
-
-	@Override
-	public void apkDownloadLinkRequestFinished(String url,
-			ExternalApplication app) {
-		// fire download of apk
-		try {
-			ApkDownloadTask downloadTask = new ApkDownloadTask(this, new URL(
-					url), this.getApplicationContext(),
-					generateApkFileNameFor(app));
-			downloadTask.setExternalApplicationReference(app);
-			downloadTask.execute();
-		} catch (MalformedURLException e) {
-			Toast.makeText(
-					getApplicationContext(),
-					"Server sent malformed url; could not download application: "
-							+ url, Toast.LENGTH_LONG).show();
-		}
-	}
-
-	@Override
-	public void apkDownloadLinkRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(),
-				"Downloadlink request failed:\n" + concatStacktrace(e),
-				Toast.LENGTH_LONG).show();
-	}
-
-	@Override
-	public void apkDownloadFinished(ApkDownloadTask downloader, File result,
-			ExternalApplication externalAppRef) {
-		installDownloadedApk(result, externalAppRef);
-	}
-
-	@Override
-	public void apkDownloadFailed(ApkDownloadTask downloader) {
-		Toast.makeText(
-				getApplicationContext(),
-				"Download failed.\n"
-						+ concatStacktrace(downloader.getDownloadException()),
-				Toast.LENGTH_LONG).show();
-	}
-
-	private void installDownloadedApk(File result,
-			ExternalApplication externalAppRef) {
-		ApkMethods.installApk(result, this);
-		try {
-			if (InstalledExternalApplicationsManager.getDefault() == null) {
-				InstalledExternalApplicationsManager
-						.init(getApplicationContext());
+		final ApkDownloadManager downloader = new ApkDownloadManager(app, getApplicationContext());
+		Observer observer = new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if(downloader.getState() == ApkDownloadManager.State.ERROR) {
+					//TODO: error msgs shouldve been already shown, still.. something is to be done here still
+				} else if(downloader.getState() == ApkDownloadManager.State.FINISHED) {
+					installDownloadedApk(downloader.getFileResult(), downloader.getExternalApplicationResult());
+				}
 			}
-			String packageName = ApkMethods.getPackageNameFromApk(result,
-					getApplicationContext());
-
-			InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(
-					packageName, externalAppRef);
-			InstalledExternalApplicationsManager.getDefault()
-					.addExternalApplication(installedExternalApp);
-
-			InstalledExternalApplicationsManager.getDefault().saveToDisk(
-					getApplicationContext());
-			new APKInstalled(externalAppRef.getID());
-		} catch (IOException e) {
-			// TODO: the package name could not be read from the apk file,
-			// or there was a problem with saving the installed-app-manager. to
-			// be programmed yet!
-			// TODO: program check that installation was really successful
-			e.printStackTrace();
-		}
+		};
+		downloader.addObserver(observer);
+		downloader.start();
 	}
 
-	private static String generateApkFileNameFor(ExternalApplication app) {
-		return app.getID() + ".apk";
+	private static void installDownloadedApk(File result,
+			final ExternalApplication externalAppRef) {
+		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
+		installer.addObserver(new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if(installer.getState() == ApkInstallManager.State.ERROR) {
+					//TODO:errors shouldve been shown already by the installer; still, something is to be done here..
+				} else if(installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
+					//TODO:how to handle if the user cancels the installation? 
+				} else if(installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
+					//TODO:?new APKInstalled(externalAppRef.getID());
+					//insaller already registered the application with the installedapplicationmanager
+				}
+			}
+		});
+		installer.start();
 	}
+
 
 	private void requestExternalApplications() {
-		List<ExternalApplication> apps;
-		// ExternalApplication app1 = new ExternalApplication("1");
-		// ExternalApplication app2 = new ExternalApplication("2");
-		// apps = Arrays.asList(new ExternalApplication[]{app1, app2});
-
 		ApkMethods.getExternalApplications(this);
 	}
 

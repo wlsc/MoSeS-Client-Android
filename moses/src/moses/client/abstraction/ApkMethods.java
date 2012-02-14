@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import moses.client.abstraction.apks.ApkInstallObserver;
 import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.abstraction.apks.InstallApkActivity;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -20,12 +22,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.util.Log;
 
 public class ApkMethods {
@@ -160,22 +160,23 @@ public class ApkMethods {
 	/**
 	 * Installs a given apk file.
 	 * 
-	 * @param apk
-	 * @param baseActivity
+	 * @param apk the apk file to install
+	 * @param baseActivity the base activity
+	 * @throws IOException if the file does not exist
 	 */
-	public static void installApk(File apk, Activity baseActivity) {
-		Intent promptInstall = new Intent(Intent.ACTION_VIEW);
-		if (apk.exists()) {
-			promptInstall.setDataAndType(Uri.fromFile(apk),
-					"application/vnd.android.package-archive");
-			try {
-				baseActivity.startActivity(promptInstall);
-			} catch (ActivityNotFoundException e) {
-				// should not occur
-				e.printStackTrace();
+	public static void installApk(File apk, ExternalApplication appRef, ApkInstallObserver o) throws IOException { //TODO: remove throw clause
+		MosesService service = MosesService.getInstance();
+		if(service != null) {
+			if (apk.exists()) {
+				InstallApkActivity.setAppToInstall(apk, appRef, o);
+				Intent installActivityIntent = new Intent(service, InstallApkActivity.class);
+				installActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				service.startActivity(installActivityIntent);
+			} else {
+				o.apkInstallError(apk, appRef, new RuntimeException("Could not install apk file because it was nonexistent."));
 			}
 		} else {
-			throw new IllegalArgumentException("apk file does not exist");
+			o.apkInstallError(apk, appRef, new RuntimeException("Could not install apk file because the service was not running."));
 		}
 	}
 

@@ -15,6 +15,7 @@ import moses.client.abstraction.ApkMethods;
 import moses.client.util.FileLocationUtil;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
@@ -35,9 +36,6 @@ public class InstalledExternalApplicationsManager {
 	 * 
 	 * @param appContext
 	 *            the application context
-	 * @throws IOException
-	 *             if something goes wrong with reading/parsing the manager
-	 *             file.
 	 */
 	public static void init(Context appContext) {
 		defaultInstance = loadAppDatabase(appContext);
@@ -82,18 +80,31 @@ public class InstalledExternalApplicationsManager {
 	 * @param ID
 	 *            the moses ID
 	 * @param baseActivity
-	 * @throws IllegalArgumentException
-	 *             if the apk file does not exist
-	 * @throws IOException
-	 *             if parsing the apk file for the package name did not succeed
+	 * @throws IOException 
 	 * @throws NameNotFoundException
 	 *             if the apk file was not installed correctly
 	 */
-	public void installAndManageExternalApplication(File apk, String ID, Activity baseActivity)
-		throws IllegalArgumentException, IOException {
-		ApkMethods.installApk(apk, baseActivity);
-		String packageName = ApkMethods.getPackageNameFromApk(apk, baseActivity);
-		addExternalApplication(new InstalledExternalApplication(packageName, ID));
+	public void installAndManageExternalApplication(File apk, final String ID, final Activity baseActivity) throws IOException {
+		ApkMethods.installApk(apk, new ExternalApplication(ID), new ApkInstallObserver() {
+			@Override
+			public void apkInstallSuccessful(File apk, ExternalApplication appRef) {
+				String packageName;
+				try {
+					packageName = ApkMethods.getPackageNameFromApk(apk, baseActivity);
+					addExternalApplication(new InstalledExternalApplication(packageName, ID));
+				} catch (IOException e) {
+					Log.e("MoSeS.Install", "Error at registering installed app with moses-id" + ID, e);
+				}
+			}
+			@Override
+			public void apkInstallError(File apk, ExternalApplication appRef, Throwable e) {
+				Log.e("MoSeS.Install", "Error at installing moses-id" + ID, e);
+			}
+			@Override
+			public void apkInstallCleanAbort(File apk, ExternalApplication appRef) {
+				Log.i("MoSeS.Install", "aborted installing moses-id" + ID);
+			}
+		});
 	}
 
 	/**
