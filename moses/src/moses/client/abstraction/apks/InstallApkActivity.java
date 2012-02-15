@@ -50,18 +50,18 @@ public class InstallApkActivity extends Activity {
 		clearAppToInstall();
 	}
 
-	private boolean hackAlwaysAssumeInstalled = true;
+	//TODO:only temporary
+	private boolean hackAlwaysAssumeInstalled = false;
 	private void installApk(File apkToInstall, ExternalApplication externalAppToInstall, ApkInstallObserver o) {
 		Intent promptInstall = new Intent(Intent.ACTION_VIEW);
 		promptInstall.setDataAndType(Uri.fromFile(apkToInstall),
 				"application/vnd.android.package-archive");
-		callArgMapFile.put(apkToInstall.hashCode(), apkToInstall);
-		callArgMapAppRef.put(apkToInstall.hashCode(), externalAppToInstall);
-		callArgMapObserver.put(apkToInstall.hashCode(), o);
-		this.startActivityForResult(promptInstall, apkToInstall.hashCode());
-		//TODO: assume it was installed successfully, until broadcast receiver or other solution is implemented
+		callArgMapFile.put(Math.abs(apkToInstall.hashCode()), apkToInstall);
+		callArgMapAppRef.put(Math.abs(apkToInstall.hashCode()), externalAppToInstall);
+		callArgMapObserver.put(Math.abs(apkToInstall.hashCode()), o);
+		this.startActivityForResult(promptInstall, Math.abs(apkToInstall.hashCode()));
 		if(hackAlwaysAssumeInstalled) {
-			this.onActivityResult(apkToInstall.hashCode(), RESULT_OK, null);
+			this.onActivityResult(Math.abs(apkToInstall.hashCode()), RESULT_OK, null);
 		}
 	}
 	
@@ -80,7 +80,10 @@ public class InstallApkActivity extends Activity {
 			if(installed) {
 				o.apkInstallSuccessful(apkFile, appRef);
 			} else {
-				//TODO: apparently there is no way to determine whether the installation crashed, or whether it was explicitely cancelled. Maybe put some more thinking into it, but for now...
+				//TODO: apparently there is no way to determine whether the installation 
+				//crashed, or whether it was explicitely cancelled. 
+				//Maybe put some more thinking into it, but for now, always signalize 
+				//"clean user cancel"
 				if(resultCode == RESULT_CANCELED) {
 					o.apkInstallCleanAbort(apkFile, appRef);
 				} else {
