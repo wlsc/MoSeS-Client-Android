@@ -238,7 +238,7 @@ public class HardwareAbstraction {
 							"FAILURE_DEVICEID_DUPLICATED")) {
 						showForceDialog(j.getString("VENDOR_NAME"),
 								j.getString("MODEL_NAME"),
-								j.getString("ANDVER"));
+								j.getString("ANDVER"), MosesService.getInstance().getActivityContext());
 					} else {
 						Log.d("MoSeS.HARDWARE_ABSTRACTION",
 								"Parameters NOT set successfully! Invalid session id.");
@@ -256,50 +256,49 @@ public class HardwareAbstraction {
 			}
 		}
 
-		public void showForceDialog(String vendor, String model, String andver) {
-			if (MosesService.getInstance() != null) {
-				AlertDialog a = new AlertDialog.Builder(
-						MosesService.getInstance()).create();
-				a.setIcon(R.drawable.ic_launcher);
-				a.setTitle(R.string.dialog_duplicated_devid_title);
-				a.setMessage(MosesService.getInstance().getString(
-						R.string.dialog_duplicated_devid_text)
-						+ "\nVendor: "
-						+ vendor
-						+ "\nModel: "
-						+ model
-						+ "\nSDK Version: "
-						+ andver
-						+ "\n"
-						+ MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_text2));
-				a.setIcon(R.drawable.ic_launcher);
-				a.setButton(
-						MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_update),
-						new DialogInterface.OnClickListener() {
+		public void showForceDialog(String vendor, String model, String andver,
+				Context c) {
+			AlertDialog a = new AlertDialog.Builder(c).create();
+			a.setIcon(R.drawable.ic_launcher);
+			a.setTitle(R.string.dialog_duplicated_devid_title);
+			a.setMessage(MosesService.getInstance().getString(
+					R.string.dialog_duplicated_devid_text)
+					+ "\nVendor: "
+					+ vendor
+					+ "\nModel: "
+					+ model
+					+ "\nSDK Version: "
+					+ andver
+					+ "\n"
+					+ MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_text2));
+			a.setIcon(R.drawable.ic_launcher);
+			a.setButton(
+					MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_update),
+					new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								MosesService.getInstance()
-										.syncDeviceInformation(true);
-								arg0.dismiss();
-							}
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							MosesService.getInstance().syncDeviceInformation(
+									true);
+							arg0.dismiss();
+						}
 
-						});
-				a.setButton2(
-						MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_cancle),
-						new DialogInterface.OnClickListener() {
+					});
+			a.setButton2(
+					MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_cancle),
+					new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								arg0.dismiss();
-							}
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							arg0.dismiss();
+						}
 
-						});
-				a.setIcon(R.drawable.ic_launcher);
-			}
+					});
+			a.setIcon(R.drawable.ic_launcher);
+			a.show();
 		}
 	}
 

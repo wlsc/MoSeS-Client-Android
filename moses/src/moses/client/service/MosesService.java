@@ -72,6 +72,10 @@ public class MosesService extends android.app.Service implements
 		public boolean loggingIn = false;
 
 		public boolean firstStart = true;
+		
+		public String deviceid = "";
+		
+		public Context activitycontext = null;
 
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
@@ -125,6 +129,7 @@ public class MosesService extends android.app.Service implements
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		mset.username = settingsFile.getString("username_pref", "");
 		mset.password = settingsFile.getString("password_pref", "");
+		mset.deviceid = settingsFile.getString("deviceid_pref", "");
 	}
 
 	/**
@@ -463,5 +468,13 @@ public class MosesService extends android.app.Service implements
 			syncDeviceInformation(false);
 			uploadFilter();
 		}
+	}
+
+	public void setActivityContext(Context c) {
+		mset.activitycontext = c;
+	}
+	
+	public Context getActivityContext() {
+		return mset.activitycontext;
 	}
 }

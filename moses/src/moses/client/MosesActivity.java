@@ -125,6 +125,8 @@ public class MosesActivity extends Activity {
 			mService.registerPostLogoutHook(postLogoutHook);
 
 			mService.registerChangeTextFieldHook(changeTextFieldHook);
+			
+			mService.setActivityContext(MosesActivity.this);
 
 			if (mService.isLoggedIn()) {
 				((TextView) findViewById(R.id.success)).setText("Online");
@@ -151,6 +153,8 @@ public class MosesActivity extends Activity {
 			mService.unregisterPostLogoutHook(postLogoutHook);
 
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
+			
+			mService.setActivityContext(null);
 
 			mBound = false;
 		}
@@ -166,6 +170,15 @@ public class MosesActivity extends Activity {
 			if (!mService.isLoggedIn()) {
 				mService.login();
 			}
+		}
+	}
+	
+	public void onWindowFocusChanged(boolean f) {
+		super.onWindowFocusChanged(f);
+		if(MosesService.getInstance() != null) {
+			MosesService.getInstance().setActivityContext(this);
+		} else {
+			MosesService.getInstance().setActivityContext(null);
 		}
 	}
 

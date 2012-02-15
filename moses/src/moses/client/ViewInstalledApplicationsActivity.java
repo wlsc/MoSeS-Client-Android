@@ -94,6 +94,7 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			items[counter] = app.getName();
 			counter++;
 		}
+		
 		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
 				R.layout.installedapplistitem, R.id.installedAppListItemText,
 				items) {

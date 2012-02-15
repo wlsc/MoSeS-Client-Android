@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import moses.client.R;
 import moses.client.abstraction.ESensor;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.service.MosesService;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -51,6 +52,15 @@ public class MosesPreferences extends PreferenceActivity {
 
 		addPreferencesFromResource(R.xml.moses_pref);
 		loadSensors();
+	}
+	
+	public void onWindowFocusChanged(boolean f) {
+		super.onWindowFocusChanged(f);
+		if(MosesService.getInstance() != null) {
+			MosesService.getInstance().setActivityContext(this);
+		} else {
+			MosesService.getInstance().setActivityContext(null);
+		}
 	}
 
 }
