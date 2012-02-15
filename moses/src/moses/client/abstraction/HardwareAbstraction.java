@@ -17,7 +17,6 @@ import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
-import moses.client.service.MosesService.MosesSettings;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -25,10 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
@@ -200,7 +197,6 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestSetFilter.filterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Filter set successfully, server returned positive response");
@@ -230,7 +226,6 @@ public class HardwareAbstraction {
 
 		@Override
 		public void postExecution(String s) {
-			Log.d("HARDWARE_ABSTRACTION", "From server: " + s);
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);

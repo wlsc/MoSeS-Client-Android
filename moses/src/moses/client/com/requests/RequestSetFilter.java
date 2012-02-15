@@ -1,7 +1,5 @@
 package moses.client.com.requests;
 
-import java.util.List;
-
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
 

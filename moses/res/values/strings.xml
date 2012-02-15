@@ -53,4 +53,7 @@
     <string name="pref_deviceid">Device ID</string>
     <string name="pref_deviceid_message">Please chose a device id.</string>
     <string name="no_deviceid">No device id entered.</string>
+    <string name="welcome_to_moses_title_string">Welcome to MoSeS!</string>
+    <string name="welcome_to_moses_string">Before you can start to experience the wonderful world of MoSeS, you have to provide some informations about your account and the sensors you want to share.</string>
+    <string name="button_okay">Okay</string>
 </resources>

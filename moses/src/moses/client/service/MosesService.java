@@ -3,16 +3,22 @@ package moses.client.service;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.json.JSONArray;
+
+import moses.client.MosesActivity;
+import moses.client.R;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
+import moses.client.preferences.MosesPreferences;
 import moses.client.service.helpers.C2DMManager;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
 import moses.client.userstudy.UserstudyNotificationManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -253,16 +259,6 @@ public class MosesService extends android.app.Service implements
 		InstalledExternalApplicationsManager.init(this);
 		UserstudyNotificationManager.init(this);
 
-		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this)
-				.getBoolean("first_start", true);
-
-		if (mset.firstStart) {
-			Log.d("MoSeS.SERVICE", "First login.");
-			startedFirstTime();
-			PreferenceManager.getDefaultSharedPreferences(this).edit()
-					.putBoolean("first_start", false).commit();
-		}
-
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -272,9 +268,8 @@ public class MosesService extends android.app.Service implements
 		Log.d("MoSeS.SERVICE", "Service Created");
 	}
 
-	private void startedFirstTime() {
-		C2DMManager.requestC2DMId(MosesService.this);
-		syncDeviceInformation(false);
+	public void startedFirstTime(Context c) {
+		showWelcomeDialog(c);
 	}
 
 	public void executeLoggedIn(Executor e) {
@@ -404,6 +399,27 @@ public class MosesService extends android.app.Service implements
 	 */
 	public void syncDeviceInformation(boolean force) {
 		new HardwareAbstraction(this).syncDeviceInformation(force);
+	}
+
+	public void showWelcomeDialog(final Context c) {
+		AlertDialog a = new AlertDialog.Builder(c).create();
+		a.setCancelable(false); // This blocks the 'BACK' button
+		a.setMessage(getString(R.string.welcome_to_moses_string));
+		a.setTitle(getString(R.string.welcome_to_moses_title_string));
+		a.setButton("OK", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				C2DMManager.requestC2DMId(MosesService.this);
+				Intent mainDialog = new Intent(c,
+						MosesPreferences.class);
+				c.startActivity(mainDialog);
+				dialog.dismiss();
+			}
+		});
+		a.show();
+		Log.d("MoSeS.SERVICE", "First login.");
+		PreferenceManager.getDefaultSharedPreferences(this).edit()
+				.putBoolean("first_start", false).commit();
 	}
 
 	public boolean isOnline() {
