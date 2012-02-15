@@ -15,7 +15,8 @@
             android:dialogTitle="@string/dialog_title_password_pref"
             android:key="password_pref"
             android:summary="@string/summary_password_pref"
-            android:title="@string/title_password_pref" />
+            android:title="@string/title_password_pref"
+            android:password="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/device_prefs" >
         <moses.client.preferences.ListPreferenceMultiSelect

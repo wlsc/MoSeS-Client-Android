@@ -1,6 +1,5 @@
 package moses.client;
 
-import moses.client.R.id;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.preferences.MosesPreferences;
@@ -18,14 +17,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
@@ -92,13 +90,13 @@ public class MosesActivity extends TabActivity {
 			((TextView) findViewById(R.id.success)).setText("Offline");
 		}
 	};
-	
+
 	ExecutorWithObject changeTextFieldHook = new ExecutorWithObject() {
-		
+
 		@Override
 		public void execute(Object o) {
-			if(o instanceof String) {
-				((TextView) findViewById(R.id.success)).setText((String)o);
+			if (o instanceof String) {
+				((TextView) findViewById(R.id.success)).setText((String) o);
 			}
 		}
 	};
@@ -130,13 +128,20 @@ public class MosesActivity extends TabActivity {
 			mService.registerLoginEndHook(loginEndHook);
 
 			mService.registerPostLogoutHook(postLogoutHook);
-			
+
 			mService.registerChangeTextFieldHook(changeTextFieldHook);
+			
+			mService.setActivityContext(MosesActivity.this);
 
 			if (mService.isLoggedIn()) {
 				((TextView) findViewById(R.id.success)).setText("Online");
 			} else {
 				((TextView) findViewById(R.id.success)).setText("Offline");
+			}
+
+			if (PreferenceManager.getDefaultSharedPreferences(
+					MosesActivity.this).getBoolean("first_start", true)) {
+				mService.startedFirstTime(MosesActivity.this);
 			}
 		}
 
@@ -154,6 +159,8 @@ public class MosesActivity extends TabActivity {
 
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
 			
+			mService.setActivityContext(null);
+
 			mBound = false;
 		}
 	};
@@ -168,6 +175,15 @@ public class MosesActivity extends TabActivity {
 			if (!mService.isLoggedIn()) {
 				mService.login();
 			}
+		}
+	}
+	
+	public void onWindowFocusChanged(boolean f) {
+		super.onWindowFocusChanged(f);
+		if(MosesService.getInstance() != null) {
+			MosesService.getInstance().setActivityContext(this);
+		} else {
+			MosesService.getInstance().setActivityContext(null);
 		}
 	}
 
@@ -316,7 +332,7 @@ public class MosesActivity extends TabActivity {
 	 */
 	private void startAndBindService() {
 		Intent intent = new Intent(this, MosesService.class);
-		if(null == startService(intent)) {
+		if (null == startService(intent)) {
 			stopService(intent);
 			startService(intent);
 		}
@@ -334,9 +350,9 @@ public class MosesActivity extends TabActivity {
 		inflater.inflate(R.menu.main_menu, menu);
 		return true;
 	}
-	
+
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if(mBound) {
+		if (mBound) {
 			if (mService.isLoggedIn())
 				menu.getItem(0).setTitle(R.string.menu_disconnect);
 			else
@@ -348,7 +364,7 @@ public class MosesActivity extends TabActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.item_connect:
-			if(mBound) {
+			if (mBound) {
 				if (mService.isLoggedIn())
 					mService.logout();
 				else
