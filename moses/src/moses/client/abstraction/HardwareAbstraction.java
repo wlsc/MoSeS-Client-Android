@@ -230,6 +230,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void postExecution(String s) {
+			Log.d("HARDWARE_ABSTRACTION", "From server: " + s);
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
@@ -404,7 +405,7 @@ public class HardwareAbstraction {
 	 */
 	public void syncDeviceInformation(final boolean force) {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedInPriority(new Executor() {
 
 				@Override
 				public void execute() {
