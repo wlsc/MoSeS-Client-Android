@@ -250,8 +250,12 @@ public class MosesService extends android.app.Service implements
 			}
 		});
 
-		InstalledExternalApplicationsManager.init(this);
-		UserstudyNotificationManager.init(this);
+		if(InstalledExternalApplicationsManager.getInstance() == null) {
+			InstalledExternalApplicationsManager.init(this);
+		}
+		if(UserstudyNotificationManager.getInstance() == null) {
+			UserstudyNotificationManager.init(this);
+		}
 
 		mset.firstStart = PreferenceManager.getDefaultSharedPreferences(this)
 				.getBoolean("first_start", true);

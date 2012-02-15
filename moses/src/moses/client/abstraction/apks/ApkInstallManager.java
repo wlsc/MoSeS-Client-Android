@@ -119,7 +119,7 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	public static InstalledExternalApplication registerInstalledApk(File apk, ExternalApplication externalAppRef,
 		Context context, boolean isUserStudy) throws IOException {
 		// gather informations about the app
-		if (InstalledExternalApplicationsManager.getDefault() == null) {
+		if (InstalledExternalApplicationsManager.getInstance() == null) {
 			InstalledExternalApplicationsManager.init(context);
 		}
 		String packageName;
@@ -127,8 +127,8 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 		packageName = ApkMethods.getPackageNameFromApk(apk, context);
 		InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(packageName,
 			externalAppRef, isUserStudy);
-		InstalledExternalApplicationsManager.getDefault().addExternalApplication(installedExternalApp);
-		InstalledExternalApplicationsManager.getDefault().saveToDisk(context);
+		InstalledExternalApplicationsManager.getInstance().addExternalApplication(installedExternalApp);
+		InstalledExternalApplicationsManager.getInstance().saveToDisk(context);
 		return installedExternalApp;
 	}
 

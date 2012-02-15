@@ -2,17 +2,21 @@ package moses.client;
 
 import moses.client.R.id;
 import moses.client.abstraction.HardwareAbstraction;
+import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,6 +28,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 /**
@@ -34,7 +39,7 @@ import android.widget.TextView;
  * @author Jaco
  * 
  */
-public class MosesActivity extends Activity {
+public class MosesActivity extends TabActivity {
 
 	public enum results {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
@@ -220,33 +225,69 @@ public class MosesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		if(InstalledExternalApplicationsManager.getInstance() == null) {
+			InstalledExternalApplicationsManager.init(this);
+		}
+		if(UserstudyNotificationManager.getInstance() == null) {
+			UserstudyNotificationManager.init(this);
+		}
+		
+		//----------
+		
+		Resources res = getResources(); // Resource object to get Drawables
+	    TabHost tabHost = getTabHost();  // The activity TabHost
+	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
+	    Intent intent;  // Reusable Intent for each tab
+
+	    // Create an Intent to launch an Activity for the tab (to be reused)
+	    intent = new Intent().setClass(this, ViewAvailableApkActivity.class);
+
+	    // Initialize a TabSpec for each tab and add it to the TabHost
+	    spec = tabHost.newTabSpec("artists").setIndicator("Available apps",
+	                      res.getDrawable(R.drawable.ic_main_tab))
+	                  .setContent(intent);
+	    tabHost.addTab(spec);
+
+	    // Do the same for the other tabs
+	    intent = new Intent().setClass(this, ViewInstalledApplicationsActivity.class);
+	    spec = tabHost.newTabSpec("albums").setIndicator("Installed apps",
+	                      res.getDrawable(R.drawable.ic_main_tab))
+	                  .setContent(intent);
+	    tabHost.addTab(spec);
+
+
+	    tabHost.setCurrentTab(1);
+		//---------------
+		
+		
 		initControls();
 	}
 
 	private void initControls() {
-		((Button) findViewById(R.id.btn_browse_available_apps))
-				.setOnClickListener(new Button.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent showAvailableApkList = new Intent(
-								MosesActivity.this,
-								ViewAvailableApkActivity.class);
-						startActivity(showAvailableApkList);
+//		((Button) findViewById(R.id.btn_browse_available_apps))
+//				.setOnClickListener(new Button.OnClickListener() {
+//					@Override
+//					public void onClick(View v) {
+//						Intent showAvailableApkList = new Intent(
+//								MosesActivity.this,
+//								ViewAvailableApkActivity.class);
+//						startActivity(showAvailableApkList);
+//
+//					}
+//				});
 
-					}
-				});
-
-		((Button) findViewById(R.id.btn_list_installed_apps))
-				.setOnClickListener(new Button.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Intent showInstalledAppsList = new Intent(
-								MosesActivity.this,
-								ViewInstalledApplicationsActivity.class);
-						startActivity(showInstalledAppsList);
-
-					}
-				});
+//		((Button) findViewById(R.id.btn_list_installed_apps))
+//				.setOnClickListener(new Button.OnClickListener() {
+//					@Override
+//					public void onClick(View v) {
+//						Intent showInstalledAppsList = new Intent(
+//								MosesActivity.this,
+//								ViewInstalledApplicationsActivity.class);
+//						startActivity(showInstalledAppsList);
+//
+//					}
+//				});
 	}
 
 	/**

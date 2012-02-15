@@ -1,39 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/tabhost"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:gravity="bottom"
-    android:orientation="vertical" >
-
-    <Button
-        android:id="@+id/btn_list_installed_apps"
-        style="@android:style/TextAppearance.Inverse"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:text="@string/list_avail_apps" />
-
-    <Button
-        android:id="@+id/btn_browse_available_apps"
-        android:layout_width="match_parent"
-        android:layout_height="80dip"
-        android:text="@string/browse_avail" />
+    android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="48dip"
-        android:layout_weight="0.00" >
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:padding="5dp" >
 
-        <TextView
-            android:id="@+id/success"
-            android:layout_width="256dp"
-            android:layout_height="48dp" />
-
-        <ProgressBar
-            android:id="@+id/main_spinning_progress_bar"
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
+        <TabWidget
+            android:id="@android:id/tabs"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:id="@android:id/tabcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="5dp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="match_parent"
+            android:layout_height="48dip"
+            android:layout_weight="0.00" >
+
+            <TextView
+                android:id="@+id/success"
+                android:layout_width="256dp"
+                android:layout_height="48dp" />
+
+            <ProgressBar
+                android:id="@+id/main_spinning_progress_bar"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        
     </LinearLayout>
 
-</LinearLayout>
+</TabHost>

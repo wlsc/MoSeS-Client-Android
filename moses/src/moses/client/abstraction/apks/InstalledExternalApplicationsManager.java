@@ -44,7 +44,7 @@ public class InstalledExternalApplicationsManager {
 	 * 
 	 * @return the default manager or null, if not initialized.
 	 */
-	public static InstalledExternalApplicationsManager getDefault() {
+	public static InstalledExternalApplicationsManager getInstance() {
 		return defaultInstance;
 	}
 
