@@ -461,6 +461,7 @@ public class MosesService extends android.app.Service implements
 		} else if (key.equals("deviceid_pref")) {
 			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 			syncDeviceInformation(false);
+			uploadFilter();
 		}
 	}
 }
