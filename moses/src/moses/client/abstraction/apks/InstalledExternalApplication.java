@@ -74,6 +74,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 	public String getPackageName() {
 		return packageName;
 	}
+	
+	public boolean wasInstalledAsUserStudy() {
+		return wasInstalledAsUserStudy;
+	}
 
 	@Override
 	public String toString() {
