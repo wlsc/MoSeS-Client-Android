@@ -18,13 +18,14 @@
         <FrameLayout
             android:id="@android:id/tabcontent"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.7"
             android:padding="5dp" />
 
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
-            android:layout_height="48dip"
+            android:layout_height="32dip"
             android:layout_weight="0.00" >
 
             <TextView
@@ -38,7 +39,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
-        
     </LinearLayout>
 
 </TabHost>

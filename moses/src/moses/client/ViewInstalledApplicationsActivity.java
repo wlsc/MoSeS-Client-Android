@@ -32,9 +32,16 @@ public class ViewInstalledApplicationsActivity extends Activity {
 	}
 
 	private void refreshInstalledApplications() {
+		Toast.makeText(getApplicationContext(), "installed apps list refreshed", Toast.LENGTH_SHORT).show();
 		installedApps = new LinkedList<InstalledExternalApplication>(
 				InstalledExternalApplicationsManager.getInstance().getApps());
 		populateList(installedApps);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		refreshInstalledApplications();
 	}
 
 	/*

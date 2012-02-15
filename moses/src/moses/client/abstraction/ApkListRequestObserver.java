@@ -18,6 +18,7 @@ public interface ApkListRequestObserver {
 	/**
 	 * Notifies the observer that the request failed
 	 * 
+	 * @param e an exception object; may be null
 	 */
 	public void apkListRequestFailed(Exception e);
 }

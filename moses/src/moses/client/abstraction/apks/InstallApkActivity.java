@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import moses.client.abstraction.ApkMethods;
+import moses.client.service.MosesService;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -68,6 +69,9 @@ public class InstallApkActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		
+		MosesService service = MosesService.getInstance();
+		
 		File apkFile = callArgMapFile.get(requestCode);
 		ExternalApplication appRef = callArgMapAppRef.get(requestCode);
 		ApkInstallObserver o = callArgMapObserver.get(requestCode);
@@ -76,7 +80,8 @@ public class InstallApkActivity extends Activity {
 			return;
 		}
 		try {
-			boolean installed = hackAlwaysAssumeInstalled || ApkMethods.isApplicationInstalled(ApkMethods.getPackageNameFromApk(apkFile, getApplicationContext()), getApplicationContext());
+			//TODO: if mosesService could not be found?
+			boolean installed = hackAlwaysAssumeInstalled || ApkMethods.isApplicationInstalled(ApkMethods.getPackageNameFromApk(apkFile, service), service);
 			if(installed) {
 				o.apkInstallSuccessful(apkFile, appRef);
 			} else {

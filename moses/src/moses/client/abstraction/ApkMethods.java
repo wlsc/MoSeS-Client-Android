@@ -127,8 +127,7 @@ public class ApkMethods {
 					observer.apkListRequestFinished(apps);
 
 				} else {
-					Log.d("MoSeS.APK_METHODS",
-							"Request not successful! Server returned negative response");
+					observer.apkListRequestFailed(new RuntimeException("invalid response: " + j.toString()));
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
