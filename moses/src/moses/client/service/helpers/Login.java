@@ -22,7 +22,7 @@ import android.util.Log;
  * @author Jaco Hofmann
  */
 public class Login {
-	
+
 	/**
 	 * The Class LoginFunc.
 	 */
@@ -59,10 +59,13 @@ public class Login {
 				if (RequestLogin.loginValid(j, uname)) {
 					serv.loggedIn(j.getString("SESSIONID"));
 					mHandler.removeCallbacks(logoutTask);
-					mHandler.postDelayed(logoutTask, sessionAliveTime-1000);
+					mHandler.postDelayed(logoutTask, sessionAliveTime - 1000);
 					lastLoggedIn = System.currentTimeMillis();
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
+					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
+					executeAll(postExecuteSuccessPriority);
+					Log.d("MoSeS.LOGIN", "Executing post login hooks:");
 					executeAll(postExecuteSuccess);
 				} else {
 					Log.d("MoSeS.LOGIN", "NOT GRANTED: " + j.toString());
@@ -83,9 +86,9 @@ public class Login {
 		@Override
 		public void updateExecution(BackgroundException c) {
 			if (c.c != ConnectionParam.EXCEPTION) {
-				if(c.c == ConnectionParam.CONNECTING) {
+				if (c.c == ConnectionParam.CONNECTING) {
 					executeAll(loginStart);
-				} else if(c.c == ConnectionParam.CONNECTED) {
+				} else if (c.c == ConnectionParam.CONNECTED) {
 					executeAll(loginEnd);
 				}
 			} else {
@@ -106,35 +109,36 @@ public class Login {
 
 	/** The e. */
 	private ConcurrentLinkedQueue<Executor> postExecuteSuccess;
+	private ConcurrentLinkedQueue<Executor> postExecuteSuccessPriority;
 	private ConcurrentLinkedQueue<Executor> postExecuteFailure;
 	private ConcurrentLinkedQueue<Executor> loginStart;
 	private ConcurrentLinkedQueue<Executor> loginEnd;
-	
+
 	public static long lastLoggedIn = -1;
-	
+
 	private final long sessionAliveTime = 120000;
 
 	private void executeAll(ConcurrentLinkedQueue<Executor> el) {
-		for(Executor e : el) {
+		for (Executor e : el) {
 			e.execute();
 		}
 	}
-	
+
 	private static Handler mHandler = new Handler();
-	
+
 	private static Runnable logoutTask = new Runnable() {
-		
+
 		@Override
 		public void run() {
 			Log.d("MoSeS.LOGIN", "Session is now invalid.");
 			serv.logout();
 		}
 	};
-	
+
 	public static void setService(MosesService s) {
 		serv = s;
 	}
-	
+
 	/**
 	 * Instantiates a new login.
 	 * 
@@ -147,20 +151,27 @@ public class Login {
 	 * @param e
 	 *            the e
 	 */
-	public Login(String username, String password, 
-			ConcurrentLinkedQueue<Executor> postExecuteSuccess, ConcurrentLinkedQueue<Executor> postExecuteFailure,
-			ConcurrentLinkedQueue<Executor> loginStart, ConcurrentLinkedQueue<Executor> loginEnd) {
+	public Login(String username, String password,
+			ConcurrentLinkedQueue<Executor> postExecuteSuccess,
+			ConcurrentLinkedQueue<Executor> postExecuteSuccessPriority,
+			ConcurrentLinkedQueue<Executor> postExecuteFailure,
+			ConcurrentLinkedQueue<Executor> loginStart,
+			ConcurrentLinkedQueue<Executor> loginEnd) {
 		this.pw = password;
 		this.uname = username;
 		this.postExecuteSuccess = postExecuteSuccess;
+		this.postExecuteSuccessPriority = postExecuteSuccessPriority;
 		this.postExecuteFailure = postExecuteFailure;
 		this.loginEnd = loginEnd;
 		this.loginStart = loginStart;
-		if(System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
+		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
 			new RequestLogin(new LoginFunc(), uname, pw).send();
 		} else {
-			executeAll(postExecuteSuccess);
 			Log.d("MoSeS.LOGIN", "Session still active.");
+			Log.d("MoSeS.LOGIN", "Post login success priority: ");
+			executeAll(postExecuteSuccessPriority);
+			Log.d("MoSeS.LOGIN", "Post login success: ");
+			executeAll(postExecuteSuccess);
 		}
 	}
 }

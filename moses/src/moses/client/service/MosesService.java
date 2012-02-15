@@ -70,6 +70,8 @@ public class MosesService extends android.app.Service implements
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
+		public ConcurrentLinkedQueue<Executor> postLoginSuccessPriorityHook = new ConcurrentLinkedQueue<Executor>();
+		
 		public ConcurrentLinkedQueue<Executor> postLoginSuccessHook = new ConcurrentLinkedQueue<Executor>();
 
 		public ConcurrentLinkedQueue<Executor> postLoginFailureHook = new ConcurrentLinkedQueue<Executor>();
@@ -193,18 +195,21 @@ public class MosesService extends android.app.Service implements
 			}
 			return;
 		}
-		if (isOnline()) {
-			if (!mset.loggedIn && !mset.loggingIn) {
-				Log.d("MoSeS.SERVICE", "Logging in...");
-				mset.loggingIn = true;
-				Login.setService(this);
-				new Login(mset.username, mset.password,
-						mset.postLoginSuccessHook, mset.postLoginFailureHook,
-						mset.loginStartHook, mset.loginEndHook);
-			}
-		} else {
-			Log.d("MoSeS.SERVICE",
-					"Tried logging in but no internet connection was present.");
+		if (!isOnline()) {
+				Log.d("MoSeS.SERVICE",
+						"Tried logging in but no internet connection was present.");
+				for (ExecutorWithObject e : mset.changeTextFieldHook) {
+					e.execute("No internet connection.");
+				}
+			return;
+		}
+		if (!mset.loggedIn && !mset.loggingIn) {
+			Log.d("MoSeS.SERVICE", "Logging in...");
+			mset.loggingIn = true;
+			Login.setService(this);
+			new Login(mset.username, mset.password,
+					mset.postLoginSuccessHook, mset.postLoginSuccessPriorityHook, mset.postLoginFailureHook,
+					mset.loginStartHook, mset.loginEndHook);
 		}
 	}
 
@@ -280,6 +285,15 @@ public class MosesService extends android.app.Service implements
 			login();
 		}
 	}
+	
+	public void executeLoggedInPriority(Executor e) {
+		if (isLoggedIn())
+			e.execute();
+		else {
+			registerPostLoginSuccessOneTimePriorityHook(e);
+			login();
+		}
+	}
 
 	public void registerPostLoginSuccessHook(Executor e) {
 		if (!mset.postLoginSuccessHook.contains(e))
@@ -296,9 +310,24 @@ public class MosesService extends android.app.Service implements
 		};
 		mset.postLoginSuccessHook.add(n);
 	}
+	
+	public void registerPostLoginSuccessOneTimePriorityHook(final Executor e) {
+		Executor n = new Executor() {
+			@Override
+			public void execute() {
+				e.execute();
+				unregisterPostLoginSuccessPriorityHook(this);
+			}
+		};
+		mset.postLoginSuccessPriorityHook.add(n);
+	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
 		mset.postLoginSuccessHook.remove(e);
+	}
+	
+	public void unregisterPostLoginSuccessPriorityHook(Executor e) {
+		mset.postLoginSuccessPriorityHook.remove(e);
 	}
 
 	public void registerPostLoginFailureHook(Executor e) {
@@ -415,7 +444,6 @@ public class MosesService extends android.app.Service implements
 		} else if (key.equals("deviceid_pref")) {
 			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 			syncDeviceInformation(false);
-			uploadFilter();
 		}
 	}
 }
