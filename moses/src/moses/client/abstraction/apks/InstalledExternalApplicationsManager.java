@@ -10,12 +10,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import moses.client.abstraction.ApkMethods;
 import moses.client.util.FileLocationUtil;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 
 /**
@@ -29,6 +25,7 @@ import android.util.Log;
 public class InstalledExternalApplicationsManager {
 	private List<InstalledExternalApplication> apps;
 	private static InstalledExternalApplicationsManager defaultInstance;
+	private static int managerVersion = 1;
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -70,41 +67,6 @@ public class InstalledExternalApplicationsManager {
 		for (InstalledExternalApplication app : externalApps) {
 			addExternalApplication(app);
 		}
-	}
-
-	/**
-	 * Installs an application and adds its reference to this manager
-	 * 
-	 * @param apk
-	 *            the apk file
-	 * @param ID
-	 *            the moses ID
-	 * @param baseActivity
-	 * @throws IOException 
-	 * @throws NameNotFoundException
-	 *             if the apk file was not installed correctly
-	 */
-	public void installAndManageExternalApplication(File apk, final String ID, final Activity baseActivity) throws IOException {
-		ApkMethods.installApk(apk, new ExternalApplication(ID), new ApkInstallObserver() {
-			@Override
-			public void apkInstallSuccessful(File apk, ExternalApplication appRef) {
-				String packageName;
-				try {
-					packageName = ApkMethods.getPackageNameFromApk(apk, baseActivity);
-					addExternalApplication(new InstalledExternalApplication(packageName, ID));
-				} catch (IOException e) {
-					Log.e("MoSeS.Install", "Error at registering installed app with moses-id" + ID, e);
-				}
-			}
-			@Override
-			public void apkInstallError(File apk, ExternalApplication appRef, Throwable e) {
-				Log.e("MoSeS.Install", "Error at installing moses-id" + ID, e);
-			}
-			@Override
-			public void apkInstallCleanAbort(File apk, ExternalApplication appRef) {
-				Log.i("MoSeS.Install", "aborted installing moses-id" + ID);
-			}
-		});
 	}
 
 	/**
@@ -184,6 +146,7 @@ public class InstalledExternalApplicationsManager {
 		try {
 			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
 			bufWriter = new BufferedWriter(writer);
+			bufWriter.append("version = " + managerVersion + "\n");
 			for (InstalledExternalApplication app : apps) {
 				bufWriter.append(app.asOnelineString() + "\n");
 			}
@@ -198,7 +161,6 @@ public class InstalledExternalApplicationsManager {
 		}
 	}
 
-	static boolean reset = true;
 	/**
 	 * loads an InstalledExternalApplicationsManager from the standard file (see
 	 * Util.getAppdatabaseFile). If this file does not exist, this method
@@ -211,13 +173,32 @@ public class InstalledExternalApplicationsManager {
 	public static InstalledExternalApplicationsManager loadAppDatabase(Context context) {
 		File settingsFile = FileLocationUtil.getAppDatabaseFile(context);
 		InstalledExternalApplicationsManager manager = new InstalledExternalApplicationsManager();
-		if (!reset && settingsFile.exists()) {
+		if (settingsFile.exists()) {
+			int fileVersion = -1;
+
 			FileReader reader = null;
 			BufferedReader bufReader = null;
 			try {
 				reader = new FileReader(settingsFile);
 				bufReader = new BufferedReader(reader);
 				String line;
+
+				//
+				if ((line = bufReader.readLine()) != null) {
+					if (line.trim().matches("version = [0-9]*")) {
+						line = line.trim().replace("version = ", "");
+						fileVersion = Integer.parseInt(line);
+					}
+				} else {
+					fileVersion = -1;
+					// return straight here because no lines are contained
+					return new InstalledExternalApplicationsManager();
+				}
+				if (fileVersion == -1 || fileVersion != managerVersion) {
+					// versions are incompatible, so return empty manager.
+					return new InstalledExternalApplicationsManager();
+				}
+
 				while ((line = bufReader.readLine()) != null) {
 					if (!line.trim().equals("")) {
 						InstalledExternalApplication appRef = InstalledExternalApplication.fromOnelineString(line);

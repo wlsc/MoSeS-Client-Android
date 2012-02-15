@@ -1,17 +1,20 @@
 package moses.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -22,8 +25,7 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewAvailableApkActivity extends Activity implements
-		ApkListRequestObserver {
+public class ViewAvailableApkActivity extends Activity implements ApkListRequestObserver {
 
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
@@ -76,10 +78,11 @@ public class ViewAvailableApkActivity extends Activity implements
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
-				if(downloader.getState() == ApkDownloadManager.State.ERROR) {
-					//TODO: error msgs shouldve been already shown, still.. something is to be done here still
-				} else if(downloader.getState() == ApkDownloadManager.State.FINISHED) {
-					installDownloadedApk(downloader.getFileResult(), downloader.getExternalApplicationResult());
+				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					// TODO: error msgs/log msgs shouldve been already shown,
+					// still.. something is to be done here still
+				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
+					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
 			}
 		};
@@ -87,25 +90,31 @@ public class ViewAvailableApkActivity extends Activity implements
 		downloader.start();
 	}
 
-	private static void installDownloadedApk(File result,
-			final ExternalApplication externalAppRef) {
-		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
+	private void installDownloadedApk(final File originalApk, final ExternalApplication externalAppRef) {
+		final ApkInstallManager installer = new ApkInstallManager(originalApk, externalAppRef);
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
-				if(installer.getState() == ApkInstallManager.State.ERROR) {
-					//TODO:errors shouldve been shown already by the installer; still, something is to be done here..
-				} else if(installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
-					//TODO:how to handle if the user cancels the installation? 
-				} else if(installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
-					//TODO:?new APKInstalled(externalAppRef.getID());
-					//insaller already registered the application with the installedapplicationmanager
+				if (installer.getState() == ApkInstallManager.State.ERROR) {
+					// TODO:errors/log msgs shouldve been shown already by the
+					// installer; still, something is to be done here..
+				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
+					// TODO:how to handle if the user cancels the installation?
+				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
+					new APKInstalled(externalAppRef.getID());
+					try {
+						ApkInstallManager.registerInstalledApk(originalApk, externalAppRef,
+							ViewAvailableApkActivity.this.getApplicationContext(), false);
+					} catch (IOException e) {
+						Log.e(
+							"MoSeS.Install",
+							"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
+					}
 				}
 			}
 		});
 		installer.start();
 	}
-
 
 	private void requestExternalApplications() {
 		ApkMethods.getExternalApplications(this);
@@ -119,10 +128,8 @@ public class ViewAvailableApkActivity extends Activity implements
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toast.makeText(
-				getApplicationContext(),
-				"Error when loading the list of applications: "
-						+ e.getMessage(), Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e.getMessage(),
+			Toast.LENGTH_LONG).show();
 	}
 
 	private void populateList(List<ExternalApplication> applications) {
@@ -133,8 +140,8 @@ public class ViewAvailableApkActivity extends Activity implements
 			items[counter] = app.getName();
 			counter++;
 		}
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-				R.layout.availableabkslistitem, R.id.apklistitemtext, items) {
+		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
+			R.id.apklistitemtext, items) {
 		};
 		listView.setAdapter(arrayAdapter);
 	}

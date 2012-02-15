@@ -160,7 +160,7 @@ public class ViewUserStudiesActivity extends Activity {
 					// TODO: error msgs shouldve been already shown, still..
 					// something is to be done here still
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
-					installDownloadedApk(downloader.getFileResult(), downloader.getExternalApplicationResult());
+					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
 			}
 		};

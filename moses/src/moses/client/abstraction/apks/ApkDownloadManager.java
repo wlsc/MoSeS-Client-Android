@@ -12,10 +12,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 /**
- * Abstraction for downloading a single application package fileResult, given an
- * {@link ExternalApplication} object (specified only by moses application id).
+ * Abstraction for downloading a single application package downloadedApk, given
+ * an {@link ExternalApplication} object (specified only by moses application
+ * id).
  * 
- * Supports the {@link Observable} scheme for updates in the download process. See {@link State}.
+ * Supports the {@link Observable} scheme for updates in the download process.
+ * See {@link State}.
  * 
  * @author Simon L
  * 
@@ -31,14 +33,16 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	private String errorMsg;
 	private State state;
 	private ExternalApplication externalApplicationResult;
-	private File fileResult;
-
+	private File downloadedApk;
 
 	/**
-	 * Creates this download manager with an observer which will be notified every time the state of the download process changed (including errors). 
+	 * Creates this download manager with an observer which will be notified
+	 * every time the state of the download process changed (including errors).
 	 * 
-	 * @param externalApp the external Application to download
-	 * @param applicationContext the context
+	 * @param externalApp
+	 *            the external Application to download
+	 * @param applicationContext
+	 *            the context
 	 */
 	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext) {
 		super();
@@ -46,9 +50,10 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		this.context = applicationContext;
 		setState(State.JUST_INITIALIZED);
 	}
-	
+
 	/**
-	 * start the download process (using a generated file name for the apk file).
+	 * start the download process (using a generated file name for the apk
+	 * file).
 	 */
 	public void start() {
 		requestUrlForApplication(this.app);
@@ -63,15 +68,15 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	private void setErrorState(String errorMsg) {
 		setErrorState(errorMsg, null);
 	}
-	
+
 	private void setErrorState(String errorMsg, Throwable e) {
 		this.errorMsg = errorMsg;
-		if(e != null) {
+		if (e != null) {
 			Log.e("MoSeS.Download", errorMsg, e);
 		} else {
 			Log.e("MoSeS.Download", errorMsg);
 		}
-		
+
 		Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
 		setState(State.ERROR);
 	}
@@ -108,7 +113,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 
 	@Override
 	public void apkDownloadFinished(ApkDownloadTask downloader, File result, ExternalApplication externalAppRef) {
-		this.fileResult = result;
+		this.downloadedApk = result;
 		this.externalApplicationResult = externalAppRef;
 		setState(State.FINISHED);
 	}
@@ -143,8 +148,8 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		return externalApplicationResult;
 	}
 
-	public File getFileResult() {
-		return fileResult;
+	public File getDownloadedApk() {
+		return downloadedApk;
 	}
 
 }

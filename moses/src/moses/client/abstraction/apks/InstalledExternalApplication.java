@@ -15,6 +15,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 
 	private static final String SEPARATOR = "#IEA#";
 	private String packageName;
+	private boolean wasInstalledAsUserStudy;
 
 	/**
 	 * Creates the reference to the external application by specifying the
@@ -24,10 +25,12 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *            the name of the package of the application
 	 * @param ID
 	 *            the moses id of the application
+	 * @param wasInstalledAsUserStudy
 	 * @param appContext
 	 */
-	public InstalledExternalApplication(String packageName, String ID) {
+	public InstalledExternalApplication(String packageName, String ID, boolean wasInstalledAsUserStudy) {
 		super(ID);
+		this.wasInstalledAsUserStudy = wasInstalledAsUserStudy;
 		this.packageName = packageName;
 	}
 
@@ -40,9 +43,11 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *            the package name of the installed app
 	 * @param externalApp
 	 *            the preexisting reference that will be adapted
+	 * @param wasInstalledAsUserStudy
 	 */
-	public InstalledExternalApplication(String packageName, ExternalApplication externalApp) {
-		this(packageName, externalApp.getID());
+	public InstalledExternalApplication(String packageName, ExternalApplication externalApp,
+		boolean wasInstalledAsUserStudy) {
+		this(packageName, externalApp.getID(), wasInstalledAsUserStudy);
 		if (externalApp.isDescriptionSet()) {
 			setDescription(externalApp.getDescription());
 		}
@@ -85,13 +90,16 @@ public class InstalledExternalApplication extends ExternalApplication {
 		}
 	}
 
+	@Override
 	public String asOnelineString() {
-		return super.asOnelineString()+SEPARATOR+this.getPackageName();
+		return super.asOnelineString() + SEPARATOR + this.getPackageName() + SEPARATOR
+			+ Boolean.valueOf(wasInstalledAsUserStudy).toString();
 	}
-	
+
 	public static InstalledExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(SEPARATOR);
-		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]));
+		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]),
+			Boolean.parseBoolean(split[2]));
 	}
 
 }
