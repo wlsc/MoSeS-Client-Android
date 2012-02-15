@@ -400,9 +400,10 @@ public class MosesService extends android.app.Service implements
 	public void syncDeviceInformation(boolean force) {
 		new HardwareAbstraction(this).syncDeviceInformation(force);
 	}
-
+	
 	public void showWelcomeDialog(final Context c) {
 		AlertDialog a = new AlertDialog.Builder(c).create();
+		a.setIcon(R.drawable.ic_launcher);
 		a.setCancelable(false); // This blocks the 'BACK' button
 		a.setMessage(getString(R.string.welcome_to_moses_string));
 		a.setTitle(getString(R.string.welcome_to_moses_title_string));

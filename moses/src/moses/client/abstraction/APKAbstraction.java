@@ -3,6 +3,7 @@
  */
 package moses.client.abstraction;
 
+import moses.client.R;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -101,6 +102,7 @@ public class APKAbstraction {
 	 */
 	public APKAbstraction(Context c) {
 		infoDialog = new AlertDialog.Builder(c).create();
+		infoDialog.setIcon(R.drawable.ic_launcher);
 		infoDialog.setTitle("INFO:");
 		infoDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok",
 				new DialogInterface.OnClickListener() {

@@ -159,6 +159,7 @@ public class HardwareAbstraction {
 					AlertDialog ad = new AlertDialog.Builder(appContext)
 							.create();
 					ad.setCancelable(false); // This blocks the 'BACK' button
+					ad.setIcon(R.drawable.ic_launcher);
 					ad.setMessage(sb.toString());
 					ad.setButton("OK", new DialogInterface.OnClickListener() {
 						@Override
@@ -259,6 +260,7 @@ public class HardwareAbstraction {
 			if (MosesService.getInstance() != null) {
 				AlertDialog a = new AlertDialog.Builder(
 						MosesService.getInstance()).create();
+				a.setIcon(R.drawable.ic_launcher);
 				a.setTitle(R.string.dialog_duplicated_devid_title);
 				a.setMessage(MosesService.getInstance().getString(
 						R.string.dialog_duplicated_devid_text)
@@ -271,6 +273,7 @@ public class HardwareAbstraction {
 						+ "\n"
 						+ MosesService.getInstance().getString(
 								R.string.dialog_duplicated_devid_text2));
+				a.setIcon(R.drawable.ic_launcher);
 				a.setButton(
 						MosesService.getInstance().getString(
 								R.string.dialog_duplicated_devid_update),
