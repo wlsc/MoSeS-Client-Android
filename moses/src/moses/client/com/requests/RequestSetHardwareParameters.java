@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 /**
  * This class is used for setting hardware parameters it provides some basic
  * methods for this
@@ -47,6 +49,7 @@ public class RequestSetHardwareParameters {
 	}
 
 	public void send() {
+		Log.d("MoSeS.HARDWARE_ABSTRACTION", j.toString());
 		NetworkJSON task = new NetworkJSON();
 		NetworkJSON.APIRequest req;
 		req = task.new APIRequest();

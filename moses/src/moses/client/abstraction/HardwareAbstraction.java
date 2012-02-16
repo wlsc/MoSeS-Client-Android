@@ -17,7 +17,6 @@ import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
-import moses.client.service.MosesService.MosesSettings;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -25,10 +24,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
@@ -162,6 +159,7 @@ public class HardwareAbstraction {
 					AlertDialog ad = new AlertDialog.Builder(appContext)
 							.create();
 					ad.setCancelable(false); // This blocks the 'BACK' button
+					ad.setIcon(R.drawable.ic_launcher);
 					ad.setMessage(sb.toString());
 					ad.setButton("OK", new DialogInterface.OnClickListener() {
 						@Override
@@ -200,7 +198,6 @@ public class HardwareAbstraction {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				// TODO handling
 				if (RequestSetFilter.filterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Filter set successfully, server returned positive response");
@@ -230,7 +227,6 @@ public class HardwareAbstraction {
 
 		@Override
 		public void postExecution(String s) {
-			Log.d("HARDWARE_ABSTRACTION", "From server: " + s);
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
@@ -242,7 +238,7 @@ public class HardwareAbstraction {
 							"FAILURE_DEVICEID_DUPLICATED")) {
 						showForceDialog(j.getString("VENDOR_NAME"),
 								j.getString("MODEL_NAME"),
-								j.getString("ANDVER"));
+								j.getString("ANDVER"), MosesService.getInstance().getActivityContext());
 					} else {
 						Log.d("MoSeS.HARDWARE_ABSTRACTION",
 								"Parameters NOT set successfully! Invalid session id.");
@@ -260,48 +256,49 @@ public class HardwareAbstraction {
 			}
 		}
 
-		public void showForceDialog(String vendor, String model, String andver) {
-			if (MosesService.getInstance() != null) {
-				AlertDialog a = new AlertDialog.Builder(
-						MosesService.getInstance()).create();
-				a.setTitle(R.string.dialog_duplicated_devid_title);
-				a.setMessage(MosesService.getInstance().getString(
-						R.string.dialog_duplicated_devid_text)
-						+ "\nVendor: "
-						+ vendor
-						+ "\nModel: "
-						+ model
-						+ "\nSDK Version: "
-						+ andver
-						+ "\n"
-						+ MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_text2));
-				a.setButton(
-						MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_update),
-						new DialogInterface.OnClickListener() {
+		public void showForceDialog(String vendor, String model, String andver,
+				Context c) {
+			AlertDialog a = new AlertDialog.Builder(c).create();
+			a.setIcon(R.drawable.ic_launcher);
+			a.setTitle(R.string.dialog_duplicated_devid_title);
+			a.setMessage(MosesService.getInstance().getString(
+					R.string.dialog_duplicated_devid_text)
+					+ "\nVendor: "
+					+ vendor
+					+ "\nModel: "
+					+ model
+					+ "\nSDK Version: "
+					+ andver
+					+ "\n"
+					+ MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_text2));
+			a.setIcon(R.drawable.ic_launcher);
+			a.setButton(
+					MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_update),
+					new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								MosesService.getInstance()
-										.syncDeviceInformation(true);
-								arg0.dismiss();
-							}
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							MosesService.getInstance().syncDeviceInformation(
+									true);
+							arg0.dismiss();
+						}
 
-						});
-				a.setButton2(
-						MosesService.getInstance().getString(
-								R.string.dialog_duplicated_devid_cancle),
-						new DialogInterface.OnClickListener() {
+					});
+			a.setButton2(
+					MosesService.getInstance().getString(
+							R.string.dialog_duplicated_devid_cancle),
+					new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								arg0.dismiss();
-							}
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							arg0.dismiss();
+						}
 
-						});
-				a.setIcon(R.drawable.ic_launcher);
-			}
+					});
+			a.setIcon(R.drawable.ic_launcher);
+			a.show();
 		}
 	}
 
