@@ -67,6 +67,7 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 
 	private void setState(State state) {
 		this.state = state;
+		this.setChanged();
 		notifyObservers(state);
 	}
 

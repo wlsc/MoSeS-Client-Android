@@ -58,8 +58,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
-			((TextView) findViewById(R.id.success))
-					.setText("Error while logging in.");
+			((TextView) findViewById(R.id.success)).setText("Error while logging in.");
 		}
 	};
 
@@ -67,8 +66,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-					.setVisibility(View.VISIBLE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
 		}
 	};
 
@@ -76,8 +74,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-					.setVisibility(View.GONE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
 			((TextView) findViewById(R.id.success)).setText("Connected");
 		}
 	};
@@ -130,7 +127,7 @@ public class MosesActivity extends TabActivity {
 			mService.registerPostLogoutHook(postLogoutHook);
 
 			mService.registerChangeTextFieldHook(changeTextFieldHook);
-			
+
 			mService.setActivityContext(MosesActivity.this);
 
 			if (mService.isLoggedIn()) {
@@ -139,8 +136,7 @@ public class MosesActivity extends TabActivity {
 				((TextView) findViewById(R.id.success)).setText("Offline");
 			}
 
-			if (PreferenceManager.getDefaultSharedPreferences(
-					MosesActivity.this).getBoolean("first_start", true)) {
+			if (PreferenceManager.getDefaultSharedPreferences(MosesActivity.this).getBoolean("first_start", true)) {
 				mService.startedFirstTime(MosesActivity.this);
 			}
 		}
@@ -158,7 +154,7 @@ public class MosesActivity extends TabActivity {
 			mService.unregisterPostLogoutHook(postLogoutHook);
 
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
-			
+
 			mService.setActivityContext(null);
 
 			mBound = false;
@@ -177,10 +173,10 @@ public class MosesActivity extends TabActivity {
 			}
 		}
 	}
-	
+
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
-		if(MosesService.getInstance() != null) {
+		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().setActivityContext(this);
 		} else {
 			MosesService.getInstance().setActivityContext(null);
@@ -203,12 +199,8 @@ public class MosesActivity extends TabActivity {
 	 */
 	private boolean isMosesServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("moses.client.service.MosesService".equals(service.service
-					.getClassName())) {
-				return true;
-			}
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service.getClassName())) { return true; }
 		}
 		return false;
 	}
@@ -217,8 +209,7 @@ public class MosesActivity extends TabActivity {
 	 * User comes back from another activity
 	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (!isMosesServiceRunning())
-			startAndBindService();
+		if (!isMosesServiceRunning()) startAndBindService();
 		if (requestCode == 0) {
 		}
 	}
@@ -241,69 +232,41 @@ public class MosesActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		
-		if(InstalledExternalApplicationsManager.getInstance() == null) {
+
+		if (InstalledExternalApplicationsManager.getInstance() == null) {
 			InstalledExternalApplicationsManager.init(this);
 		}
-		if(UserstudyNotificationManager.getInstance() == null) {
+		if (UserstudyNotificationManager.getInstance() == null) {
 			UserstudyNotificationManager.init(this);
 		}
-		
-		//----------
-		
-		Resources res = getResources(); // Resource object to get Drawables
-	    TabHost tabHost = getTabHost();  // The activity TabHost
-	    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-	    Intent intent;  // Reusable Intent for each tab
 
-	    // Create an Intent to launch an Activity for the tab (to be reused)
-	    intent = new Intent().setClass(this, ViewAvailableApkActivity.class);
-
-	    // Initialize a TabSpec for each tab and add it to the TabHost
-	    spec = tabHost.newTabSpec("artists").setIndicator("Available apps",
-	                      res.getDrawable(R.drawable.ic_main_tab))
-	                  .setContent(intent);
-	    tabHost.addTab(spec);
-
-	    // Do the same for the other tabs
-	    intent = new Intent().setClass(this, ViewInstalledApplicationsActivity.class);
-	    spec = tabHost.newTabSpec("albums").setIndicator("Installed apps",
-	                      res.getDrawable(R.drawable.ic_main_tab))
-	                  .setContent(intent);
-	    tabHost.addTab(spec);
-
-
-	    tabHost.setCurrentTab(1);
-		//---------------
-		
-		
 		initControls();
 	}
 
 	private void initControls() {
-//		((Button) findViewById(R.id.btn_browse_available_apps))
-//				.setOnClickListener(new Button.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						Intent showAvailableApkList = new Intent(
-//								MosesActivity.this,
-//								ViewAvailableApkActivity.class);
-//						startActivity(showAvailableApkList);
-//
-//					}
-//				});
+		Resources res = getResources(); // Resource object to get Drawables
+		TabHost tabHost = getTabHost(); // The activity TabHost
+		TabHost.TabSpec spec; // Resusable TabSpec for each tab
+		Intent intent; // Reusable Intent for each tab
 
-//		((Button) findViewById(R.id.btn_list_installed_apps))
-//				.setOnClickListener(new Button.OnClickListener() {
-//					@Override
-//					public void onClick(View v) {
-//						Intent showInstalledAppsList = new Intent(
-//								MosesActivity.this,
-//								ViewInstalledApplicationsActivity.class);
-//						startActivity(showInstalledAppsList);
-//
-//					}
-//				});
+
+		intent = new Intent().setClass(this, ViewInstalledApplicationsActivity.class);
+		spec = tabHost.newTabSpec("installedApps")
+			.setIndicator("Installed apps", res.getDrawable(R.drawable.ic_menu_agenda)).setContent(intent);
+		tabHost.addTab(spec);
+
+		intent = new Intent().setClass(this, ViewAvailableApkActivity.class);
+		spec = tabHost.newTabSpec("availableApps")
+			.setIndicator("Install apps from MoSeS", res.getDrawable(R.drawable.ic_menu_add)).setContent(intent);
+		tabHost.addTab(spec);
+
+		// activate installed apps tab if there is actually one installed app
+		// else show the available apps tab
+		if (InstalledExternalApplicationsManager.getInstance().getApps().size() > 0) {
+			tabHost.setCurrentTab(0);
+		} else {
+			tabHost.setCurrentTab(1);
+		}
 	}
 
 	/**
@@ -313,8 +276,7 @@ public class MosesActivity extends TabActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-				.setVisibility(View.GONE);
+		((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
 		startAndBindService();
 	}
 
@@ -340,8 +302,7 @@ public class MosesActivity extends TabActivity {
 	}
 
 	public void settings() {
-		Intent mainDialog = new Intent(MosesActivity.this,
-				MosesPreferences.class);
+		Intent mainDialog = new Intent(MosesActivity.this, MosesPreferences.class);
 		startActivityForResult(mainDialog, 0);
 	}
 
@@ -353,10 +314,8 @@ public class MosesActivity extends TabActivity {
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		if (mBound) {
-			if (mService.isLoggedIn())
-				menu.getItem(0).setTitle(R.string.menu_disconnect);
-			else
-				menu.getItem(0).setTitle(R.string.menu_connect);
+			if (mService.isLoggedIn()) menu.getItem(0).setTitle(R.string.menu_disconnect);
+			else menu.getItem(0).setTitle(R.string.menu_connect);
 		}
 		return true;
 	}
@@ -365,10 +324,8 @@ public class MosesActivity extends TabActivity {
 		switch (item.getItemId()) {
 		case R.id.item_connect:
 			if (mBound) {
-				if (mService.isLoggedIn())
-					mService.logout();
-				else
-					connect();
+				if (mService.isLoggedIn()) mService.logout();
+				else connect();
 				break;
 			}
 		case R.id.item_settings:

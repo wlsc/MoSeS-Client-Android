@@ -1,5 +1,7 @@
 package moses.client.abstraction.apks;
 
+import java.util.regex.Pattern;
+
 /**
  * Reference to an application on the server, referenced by it's MoSeS id
  * 
@@ -7,11 +9,17 @@ package moses.client.abstraction.apks;
  * 
  */
 public class ExternalApplication {
+	private static final String TAG_DESCRIPTION = "[description]";
+
+	private static final String TAG_NAME = "[name]";
+
+	private static final String SEPARATOR = "#EA#";
+	
 	private String ID;
 
 	// lazy loading variables for non-defining attributes
-	volatile private String name;
-	volatile private String description;
+	private String name;
+	private String description;
 
 	public String getID() {
 		return ID;
@@ -98,12 +106,39 @@ public class ExternalApplication {
 		return name != null;
 	}
 	
-	public String asOnelineString() {
-		return this.ID;
+	public String asOnelineString() { //ID-{name}-{description}
+		String result = this.ID;
+		if(isNameSet()) {
+			result += SEPARATOR + TAG_NAME + getName();
+		}
+		if(isDescriptionSet()) {
+			result += SEPARATOR + TAG_DESCRIPTION + getName();
+		}
+		return result;
 	}
 	
 	public static ExternalApplication fromOnelineString(String s) {
-		return new ExternalApplication(s);
+		String[] split = s.split(Pattern.quote(SEPARATOR));
+		String ID = null;
+		String name = null;
+		String description = null;
+		for(int i=0; i<split.length; i++) {
+			if(i==0) {
+				ID = split[i];
+			} else {
+				if(split[i].startsWith(TAG_DESCRIPTION)) {
+					description = split[i].substring(TAG_DESCRIPTION.length());
+				}
+				if(split[i].startsWith(TAG_NAME)) {
+					name = split[i].substring(TAG_NAME.length());
+				}
+			}
+		}
+		
+		ExternalApplication externalApplication = new ExternalApplication(ID);
+		externalApplication.setName(name);
+		externalApplication.setDescription(description);
+		return externalApplication;
 	}
 
 }
