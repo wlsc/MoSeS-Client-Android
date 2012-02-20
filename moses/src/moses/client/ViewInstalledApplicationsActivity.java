@@ -33,8 +33,14 @@ public class ViewInstalledApplicationsActivity extends Activity {
 
 	private void refreshInstalledApplications() {
 		installedApps = new LinkedList<InstalledExternalApplication>(
-				InstalledExternalApplicationsManager.getDefault().getApps());
+				InstalledExternalApplicationsManager.getInstance().getApps());
 		populateList(installedApps);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		refreshInstalledApplications();
 	}
 
 	/*

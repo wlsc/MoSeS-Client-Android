@@ -2,6 +2,7 @@ package moses.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Currency;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -29,6 +30,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
+	private Long lastListRefreshTime = null;
 
 	/*
 	 * (non-Javadoc)
@@ -117,6 +119,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 	}
 
 	private void requestExternalApplications() {
+		lastListRefreshTime = System.currentTimeMillis();
 		ApkMethods.getExternalApplications(this);
 	}
 
@@ -128,10 +131,24 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e.getMessage(),
-			Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e==null?"":e.getMessage(), Toast.LENGTH_LONG).show();
 	}
 
+	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>500)) {
+			requestExternalApplications();
+		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>500)) {
+			requestExternalApplications();
+		}
+	}
+	
 	private void populateList(List<ExternalApplication> applications) {
 		listView = (ListView) findViewById(R.id.availableApkListView);
 		String[] items = new String[applications.size()];

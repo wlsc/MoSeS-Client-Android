@@ -127,8 +127,7 @@ public class ApkMethods {
 					observer.apkListRequestFinished(apps);
 
 				} else {
-					Log.d("MoSeS.APK_METHODS",
-							"Request not successful! Server returned negative response");
+					observer.apkListRequestFailed(new RuntimeException("invalid response: " + j.toString()));
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -223,8 +222,10 @@ public class ApkMethods {
 		try {
 			context.getPackageManager().getApplicationInfo(packageName, 0);
 		} catch (NameNotFoundException e) {
+			Log.i("MoSeS.BLA", "false");
 			return false;
 		}
+		Log.i("MoSeS.BLA", "true");
 		return true;
 	}
 

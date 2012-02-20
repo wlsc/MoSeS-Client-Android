@@ -261,8 +261,12 @@ public class MosesService extends android.app.Service implements
 			}
 		});
 
-		InstalledExternalApplicationsManager.init(this);
-		UserstudyNotificationManager.init(this);
+		if(InstalledExternalApplicationsManager.getInstance() == null) {
+			InstalledExternalApplicationsManager.init(this);
+		}
+		if(UserstudyNotificationManager.getInstance() == null) {
+			UserstudyNotificationManager.init(this);
+		}
 
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)

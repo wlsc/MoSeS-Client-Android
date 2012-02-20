@@ -25,7 +25,7 @@ import android.util.Log;
 public class InstalledExternalApplicationsManager {
 	private List<InstalledExternalApplication> apps;
 	private static InstalledExternalApplicationsManager defaultInstance;
-	private static int managerVersion = 1;
+	private static int managerVersion = 2;
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -44,7 +44,7 @@ public class InstalledExternalApplicationsManager {
 	 * 
 	 * @return the default manager or null, if not initialized.
 	 */
-	public static InstalledExternalApplicationsManager getDefault() {
+	public static InstalledExternalApplicationsManager getInstance() {
 		return defaultInstance;
 	}
 
@@ -192,10 +192,12 @@ public class InstalledExternalApplicationsManager {
 				} else {
 					fileVersion = -1;
 					// return straight here because no lines are contained
+					Log.i("MoSeS.APK", "Initialized empty installed apps manager because the manager savefile was empty");
 					return new InstalledExternalApplicationsManager();
 				}
 				if (fileVersion == -1 || fileVersion != managerVersion) {
 					// versions are incompatible, so return empty manager.
+					Log.i("MoSeS.APK", "Initialized empty installed apps manager because of version mismatch");
 					return new InstalledExternalApplicationsManager();
 				}
 
@@ -205,6 +207,7 @@ public class InstalledExternalApplicationsManager {
 						manager.addExternalApplication(appRef);
 					}
 				}
+				Log.i("MoSeS.APK", "Loaded " + manager.getApps().size() + " installed apps from file");
 				return manager;
 			} catch (FileNotFoundException e) {
 				return new InstalledExternalApplicationsManager();
