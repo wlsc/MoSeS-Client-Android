@@ -17,6 +17,7 @@ import moses.client.com.requests.RequestLogin;
 import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.C2DMManager;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -233,6 +234,8 @@ public class HardwareAbstraction {
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Parameters set successfully, server returned positive response");
+					C2DMManager.sendCurrentC2DM();
+					MosesService.getInstance().uploadFilter();
 				} else {
 					if (j.getString("STATUS").equals(
 							"FAILURE_DEVICEID_DUPLICATED")) {
@@ -288,7 +291,7 @@ public class HardwareAbstraction {
 					});
 			a.setButton2(
 					MosesService.getInstance().getString(
-							R.string.dialog_duplicated_devid_cancle),
+							R.string.dialog_duplicated_devid_cancel),
 					new DialogInterface.OnClickListener() {
 
 						@Override

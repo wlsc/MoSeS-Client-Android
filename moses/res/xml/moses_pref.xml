@@ -38,4 +38,9 @@
             android:title="@string/pref_deviceid" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/application_prefs">
+        <CheckBoxPreference android:key="splashscreen_pref" android:title="@string/show_splash" android:defaultValue="true"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

@@ -11,12 +11,16 @@ import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -38,6 +42,8 @@ import android.widget.TextView;
  * 
  */
 public class MosesActivity extends TabActivity {
+
+	private static boolean showsplash = true;
 
 	public enum results {
 		RS_DONE, RS_CLOSE, RS_LOGGEDOUT
@@ -231,6 +237,12 @@ public class MosesActivity extends TabActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		if(showsplash && PreferenceManager.getDefaultSharedPreferences(this).getBoolean("splashscreen_pref", true)) {
+			showSplashScreen();
+			showsplash = false;
+		}
+
 		setContentView(R.layout.main);
 
 		if (InstalledExternalApplicationsManager.getInstance() == null) {
@@ -241,6 +253,31 @@ public class MosesActivity extends TabActivity {
 		}
 
 		initControls();
+	}
+
+	private Dialog mSplashDialog;
+
+	private void showSplashScreen() {
+		mSplashDialog = new Dialog(this, R.style.SplashScreen);
+	    mSplashDialog.setContentView(R.layout.splashscreen);
+	    mSplashDialog.setCancelable(false);
+	    try {
+			((TextView)mSplashDialog.findViewById(R.id.versiontextview)).setText(getPackageManager().getPackageInfo(getPackageName(),0).versionName);
+		} catch (NameNotFoundException e) {
+			Log.d("MoSeS","There's no MoSeS around here.");
+		}
+	    mSplashDialog.show();
+
+	    final Handler handler = new Handler();
+	    handler.postDelayed(new Runnable() {
+	      @Override
+	      public void run() {
+	        if(mSplashDialog != null) {
+			mSplashDialog.dismiss();
+			mSplashDialog = null;
+	        }
+	      }
+	    }, 1500);
 	}
 
 	private void initControls() {

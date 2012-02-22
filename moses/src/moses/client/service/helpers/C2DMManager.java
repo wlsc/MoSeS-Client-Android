@@ -13,6 +13,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -47,8 +48,13 @@ public class C2DMManager {
 		}
 		if (setNewC2DMID) {
 			c2dmRegistrationId = registrationId;
+			PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit().putString("c2dm_pref", registrationId).commit();
 			sendC2DMIdToServer(registrationId, MosesService.getInstance());
 		}
+	}
+
+	public static void sendCurrentC2DM() {
+		sendC2DMIdToServer(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("c2dm_pref", ""),MosesService.getInstance());
 	}
 
 	// TODO: make very sure that the id is really sent to the server!

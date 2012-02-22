@@ -268,6 +268,9 @@ public class MosesService extends android.app.Service implements
 			UserstudyNotificationManager.init(this);
 		}
 
+		if(PreferenceManager.getDefaultSharedPreferences(this).getString("c2dm_pref", "").equals(""))
+			C2DMManager.requestC2DMId(MosesService.this);
+
 		NetworkJSON.url = mset.url;
 		PreferenceManager.getDefaultSharedPreferences(this)
 				.registerOnSharedPreferenceChangeListener(this);
@@ -419,7 +422,6 @@ public class MosesService extends android.app.Service implements
 		a.setButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				C2DMManager.requestC2DMId(MosesService.this);
 				Intent mainDialog = new Intent(c,
 						MosesPreferences.class);
 				c.startActivity(mainDialog);
@@ -445,7 +447,7 @@ public class MosesService extends android.app.Service implements
 		new HardwareAbstraction(MosesService.this).getFilter();
 	}
 
-	private void uploadFilter() {
+	public void uploadFilter() {
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		String s = settingsFile.getString("sensor_data", "[]");
 		HardwareAbstraction ha = new HardwareAbstraction(this);
@@ -470,7 +472,6 @@ public class MosesService extends android.app.Service implements
 		} else if (key.equals("deviceid_pref")) {
 			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 			syncDeviceInformation(false);
-			uploadFilter();
 		}
 	}
 

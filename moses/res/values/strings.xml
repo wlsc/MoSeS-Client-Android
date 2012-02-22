@@ -49,11 +49,15 @@
     <string name="dialog_duplicated_devid_text">Your chosen deviceid is already in use by: </string>
     <string name="dialog_duplicated_devid_text2">Please chose update if you want to replace this device by your current.</string>     
     <string name="dialog_duplicated_devid_update">Update</string>
-    <string name="dialog_duplicated_devid_cancle">Cancle</string>
+    <string name="dialog_duplicated_devid_cancel">Cancel</string>
     <string name="pref_deviceid">Device ID</string>
     <string name="pref_deviceid_message">Please chose a device id.</string>
     <string name="no_deviceid">No device id entered.</string>
     <string name="welcome_to_moses_title_string">Welcome to MoSeS!</string>
     <string name="welcome_to_moses_string">Before you can start to experience the wonderful world of MoSeS, you have to provide some informations about your account and the sensors you want to share.</string>
     <string name="button_okay">Okay</string>
+    <string name="moses_title">MoSeS</string>
+    <string name="version">Version: </string>
+    <string name="application_prefs">Application settings</string>
+    <string name="show_splash">Show splash screen</string>
 </resources>
