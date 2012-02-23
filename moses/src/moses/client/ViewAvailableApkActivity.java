@@ -3,7 +3,10 @@ package moses.client;
 import java.io.File;
 import java.io.IOException;
 import java.util.Currency;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -13,12 +16,14 @@ import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.abstraction.apks.InstalledExternalApplication;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 /**
@@ -157,10 +162,26 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			items[counter] = app.getName();
 			counter++;
 		}
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
-			R.id.apklistitemtext, items) {
-		};
-		listView.setAdapter(arrayAdapter);
+		
+		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
+		for(ExternalApplication app: applications) {
+			HashMap<String, String> rowMap = new HashMap<String, String>();
+			rowMap.put("name", app.getName());
+			rowMap.put("description", app.getDescription());
+			listContent.add(rowMap);
+
+		}
+		SimpleAdapter contentAdapter = new SimpleAdapter( 
+			this, 
+			listContent,
+			R.layout.installedapplistitem,
+			new String[] { "name","description" },
+			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
+		
+//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
+//			R.id.apklistitemtext, items) {
+//		};
+		listView.setAdapter(contentAdapter);
 	}
 
 	public static String concatStacktrace(Exception e) {

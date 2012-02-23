@@ -1,26 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
-    
-	<TextView
+    android:layout_height="fill_parent"
+    android:clickable="true"
+    android:onClick="apkInstallClickHandler"
+    android:orientation="vertical">
+    
+    <TextView
 	    xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:id="@+id/apklistitemtext"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_marginLeft="10px"
-	    android:text="itemtext" >
+	    android:layout_marginLeft="10sp"
+	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:text="App name" >
 
 	</TextView>
-
-	<Button
+
+	<TextView
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/apklistitemdescription"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginLeft="10sp"
+	    android:layout_marginBottom="15sp"
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:text="Description" >
+
+	</TextView>
+
+	<!--<Button
 	    android:id="@+id/btnInstallApk"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:onClick="apkInstallClickHandler"
 	    android:layout_marginLeft="10px"
 	    android:text="Install" >
 
-    </Button>
+    </Button>  -->
 	
 </LinearLayout>

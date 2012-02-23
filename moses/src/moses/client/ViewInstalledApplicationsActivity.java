@@ -1,7 +1,9 @@
 package moses.client;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.abstraction.apks.InstalledExternalApplication;
@@ -12,6 +14,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -101,11 +105,35 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			counter++;
 		}
 		
-		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-				R.layout.installedapplistitem, R.id.installedAppListItemText,
-				items) {
-		};
-		listView.setAdapter(arrayAdapter);
+		TextView instructionsView = (TextView) findViewById(R.id.installedAppHeaderInstructions);
+		if(instructionsView != null) {
+			if(applications.size() == 0) {
+				instructionsView.setText(R.string.installedApkList_emptyHint);
+			} else {
+				instructionsView.setText(R.string.installedApkList_defaultHint);
+			}
+		}
+		
+		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
+		for(InstalledExternalApplication app: applications) {
+			HashMap<String, String> rowMap = new HashMap<String, String>();
+			rowMap.put("name", app.getName());
+			rowMap.put("description", app.getDescription());
+			listContent.add(rowMap);
+
+		}
+		SimpleAdapter contentAdapter = new SimpleAdapter( 
+			this, 
+			listContent,
+			R.layout.installedapplistitem,
+			new String[] { "name","description" },
+			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription } );
+		
+//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+//				R.layout.installedapplistitem, R.id.installedAppListItemText,
+//				items) {
+//		};
+		listView.setAdapter(contentAdapter);
 	}
 
 	public static String concatStacktrace(Exception e) {
