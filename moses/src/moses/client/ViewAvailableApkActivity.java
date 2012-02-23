@@ -153,7 +153,8 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD*2)) {
+		//TODO: find better way to detect unwanted focus-lsoe-and-regain by some intent
+		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}
 	}
@@ -161,6 +162,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 	@Override
 	protected void onResume() {
 		super.onResume();
+		//TODO: find better way to detect unwanted focus-lsoe-and-regain by some intent
 		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}
