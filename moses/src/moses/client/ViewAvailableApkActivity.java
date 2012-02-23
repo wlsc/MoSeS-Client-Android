@@ -17,6 +17,7 @@ import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.abstraction.apks.InstalledExternalApplication;
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import android.widget.Toast;
  */
 public class ViewAvailableApkActivity extends Activity implements ApkListRequestObserver {
 
+	private static final int REFRESH_THRESHHOLD = 6000;
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
 	private Long lastListRefreshTime = null;
@@ -151,7 +153,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>500)) {
+		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD*2)) {
 			requestExternalApplications();
 		}
 	}
@@ -159,7 +161,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 	@Override
 	protected void onResume() {
 		super.onResume();
-		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>500)) {
+		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}
 	}
@@ -173,7 +175,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			counter++;
 		}
 		
-		TextView instructionsView = (TextView) findViewById(R.id.installedAppHeaderInstructions);
+		TextView instructionsView = (TextView) findViewById(R.id.availableApkHeaderInstructions);
 		if(instructionsView != null) {
 			if(applications.size() == 0) {
 				instructionsView.setText(R.string.availableApkList_emptyHint);

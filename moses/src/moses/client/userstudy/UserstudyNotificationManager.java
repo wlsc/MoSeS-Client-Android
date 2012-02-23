@@ -13,6 +13,7 @@ import java.util.List;
 import moses.client.ViewUserStudiesActivity;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.NotifyAboutUserStudyActivity;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.content.Intent;
@@ -149,37 +150,7 @@ public class UserstudyNotificationManager {
 	
 	
 	public static void userStudyNotificationArrived(String apkId) {
-		handleUserStudyNotificationFor(apkId);
+		NotifyAboutUserStudyActivity.handleUserStudyNotificationFor(apkId);
 	}
 	
-	private static void handleUserStudyNotificationFor(String apkId) {
-		Log.i("MoSeS.Service", "saving user study notification to the manager");
-		if (UserstudyNotificationManager.getInstance() == null) {
-			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
-		}
-
-		if (UserstudyNotificationManager.getInstance() != null) {
-			UserStudyNotification notification = new UserStudyNotification(
-					new ExternalApplication(apkId));
-			UserstudyNotificationManager.getInstance().addNotification(
-					notification);
-			try {
-				UserstudyNotificationManager.getInstance().saveToDisk(
-					MosesService.getInstance().getApplicationContext());
-			} catch (IOException e) {
-				Log.e("MoSeS", "Error when saving user study notifications");
-			}
-
-			Intent intent = new Intent(MosesService.getInstance(), ViewUserStudiesActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID,
-					notification.getApplication().getID());
-			Log.i("MoSeS.Service",
-					"starting intent to display user study notification");
-			MosesService.getInstance().startActivity(intent);
-		} else {
-			Log.e("MoSeS.Service",
-					"cannot display user study notification because user notification manager could not be initialized.");
-		}
-	}
 }

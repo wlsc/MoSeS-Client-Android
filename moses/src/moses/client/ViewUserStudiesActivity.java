@@ -66,7 +66,7 @@ public class ViewUserStudiesActivity extends Activity {
 		}
 	}
 
-	private void requestApkInfo(final String id) {
+	private void requestApkInfo(final String id) { 
 
 		if (MosesService.getInstance() != null) MosesService.getInstance().executeLoggedIn(new Executor() {
 
@@ -153,6 +153,7 @@ public class ViewUserStudiesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				//TODO: !implement
+				myDialog.dismiss();
 				ViewUserStudiesActivity.this.finish();
 			}
 		});
@@ -161,7 +162,7 @@ public class ViewUserStudiesActivity extends Activity {
 		myDialog.show();
 
 	}
-
+	
 	protected void installUserstudyApp(UserStudyNotification notification) {
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
 			getApplicationContext());
@@ -182,7 +183,7 @@ public class ViewUserStudiesActivity extends Activity {
 
 	private static void installDownloadedApk(File result, final ExternalApplication externalAppRef) {
 		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
-		installer.addObserver(new Observer() {
+		installer.addObserver(new Observer() { 
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
