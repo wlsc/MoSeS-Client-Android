@@ -66,21 +66,6 @@ public class ViewInstalledApplicationsActivity extends Activity {
 
 		handleStartApp(app);
 
-		// ListView lvItems = listView;
-		// for (int i=0; i < lvItems.getChildCount(); i++)
-		// {
-		// lvItems.getChildAt(i).setBackgroundColor(Color.BLUE);
-		// }
-		// get the row the clicked button is in
-		// LinearLayout vwParentRow = (LinearLayout)v.getParent();
-		// TextView child = (TextView)vwParentRow.getChildAt(0);
-		// Button btnChild = (Button)vwParentRow.getChildAt(1);
-		// btnChild.setText(child.getText());
-		// int pos = lvItems.getPositionForView(v);
-		// btnChild.setText("I've been clicked! " + pos);
-		// int c = Color.CYAN;
-		// vwParentRow.setBackgroundColor(c);
-		// vwParentRow.refreshDrawableState();
 	}
 
 	private void handleStartApp(InstalledExternalApplication app) {

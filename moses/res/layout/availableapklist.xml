@@ -10,8 +10,19 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10px"
         android:layout_marginTop="10px"
-        android:text="Available sensing applications:"
-        android:textSize="20sp" />
+        android:text="Installed sensing applications:"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+
+    <TextView
+        android:id="@+id/availableApkHeaderInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10px"
+        android:layout_marginTop="0px"
+        android:text="@string/installedApkList_defaultHint"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+    
 
     <ListView
         android:id="@+id/availableApkListView"

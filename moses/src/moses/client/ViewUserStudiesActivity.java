@@ -60,6 +60,9 @@ public class ViewUserStudiesActivity extends Activity {
 		if (notification != null) {
 			this.handleSingleNotificationData = notification;
 			requestApkInfo(notification.getApplication().getID());
+		} else {
+			Log.e("MoSeS.Userstudy", "aborting userstudy operation; no data");
+			finish();
 		}
 	}
 
@@ -136,12 +139,21 @@ public class ViewUserStudiesActivity extends Activity {
 			public void onClick(View v) {
 				Log.i("MoSes.Userstudy", "starting download process...");
 				installUserstudyApp(notification);
+				ViewUserStudiesActivity.this.finish();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				myDialog.dismiss();
+				ViewUserStudiesActivity.this.finish();
+			}
+		});
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//TODO: !implement
+				ViewUserStudiesActivity.this.finish();
 			}
 		});
 

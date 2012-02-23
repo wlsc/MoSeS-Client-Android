@@ -60,6 +60,8 @@
     <string name="version">Version: </string>
     <string name="application_prefs">Application settings</string>
     <string name="show_splash">Show splash screen</string>
-    <string name="installedApkList_defaultHint">Click on an app entry to start it:</string>
+    <string name="installedApkList_defaultHint">Click on an app to start it:</string>
     <string name="installedApkList_emptyHint">No sensing applications are installed.</string>
+    <string name="availableApkList_defaultHint">Click on an app to view the full description:</string>
+    <string name="availableApkList_emptyHint">No sensing applications are available.</string>
 </resources>

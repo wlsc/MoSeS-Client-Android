@@ -18,12 +18,15 @@ import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.abstraction.apks.InstalledExternalApplication;
 import android.app.Activity;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -52,25 +55,32 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	public void apkInstallClickHandler(View v) {
 		int pos = listView.getPositionForView(v);
-		ExternalApplication app = externalApps.get(pos);
+		final ExternalApplication app = externalApps.get(pos);
 
-		handleInstallApp(app);
+		final Dialog myDialog = new Dialog(this);
+		myDialog.setContentView(R.layout.view_app_info_layout);
+		myDialog.setTitle("App informations:");
+		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: "
+			+ app.getName());
+		((TextView) myDialog.findViewById(R.id.appinfodialog_descr)).setText(""
+			+ app.getDescription());
+		((Button) myDialog.findViewById(R.id.appinfodialog_installbtn)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.i("MoSes.Install", "starting install process for app " + app.toString());
+				myDialog.dismiss();
+				handleInstallApp(app);
+			}
+		});
+		((Button) myDialog.findViewById(R.id.appinfodialog_cancelbtn)).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				myDialog.dismiss();
+			}
+		});
 
-		// ListView lvItems = listView;
-		// for (int i=0; i < lvItems.getChildCount(); i++)
-		// {
-		// lvItems.getChildAt(i).setBackgroundColor(Color.BLUE);
-		// }
-		// get the row the clicked button is in
-		// LinearLayout vwParentRow = (LinearLayout)v.getParent();
-		// TextView child = (TextView)vwParentRow.getChildAt(0);
-		// Button btnChild = (Button)vwParentRow.getChildAt(1);
-		// btnChild.setText(child.getText());
-		// int pos = lvItems.getPositionForView(v);
-		// btnChild.setText("I've been clicked! " + pos);
-		// int c = Color.CYAN;
-		// vwParentRow.setBackgroundColor(c);
-		// vwParentRow.refreshDrawableState();
+		myDialog.setOwnerActivity(this);
+		myDialog.show();
 	}
 
 	/**
@@ -163,6 +173,15 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			counter++;
 		}
 		
+		TextView instructionsView = (TextView) findViewById(R.id.installedAppHeaderInstructions);
+		if(instructionsView != null) {
+			if(applications.size() == 0) {
+				instructionsView.setText(R.string.availableApkList_emptyHint);
+			} else {
+				instructionsView.setText(R.string.availableApkList_defaultHint);
+			}
+		}
+		
 		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
 		for(ExternalApplication app: applications) {
 			HashMap<String, String> rowMap = new HashMap<String, String>();
@@ -174,7 +193,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 		SimpleAdapter contentAdapter = new SimpleAdapter( 
 			this, 
 			listContent,
-			R.layout.installedapplistitem,
+			R.layout.availableabkslistitem,
 			new String[] { "name","description" },
 			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
 		
