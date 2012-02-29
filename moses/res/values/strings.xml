@@ -64,4 +64,6 @@
     <string name="installedApkList_emptyHint">No sensing applications are installed.</string>
     <string name="availableApkList_defaultHint">Click on an app to view the full description:</string>
     <string name="availableApkList_emptyHint">No sensing applications are available.</string>
+    <string name="entercredentials">Please enter your login credentials:</string>
+    <string name="login_text">Login</string>
 </resources>
