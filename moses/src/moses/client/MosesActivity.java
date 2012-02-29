@@ -17,7 +17,6 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -29,7 +28,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -227,9 +225,10 @@ public class MosesActivity extends TabActivity {
 		if (!isMosesServiceRunning())
 			startAndBindService();
 		if (requestCode == 1) { // Login activity
-			switch(resultCode) {
+			switch (resultCode) {
 			case Activity.RESULT_OK:
-				SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(this).edit();
+				SharedPreferences.Editor e = PreferenceManager
+						.getDefaultSharedPreferences(this).edit();
 				String username = data.getStringExtra("username_pref");
 				String password = data.getStringExtra("password_pref");
 				Log.d("MoSeS.ACTIVITY", username);
@@ -398,9 +397,9 @@ public class MosesActivity extends TabActivity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		if (mBound) {
 			if (mService.isLoggedIn())
-				menu.getItem(0).setTitle(R.string.menu_disconnect);
+				menu.findItem(R.id.item_connect).setTitle(R.string.menu_disconnect);
 			else
-				menu.getItem(0).setTitle(R.string.menu_connect);
+				menu.findItem(R.id.item_connect).setTitle(R.string.menu_connect);
 		}
 		return true;
 	}
@@ -423,6 +422,13 @@ public class MosesActivity extends TabActivity {
 			break;
 		case R.id.item_hardware_info:
 			new HardwareAbstraction(this).getHardwareParameters();
+			break;
+		case R.id.item_logout:
+			PreferenceManager.getDefaultSharedPreferences(this).edit()
+					.remove("username_pref").remove("password_pref").commit();
+			Intent mainDialog = new Intent(MosesActivity.this,
+					MosesLoginActivity.class);
+			startActivityForResult(mainDialog, 1);
 			break;
 		}
 		return true;

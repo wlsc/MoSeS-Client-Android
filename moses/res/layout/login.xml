@@ -57,7 +57,7 @@
             android:text="@string/login_text"
             android:textColor="#FFFFFF"
             android:layout_weight="0.20"
-            android:textStyle="1" />
+            android:textStyle="bold" />
 
         <FrameLayout
             android:id="@+id/frameLayout1"

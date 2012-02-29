@@ -66,4 +66,5 @@
     <string name="availableApkList_emptyHint">No sensing applications are available.</string>
     <string name="entercredentials">Please enter your login credentials:</string>
     <string name="login_text">Login</string>
+    <string name="logout_text">Logout</string>
 </resources>
