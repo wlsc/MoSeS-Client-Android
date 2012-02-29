@@ -23,7 +23,7 @@ public class MosesLoginActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent resultData = new Intent();
-				if(username.getText().equals("") || password.getText().equals("")) return;
+				if(username.getText().toString().equals("") || password.getText().toString().equals("")) return;
 				resultData.putExtra("username_pref", username.getText().toString());
 				resultData.putExtra("password_pref", password.getText().toString());
 				setResult(Activity.RESULT_OK, resultData);
