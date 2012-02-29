@@ -47,18 +47,30 @@
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="60dp" >
 
         <Button
             android:id="@+id/login_login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/ic_menu_login" />
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:background="@drawable/ic_menu_login"
+            android:text="@string/login_text"
+            android:textColor="#FFFFFF"
+            android:layout_weight="0.20"
+            android:textStyle="1" />
+
+        <FrameLayout
+            android:id="@+id/frameLayout1"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.60" >
+        </FrameLayout>
 
         <Button
             android:id="@+id/login_exit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="0.20"
             android:background="@drawable/ic_menu_close_clear_cancel" />
 
     </LinearLayout>
