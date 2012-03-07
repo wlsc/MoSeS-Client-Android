@@ -1,5 +1,6 @@
 package moses.client;
 
+import moses.client.service.MosesService;
 import android.app.Activity;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -20,20 +21,22 @@ public class MosesAskForDeviceIDActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.askfordeviceid);
 
-		((ImageButton) findViewById(R.id.askfordeviceid_forward_btn))
-				.setOnClickListener(new OnClickListener() {
+		((ImageButton) findViewById(R.id.askfordeviceid_forward_btn)).setOnClickListener(new OnClickListener() {
 
-					@Override
-					public void onClick(View v) {
-						TextView t = (TextView) findViewById(R.id.askfordeviceid_deviceid_text);
-						if (t.getText().equals(""))
-							return;
-						PreferenceManager
-								.getDefaultSharedPreferences(
-										MosesAskForDeviceIDActivity.this)
-								.edit().putString("deviceid_pref", t.getText().toString()).commit();
-						MosesAskForDeviceIDActivity.this.finish();
-					}
-				});
+			@Override
+			public void onClick(View v) {
+				TextView t = (TextView) findViewById(R.id.askfordeviceid_deviceid_text);
+				if (t.getText().equals(""))
+					return;
+				PreferenceManager.getDefaultSharedPreferences(MosesAskForDeviceIDActivity.this).edit()
+						.putString("deviceid_pref", t.getText().toString()).commit();
+				finish();
+			}
+		});
+	}
+
+	@Override
+	public void onBackPressed() {
+		return;
 	}
 }

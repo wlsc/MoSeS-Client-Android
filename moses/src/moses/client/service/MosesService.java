@@ -35,8 +35,7 @@ import android.util.Log;
  * 
  * @author Jaco Hofmann
  */
-public class MosesService extends android.app.Service implements
-		OnSharedPreferenceChangeListener {
+public class MosesService extends android.app.Service implements OnSharedPreferenceChangeListener {
 
 	/**
 	 * The Class LocalBinder.
@@ -73,16 +72,16 @@ public class MosesService extends android.app.Service implements
 		public boolean loggingIn = false;
 
 		public boolean firstStart = true;
-		
+
 		public String deviceid = "";
-		
+
 		public Context activitycontext = null;
 
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
 		public ConcurrentLinkedQueue<Executor> postLoginSuccessPriorityHook = new ConcurrentLinkedQueue<Executor>();
-		
+
 		public ConcurrentLinkedQueue<Executor> postLoginSuccessHook = new ConcurrentLinkedQueue<Executor>();
 
 		public ConcurrentLinkedQueue<Executor> postLoginFailureHook = new ConcurrentLinkedQueue<Executor>();
@@ -96,6 +95,8 @@ public class MosesService extends android.app.Service implements
 		public String url = "http://www.da-sense.de/moses/test.php";
 
 		public ConcurrentLinkedQueue<ExecutorWithObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutorWithObject>();
+
+		public boolean nopreferenceupdate = false;
 
 	}
 
@@ -145,10 +146,8 @@ public class MosesService extends android.app.Service implements
 	public void setFilter(JSONArray filter) {
 		mset.filter = filter;
 		settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		settingsFile.edit().putString("sensor_data", filter.toString())
-				.commit();
-		Log.d("MoSeS.SERVICE",
-				"Set data to: " + settingsFile.getString("sensor_data", "[]"));
+		settingsFile.edit().putString("sensor_data", filter.toString()).commit();
+		Log.d("MoSeS.SERVICE", "Set data to: " + settingsFile.getString("sensor_data", "[]"));
 	}
 
 	public JSONArray getFilter() {
@@ -208,20 +207,18 @@ public class MosesService extends android.app.Service implements
 			return;
 		}
 		if (!isOnline()) {
-				Log.d("MoSeS.SERVICE",
-						"Tried logging in but no internet connection was present.");
-				for (ExecutorWithObject e : mset.changeTextFieldHook) {
-					e.execute("No internet connection.");
-				}
+			Log.d("MoSeS.SERVICE", "Tried logging in but no internet connection was present.");
+			for (ExecutorWithObject e : mset.changeTextFieldHook) {
+				e.execute("No internet connection.");
+			}
 			return;
 		}
 		if (!mset.loggedIn && !mset.loggingIn) {
 			Log.d("MoSeS.SERVICE", "Logging in...");
 			mset.loggingIn = true;
 			Login.setService(this);
-			new Login(mset.username, mset.password,
-					mset.postLoginSuccessHook, mset.postLoginSuccessPriorityHook, mset.postLoginFailureHook,
-					mset.loginStartHook, mset.loginEndHook);
+			new Login(mset.username, mset.password, mset.postLoginSuccessHook, mset.postLoginSuccessPriorityHook,
+					mset.postLoginFailureHook, mset.loginStartHook, mset.loginEndHook);
 		}
 	}
 
@@ -262,19 +259,18 @@ public class MosesService extends android.app.Service implements
 			}
 		});
 
-		if(InstalledExternalApplicationsManager.getInstance() == null) {
+		if (InstalledExternalApplicationsManager.getInstance() == null) {
 			InstalledExternalApplicationsManager.init(this);
 		}
-		if(UserstudyNotificationManager.getInstance() == null) {
+		if (UserstudyNotificationManager.getInstance() == null) {
 			UserstudyNotificationManager.init(this);
 		}
 
-		if(PreferenceManager.getDefaultSharedPreferences(this).getString("c2dm_pref", "").equals(""))
+		if (PreferenceManager.getDefaultSharedPreferences(this).getString("c2dm_pref", "").equals(""))
 			C2DMManager.requestC2DMId(MosesService.this);
 
 		NetworkJSON.url = mset.url;
-		PreferenceManager.getDefaultSharedPreferences(this)
-				.registerOnSharedPreferenceChangeListener(this);
+		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 		firstLogin();
 		initConfig();
 
@@ -293,7 +289,7 @@ public class MosesService extends android.app.Service implements
 			login();
 		}
 	}
-	
+
 	public void executeLoggedInPriority(Executor e) {
 		if (isLoggedIn())
 			e.execute();
@@ -318,7 +314,7 @@ public class MosesService extends android.app.Service implements
 		};
 		mset.postLoginSuccessHook.add(n);
 	}
-	
+
 	public void registerPostLoginSuccessOneTimePriorityHook(final Executor e) {
 		Executor n = new Executor() {
 			@Override
@@ -333,7 +329,7 @@ public class MosesService extends android.app.Service implements
 	public void unregisterPostLoginSuccessHook(Executor e) {
 		mset.postLoginSuccessHook.remove(e);
 	}
-	
+
 	public void unregisterPostLoginSuccessPriorityHook(Executor e) {
 		mset.postLoginSuccessPriorityHook.remove(e);
 	}
@@ -413,7 +409,7 @@ public class MosesService extends android.app.Service implements
 	public void syncDeviceInformation(boolean force) {
 		new HardwareAbstraction(this).syncDeviceInformation(force);
 	}
-	
+
 	public void showWelcomeDialog(final Context c) {
 		AlertDialog a = new AlertDialog.Builder(c).create();
 		a.setIcon(R.drawable.ic_launcher);
@@ -423,16 +419,14 @@ public class MosesService extends android.app.Service implements
 		a.setButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Intent mainDialog = new Intent(c,
-						MosesAskForDeviceIDActivity.class);
+				Intent mainDialog = new Intent(c, MosesAskForDeviceIDActivity.class);
 				c.startActivity(mainDialog);
 				dialog.dismiss();
 			}
 		});
 		a.show();
 		Log.d("MoSeS.SERVICE", "First login.");
-		PreferenceManager.getDefaultSharedPreferences(this).edit()
-				.putBoolean("first_start", false).commit();
+		PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("first_start", false).commit();
 	}
 
 	public boolean isOnline() {
@@ -456,29 +450,38 @@ public class MosesService extends android.app.Service implements
 	}
 
 	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		if (key.equals("sensor_data")) {
-			Log.d("MoSeS.SERVICE", "Sensor filter changed to: "
-					+ sharedPreferences.getString("sensor_data", ""));
-			uploadFilter();
-		} else if (key.equals("username_pref")) {
-			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-			mset.username = sharedPreferences.getString("username_pref", "");
-		} else if (key.equals("password_pref")) {
-			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-			mset.password = sharedPreferences.getString("password_pref", "");
-		} else if (key.equals("deviceid_pref")) {
-			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
-			syncDeviceInformation(false);
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		if (!this.mset.nopreferenceupdate) {
+			if (key.equals("sensor_data")) {
+				Log.d("MoSeS.SERVICE", "Sensor filter changed to: " + sharedPreferences.getString("sensor_data", ""));
+				uploadFilter();
+			} else if (key.equals("username_pref")) {
+				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
+				mset.username = sharedPreferences.getString("username_pref", "");
+			} else if (key.equals("password_pref")) {
+				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
+				mset.password = sharedPreferences.getString("password_pref", "");
+			} else if (key.equals("deviceid_pref")) {
+				Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
+				syncDeviceInformation(false);
+			}
 		}
 	}
 
 	public void setActivityContext(Context c) {
 		mset.activitycontext = c;
 	}
-	
+
 	public Context getActivityContext() {
 		return mset.activitycontext;
+	}
+
+	public void noOnSharedPreferenceChanged(boolean t) {
+		this.mset.nopreferenceupdate = t;
+	}
+
+	public void notSetDeviceID() {
+		Intent mainDialog = new Intent(mset.activitycontext, MosesAskForDeviceIDActivity.class);
+		mset.activitycontext.startActivity(mainDialog);
 	}
 }

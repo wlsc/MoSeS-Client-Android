@@ -63,8 +63,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
-			((TextView) findViewById(R.id.success))
-					.setText("Error while logging in.");
+			((TextView) findViewById(R.id.success)).setText("Error while logging in.");
 		}
 	};
 
@@ -72,8 +71,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-					.setVisibility(View.VISIBLE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
 		}
 	};
 
@@ -81,8 +79,7 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-					.setVisibility(View.GONE);
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
 			((TextView) findViewById(R.id.success)).setText("Connected");
 		}
 	};
@@ -144,8 +141,8 @@ public class MosesActivity extends TabActivity {
 				((TextView) findViewById(R.id.success)).setText("Offline");
 			}
 
-			if (PreferenceManager.getDefaultSharedPreferences(
-					MosesActivity.this).getBoolean("first_start", true) && !waitingForResult) {
+			if (PreferenceManager.getDefaultSharedPreferences(MosesActivity.this).getBoolean("first_start", true)
+					&& !waitingForResult) {
 				mService.startedFirstTime(MosesActivity.this);
 			}
 		}
@@ -210,10 +207,8 @@ public class MosesActivity extends TabActivity {
 	 */
 	private boolean isMosesServiceRunning() {
 		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("moses.client.service.MosesService".equals(service.service
-					.getClassName())) {
+		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+			if ("moses.client.service.MosesService".equals(service.service.getClassName())) {
 				return true;
 			}
 		}
@@ -229,8 +224,7 @@ public class MosesActivity extends TabActivity {
 		if (requestCode == 1) { // Login activity
 			switch (resultCode) {
 			case Activity.RESULT_OK:
-				SharedPreferences.Editor e = PreferenceManager
-						.getDefaultSharedPreferences(this).edit();
+				SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(this).edit();
 				String username = data.getStringExtra("username_pref");
 				String password = data.getStringExtra("password_pref");
 				Log.d("MoSeS.ACTIVITY", username);
@@ -266,22 +260,26 @@ public class MosesActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (PreferenceManager.getDefaultSharedPreferences(this)
-				.getString("username_pref", "").equals("")
-				|| PreferenceManager.getDefaultSharedPreferences(this)
-						.getString("password_pref", "").equals("") && !waitingForResult ) {
+		if (PreferenceManager.getDefaultSharedPreferences(this).getString("username_pref", "").equals("")
+				|| PreferenceManager.getDefaultSharedPreferences(this).getString("password_pref", "").equals("")
+				&& !waitingForResult) {
 			waitingForResult = true;
-			Intent mainDialog = new Intent(MosesActivity.this,
-					MosesLoginActivity.class);
+			Intent mainDialog = new Intent(MosesActivity.this, MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);
 		}
 
-		if (showsplash
-				&& PreferenceManager.getDefaultSharedPreferences(this)
-						.getBoolean("splashscreen_pref", true) && !waitingForResult) {
+		if (showsplash && PreferenceManager.getDefaultSharedPreferences(this).getBoolean("splashscreen_pref", true)
+				&& !waitingForResult) {
 			showSplashScreen();
 		}
-		
+
+		if (PreferenceManager.getDefaultSharedPreferences(this).getString("deviceid_pref", "").equals("")
+				&& !waitingForResult
+				&& !PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firststart", true)) {
+			Intent i = new Intent(MosesActivity.this, MosesAskForDeviceIDActivity.class);
+			startActivity(i);
+		}
+
 		showsplash = false;
 
 		setContentView(R.layout.main);
@@ -303,9 +301,8 @@ public class MosesActivity extends TabActivity {
 		mSplashDialog.setContentView(R.layout.splashscreen);
 		mSplashDialog.setCancelable(false);
 		try {
-			((TextView) mSplashDialog.findViewById(R.id.versiontextview))
-					.setText(getPackageManager().getPackageInfo(
-							getPackageName(), 0).versionName);
+			((TextView) mSplashDialog.findViewById(R.id.versiontextview)).setText(getPackageManager().getPackageInfo(
+					getPackageName(), 0).versionName);
 		} catch (NameNotFoundException e) {
 			Log.d("MoSeS", "There's no MoSeS around here.");
 		}
@@ -329,21 +326,14 @@ public class MosesActivity extends TabActivity {
 		TabHost.TabSpec spec; // Resusable TabSpec for each tab
 		Intent intent; // Reusable Intent for each tab
 
-		intent = new Intent().setClass(this,
-				ViewInstalledApplicationsActivity.class);
-		spec = tabHost
-				.newTabSpec("installedApps")
-				.setIndicator("Installed apps",
-						res.getDrawable(R.drawable.ic_menu_agenda))
-				.setContent(intent);
+		intent = new Intent().setClass(this, ViewInstalledApplicationsActivity.class);
+		spec = tabHost.newTabSpec("installedApps")
+				.setIndicator("Installed apps", res.getDrawable(R.drawable.ic_menu_agenda)).setContent(intent);
 		tabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, ViewAvailableApkActivity.class);
-		spec = tabHost
-				.newTabSpec("availableApps")
-				.setIndicator("Install apps from MoSeS",
-						res.getDrawable(R.drawable.ic_menu_add))
-				.setContent(intent);
+		spec = tabHost.newTabSpec("availableApps")
+				.setIndicator("Install apps from MoSeS", res.getDrawable(R.drawable.ic_menu_add)).setContent(intent);
 		tabHost.addTab(spec);
 
 		// activate installed apps tab if there is actually one installed app
@@ -362,8 +352,7 @@ public class MosesActivity extends TabActivity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
-				.setVisibility(View.GONE);
+		((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
 		startAndBindService();
 	}
 
@@ -389,8 +378,7 @@ public class MosesActivity extends TabActivity {
 	}
 
 	public void settings() {
-		Intent mainDialog = new Intent(MosesActivity.this,
-				MosesPreferences.class);
+		Intent mainDialog = new Intent(MosesActivity.this, MosesPreferences.class);
 		startActivityForResult(mainDialog, 0);
 	}
 
@@ -430,11 +418,10 @@ public class MosesActivity extends TabActivity {
 			new HardwareAbstraction(this).getHardwareParameters();
 			break;
 		case R.id.item_logout:
-			PreferenceManager.getDefaultSharedPreferences(this).edit()
-					.remove("username_pref").remove("password_pref").commit();
+			PreferenceManager.getDefaultSharedPreferences(this).edit().remove("username_pref").remove("password_pref")
+					.commit();
 			waitingForResult = true;
-			Intent mainDialog = new Intent(MosesActivity.this,
-					MosesLoginActivity.class);
+			Intent mainDialog = new Intent(MosesActivity.this, MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);
 			break;
 		}
