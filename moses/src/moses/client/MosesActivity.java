@@ -145,7 +145,7 @@ public class MosesActivity extends TabActivity {
 			}
 
 			if (PreferenceManager.getDefaultSharedPreferences(
-					MosesActivity.this).getBoolean("first_start", true)) {
+					MosesActivity.this).getBoolean("first_start", true) && !waitingForResult) {
 				mService.startedFirstTime(MosesActivity.this);
 			}
 		}
@@ -169,6 +169,8 @@ public class MosesActivity extends TabActivity {
 			mBound = false;
 		}
 	};
+
+	private boolean waitingForResult = false;
 
 	/**
 	 * Connect to the server and save (changed) settings
@@ -236,6 +238,7 @@ public class MosesActivity extends TabActivity {
 				e.putString("username_pref", username);
 				e.putString("password_pref", password);
 				e.commit();
+				waitingForResult = false;
 				break;
 			case Activity.RESULT_CANCELED:
 				finish();
@@ -265,7 +268,8 @@ public class MosesActivity extends TabActivity {
 		if (PreferenceManager.getDefaultSharedPreferences(this)
 				.getString("username_pref", "").equals("")
 				|| PreferenceManager.getDefaultSharedPreferences(this)
-						.getString("password_pref", "").equals("")) {
+						.getString("password_pref", "").equals("") && !waitingForResult ) {
+			waitingForResult = true;
 			Intent mainDialog = new Intent(MosesActivity.this,
 					MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);
@@ -273,7 +277,7 @@ public class MosesActivity extends TabActivity {
 
 		if (showsplash
 				&& PreferenceManager.getDefaultSharedPreferences(this)
-						.getBoolean("splashscreen_pref", true)) {
+						.getBoolean("splashscreen_pref", true) && !waitingForResult) {
 			showSplashScreen();
 			showsplash = false;
 		}
@@ -426,6 +430,7 @@ public class MosesActivity extends TabActivity {
 		case R.id.item_logout:
 			PreferenceManager.getDefaultSharedPreferences(this).edit()
 					.remove("username_pref").remove("password_pref").commit();
+			waitingForResult = true;
 			Intent mainDialog = new Intent(MosesActivity.this,
 					MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);

@@ -464,11 +464,9 @@ public class MosesService extends android.app.Service implements
 		} else if (key.equals("username_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
 			mset.username = sharedPreferences.getString("username_pref", "");
-			firstLogin();
 		} else if (key.equals("password_pref")) {
 			Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
 			mset.password = sharedPreferences.getString("password_pref", "");
-			firstLogin();
 		} else if (key.equals("deviceid_pref")) {
 			Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 			syncDeviceInformation(false);
