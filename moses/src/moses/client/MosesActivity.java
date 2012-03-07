@@ -239,6 +239,7 @@ public class MosesActivity extends TabActivity {
 				e.putString("password_pref", password);
 				e.commit();
 				waitingForResult = false;
+				mService.login();
 				break;
 			case Activity.RESULT_CANCELED:
 				finish();
@@ -279,8 +280,9 @@ public class MosesActivity extends TabActivity {
 				&& PreferenceManager.getDefaultSharedPreferences(this)
 						.getBoolean("splashscreen_pref", true) && !waitingForResult) {
 			showSplashScreen();
-			showsplash = false;
 		}
+		
+		showsplash = false;
 
 		setContentView(R.layout.main);
 

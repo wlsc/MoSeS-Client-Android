@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.json.JSONArray;
 
 import moses.client.MosesActivity;
+import moses.client.MosesAskForDeviceIDActivity;
 import moses.client.R;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
@@ -423,7 +424,7 @@ public class MosesService extends android.app.Service implements
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Intent mainDialog = new Intent(c,
-						MosesPreferences.class);
+						MosesAskForDeviceIDActivity.class);
 				c.startActivity(mainDialog);
 				dialog.dismiss();
 			}

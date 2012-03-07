@@ -67,4 +67,7 @@
     <string name="entercredentials">Please enter your login credentials:</string>
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>
+    <string name="deviceid_text">Device ID</string>
+    <string name="deviceid_decr_text">Please enter your device id.\nThis id can be an arbitrary string and is used to identify a device in our system.</string>
+    <string name="next_text">Next</string>
 </resources>
