@@ -28,8 +28,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -234,12 +232,11 @@ public class MosesActivity extends TabActivity {
 				e.putString("password_pref", password);
 				e.commit();
 				waitingForResult = false;
-
+				mService.login();
 				if (onLoginCompleteShowUserStudy != null) {
 					// if a user study is to be displayed
 					displayUserStudy(onLoginCompleteShowUserStudy);
 				}
-
 				break;
 			case Activity.RESULT_CANCELED:
 				if (onLoginCompleteShowUserStudy != null) {
@@ -272,7 +269,6 @@ public class MosesActivity extends TabActivity {
 		super.onCreate(savedInstanceState);
 
 		boolean isShowUserStudyCall = getIntent().getStringExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID) != null;
-
 		if (PreferenceManager.getDefaultSharedPreferences(this).getString("username_pref", "").equals("")
 			|| PreferenceManager.getDefaultSharedPreferences(this).getString("password_pref", "").equals("")
 			&& !waitingForResult) {
@@ -297,6 +293,14 @@ public class MosesActivity extends TabActivity {
 				showsplash = false;
 			}
 		}
+
+		if (PreferenceManager.getDefaultSharedPreferences(this).getString("deviceid_pref", "").equals("")
+			&& !waitingForResult && !PreferenceManager.getDefaultSharedPreferences(this).getBoolean("firststart", true)) {
+			Intent i = new Intent(MosesActivity.this, MosesAskForDeviceIDActivity.class);
+			startActivity(i);
+		}
+
+		showsplash = false;
 
 		setContentView(R.layout.main);
 
@@ -355,7 +359,7 @@ public class MosesActivity extends TabActivity {
 		spec = tabHost.newTabSpec("availableApps")
 			.setIndicator("Install apps from MoSeS", res.getDrawable(R.drawable.ic_menu_add)).setContent(intent);
 		tabHost.addTab(spec);
-		
+
 		intent = new Intent().setClass(this, ViewUserStudyNotificationsList.class);
 		spec = tabHost.newTabSpec("available user studes")
 			.setIndicator("View user studies", res.getDrawable(R.drawable.ic_menu_more)).setContent(intent);
@@ -370,13 +374,14 @@ public class MosesActivity extends TabActivity {
 		}
 
 		// TODO: !remove debug
-//		Button buttonNotificationTest = (Button) findViewById(R.id.buttonTestNotification1);
-//		buttonNotificationTest.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				UserstudyNotificationManager.fakeUserStudyNotification();
-//			}
-//		});
+		// Button buttonNotificationTest = (Button)
+		// findViewById(R.id.buttonTestNotification1);
+		// buttonNotificationTest.setOnClickListener(new OnClickListener() {
+		// @Override
+		// public void onClick(View v) {
+		// UserstudyNotificationManager.fakeUserStudyNotification();
+		// }
+		// });
 	}
 
 	/**

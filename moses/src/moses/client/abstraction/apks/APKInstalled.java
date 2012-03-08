@@ -2,15 +2,16 @@ package moses.client.abstraction.apks;
 
 import java.net.UnknownHostException;
 
-import org.json.JSONException;
-
-import android.util.Log;
 import moses.client.com.ConnectionParam;
-import moses.client.com.ReqTaskExecutor;
 import moses.client.com.NetworkJSON.BackgroundException;
+import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestInstalledAPK;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.Executor;
+
+import org.json.JSONException;
+
+import android.util.Log;
 
 public class APKInstalled {
 

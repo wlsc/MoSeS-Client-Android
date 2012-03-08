@@ -1,8 +1,8 @@
 package moses.client.service.helpers;
 
 import moses.client.abstraction.HardwareAbstraction;
-import moses.client.com.ReqTaskExecutor;
 import moses.client.com.NetworkJSON.BackgroundException;
+import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestC2DM;
 import moses.client.service.MosesService;
 

@@ -241,7 +241,8 @@ public class HardwareAbstraction {
 							"FAILURE_DEVICEID_DUPLICATED")) {
 						showForceDialog(j.getString("VENDOR_NAME"),
 								j.getString("MODEL_NAME"),
-								j.getString("ANDVER"), MosesService.getInstance().getActivityContext());
+								j.getString("ANDVER"), MosesService
+										.getInstance().getActivityContext());
 					} else {
 						Log.d("MoSeS.HARDWARE_ABSTRACTION",
 								"Parameters NOT set successfully! Invalid session id.");
@@ -296,6 +297,13 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
+							MosesService.getInstance().noOnSharedPreferenceChanged(true);
+							PreferenceManager
+									.getDefaultSharedPreferences(
+											MosesService.getInstance()).edit()
+									.putString("deviceid_pref", "").commit();
+							MosesService.getInstance().noOnSharedPreferenceChanged(false);
+							MosesService.getInstance().notSetDeviceID();
 							arg0.dismiss();
 						}
 

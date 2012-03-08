@@ -10,15 +10,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import moses.client.MosesActivity;
 import moses.client.ViewUserStudiesActivity;
-import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.NotifyAboutUserStudyActivity;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class UserstudyNotificationManager {

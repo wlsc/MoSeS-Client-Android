@@ -70,6 +70,8 @@
         </activity>
         <activity android:name="moses.client.MosesLoginActivity" >
         </activity>
+        <activity android:name="moses.client.MosesAskForDeviceIDActivity" >
+        </activity>
 
         <receiver android:name="moses.client.service.StartupIntentReceiver" >
             <intent-filter>

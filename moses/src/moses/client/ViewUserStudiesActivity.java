@@ -14,7 +14,6 @@ import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestGetApkInfo;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.Executor;
-import moses.client.service.helpers.NotifyAboutUserStudyActivity;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 

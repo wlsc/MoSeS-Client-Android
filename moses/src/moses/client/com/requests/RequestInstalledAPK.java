@@ -1,10 +1,10 @@
 package moses.client.com.requests;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class RequestInstalledAPK {
 	ReqTaskExecutor e;

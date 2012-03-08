@@ -2,9 +2,7 @@ package moses.client.service.helpers;
 
 import java.io.IOException;
 
-import moses.client.MosesActivity;
 import moses.client.R;
-import moses.client.ViewAvailableApkActivity;
 import moses.client.ViewUserStudiesActivity;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
