@@ -36,7 +36,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.availableapklist);
+		setContentView(R.layout.pendinguserstudieslist);
 
 		initControls();
 	}
@@ -131,7 +131,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	
 	private void populateList(List<UserStudyNotification> applications) {
 		//TODO: update names cuz of copypasta
-		listView = (ListView) findViewById(R.id.availableApkListView);
+		listView = (ListView) findViewById(R.id.userstudyListListView);
 //		String[] items = new String[applications.size()];
 //		int counter = 0;
 //		for (UserStudyNotification app : applications) {
@@ -139,7 +139,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 //			counter++;
 //		}
 		
-		TextView instructionsView = (TextView) findViewById(R.id.availableApkHeaderInstructions);
+		TextView instructionsView = (TextView) findViewById(R.id.userstudyListHeaderInstructions);
 		if(instructionsView != null) {
 			//TODO: check if there is no notification WITH DATA (or just load all descriptions/names in this activity, too)
 			if(applications.size() == 0) {

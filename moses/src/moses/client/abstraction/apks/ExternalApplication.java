@@ -48,8 +48,7 @@ public class ExternalApplication {
 		if (name != null) {
 			return name;
 		} else {
-			name = retrieveName();
-			return getName();
+			return getGenericName();
 		}
 	}
 
@@ -59,9 +58,9 @@ public class ExternalApplication {
 	 * 
 	 * @return the name of the application
 	 */
-	private String retrieveName() {
+	private String getGenericName() {
 		// TODO: implement, placeholder
-		return "retrieved name for application " + ID;
+		return "loading Name...  (ID: " + getID() + ")";
 	}
 
 	/**
@@ -75,8 +74,7 @@ public class ExternalApplication {
 		if (description != null) {
 			return description;
 		} else {
-			description = retrieveDescription();
-			return getName();
+			return retrieveDescription();
 		}
 	}
 
@@ -87,8 +85,7 @@ public class ExternalApplication {
 	 * @return the description of the application
 	 */
 	private String retrieveDescription() {
-		// TODO: implement, placeholder
-		return "retrieved description for application " + ID;
+		return "loading Description...";
 	}
 
 	/**

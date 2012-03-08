@@ -5,17 +5,17 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/availableApkHeader"
+        android:id="@+id/userstudyListHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10px"
         android:layout_marginTop="10px"
-        android:text="Available sensing applications:"
+        android:text="Pending user study notifications:"
         android:textAppearance="?android:attr/textAppearanceLarge" />
     
 
     <TextView
-        android:id="@+id/availableApkHeaderInstructions"
+        android:id="@+id/userstudyListHeaderInstructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10px"
@@ -25,7 +25,7 @@
     
 
     <ListView
-        android:id="@+id/availableApkListView"
+        android:id="@+id/userstudyListListView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:choiceMode="multipleChoice" >
