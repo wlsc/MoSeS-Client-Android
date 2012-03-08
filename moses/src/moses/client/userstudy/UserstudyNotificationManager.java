@@ -129,7 +129,7 @@ public class UserstudyNotificationManager {
 		//TODO: notify view?
 	}
 
-	private void removeNotificationWithApkId(String id) {
+	public void removeNotificationWithApkId(String id) {
 		UserStudyNotification notificationToRemove = null;
 		for(UserStudyNotification notification: notifications) {
 			if(notification.getApplication().getID().equals(id)) {
@@ -183,6 +183,16 @@ public class UserstudyNotificationManager {
 		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		viewUserStudy.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
 		applicationContext.startActivity(viewUserStudy);
+	}
+
+	public List<UserStudyNotification> getNotifications() {
+		return new LinkedList(notifications);
+	}
+
+	public void updateNotification(UserStudyNotification notification) {
+		if(this.notifications.contains(notification)) {
+			this.addNotification(notification);
+		}
 	}
 	
 	

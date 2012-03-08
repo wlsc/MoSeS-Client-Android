@@ -355,6 +355,11 @@ public class MosesActivity extends TabActivity {
 		spec = tabHost.newTabSpec("availableApps")
 			.setIndicator("Install apps from MoSeS", res.getDrawable(R.drawable.ic_menu_add)).setContent(intent);
 		tabHost.addTab(spec);
+		
+		intent = new Intent().setClass(this, ViewUserStudyNotificationsList.class);
+		spec = tabHost.newTabSpec("available user studes")
+			.setIndicator("View user studies", res.getDrawable(R.drawable.ic_menu_more)).setContent(intent);
+		tabHost.addTab(spec);
 
 		// activate installed apps tab if there is actually one installed app
 		// else show the available apps tab

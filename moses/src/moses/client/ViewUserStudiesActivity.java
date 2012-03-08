@@ -51,6 +51,7 @@ public class ViewUserStudiesActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		//TODO: remove userstudy NOTIFICATION if it still exists in the bar, because this could've been called from the "later" list
 		String studyApkId = getIntent().getExtras().getString(EXTRA_USER_STUDY_APK_ID);
 		if (studyApkId != null) {
 			
@@ -119,6 +120,7 @@ public class ViewUserStudiesActivity extends Activity {
 								String descr = j.getString("DESCR");
 								handleSingleNotificationData.getApplication().setName(name);
 								handleSingleNotificationData.getApplication().setDescription(descr);
+								UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
 
 								showDescisionDialog(handleSingleNotificationData);
 							} else {
@@ -171,13 +173,14 @@ public class ViewUserStudiesActivity extends Activity {
 			public void onClick(View v) {
 				Log.i("MoSes.Userstudy", "starting download process...");
 				installUserstudyApp(notification);
-				// TODO: finish here alright? or wait until everythings's done
-				finishActivityOK();
+				// TODO: finish here alright? or wait until everythings's done (e. g. userstudy installed and removed -> return -> refresh userstudy list)
+				
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
 				myDialog.dismiss();
 				cancelActivity();
 			}
@@ -205,6 +208,7 @@ public class ViewUserStudiesActivity extends Activity {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
 					// TODO: error msgs shouldve been already shown, still..
 					// something is to be done here still
+					cancelActivity();
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
@@ -222,18 +226,23 @@ public class ViewUserStudiesActivity extends Activity {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
 					// TODO:errors shouldve been shown already by the installer;
 					// still, something is to be done here..
+					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					// TODO:how to handle if the user cancels the installation?
+					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					new APKInstalled(externalAppRef.getID());
 					try {
 						ApkInstallManager.registerInstalledApk(result, externalAppRef,
 							ViewUserStudiesActivity.this.getApplicationContext(), true);
+						UserstudyNotificationManager.getInstance().removeNotificationWithApkId(externalAppRef.getID());
+						//TODO: refresh userstudy list?
 					} catch (IOException e) {
 						Log.e(
 							"MoSeS.Install",
 							"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
 					}
+					finishActivityOK();
 				}
 			}
 		});

@@ -56,6 +56,8 @@
         </activity>
         <activity android:name="moses.client.ViewAvailableApkActivity" >
         </activity>
+        <activity android:name="moses.client.ViewUserStudyNotificationsList" >
+        </activity>
         <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
         </activity>
         <activity android:name="moses.client.abstraction.apks.InstallApkActivity" >
