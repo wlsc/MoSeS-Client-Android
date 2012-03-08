@@ -1,6 +1,7 @@
 package moses.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -13,6 +14,7 @@ import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestGetApkInfo;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.Executor;
+import moses.client.service.helpers.NotifyAboutUserStudyActivity;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 
@@ -21,7 +23,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,11 +50,27 @@ public class ViewUserStudiesActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		String studyApkId = getIntent().getExtras().getString(EXTRA_USER_STUDY_APK_ID);
 		if (studyApkId != null) {
-			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(
-				studyApkId);
-			showActivityForNotification(notification);
+			
+			if (PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+				.getString("username_pref", "").equals("")
+				|| PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+					.getString("password_pref", "").equals("")) {
+				//if either username or password are not set, redirect to moses ui for login
+
+				Intent intent = new Intent(this, MosesActivity.class);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, studyApkId);
+				startActivity(intent);
+				finish();
+			} else {
+				UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(
+					studyApkId);
+				showActivityForNotification(notification);
+			}
+			
 		} else {
 			showActivityForNotification(null);
 		}
@@ -62,11 +82,24 @@ public class ViewUserStudiesActivity extends Activity {
 			requestApkInfo(notification.getApplication().getID());
 		} else {
 			Log.e("MoSeS.Userstudy", "aborting userstudy operation; no data");
-			finish();
+			cancelActivity();
 		}
 	}
 
-	private void requestApkInfo(final String id) { 
+	/**
+	 * sets result:cancelled and finishes.
+	 */
+	private void cancelActivity() {
+		setResult(Activity.RESULT_CANCELED);
+		finish();
+	}
+
+	protected void finishActivityOK() {
+		setResult(Activity.RESULT_OK);
+		finish();
+	}
+
+	private void requestApkInfo(final String id) {
 
 		if (MosesService.getInstance() != null) MosesService.getInstance().executeLoggedIn(new Executor() {
 
@@ -94,7 +127,7 @@ public class ViewUserStudiesActivity extends Activity {
 								Toast.makeText(getApplicationContext(),
 									"user study info request: Server returned negative" + j.toString(),
 									Toast.LENGTH_LONG).show();
-								ViewUserStudiesActivity.this.finish();
+								cancelActivity();
 								// TODO: handle better but for now...
 							}
 						} catch (JSONException e) {
@@ -102,7 +135,7 @@ public class ViewUserStudiesActivity extends Activity {
 							Toast.makeText(getApplicationContext(),
 								"requesting study information: json exception" + e.getMessage(), Toast.LENGTH_LONG)
 								.show();
-							ViewUserStudiesActivity.this.finish();
+							cancelActivity();
 							// TODO: handle better but for now...
 						}
 					}
@@ -128,8 +161,7 @@ public class ViewUserStudiesActivity extends Activity {
 		Log.i("MoSeS.Userstudy", notification.getApplication().getID());
 		final Dialog myDialog = new Dialog(this);
 		myDialog.setContentView(R.layout.userstudynotificationdialog);
-		myDialog.setTitle("A new user study of the sensing app " + notification.getApplication().getName()
-			+ " is available for you");
+		myDialog.setTitle("A new user study \"" + notification.getApplication().getName() + "\" is available for you");
 		((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
 			+ notification.getApplication().getName());
 		((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
@@ -139,22 +171,23 @@ public class ViewUserStudiesActivity extends Activity {
 			public void onClick(View v) {
 				Log.i("MoSes.Userstudy", "starting download process...");
 				installUserstudyApp(notification);
-				ViewUserStudiesActivity.this.finish();
+				// TODO: finish here alright? or wait until everythings's done
+				finishActivityOK();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				myDialog.dismiss();
-				ViewUserStudiesActivity.this.finish();
+				cancelActivity();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO: !implement
+				// TODO: !implement later functionality
 				myDialog.dismiss();
-				ViewUserStudiesActivity.this.finish();
+				cancelActivity();
 			}
 		});
 
@@ -162,7 +195,7 @@ public class ViewUserStudiesActivity extends Activity {
 		myDialog.show();
 
 	}
-	
+
 	protected void installUserstudyApp(UserStudyNotification notification) {
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
 			getApplicationContext());
@@ -181,9 +214,9 @@ public class ViewUserStudiesActivity extends Activity {
 		downloader.start();
 	}
 
-	private static void installDownloadedApk(File result, final ExternalApplication externalAppRef) {
+	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef) {
 		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
-		installer.addObserver(new Observer() { 
+		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
@@ -193,6 +226,14 @@ public class ViewUserStudiesActivity extends Activity {
 					// TODO:how to handle if the user cancels the installation?
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					new APKInstalled(externalAppRef.getID());
+					try {
+						ApkInstallManager.registerInstalledApk(result, externalAppRef,
+							ViewUserStudiesActivity.this.getApplicationContext(), true);
+					} catch (IOException e) {
+						Log.e(
+							"MoSeS.Install",
+							"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
+					}
 				}
 			}
 		});

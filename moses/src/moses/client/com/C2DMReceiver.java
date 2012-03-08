@@ -49,6 +49,8 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 
 		if (receivedGoodThing) {
+			//TODO: !remove
+			Log.i("MoSeS", "userstudy id incoming: " + apkidString);
 			UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
 		}
 	}

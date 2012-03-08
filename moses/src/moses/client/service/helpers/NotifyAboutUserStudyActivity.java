@@ -2,6 +2,7 @@ package moses.client.service.helpers;
 
 import java.io.IOException;
 
+import moses.client.MosesActivity;
 import moses.client.R;
 import moses.client.ViewAvailableApkActivity;
 import moses.client.ViewUserStudiesActivity;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+//TODO: eliminate activity (only use static methods here)
 public class NotifyAboutUserStudyActivity extends Activity {
 
 	public static NotifyAboutUserStudyActivity staticActivityReference;
@@ -30,14 +32,11 @@ public class NotifyAboutUserStudyActivity extends Activity {
 		finish();
 	}
 
-	public static void handleUserStudyNotificationFor(String apkId) {
-		Intent intent = new Intent(MosesService.getInstance(), NotifyAboutUserStudyActivity.class);
-		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, apkId);
-		MosesService.getInstance().startActivity(intent);
+	private void displayUserStudyNotification(String apkId) {
+		displayUserStudyNotificationStatic(apkId, this);
 	}
 	
-	private void displayUserStudyNotification(String apkId) {
+	public static void displayUserStudyNotificationStatic(String apkId, Context context) {
 		Log.i("MoSeS.Service", "saving user study notification to the manager");
 		if (UserstudyNotificationManager.getInstance() == null) {
 			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
@@ -61,7 +60,7 @@ public class NotifyAboutUserStudyActivity extends Activity {
 					notification.getApplication().getID());
 			Log.i("MoSeS.Service",
 					"starting intent to display user study notification");
-			showNotification(intent, apkId);
+			showNotificationStatic(intent, apkId, context);
 			
 		} else {
 			Log.e("MoSeS.Service",
@@ -69,13 +68,13 @@ public class NotifyAboutUserStudyActivity extends Activity {
 		}
 	}
 	
-	protected void showNotification(Intent intent, String apkId) {
-		Log.i("MoSeS.Userstudy", "diosplayed user study notification in taskbar");
-		showNotification(intent, "A new user study is available for you\nClick here to view it", "MoSeS",
-			false, Math.abs(("Userstudy"+apkId).hashCode()));
+	protected static void showNotificationStatic(Intent intent, String apkId, Context context) {
+		Log.i("MoSeS.Userstudy", "displayed user study notification in taskbar");
+		showNotificationStatic(intent, "A new user study is available for you\nClick here to view it", "MoSeS",
+			false, Math.abs(("Userstudy"+apkId).hashCode()), context);
 	}
 
-	private void showNotification(Intent intent, String text, String title, boolean ongoing, int id) {
+	private static void showNotificationStatic(Intent intent, String text, String title, boolean ongoing, int id, Context context) {
 
 		Notification notification = new Notification(R.drawable.ic_launcher, text, System.currentTimeMillis());
 		if (ongoing) {
@@ -83,10 +82,10 @@ public class NotifyAboutUserStudyActivity extends Activity {
 		} else {
 			notification.flags = Notification.FLAG_AUTO_CANCEL;
 		}
-		PendingIntent contentIntent = PendingIntent.getActivity(getContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-		notification.setLatestEventInfo(getContext(), title, text, contentIntent);
-		NotificationManager mNotificationManager = (NotificationManager) getActivity().getSystemService(
+		notification.setLatestEventInfo(context, title, text, contentIntent);
+		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(
 			Context.NOTIFICATION_SERVICE);
 		mNotificationManager.notify(id, notification);
 	}

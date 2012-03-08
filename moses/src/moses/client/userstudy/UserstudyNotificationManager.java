@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import moses.client.MosesActivity;
 import moses.client.ViewUserStudiesActivity;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
@@ -17,9 +18,11 @@ import moses.client.service.helpers.NotifyAboutUserStudyActivity;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class UserstudyNotificationManager {
+	private static final String DEBUG_USERSTUDY_NOTIFICATION_ID = "50";
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
 	
@@ -149,8 +152,38 @@ public class UserstudyNotificationManager {
 	}
 	
 	
-	public static void userStudyNotificationArrived(String apkId) {
-		NotifyAboutUserStudyActivity.handleUserStudyNotificationFor(apkId);
+	public static void handleUserStudyNotificationFor(String apkId) {
+		if(MosesService.getInstance() != null) {
+			NotifyAboutUserStudyActivity.displayUserStudyNotificationStatic(apkId, MosesService.getInstance());
+		} else {
+			//TODO: what if the service doesn't exist?
+		}
+//		Intent intent = new Intent(MosesService.getInstance(), NotifyAboutUserStudyActivity.class);
+//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//		intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, apkId);
+//		if(MosesService.getInstance() != null) {
+//			MosesService.getInstance().startActivity(intent);
+//		} else {
+//			//TODO: handle what happens if service is not running
+//		}
+		
 	}
+
+	public static void userStudyNotificationArrived(String apkId) {
+		Log.i("MoSeS", "userStudyHandled: " + apkId);
+		handleUserStudyNotificationFor(apkId);
+	}
+	
+	public static void fakeUserStudyNotification() {
+		userStudyNotificationArrived(DEBUG_USERSTUDY_NOTIFICATION_ID);
+	}
+
+	public static void displayUserStudy(String userStudyId, Context applicationContext) {
+		Intent viewUserStudy = new Intent(applicationContext, ViewUserStudiesActivity.class);
+		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		viewUserStudy.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
+		applicationContext.startActivity(viewUserStudy);
+	}
+	
 	
 }

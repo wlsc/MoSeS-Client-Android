@@ -1,5 +1,6 @@
 package moses.client;
 
+import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,6 +41,15 @@ public class MosesLoginActivity extends Activity {
 				finish();
 			}
 		});
+		
+		//TODO: !remove debug
+//		Button buttonNotificationTest = (Button) findViewById(R.id.buttonTestNotification2);
+//		buttonNotificationTest.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				UserstudyNotificationManager.fakeUserStudyNotification();
+//			}
+//		});
 	}
 
 	@Override
