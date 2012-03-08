@@ -172,8 +172,7 @@ public class ViewUserStudiesActivity extends Activity {
 			public void onClick(View v) {
 				Log.i("MoSes.Userstudy", "starting download process...");
 				installUserstudyApp(notification);
-				// TODO: finish here alright? or wait until everythings's done (e. g. userstudy installed and removed -> return -> refresh userstudy list)
-				
+				myDialog.dismiss();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
