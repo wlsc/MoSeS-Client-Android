@@ -58,8 +58,6 @@ public class MosesPreferences extends PreferenceActivity {
 		super.onWindowFocusChanged(f);
 		if(MosesService.getInstance() != null) {
 			MosesService.getInstance().setActivityContext(this);
-		} else {
-			MosesService.getInstance().setActivityContext(null);
 		}
 	}
 

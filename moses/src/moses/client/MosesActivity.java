@@ -104,7 +104,7 @@ public class MosesActivity extends TabActivity {
 	};
 
 	/** This Object represents the underlying service. **/
-	public MosesService mService;
+	public static MosesService mService;
 
 	/** If this variable is true the activity is connected to the service. **/
 	public static boolean mBound = false;
@@ -186,10 +186,8 @@ public class MosesActivity extends TabActivity {
 
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
-		if (MosesService.getInstance() != null) {
-			MosesService.getInstance().setActivityContext(this);
-		} else {
-			MosesService.getInstance().setActivityContext(null);
+		if (mBound) {
+			mService.setActivityContext(this);
 		}
 	}
 
@@ -469,9 +467,9 @@ public class MosesActivity extends TabActivity {
 	 * @return whether the information that is required for the service to properly log-in is complete.
 	 */
 	public static boolean isLoginInformationComplete() {
-		return PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+		return PreferenceManager.getDefaultSharedPreferences(mService)
 			.getString("username_pref", "").equals("")
-			|| PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+			|| PreferenceManager.getDefaultSharedPreferences(mService)
 				.getString("password_pref", "").equals("");
 	}
 

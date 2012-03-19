@@ -2,6 +2,7 @@ package moses.client.com;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -66,6 +67,10 @@ public class NetworkJSON
 
 	/** The url. */
 	public static String url;
+	
+	public static boolean debug = false;
+	
+	public static LinkedList<JSONObject> returnObjects = new LinkedList<JSONObject>();
 
 	/** The e. */
 	private ReqTaskExecutor e;
@@ -77,6 +82,11 @@ public class NetworkJSON
 	 */
 	@Override
 	protected String doInBackground(NetworkJSON.APIRequest... params) {
+		if(debug) {
+			String ret = returnObjects.getFirst().toString();
+			returnObjects.removeFirst();
+			return ret;
+		}
 		publishProgress(new BackgroundException(ConnectionParam.INIT, null));
 		e = params[0].e;
 		String ret = "";

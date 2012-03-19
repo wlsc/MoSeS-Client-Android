@@ -20,8 +20,7 @@ public class StartupIntentReceiver extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Intent serviceIntent = new Intent();
-		serviceIntent.setAction("moses.client.service.Service");
+		Intent serviceIntent = new Intent(context, MosesService.class);
 		context.startService(serviceIntent);
 	}
 
