@@ -235,7 +235,7 @@ public class MosesActivity extends TabActivity {
 				mService.login();
 				if (onLoginCompleteShowUserStudy != null) {
 					// if a user study is to be displayed
-					displayUserStudy(onLoginCompleteShowUserStudy);
+					UserstudyNotificationManager.displayUserStudyContent(onLoginCompleteShowUserStudy, this.getApplicationContext());
 				}
 				break;
 			case Activity.RESULT_CANCELED:
@@ -268,22 +268,28 @@ public class MosesActivity extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		boolean isShowUserStudyCall = getIntent().getStringExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID) != null;
-		if (PreferenceManager.getDefaultSharedPreferences(this).getString("username_pref", "").equals("")
-			|| PreferenceManager.getDefaultSharedPreferences(this).getString("password_pref", "").equals("")
+		boolean isShowUserStudyCall = getIntent().getStringExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID) != null;
+		if ((PreferenceManager.getDefaultSharedPreferences(this).getString("username_pref", "").equals("")
+			|| PreferenceManager.getDefaultSharedPreferences(this).getString("password_pref", "").equals(""))
 			&& !waitingForResult) {
+			/*
+			 * here, the activity is called to display the login screen, and, when filled 
+			 * in, redirect the user to the user study that was meant to 
+			 * be displayed originally
+			 */
+			
 			waitingForResult = true;
 			// set flag that on login creds arrival show a user study
 			if (isShowUserStudyCall) {
 				onLoginCompleteShowUserStudy = getIntent().getStringExtra(
-					ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID);
+					ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
 			}
 			Intent mainDialog = new Intent(MosesActivity.this, MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);
 		} else if (isShowUserStudyCall) {
 			// if a User study has to be shown, and username and password are
 			// set, redirect this
-			displayUserStudy(getIntent().getStringExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID));
+			UserstudyNotificationManager.displayUserStudyContent(onLoginCompleteShowUserStudy, this.getApplicationContext());
 		}
 
 		if (!isShowUserStudyCall) {
@@ -312,10 +318,6 @@ public class MosesActivity extends TabActivity {
 		}
 
 		initControls();
-	}
-
-	private void displayUserStudy(String userStudyId) {
-		UserstudyNotificationManager.displayUserStudy(userStudyId, this.getApplicationContext());
 	}
 
 	private Dialog mSplashDialog;
@@ -461,6 +463,16 @@ public class MosesActivity extends TabActivity {
 			break;
 		}
 		return true;
+	}
+
+	/**
+	 * @return whether the information that is required for the service to properly log-in is complete.
+	 */
+	public static boolean isLoginInformationComplete() {
+		return PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+			.getString("username_pref", "").equals("")
+			|| PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+				.getString("password_pref", "").equals("");
 	}
 
 }

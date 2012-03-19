@@ -63,9 +63,9 @@ public class ViewUserStudyNotificationsList extends Activity {
 		final UserStudyNotification app = externalApps.get(pos);
 
 		//TODO: handle moses service shit
-		Intent intent = new Intent(MosesService.getInstance(), ViewUserStudiesActivity.class);
+		Intent intent = new Intent(MosesService.getInstance(), ViewUserStudyActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID,
+		intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
 				app.getApplication().getID());
 		
 		//TODO: return code management

@@ -15,6 +15,7 @@ import moses.client.com.requests.RequestGetApkInfo;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.Executor;
 import moses.client.userstudy.UserStudyNotification;
+import moses.client.userstudy.UserStudyNotification.Status;
 import moses.client.userstudy.UserstudyNotificationManager;
 
 import org.json.JSONException;
@@ -36,7 +37,7 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewUserStudiesActivity extends Activity {
+public class ViewUserStudyActivity extends Activity {
 
 	public static final String EXTRA_USER_STUDY_APK_ID = "UserStudyApkId";
 	private UserStudyNotification handleSingleNotificationData;
@@ -54,15 +55,12 @@ public class ViewUserStudiesActivity extends Activity {
 		String studyApkId = getIntent().getExtras().getString(EXTRA_USER_STUDY_APK_ID);
 		if (studyApkId != null) {
 			
-			if (PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-				.getString("username_pref", "").equals("")
-				|| PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-					.getString("password_pref", "").equals("")) {
+			if (MosesActivity.isLoginInformationComplete()) {
 				//if either username or password are not set, redirect to moses ui for login
 
 				Intent intent = new Intent(this, MosesActivity.class);
 				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, studyApkId);
+				intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, studyApkId);
 				startActivity(intent);
 				finish();
 			} else {
@@ -171,14 +169,17 @@ public class ViewUserStudiesActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Log.i("MoSes.Userstudy", "starting download process...");
-				installUserstudyApp(notification);
+				downloadUserstudyApp(notification);
 				myDialog.dismiss();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				notification.setStatus(Status.DENIED);
+				UserstudyNotificationManager.getInstance().updateNotification(notification);
 				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
+				
 				myDialog.dismiss();
 				cancelActivity();
 			}
@@ -197,7 +198,7 @@ public class ViewUserStudiesActivity extends Activity {
 
 	}
 
-	protected void installUserstudyApp(UserStudyNotification notification) {
+	protected void downloadUserstudyApp(final UserStudyNotification notification) {
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
 			getApplicationContext());
 		Observer observer = new Observer() {
@@ -208,7 +209,7 @@ public class ViewUserStudiesActivity extends Activity {
 					// something is to be done here still
 					cancelActivity();
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
-					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
+					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult(), notification);
 				}
 			}
 		};
@@ -216,7 +217,7 @@ public class ViewUserStudiesActivity extends Activity {
 		downloader.start();
 	}
 
-	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef) {
+	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef, final UserStudyNotification notification) {
 		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
 		installer.addObserver(new Observer() {
 			@Override
@@ -230,10 +231,13 @@ public class ViewUserStudiesActivity extends Activity {
 					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					new APKInstalled(externalAppRef.getID());
+					notification.setStatus(Status.ACCEPTED);
+					UserstudyNotificationManager.getInstance().updateNotification(notification);
 					try {
 						ApkInstallManager.registerInstalledApk(result, externalAppRef,
-							ViewUserStudiesActivity.this.getApplicationContext(), true);
+							ViewUserStudyActivity.this.getApplicationContext(), true);
 						UserstudyNotificationManager.getInstance().removeNotificationWithApkId(externalAppRef.getID());
+						UserstudyNotificationManager.getInstance().saveToDisk(getApplicationContext());
 						//TODO: refresh userstudy list?
 					} catch (IOException e) {
 						Log.e(

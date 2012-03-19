@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import moses.client.ViewUserStudiesActivity;
+import moses.client.ViewUserStudyActivity;
+import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
-import moses.client.service.helpers.NotifyAboutUserStudyActivity;
+import moses.client.service.helpers.UserStudyStatusBarHelper;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.content.Intent;
@@ -123,7 +124,12 @@ public class UserstudyNotificationManager {
 		} else {
 			notifications.add(notification);
 		}
-		//TODO: notify view?
+	}
+
+	public void updateNotification(UserStudyNotification notification) {
+		if(this.notifications.contains(notification)) {
+			this.addNotification(notification);
+		}
 	}
 
 	public void removeNotificationWithApkId(String id) {
@@ -139,6 +145,10 @@ public class UserstudyNotificationManager {
 		}
 	}
 
+	public List<UserStudyNotification> getNotifications() {
+		return new LinkedList(notifications);
+	}
+
 	public UserStudyNotification getNotificationForApkId(String userstudyId) {
 		for(UserStudyNotification notification: notifications) {
 			if(notification.getApplication().getID().equals(userstudyId)) {
@@ -149,47 +159,65 @@ public class UserstudyNotificationManager {
 	}
 	
 	
-	public static void handleUserStudyNotificationFor(String apkId) {
-		if(MosesService.getInstance() != null) {
-			NotifyAboutUserStudyActivity.displayUserStudyNotificationStatic(apkId, MosesService.getInstance());
-		} else {
-			//TODO: what if the service doesn't exist?
-		}
-//		Intent intent = new Intent(MosesService.getInstance(), NotifyAboutUserStudyActivity.class);
-//		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//		intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, apkId);
-//		if(MosesService.getInstance() != null) {
-//			MosesService.getInstance().startActivity(intent);
-//		} else {
-//			//TODO: handle what happens if service is not running
-//		}
+	/**
+	 * called when a user study has arrived (should only be called internally)
+	 * 
+	 * @param apkId the id for the user study
+	 */
+	public static void userStudyNotificationArrived(String apkId) {
+		//create a new user study object and save it to the manager
 		
+		if (UserstudyNotificationManager.getInstance() == null) {
+			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
+		}
+
+		if (UserstudyNotificationManager.getInstance() != null) {
+			UserStudyNotification notification = new UserStudyNotification(
+					new ExternalApplication(apkId));
+			UserstudyNotificationManager.getInstance().addNotification(
+					notification);
+			try {
+				UserstudyNotificationManager.getInstance().saveToDisk(
+					MosesService.getInstance().getApplicationContext());
+			} catch (IOException e) {
+				Log.e("MoSeS", "Error when saving user study notifications");
+			}
+		}
+		
+		displayStatusBarNotificationForUserStudy(apkId);
 	}
 
-	public static void userStudyNotificationArrived(String apkId) {
-		Log.i("MoSeS", "userStudyHandled: " + apkId);
-		handleUserStudyNotificationFor(apkId);
+	/**
+	 * call this method to display a android status bar notification that a new user study has arrived
+	 * 
+	 * @param apkId the id of the study
+	 */
+	public static void displayStatusBarNotificationForUserStudy(String apkId) {
+		if(MosesService.getInstance() != null) {
+			UserStudyStatusBarHelper.displayStatusBarNotification(apkId, MosesService.getInstance());
+		} else {
+			Log.e("MoSeS.Userstudy", "Could not display notification that new userstudy has arrived, because moses service was null");
+		}
 	}
-	
+
+	/**
+	 * fakes a user study notification
+	 */
 	public static void fakeUserStudyNotification() {
 		userStudyNotificationArrived(DEBUG_USERSTUDY_NOTIFICATION_ID);
 	}
 
-	public static void displayUserStudy(String userStudyId, Context applicationContext) {
-		Intent viewUserStudy = new Intent(applicationContext, ViewUserStudiesActivity.class);
+	/**
+	 * Initiates a dialog which displazs informations about a specified user study (must already b
+	 * 
+	 * @param userStudyId
+	 * @param applicationContext
+	 */
+	public static void displayUserStudyContent(String userStudyId, Context applicationContext) {
+		Intent viewUserStudy = new Intent(applicationContext, ViewUserStudyActivity.class);
 		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		viewUserStudy.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
+		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
 		applicationContext.startActivity(viewUserStudy);
-	}
-
-	public List<UserStudyNotification> getNotifications() {
-		return new LinkedList(notifications);
-	}
-
-	public void updateNotification(UserStudyNotification notification) {
-		if(this.notifications.contains(notification)) {
-			this.addNotification(notification);
-		}
 	}
 	
 	

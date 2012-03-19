@@ -3,7 +3,7 @@ package moses.client.service.helpers;
 import java.io.IOException;
 
 import moses.client.R;
-import moses.client.ViewUserStudiesActivity;
+import moses.client.ViewUserStudyActivity;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
 import moses.client.userstudy.UserStudyNotification;
@@ -17,44 +17,24 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-//TODO: eliminate activity (only use static methods here)
-public class NotifyAboutUserStudyActivity extends Activity {
+public class UserStudyStatusBarHelper {
 
-	public static NotifyAboutUserStudyActivity staticActivityReference;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		String userstudyId = getIntent().getStringExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID);
-		displayUserStudyNotification(userstudyId);
-		finish();
-	}
-
-	private void displayUserStudyNotification(String apkId) {
-		displayUserStudyNotificationStatic(apkId, this);
-	}
-	
-	public static void displayUserStudyNotificationStatic(String apkId, Context context) {
+	/**
+	 * displays an android status bar notification for an incoming user study notification.
+	 * There must be an user study notification object already in the {@link UserstudyNotificationManager},
+	 * from which it will be retrieved using the given id.
+	 * 
+	 * @param apkId the id of the user study notification
+	 * @param context a context object for displaying the notification
+	 */
+	public static void displayStatusBarNotification(String apkId, Context context) {
 		Log.i("MoSeS.Service", "saving user study notification to the manager");
-		if (UserstudyNotificationManager.getInstance() == null) {
-			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
-		}
+		if(UserstudyNotificationManager.getInstance() != null) {
+			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(apkId);
 
-		if (UserstudyNotificationManager.getInstance() != null) {
-			UserStudyNotification notification = new UserStudyNotification(
-					new ExternalApplication(apkId));
-			UserstudyNotificationManager.getInstance().addNotification(
-					notification);
-			try {
-				UserstudyNotificationManager.getInstance().saveToDisk(
-					MosesService.getInstance().getApplicationContext());
-			} catch (IOException e) {
-				Log.e("MoSeS", "Error when saving user study notifications");
-			}
-
-			Intent intent = new Intent(MosesService.getInstance(), ViewUserStudiesActivity.class);
+			Intent intent = new Intent(MosesService.getInstance(), ViewUserStudyActivity.class);
 			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.putExtra(ViewUserStudiesActivity.EXTRA_USER_STUDY_APK_ID,
+			intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
 					notification.getApplication().getID());
 			Log.i("MoSeS.Service",
 					"starting intent to display user study notification");
@@ -86,14 +66,6 @@ public class NotifyAboutUserStudyActivity extends Activity {
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(
 			Context.NOTIFICATION_SERVICE);
 		mNotificationManager.notify(id, notification);
-	}
-
-	private Activity getActivity() {
-		return this;
-	}
-
-	private Context getContext() {
-		return getActivity().getApplicationContext();
 	}
 
 }

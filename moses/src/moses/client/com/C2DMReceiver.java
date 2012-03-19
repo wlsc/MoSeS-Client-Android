@@ -20,14 +20,14 @@ public class C2DMReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals(
 				"com.google.android.c2dm.intent.REGISTRATION")) { 
-			handleRegistration(context, intent);
+			handleC2DMRegistrationMsgFromGoogle(context, intent);
 		} else if (intent.getAction().equals(
 				"com.google.android.c2dm.intent.RECEIVE")) {
-			handleMessage(context, intent);
+			handleNotifications(context, intent);
 		}
 	}
 
-	private static void handleMessage(Context context, Intent intent) {
+	private static void handleNotifications(Context context, Intent intent) {
 		String messagetype = intent.getExtras().getString(
 				C2DN_MESSAGETYPE_FIELD);
 		String apkidString = intent.getExtras().getString(
@@ -55,7 +55,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 	}
 
-	private static void handleRegistration(Context context, Intent intent) {
+	private static void handleC2DMRegistrationMsgFromGoogle(Context context, Intent intent) {
 		String registrationId = intent.getStringExtra("registration_id");
 		if (intent.getStringExtra("error") != null) {
 			// TODO: handle errors
