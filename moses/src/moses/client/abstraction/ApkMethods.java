@@ -150,6 +150,7 @@ public class ApkMethods {
 
 				@Override
 				public void execute() {
+					Log.d("MoSeS.APKMETHODS", "requesting apk list");
 					new RequestGetListAPK(new RequestApkListExecutor(observer),
 							RequestLogin.getSessionID()).send();
 				}

@@ -65,8 +65,8 @@ public class Login {
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
 					executeAll(postExecuteSuccessPriority);
-					Log.d("MoSeS.LOGIN", "Executing post login hooks:");
-					executeAll(postExecuteSuccess);
+					mHandler.removeCallbacks(executeHooksTask);
+					mHandler.postDelayed(executeHooksTask, 500);
 				} else {
 					Log.d("MoSeS.LOGIN", "NOT GRANTED: " + j.toString());
 					executeAll(postExecuteFailure);
@@ -126,6 +126,15 @@ public class Login {
 
 	private static Handler mHandler = new Handler();
 
+	private Runnable executeHooksTask = new Runnable() {
+
+		@Override
+		public void run() {
+			Log.d("MoSeS.LOGIN", "Executing post login hooks:");
+			executeAll(postExecuteSuccess);
+		}
+	};
+	
 	private static Runnable logoutTask = new Runnable() {
 
 		@Override

@@ -7,6 +7,8 @@ import moses.client.com.ReqTaskExecutor;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 /**
  * This class represents a Request for obtaining the list of avaliable APKs for
  * this device from the Server
@@ -58,6 +60,7 @@ public class RequestGetListAPK {
 		req = task.new APIRequest();
 		req.request = j;
 		req.e = this.e;
+		Log.d("MoSeS.REQGETLISTAPK", "sent request: " + j.toString());
 		task.execute(req);
 	}
 }

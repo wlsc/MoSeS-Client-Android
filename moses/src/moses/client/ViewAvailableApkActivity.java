@@ -140,7 +140,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toast.makeText(getApplicationContext(), "Error when loading the list of applications: " + e==null?"":e.getMessage(), Toast.LENGTH_LONG).show();
+		Log.w("MoSeS.APKMETHODS", "invalid response for apk list request: " + e.getMessage());
 	}
 
 	@Override
