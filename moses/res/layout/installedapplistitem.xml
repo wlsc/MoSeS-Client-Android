@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:clickable="true"
     android:onClick="appStartClickHandler"
-    android:orientation="vertical">
-    
+    android:orientation="horizontal" >
 
-	<TextView
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/installedAppListItemText"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_marginLeft="10sp"
-	    android:textAppearance="?android:attr/textAppearanceMedium"
-	    android:text="App name" >
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:layout_weight="0.99"
+        android:onClick="appStartClickHandler"
+        android:orientation="vertical" >
 
-	</TextView>
+        <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/installedAppListItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10sp"
+            android:text="App name"
+            android:textAppearance="?android:attr/textAppearanceMedium" >
+        </TextView>
 
-	<TextView
-	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/installedAppListItemDescription"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_marginLeft="10sp"
-	    android:layout_marginBottom="15sp"
-	    android:textAppearance="?android:attr/textAppearanceSmall"
-	    android:text="Description" >
+        <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/installedAppListItemDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15sp"
+            android:layout_marginLeft="10sp"
+            android:text="Description"
+            android:textAppearance="?android:attr/textAppearanceSmall" >
+        </TextView>
 
-	</TextView>
-	
-	<!-- <Button
+        <!--
+    <Button
 	    android:id="@+id/btnStartApp"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10px"
 	    android:text="Start app" >
 
-    </Button>-->
-	
+    </Button>
+        -->
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/userstudyIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.01"
+        android:text="User study" />
+
 </LinearLayout>

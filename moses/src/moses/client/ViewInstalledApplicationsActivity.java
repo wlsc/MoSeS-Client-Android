@@ -107,6 +107,7 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			HashMap<String, String> rowMap = new HashMap<String, String>();
 			rowMap.put("name", app.getName());
 			rowMap.put("description", app.getDescription());
+			rowMap.put("userstudyIndicator", app.wasInstalledAsUserStudy()?"user study":"");
 			listContent.add(rowMap);
 
 		}
@@ -114,8 +115,8 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			this, 
 			listContent,
 			R.layout.installedapplistitem,
-			new String[] { "name","description" },
-			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription } );
+			new String[] { "name","description","userstudyIndicator" },
+			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription, R.id.userstudyIndicator } );
 		
 		listView.setAdapter(contentAdapter);
 	}

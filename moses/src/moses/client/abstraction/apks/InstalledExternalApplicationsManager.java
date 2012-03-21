@@ -26,7 +26,7 @@ import android.util.Log;
 public class InstalledExternalApplicationsManager {
 	private List<InstalledExternalApplication> apps;
 	private static InstalledExternalApplicationsManager defaultInstance;
-	private static int managerVersion = 2;
+	private static int managerVersion = 3;
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,

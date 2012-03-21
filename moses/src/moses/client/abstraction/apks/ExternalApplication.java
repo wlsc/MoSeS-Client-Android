@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
  * 
  */
 public class ExternalApplication {
+	private static final String TAG_NEWESTVERSION = "[newestversion]";
+
 	private static final String TAG_DESCRIPTION = "[description]";
 
 	private static final String TAG_NAME = "[name]";
@@ -16,10 +18,11 @@ public class ExternalApplication {
 	private static final String SEPARATOR = "#EA#";
 	
 	private String ID;
-
+	
 	// lazy loading variables for non-defining attributes
 	private String name;
 	private String description;
+	private Double newestVersion;
 
 	public String getID() {
 		return ID;
@@ -103,6 +106,18 @@ public class ExternalApplication {
 		return "loading Description...";
 	}
 
+	public Double getNewestVersion() {
+		return newestVersion;
+	}
+
+	public void setNewestVersion(Double newestVersion) {
+		this.newestVersion = newestVersion;
+	}
+	
+	public boolean isNewestVersionSet() {
+		return newestVersion != null;
+	}
+
 	/**
 	 * @return whether the description of the application was already
 	 *         retrieved/set
@@ -131,6 +146,9 @@ public class ExternalApplication {
 		if(isDescriptionSet()) {
 			result += SEPARATOR + TAG_DESCRIPTION + getName();
 		}
+		if(isDescriptionSet()) {
+			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();
+		}
 		return result;
 	}
 	
@@ -145,6 +163,7 @@ public class ExternalApplication {
 		String ID = null;
 		String name = null;
 		String description = null;
+		Double newestVersion = null;
 		for(int i=0; i<split.length; i++) {
 			if(i==0) {
 				ID = split[i];
@@ -155,12 +174,16 @@ public class ExternalApplication {
 				if(split[i].startsWith(TAG_NAME)) {
 					name = split[i].substring(TAG_NAME.length());
 				}
+				if(split[i].startsWith(TAG_NEWESTVERSION)) {
+					newestVersion = Double.valueOf(split[i].substring(TAG_NEWESTVERSION.length()));
+				}
 			}
 		}
 		
 		ExternalApplication externalApplication = new ExternalApplication(ID);
 		externalApplication.setName(name);
 		externalApplication.setDescription(description);
+		externalApplication.setNewestVersion(newestVersion);
 		return externalApplication;
 	}
 
