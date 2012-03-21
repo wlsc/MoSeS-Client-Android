@@ -14,6 +14,7 @@ import android.util.Log;
 
 /**
  * Activity for installing an application. call {@link #setAppToInstall(File, ExternalApplication, ApkInstallObserver)} just before starting the activity (only preliminary)
+ * TODO:refactor
  * 
  * @author Simon L
  *
@@ -51,8 +52,6 @@ public class InstallApkActivity extends Activity {
 		clearAppToInstall();
 	}
 
-	//TODO:only temporary
-	private boolean hackAlwaysAssumeInstalled = false;
 	private void installApk(File apkToInstall, ExternalApplication externalAppToInstall, ApkInstallObserver o) {
 		Intent promptInstall = new Intent(Intent.ACTION_VIEW);
 		promptInstall.setDataAndType(Uri.fromFile(apkToInstall),
@@ -61,9 +60,6 @@ public class InstallApkActivity extends Activity {
 		callArgMapAppRef.put(Math.abs(apkToInstall.hashCode()), externalAppToInstall);
 		callArgMapObserver.put(Math.abs(apkToInstall.hashCode()), o);
 		this.startActivityForResult(promptInstall, Math.abs(apkToInstall.hashCode()));
-		if(hackAlwaysAssumeInstalled) {
-			this.onActivityResult(Math.abs(apkToInstall.hashCode()), RESULT_OK, null);
-		}
 	}
 	
 	@Override
@@ -80,8 +76,7 @@ public class InstallApkActivity extends Activity {
 			return;
 		}
 		try {
-			//TODO: if mosesService could not be found?
-			boolean installed = hackAlwaysAssumeInstalled || ApkMethods.isApplicationInstalled(ApkMethods.getPackageNameFromApk(apkFile, service), service);
+			boolean installed = ApkMethods.isApplicationInstalled(ApkMethods.getPackageNameFromApk(apkFile, this.getApplicationContext()), this.getApplicationContext());
 			if(installed) {
 				o.apkInstallSuccessful(apkFile, appRef);
 			} else {

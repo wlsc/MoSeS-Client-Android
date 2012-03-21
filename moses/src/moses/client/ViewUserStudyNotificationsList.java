@@ -11,6 +11,7 @@ import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -43,7 +44,6 @@ public class ViewUserStudyNotificationsList extends Activity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		if(requestCode == showStudyRequestcode) {
 			UserStudyNotification app = lastStartedDialog;
@@ -57,12 +57,10 @@ public class ViewUserStudyNotificationsList extends Activity {
 		}
 	}
 	
-	//TODO: rename here! (copypasta)
-	public void apkInstallClickHandler(View v) {
+	public void studyOnClickHandler(View v) {
 		int pos = listView.getPositionForView(v);
 		final UserStudyNotification app = externalApps.get(pos);
 
-		//TODO: handle moses service shit
 		Intent intent = new Intent(MosesService.getInstance(), ViewUserStudyActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
@@ -72,30 +70,6 @@ public class ViewUserStudyNotificationsList extends Activity {
 		lastStartedDialog = app;
 		startActivityForResult(intent, showStudyRequestcode);
 		
-//		final Dialog myDialog = new Dialog(this);
-//		myDialog.setContentView(R.layout.view_app_info_layout);
-//		myDialog.setTitle("App informations:");
-//		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: "
-//			+ app.getName());
-//		((TextView) myDialog.findViewById(R.id.appinfodialog_descr)).setText(""
-//			+ app.getDescription());
-//		((Button) myDialog.findViewById(R.id.appinfodialog_installbtn)).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				Log.i("MoSes.Install", "starting install process for app " + app.toString());
-//				myDialog.dismiss();
-//				handleInstallApp(app);
-//			}
-//		});
-//		((Button) myDialog.findViewById(R.id.appinfodialog_cancelbtn)).setOnClickListener(new View.OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				myDialog.dismiss();
-//			}
-//		});
-//
-//		myDialog.setOwnerActivity(this);
-//		myDialog.show();
 	}
 
 	/**
@@ -103,8 +77,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	 */
 	private void initControls() {
 		if(UserstudyNotificationManager.getInstance() == null) {
-			UserstudyNotificationManager.init(MosesService.getInstance());
-			//TODO: make sure the service exists/handle it
+			UserstudyNotificationManager.init(this.getApplicationContext());
 		}
 		drawUserStudies();
 	}
@@ -119,7 +92,6 @@ public class ViewUserStudyNotificationsList extends Activity {
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		//TODO: find better way to detect unwanted focus-lsoe-and-regain by some intent
 		drawUserStudies();
 	}
 	
@@ -130,14 +102,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	}
 	
 	private void populateList(List<UserStudyNotification> applications) {
-		//TODO: update names cuz of copypasta
 		listView = (ListView) findViewById(R.id.userstudyListListView);
-//		String[] items = new String[applications.size()];
-//		int counter = 0;
-//		for (UserStudyNotification app : applications) {
-//			items[counter] = app.getName();
-//			counter++;
-//		}
 		
 		TextView instructionsView = (TextView) findViewById(R.id.userstudyListHeaderInstructions);
 		if(instructionsView != null) {
@@ -161,13 +126,10 @@ public class ViewUserStudyNotificationsList extends Activity {
 		SimpleAdapter contentAdapter = new SimpleAdapter( 
 			this, 
 			listContent,
-			R.layout.availableabkslistitem,
+			R.layout.availablestudieslistitem,
 			new String[] { "name","description" },
 			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
 		
-//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
-//			R.id.apklistitemtext, items) {
-//		};
 		listView.setAdapter(contentAdapter);
 	}
 

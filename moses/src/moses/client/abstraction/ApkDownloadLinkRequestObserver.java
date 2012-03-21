@@ -2,6 +2,12 @@ package moses.client.abstraction;
 
 import moses.client.abstraction.apks.ExternalApplication;
 
+/**
+ * Interface for getting notifications about download link requests
+ * 
+ * @author Simon L
+ *
+ */
 public interface ApkDownloadLinkRequestObserver {
 	/**
 	 * Notifies the observer, that the request was finished. if the reference to

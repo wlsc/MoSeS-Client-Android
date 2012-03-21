@@ -42,14 +42,6 @@ public class MosesLoginActivity extends Activity {
 			}
 		});
 		
-		//TODO: !remove debug
-//		Button buttonNotificationTest = (Button) findViewById(R.id.buttonTestNotification2);
-//		buttonNotificationTest.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				UserstudyNotificationManager.fakeUserStudyNotification();
-//			}
-//		});
 	}
 
 	@Override

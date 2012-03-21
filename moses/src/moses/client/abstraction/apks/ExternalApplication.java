@@ -25,14 +25,29 @@ public class ExternalApplication {
 		return ID;
 	}
 
+	/**
+	 * Creates a reference to an external application, specifying its ID
+	 * 
+	 * @param ID the id in the MoSeS database
+	 */
 	public ExternalApplication(String ID) {
 		this.ID = ID;
 	}
 
+	/**
+	 * sets the name of the application
+	 * 
+	 * @param name the name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * sets the description of the application
+	 * 
+	 * @param description the description
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -103,6 +118,11 @@ public class ExternalApplication {
 		return name != null;
 	}
 	
+	/**
+	 * writes this object into an one-line string
+	 * 
+	 * @return the encoded object
+	 */
 	public String asOnelineString() { //ID-{name}-{description}
 		String result = this.ID;
 		if(isNameSet()) {
@@ -114,6 +134,12 @@ public class ExternalApplication {
 		return result;
 	}
 	
+	/**
+	 * creates an external application from a string (@see {@link #asOnelineString()})
+	 * 
+	 * @param s the string-exncoded external application
+	 * @return the decoded external application
+	 */
 	public static ExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(Pattern.quote(SEPARATOR));
 		String ID = null;

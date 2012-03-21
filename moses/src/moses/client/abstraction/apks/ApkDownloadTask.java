@@ -11,6 +11,12 @@ import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.os.AsyncTask;
 
+/**
+ * asynchronous downloading task for an apk file
+ * 
+ * @author Simon L
+ *
+ */
 public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 
 	private URL url;
@@ -20,6 +26,14 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 	private ApkDownloadObserver observer;
 	private ExternalApplication externalAppRef;
 
+	/**
+	 * creates the downloading task with the required parameters
+	 * 
+	 * @param observer observer interface - implementing class for notifications about progress etc.
+	 * @param url the url of the file to download
+	 * @param appContext context
+	 * @param apkFileName the file name of the apk file in the default location
+	 */
 	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName) {
 		this.observer = observer;
 		this.url = url;
@@ -42,6 +56,12 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 		}
 	}
 
+	/**
+	 * starts the download
+	 * 
+	 * @param url the url
+	 * @return
+	 */
 	private File downloadFile(URL url) {
 		FileOutputStream fileOutput = null;
 

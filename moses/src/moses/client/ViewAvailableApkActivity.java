@@ -94,8 +94,6 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
-					// TODO: error msgs/log msgs shouldve been already shown,
-					// still.. something is to be done here still
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
@@ -111,8 +109,6 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
-					// TODO:errors/log msgs shouldve been shown already by the
-					// installer; still, something is to be done here..
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					// TODO:how to handle if the user cancels the installation?
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
@@ -149,7 +145,6 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		//TODO: find better way to detect unwanted focus-lsoe-and-regain by some intent
 		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}
@@ -158,7 +153,6 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//TODO: find better way to detect unwanted focus-lsoe-and-regain by some intent
 		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}

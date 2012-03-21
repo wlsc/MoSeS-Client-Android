@@ -59,16 +59,32 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		requestUrlForApplication(this.app);
 	}
 
+	/**
+	 * sets the state of this downloading process aand notifies observers about it
+	 * 
+	 * @param state
+	 */
 	private void setState(State state) {
 		this.state = state;
 		this.setChanged();
 		this.notifyObservers(state);
 	}
 
+	/**
+	 * sets the error state with a message as indicator of what wet wrong
+	 * 
+	 * @param errorMsg
+	 */
 	private void setErrorState(String errorMsg) {
 		setErrorState(errorMsg, null);
 	}
 
+	/**
+	 * sets the error state, with a message and a throwable as indicator of what went wrong
+	 * 
+	 * @param errorMsg error message
+	 * @param e throwable that was thrown when the error occured
+	 */
 	private void setErrorState(String errorMsg, Throwable e) {
 		this.errorMsg = errorMsg;
 		if (e != null) {
@@ -126,14 +142,6 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 
 	private static String generateApkFileNameFor(ExternalApplication app) {
 		return app.getID() + ".apk";
-	}
-
-	private static String concatStacktrace(Exception e) {
-		String stackTrace = "";
-		for (int i = 0; i < e.getStackTrace().length; i++) {
-			stackTrace += e.getStackTrace()[i];
-		}
-		return stackTrace;
 	}
 
 	public String getErrorMsg() {

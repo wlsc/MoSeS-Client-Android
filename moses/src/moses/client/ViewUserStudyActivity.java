@@ -51,7 +51,7 @@ public class ViewUserStudyActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		//TODO: remove userstudy NOTIFICATION if it still exists in the bar, because this could've been called from the "later" list
+		//TODO: remove userstudy NOTIFICATION if it still exists in the bar, because this could've been called from the "later" list (very unlikely thou: requires double notification)
 		String studyApkId = getIntent().getExtras().getString(EXTRA_USER_STUDY_APK_ID);
 		if (studyApkId != null) {
 			
@@ -127,7 +127,6 @@ public class ViewUserStudyActivity extends Activity {
 									"user study info request: Server returned negative" + j.toString(),
 									Toast.LENGTH_LONG).show();
 								cancelActivity();
-								// TODO: handle better but for now...
 							}
 						} catch (JSONException e) {
 							Log.e("MoSeS.UserStudy", "requesting study information: json exception" + e.getMessage());
@@ -135,7 +134,6 @@ public class ViewUserStudyActivity extends Activity {
 								"requesting study information: json exception" + e.getMessage(), Toast.LENGTH_LONG)
 								.show();
 							cancelActivity();
-							// TODO: handle better but for now...
 						}
 					}
 
@@ -187,7 +185,6 @@ public class ViewUserStudyActivity extends Activity {
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// TODO: !implement later functionality
 				myDialog.dismiss();
 				cancelActivity();
 			}
@@ -205,8 +202,6 @@ public class ViewUserStudyActivity extends Activity {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
-					// TODO: error msgs shouldve been already shown, still..
-					// something is to be done here still
 					cancelActivity();
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult(), notification);
@@ -223,11 +218,8 @@ public class ViewUserStudyActivity extends Activity {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
-					// TODO:errors shouldve been shown already by the installer;
-					// still, something is to be done here..
 					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
-					// TODO:how to handle if the user cancels the installation?
 					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					new APKInstalled(externalAppRef.getID());
@@ -238,7 +230,6 @@ public class ViewUserStudyActivity extends Activity {
 							ViewUserStudyActivity.this.getApplicationContext(), true);
 						UserstudyNotificationManager.getInstance().removeNotificationWithApkId(externalAppRef.getID());
 						UserstudyNotificationManager.getInstance().saveToDisk(getApplicationContext());
-						//TODO: refresh userstudy list?
 					} catch (IOException e) {
 						Log.e(
 							"MoSeS.Install",

@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Viewing and installing apks from the server
+ * Viewing installed apks from the server in a list
  * 
  * @author Simon L
  */
@@ -78,9 +78,13 @@ public class ViewInstalledApplicationsActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Shows the given applications in the list
+	 * 
+	 * @param applications
+	 */
 	private void populateList(List<InstalledExternalApplication> applications) {
 
-		// TODO::
 		listView = (ListView) findViewById(R.id.installedAppListView);
 		String[] items = new String[applications.size()];
 		int counter = 0;
@@ -113,10 +117,6 @@ public class ViewInstalledApplicationsActivity extends Activity {
 			new String[] { "name","description" },
 			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription } );
 		
-//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-//				R.layout.installedapplistitem, R.id.installedAppListItemText,
-//				items) {
-//		};
 		listView.setAdapter(contentAdapter);
 	}
 

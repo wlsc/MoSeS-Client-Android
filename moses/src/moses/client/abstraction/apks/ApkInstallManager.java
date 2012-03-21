@@ -21,6 +21,12 @@ import android.widget.Toast;
  */
 public class ApkInstallManager extends Observable implements ApkInstallObserver {
 
+	/**
+	 * States of progress that the ApkInstallManager can assume
+	 * 
+	 * @author Simon L
+	 *
+	 */
 	public static enum State {
 		JUST_INITIALIZED, INSTALLATION_REQUESTED, INSTALLATION_CANCELLED, INSTALLATION_COMPLETED, ERROR;
 
@@ -35,6 +41,12 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	private File file;
 	private ExternalApplication appRef;
 
+	/**
+	 * creates the installation manager with the required parameters
+	 * 
+	 * @param apkFile the file from which to install
+	 * @param appRef the reference to the external application that is being installed
+	 */
 	public ApkInstallManager(File apkFile, ExternalApplication appRef) {
 		super();
 		this.file = apkFile;
@@ -52,10 +64,10 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	 * start the installation process
 	 */
 	public void start() {
-		requestInstallation();
+		startInstallation();
 	}
 
-	private void requestInstallation() {
+	private void startInstallation() {
 		try {
 			setState(State.INSTALLATION_REQUESTED);
 			ApkMethods.installApk(file, appRef, this);
@@ -71,10 +83,21 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 		notifyObservers(state);
 	}
 
+	/**
+	 * sets the error state with a message; notifies observers
+	 * 
+	 * @param errorMsg
+	 */
 	private void setErrorState(String errorMsg) {
 		setErrorState(errorMsg, null);
 	}
 
+	/**
+	 * sets the error state with a message and a related throwable; notifies observers
+	 * 
+	 * @param errorMsg the error message
+	 * @param e a throwable that was thrown when the error occured
+	 */
 	private void setErrorState(String errorMsg, Throwable e) {
 		this.errorMsg = errorMsg;
 		if (e != null) {
@@ -87,6 +110,9 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 		setState(State.ERROR);
 	}
 
+	/**
+	 * @return the state of progress of the installation manager
+	 */
 	public State getState() {
 		return state;
 	}

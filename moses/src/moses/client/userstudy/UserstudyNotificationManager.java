@@ -19,8 +19,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+/**
+ * Manages pending user studies and their persistence
+ * 
+ * @author Simon L
+ *
+ */
 public class UserstudyNotificationManager {
-	private static final String DEBUG_USERSTUDY_NOTIFICATION_ID = "50";
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
 	
@@ -117,6 +122,11 @@ public class UserstudyNotificationManager {
 		}
 	}
 
+	/**
+	 * adds a notification to this manager
+	 * 
+	 * @param notification
+	 */
 	public void addNotification(UserStudyNotification notification) {
 		if(getNotificationForApkId(notification.getApplication().getID())!= null) {
 			removeNotificationWithApkId(notification.getApplication().getID());
@@ -126,12 +136,22 @@ public class UserstudyNotificationManager {
 		}
 	}
 
+	/**
+	 * updates a notification if it's contents have changed since its registration with this manager (e. g. status change)
+	 * 
+	 * @param notification the notification
+	 */
 	public void updateNotification(UserStudyNotification notification) {
 		if(this.notifications.contains(notification)) {
 			this.addNotification(notification);
 		}
 	}
 
+	/**
+	 * removes a notification by the id of it's external application object (see {@link UserStudyNotification#getApplication()}
+	 * 
+	 * @param id the id
+	 */
 	public void removeNotificationWithApkId(String id) {
 		UserStudyNotification notificationToRemove = null;
 		for(UserStudyNotification notification: notifications) {
@@ -145,6 +165,9 @@ public class UserstudyNotificationManager {
 		}
 	}
 
+	/**
+	 * @return all notifications this manager contains
+	 */
 	public List<UserStudyNotification> getNotifications() {
 		return new LinkedList(notifications);
 	}
@@ -198,13 +221,6 @@ public class UserstudyNotificationManager {
 		} else {
 			Log.e("MoSeS.Userstudy", "Could not display notification that new userstudy has arrived, because moses service was null");
 		}
-	}
-
-	/**
-	 * fakes a user study notification
-	 */
-	public static void fakeUserStudyNotification() {
-		userStudyNotificationArrived(DEBUG_USERSTUDY_NOTIFICATION_ID);
 	}
 
 	/**

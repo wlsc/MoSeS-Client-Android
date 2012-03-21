@@ -373,15 +373,6 @@ public class MosesActivity extends TabActivity {
 			tabHost.setCurrentTab(1);
 		}
 
-		// TODO: !remove debug
-		// Button buttonNotificationTest = (Button)
-		// findViewById(R.id.buttonTestNotification1);
-		// buttonNotificationTest.setOnClickListener(new OnClickListener() {
-		// @Override
-		// public void onClick(View v) {
-		// UserstudyNotificationManager.fakeUserStudyNotification();
-		// }
-		// });
 	}
 
 	/**

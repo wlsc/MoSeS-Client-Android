@@ -31,7 +31,6 @@ public class C2DMManager {
 	}
 
 	public static void setC2DMReceiverId(String registrationId) {
-		// TODO: if the c2dm id changed, resend?
 		Log.i("MoSeS.C2DM", "received C2DM " + registrationId);
 		boolean setNewC2DMID = false;
 		if (registrationId != null) {
@@ -43,8 +42,7 @@ public class C2DMManager {
 				}
 			}
 		} else {
-			// TODO: unexpected error.. registrationId == null (should never
-			// occur thou)
+			Log.w("MoSeS.C2DM", "received c2dm id is null");
 		}
 		if (setNewC2DMID) {
 			c2dmRegistrationId = registrationId;
@@ -57,8 +55,6 @@ public class C2DMManager {
 		sendC2DMIdToServer(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("c2dm_pref", ""),MosesService.getInstance());
 	}
 
-	// TODO: make very sure that the id is really sent to the server!
-	// TODO: what if session id is yet unknown?
 	private static void sendC2DMIdToServer(final String registrationId, final Context context) {
 		MosesService.getInstance().executeLoggedIn(new Executor() {
 			@Override

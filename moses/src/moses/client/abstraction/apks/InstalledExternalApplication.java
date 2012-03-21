@@ -100,6 +100,12 @@ public class InstalledExternalApplication extends ExternalApplication {
 			+ Boolean.valueOf(wasInstalledAsUserStudy).toString();
 	}
 
+	/**
+	 * creates an installed external application from a string (@see {@link #asOnelineString()})
+	 * 
+	 * @param s the string-exncoded installed external application
+	 * @return the decoded installed external application
+	 */
 	public static InstalledExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(SEPARATOR);
 		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]),

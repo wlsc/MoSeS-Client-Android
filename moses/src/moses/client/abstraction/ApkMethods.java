@@ -163,7 +163,7 @@ public class ApkMethods {
 	 * @param baseActivity the base activity
 	 * @throws IOException if the file does not exist
 	 */
-	public static void installApk(File apk, ExternalApplication appRef, ApkInstallObserver o) throws IOException { //TODO: remove throw clause
+	public static void installApk(File apk, ExternalApplication appRef, ApkInstallObserver o) throws IOException {
 		MosesService service = MosesService.getInstance();
 		if(service != null) {
 			if (apk.exists()) {

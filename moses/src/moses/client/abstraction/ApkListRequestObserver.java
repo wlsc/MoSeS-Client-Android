@@ -4,6 +4,12 @@ import java.util.List;
 
 import moses.client.abstraction.apks.ExternalApplication;
 
+/**
+ * Interface for getting notifications about an apk list request
+ * 
+ * @author Simon L
+ *
+ */
 public interface ApkListRequestObserver {
 	/**
 	 * Notifies the observer, that the request was finished. if the reference to
