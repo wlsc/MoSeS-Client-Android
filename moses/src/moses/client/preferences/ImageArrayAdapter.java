@@ -66,6 +66,7 @@ public class ImageArrayAdapter extends ArrayAdapter<CharSequence> {
 					CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(R.id.check);
 					index[realposition] = !index[realposition];
 					checkedTextView.setChecked(index[realposition]);
+					ImageArrayAdapter.this.notifyDataSetChanged();
 				}
 			});
 		} else {
@@ -80,18 +81,15 @@ public class ImageArrayAdapter extends ArrayAdapter<CharSequence> {
 					if (somethingsFalse) {
 						for (int i = 0; i < index.length; ++i) {
 							index[i] = true;
-							if (parent.getChildAt(i + 1) != null)
-								parent.getChildAt(i + 1).postInvalidate();
 						}
 					} else {
 						for (int i = 0; i < index.length; ++i) {
 							index[i] = false;
-							if (parent.getChildAt(i + 1) != null)
-								parent.getChildAt(i + 1).postInvalidate();
 						}
 					}
 					CheckedTextView checkedTextView = (CheckedTextView) v.findViewById(R.id.check);
 					checkedTextView.setChecked(!checkedTextView.isChecked());
+					ImageArrayAdapter.this.notifyDataSetChanged();
 				}
 			});
 		}
