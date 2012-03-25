@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+			  xmlns:moses="http://schemas.android.com/apk/res/moses.client">
     <PreferenceCategory android:title="@string/device_prefs" >
         <moses.client.preferences.ListPreferenceMultiSelect
             android:defaultValue="[]"
@@ -7,6 +8,7 @@
             android:dialogTitle="@string/sensor_data_pref_dialog_title"
             android:entries="@array/entries"
             android:entryValues="@array/entryValues"
+            moses:entryImages="@array/entryImages"
             android:key="sensor_data"
             android:summary="@string/sensor_data_pref_summary"
             android:title="@string/sensor_data_pref_title" />

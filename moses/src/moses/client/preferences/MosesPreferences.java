@@ -38,12 +38,15 @@ public class MosesPreferences extends PreferenceActivity {
 
 		CharSequence[] entries = new CharSequence[s.size()];
 		CharSequence[] entryValues = new CharSequence[s.size()];
+		String[] entryPics = new String[s.size()];
 		for (int i = 0; i < s.size(); ++i) {
 			entries[i] = s.get(i).toString();
+			entryPics[i] = s.get(i).image();
 			entryValues[i] = Integer.toString(s.get(i).ordinal());
 		}
-		ListPreference lp = (ListPreference) findPreference("sensor_data");
+		ListPreferenceMultiSelect lp = (ListPreferenceMultiSelect) findPreference("sensor_data");
 		lp.setEntries(entries);
+		lp.setImages(getApplicationContext(), entryPics);
 		lp.setEntryValues(entryValues);
 	}
 

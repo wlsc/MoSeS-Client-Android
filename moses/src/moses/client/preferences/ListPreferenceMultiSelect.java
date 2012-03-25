@@ -1,11 +1,14 @@
 package moses.client.preferences;
 
+import moses.client.R;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.util.AttributeSet;
+import android.widget.ListAdapter;
 
 /**
  * A {@link Preference} that displays a list of entries as
@@ -16,15 +19,34 @@ import android.util.AttributeSet;
  * </p>
  */
 public class ListPreferenceMultiSelect extends ListPreference {
-	//Need to make sure the SEPARATOR is unique and weird enough that it doesn't match one of the entries.
-	//Not using any fancy symbols because this is interpreted as a regex for splitting strings.
 	private static final String SEPARATOR = ",";
 	
     private boolean[] mClickedDialogEntryIndices;
 
+	private int[] resourceIds = null;
+
     public ListPreferenceMultiSelect(Context context, AttributeSet attrs) {
         super(context, attrs);
-        
+
+		TypedArray typedArray = context.obtainStyledAttributes(attrs,
+			R.styleable.ListPreferenceMultiSelect);
+
+		String[] imageNames = context.getResources().getStringArray(
+			typedArray.getResourceId(typedArray.getIndexCount()-1, -1));
+
+		resourceIds = new int[imageNames.length];
+
+		for (int i=0;i<imageNames.length;i++) {
+			String imageName = imageNames[i].substring(
+				imageNames[i].indexOf('/') + 1,
+				imageNames[i].lastIndexOf('.'));
+
+			resourceIds[i] = context.getResources().getIdentifier(imageName,
+				null, context.getPackageName());
+		}
+
+		typedArray.recycle();
+
         mClickedDialogEntryIndices = new boolean[getEntries().length];
     }
  
@@ -34,12 +56,23 @@ public class ListPreferenceMultiSelect extends ListPreference {
         mClickedDialogEntryIndices = new boolean[entries.length];
     }
     
+    public void setImages(Context context, String[] imageNames) {
+		resourceIds = new int[imageNames.length];
+
+		for (int i=0;i<imageNames.length;i++) {
+			String imageName = imageNames[i];
+			resourceIds[i] = context.getResources().getIdentifier(imageName,
+				null, context.getPackageName());
+		}
+    }
+
     public ListPreferenceMultiSelect(Context context) {
         this(context, null);
     }
 
     @Override
     protected void onPrepareDialogBuilder(Builder builder) {
+
     	CharSequence[] entries = getEntries();
     	CharSequence[] entryValues = getEntryValues();
     	
@@ -47,14 +80,15 @@ public class ListPreferenceMultiSelect extends ListPreference {
             throw new IllegalStateException(
                     "ListPreference requires an entries array and an entryValues array which are both the same length");
         }
-
+        CharSequence[] e = new CharSequence[getEntries().length+1];
+        e[0] = "All";
+        for(int i = 0; i < getEntries().length; ++i) {
+		e[i+1] = getEntries()[i];
+        }
         restoreCheckedEntries();
-        builder.setMultiChoiceItems(entries, mClickedDialogEntryIndices, 
-                new DialogInterface.OnMultiChoiceClickListener() {
-					public void onClick(DialogInterface dialog, int which, boolean val) {
-                    	mClickedDialogEntryIndices[which] = val;
-					}
-        });
+		ListAdapter listAdapter = new ImageArrayAdapter(getContext(),
+				R.layout.list_preference_multi_select, e, resourceIds, mClickedDialogEntryIndices);
+		builder.setAdapter(listAdapter, this );
     }
 
     public static String[] parseStoredValue(CharSequence val) {

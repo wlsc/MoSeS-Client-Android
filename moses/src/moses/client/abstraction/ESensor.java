@@ -14,88 +14,35 @@ public enum ESensor {
 	/*
 	 * Just a dummy value, because on android, sensor ordinals start with 1
 	 */
-	UNKNOWN {
-		public String toString() {
-			return "Unknown sensor";
-		}
-	},
+	UNKNOWN("Unknown sensor","no"),
+	ACCELEROMETER("Accelerometer","@drawable/accelerometer"),
+	MAGNETIC_FIELD_SENSOR("Magnetic field sensor","@drawable/magnetic"),
+	ORIENTATION_SENSOR("Orientation sensor","@drawable/orientation"),
+	GYROCSCOPE("Gyroscope","@drawable/gyroscope"),
+	LIGHT_SENSOR("Light sensor","@drawable/light"),
+	PRESSURE_SENSOR("Pressure sensor","@drawable/pressure"),
+	TEMPERATURE_SENSOR("Temperature sensor","@drawable/temperature"),
+	PROXIMITY_SENSOR("Proximity sensor","@drawable/proximity"),
+	GRAVITY_SENSOR("Gravity sensor","@drawable/gravity"),
+	LINEAR_ACCELERATION_SENSOR("Linear acceleration sensor","@drawable/linear"),
+	ROTATION_SENSOR("Rotation sensor","@drawable/rotation"),
+	HUMIDITY_SENSOR("Humidity sensor","@drawable/humidity"),
+	AMBIENT_TEMPERATURE_SENSOR("Ambient temperature sensor","@drawable/ambient");
 
-	ACCELEROMETER {
-		public String toString() {
-			return "Accelerometer";
-		}
-	},
+	private final String name;
+	private final String image;
 
-	MAGNETIC_FIELD_SENSOR {
-		public String toString() {
-			return "Magnetic field sensor";
-		}
-	},
+	ESensor(String name, String image) {
+		this.name = name;
+		this.image = image;
+	}
 
-	ORIENTATION_SENSOR {
-		public String toString() {
-			return "Orientation sensor";
-		}
-	},
+	public String toString() {
+		return name;
+	}
 
-	GYROCSCOPE {
-		public String toString() {
-			return "Gyroscope";
-		}
-	},
-
-	LIGHT_SENSOR {
-		public String toString() {
-			return "Light sensor";
-		}
-	},
-
-	PREASSURE_SENSOR {
-		public String toString() {
-			return "Preassure sensor";
-		}
-	},
-
-	TEMPERATURE_SENSOR {
-		public String toString() {
-			return "Temperature sensor";
-		}
-	},
-
-	PROXIMITY_SENSOR {
-		public String toString() {
-			return "Proximity sensor";
-		}
-	},
-
-	GRAVITY_SENSOR {
-		public String toString() {
-			return "Gravity sensor";
-		}
-	},
-
-	LINEAR_ACCELERATION_SENSOR {
-		public String toString() {
-			return "Linear acceleration sensor";
-		}
-	},
-
-	ROTATION_SENSOR {
-		public String toString() {
-			return "Rotation sensor";
-		}
-	},
-
-	HUMIDITY_SENSOR {
-		public String toString() {
-			return "Humidity sensor";
-		}
-	},
-
-	AMBIENT_TEMPERATURE_SENSOR {
-		public String toString() {
-			return "Ambient temperature sensor";
-		}
-	};
+	public String image() {
+		return image;
+	}
 
 }
