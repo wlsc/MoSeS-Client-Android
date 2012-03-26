@@ -13,6 +13,7 @@ import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestGetApkInfo;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 import moses.client.userstudy.UserStudyNotification;
@@ -100,7 +101,7 @@ public class ViewUserStudyActivity extends Activity {
 
 	private void requestApkInfo(final String id) {
 
-		if (MosesService.getInstance() != null) MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETAPKINFO, new Executor() {
+		if (MosesService.getInstance() != null) MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETAPKINFO, new Executor() {
 
 			@Override
 			public void execute() {

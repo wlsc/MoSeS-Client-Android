@@ -64,7 +64,7 @@ public class Login {
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
-					executeAllWithType(postExecuteSuccessPriority);
+					executeAll(postExecuteSuccessPriority);
 					mHandler.removeCallbacks(executeHooksTask);
 					mHandler.postDelayed(executeHooksTask, 500);
 				} else {
@@ -110,21 +110,15 @@ public class Login {
 	/** The e. */
 	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccess;
 	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccessPriority;
-	private ConcurrentLinkedQueue<Executor> postExecuteFailure;
-	private ConcurrentLinkedQueue<Executor> loginStart;
-	private ConcurrentLinkedQueue<Executor> loginEnd;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteFailure;
+	private ConcurrentLinkedQueue<ExecutorWithType> loginStart;
+	private ConcurrentLinkedQueue<ExecutorWithType> loginEnd;
 
 	public static long lastLoggedIn = -1;
 
 	private final long sessionAliveTime = 120000;
 
-	private void executeAll(ConcurrentLinkedQueue<Executor> el) {
-		for (Executor e : el) {
-			e.execute();
-		}
-	}
-	
-	private void executeAllWithType(ConcurrentLinkedQueue<ExecutorWithType> el) {
+	private void executeAll(ConcurrentLinkedQueue<ExecutorWithType> el) {
 		for (ExecutorWithType e : el) {
 			e.e.execute();
 		}
@@ -137,7 +131,7 @@ public class Login {
 		@Override
 		public void run() {
 			Log.d("MoSeS.LOGIN", "Executing post login hooks:");
-			executeAllWithType(postExecuteSuccess);
+			executeAll(postExecuteSuccess);
 		}
 	};
 	
@@ -165,27 +159,22 @@ public class Login {
 	 * @param e
 	 *            the e
 	 */
-	public Login(String username, String password,
-			ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccess,
-			ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccessPriority,
-			ConcurrentLinkedQueue<Executor> postExecuteFailure,
-			ConcurrentLinkedQueue<Executor> loginStart,
-			ConcurrentLinkedQueue<Executor> loginEnd) {
+	public Login(String username, String password) {
 		this.pw = password;
 		this.uname = username;
-		this.postExecuteSuccess = postExecuteSuccess;
-		this.postExecuteSuccessPriority = postExecuteSuccessPriority;
-		this.postExecuteFailure = postExecuteFailure;
-		this.loginEnd = loginEnd;
-		this.loginStart = loginStart;
+		this.postExecuteSuccess = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSUCCESS);
+		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSUCCESSPRIORITY);
+		this.postExecuteFailure = MosesService.getInstance().getHook(EHookTypes.POSTLOGINFAILED);
+		this.loginEnd = MosesService.getInstance().getHook(EHookTypes.POSTLOGINEND);
+		this.loginStart = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSTART);
 		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
 			new RequestLogin(new LoginFunc(), uname, pw).send();
 		} else {
 			Log.d("MoSeS.LOGIN", "Session still active.");
 			Log.d("MoSeS.LOGIN", "Post login success priority: ");
-			executeAllWithType(postExecuteSuccessPriority);
+			executeAll(postExecuteSuccessPriority);
 			Log.d("MoSeS.LOGIN", "Post login success: ");
-			executeAllWithType(postExecuteSuccess);
+			executeAll(postExecuteSuccess);
 		}
 	}
 }

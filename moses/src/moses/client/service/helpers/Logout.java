@@ -56,8 +56,8 @@ public class Logout {
 				if (j.getString("MESSAGE").equals("LOGOUT_RESPONSE")) {
 					serv.loggedOut();
 					Login.lastLoggedIn = -1;
-					for(Executor ex : e) {
-						ex.execute();
+					for(ExecutorWithType ex : e) {
+						ex.e.execute();
 					}
 				}
 			} catch (JSONException e) {
@@ -86,19 +86,19 @@ public class Logout {
 	private MosesService serv;
 
 	/** The e. */
-	private ConcurrentLinkedQueue<Executor> e;
+	private ConcurrentLinkedQueue<ExecutorWithType> e;
 
 	/**
 	 * Instantiates a new logout.
 	 *
 	 * @param serv
 	 *            the serv
-	 * @param e
+	 * @param postLogoutHook
 	 *            the e
 	 */
-	public Logout(MosesService serv, ConcurrentLinkedQueue<Executor> e) {
+	public Logout(MosesService serv, ConcurrentLinkedQueue<ExecutorWithType> postLogoutHook) {
 		this.serv = serv;
-		this.e = e;
+		this.e = postLogoutHook;
 		new RequestLogout(new LogoutFunc(), serv.getSessionID()).send();
 	}
 }

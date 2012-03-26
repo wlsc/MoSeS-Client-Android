@@ -18,6 +18,7 @@ import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.C2DMManager;
+import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 
@@ -327,7 +328,7 @@ public class HardwareAbstraction {
 	public void getFilter() {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETFILTER, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETFILTER, new Executor() {
 
 				@Override
 				public void execute() {
@@ -345,7 +346,7 @@ public class HardwareAbstraction {
 	public void getHardwareParameters() {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
 
 				@Override
 				public void execute() {
@@ -363,7 +364,7 @@ public class HardwareAbstraction {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTSETFILTER, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER, new Executor() {
 
 				@Override
 				public void execute() {
@@ -414,7 +415,7 @@ public class HardwareAbstraction {
 	 */
 	public void syncDeviceInformation(final boolean force) {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedInPriority(EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 				@Override
 				public void execute() {

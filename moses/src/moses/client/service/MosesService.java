@@ -4,6 +4,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import moses.client.MosesAskForDeviceIDActivity;
@@ -12,6 +13,7 @@ import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.C2DMManager;
+import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
@@ -76,17 +78,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
-		public ConcurrentLinkedQueue<ExecutorWithType> postLoginSuccessPriorityHook = new ConcurrentLinkedQueue<ExecutorWithType>();
-
-		public ConcurrentLinkedQueue<ExecutorWithType> postLoginSuccessHook = new ConcurrentLinkedQueue<ExecutorWithType>();
-
-		public ConcurrentLinkedQueue<Executor> postLoginFailureHook = new ConcurrentLinkedQueue<Executor>();
-
-		public ConcurrentLinkedQueue<Executor> loginStartHook = new ConcurrentLinkedQueue<Executor>();
-
-		public ConcurrentLinkedQueue<Executor> loginEndHook = new ConcurrentLinkedQueue<Executor>();
-
-		public ConcurrentLinkedQueue<Executor> postLogoutHook = new ConcurrentLinkedQueue<Executor>();
+		public HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutorWithType>> hooks = new HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutorWithType>>();
 
 		public ConcurrentLinkedQueue<ExecutorWithObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutorWithObject>();
 
@@ -119,27 +111,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void executeLoggedIn(EMessageTypes t, Executor e) {
+	public void executeLoggedIn(EHookTypes h, EMessageTypes t, Executor e) {
 		if (isLoggedIn() && isOnline())
 			e.execute();
 		else {
-			registerPostLoginSuccessOneTimeHook(t, e);
-			login();
-		}
-	}
-
-	/**
-	 * Same as logged in but execute the task with a higher priority after
-	 * logging in.
-	 * 
-	 * @param e
-	 *            The task to be executed.
-	 */
-	public void executeLoggedInPriority(EMessageTypes t, Executor e) {
-		if (isLoggedIn() && isOnline())
-			e.execute();
-		else {
-			registerPostLoginSuccessOneTimePriorityHook(t, e);
+			registerHook(h, t, e);
 			login();
 		}
 	}
@@ -256,8 +232,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (!mset.loggedIn && !mset.loggingIn) {
 			Log.d("MoSeS.SERVICE", "Logging in...");
 			mset.loggingIn = true;
-			new Login(mset.username, mset.password, mset.postLoginSuccessHook, mset.postLoginSuccessPriorityHook,
-					mset.postLoginFailureHook, mset.loginStartHook, mset.loginEndHook);
+			new Login(mset.username, mset.password);
 		}
 	}
 
@@ -265,7 +240,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * Call this function if you want to log out from MoSeS.
 	 */
 	public void logout() {
-		new Logout(this, mset.postLogoutHook);
+		new Logout(this, getHook(EHookTypes.POSTLOGOUT));
 	}
 
 	/**
@@ -297,7 +272,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	public void onCreate() {
 		super.onCreate();
 		thisInstance = this;
-		registerPostLoginFailureHook(new Executor() {
+
+		for(EHookTypes h : EHookTypes.values()) {
+			mset.hooks.put(h, new ConcurrentLinkedQueue<ExecutorWithType>());
+		}
+
+		registerHook(EHookTypes.POSTLOGINFAILED,EMessageTypes.SPAMMABLE,new Executor() {
 			@Override
 			public void execute() {
 				mset.loggingIn = false;
@@ -362,101 +342,43 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		}
 	}
 
+	public ConcurrentLinkedQueue<ExecutorWithType> getHook(EHookTypes h) {
+		return mset.hooks.get(h);
+	}
+
+	public void registerHook(EHookTypes h, EMessageTypes t, Executor e) {
+		ConcurrentLinkedQueue<ExecutorWithType> hook = getHook(h);
+		if (t != EMessageTypes.SPAMMABLE) {
+			for (ExecutorWithType et : hook) {
+				if (t.equals(et.t)) {
+					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString() + " from hook " + h.toString());
+					unregisterHook(h, et.e);
+				}
+			}
+		}
+		hook.add(new ExecutorWithType(t, e));
+	}
+
+	public void registerOneTimeHook(final EHookTypes h, EMessageTypes t, final Executor e) {
+		Executor n = new Executor() {
+			@Override
+			public void execute() {
+				e.execute();
+				unregisterHook(h, this);
+			}
+		};
+		registerHook(h, t, n);
+	}
+
 	/**
 	 * This hook is used for status updates that shall be shown to the user.
-	 * 
+	 *
 	 * @param e
 	 *            The task to be executed.
 	 */
 	public void registerChangeTextFieldHook(ExecutorWithObject e) {
 		if (!mset.changeTextFieldHook.contains(e))
 			mset.changeTextFieldHook.add(e);
-	}
-
-	/**
-	 * These hooks are executed after the login process is finished.
-	 * 
-	 * @param e
-	 *            The task to be executed.
-	 */
-	public void registerLoginEndHook(Executor e) {
-		if (!mset.loginEndHook.contains(e))
-			mset.loginEndHook.add(e);
-	}
-
-	/**
-	 * These hooks are executed after the login process has started.
-	 * 
-	 * @param e
-	 *            The task to be executed.
-	 */
-	public void registerLoginStartHook(Executor e) {
-		if (!mset.loginStartHook.contains(e))
-			mset.loginStartHook.add(e);
-	}
-
-	/**
-	 * These hooks are executed if the login process fails.
-	 * 
-	 * @param e
-	 *            The task to be executed.
-	 */
-	public void registerPostLoginFailureHook(Executor e) {
-		if (!mset.postLoginFailureHook.contains(e))
-			mset.postLoginFailureHook.add(e);
-	}
-
-	/**
-	 * These hooks are executed if the login process is successful.
-	 * 
-	 * @param e
-	 *            The task to be executed.
-	 */
-	public void registerPostLoginSuccessHook(EMessageTypes t, Executor e) {
-		if (t != EMessageTypes.SPAMMABLE) {
-			for (ExecutorWithType et : mset.postLoginSuccessHook) {
-				if (t.equals(et.t)) {
-					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString());
-					unregisterPostLoginSuccessHook(et.e);
-				}
-			}
-		}
-		mset.postLoginSuccessHook.add(new ExecutorWithType(t, e));
-	}
-
-	public void registerPostLoginSuccessOneTimeHook(EMessageTypes t, final Executor e) {
-		Executor n = new Executor() {
-			@Override
-			public void execute() {
-				e.execute();
-				unregisterPostLoginSuccessHook(this);
-			}
-		};
-		registerPostLoginSuccessHook(t, n);
-	}
-
-	public void registerPostLoginSuccessOneTimePriorityHook(EMessageTypes t, final Executor e) {
-		if (t != EMessageTypes.SPAMMABLE) {
-			for (ExecutorWithType et : mset.postLoginSuccessPriorityHook) {
-				if (t.equals(et.t)) {
-					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString());
-					unregisterPostLoginSuccessPriorityHook(et.e);
-				}
-			}
-		}
-		Executor n = new Executor() {
-			@Override
-			public void execute() {
-				e.execute();
-				unregisterPostLoginSuccessPriorityHook(this);
-			}
-		};
-		mset.postLoginSuccessPriorityHook.add(new ExecutorWithType(t, n));
-	}
-
-	public void registerPostLogoutHook(Executor e) {
-		if (!mset.postLogoutHook.contains(e))
-			mset.postLogoutHook.add(e);
 	}
 
 	/**
@@ -525,48 +447,17 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			mset.changeTextFieldHook.remove(e);
 	}
 
-	public void unregisterLoginEndHook(Executor e) {
-		if (mset.loginEndHook.contains(e))
-			mset.loginEndHook.remove();
-	}
-
-	public void unregisterLoginStartHook(Executor e) {
-		if (mset.loginStartHook.contains(e))
-			mset.loginStartHook.remove(e);
-	}
-
-	public void unregisterPostLoginFailureHook(Executor e) {
-		if (mset.postLoginFailureHook.contains(e))
-			mset.postLoginFailureHook.remove(e);
-	}
-
-	public void unregisterPostLoginSuccessHook(Executor e) {
+	public void unregisterHook(EHookTypes h, Executor e) {
+		ConcurrentLinkedQueue<ExecutorWithType> hook = getHook(h);
 		ExecutorWithType n = null;
-		for (ExecutorWithType t : mset.postLoginSuccessHook) {
+		for (ExecutorWithType t : hook) {
 			if (t.e.equals(e)) {
 				n = t;
 				break;
 			}
 		}
 		if (n != null)
-			mset.postLoginSuccessHook.remove(n);
-	}
-
-	public void unregisterPostLoginSuccessPriorityHook(Executor e) {
-		ExecutorWithType n = null;
-		for (ExecutorWithType t : mset.postLoginSuccessPriorityHook) {
-			if (t.e.equals(e)) {
-				n = t;
-				break;
-			}
-		}
-		if (n != null)
-			mset.postLoginSuccessPriorityHook.remove(n);
-	}
-
-	public void unregisterPostLogoutHook(Executor e) {
-		if (mset.postLogoutHook.contains(e))
-			mset.postLogoutHook.remove(e);
+			hook.remove(n);
 	}
 
 	public void uploadFilter() {

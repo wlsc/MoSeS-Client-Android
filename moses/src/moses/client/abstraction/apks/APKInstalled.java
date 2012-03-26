@@ -7,6 +7,7 @@ import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestInstalledAPK;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 
@@ -46,7 +47,7 @@ public class APKInstalled {
 
 	public APKInstalled(final String appID) {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTINSTALLEDAPK, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTINSTALLEDAPK, new Executor() {
 
 				@Override
 				public void execute() {

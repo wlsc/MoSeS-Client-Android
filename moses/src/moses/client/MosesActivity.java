@@ -5,6 +5,7 @@ import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
@@ -131,15 +132,15 @@ public class MosesActivity extends TabActivity {
 			mBound = true;
 
 			// Add hooks
-			mService.registerPostLoginSuccessHook(EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginSuccessHook);
+			mService.registerHook(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginSuccessHook);
 
-			mService.registerPostLoginFailureHook(postLoginFailureHook);
+			mService.registerHook(EHookTypes.POSTLOGINFAILED, EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginFailureHook);
 
-			mService.registerLoginStartHook(loginStartHook);
+			mService.registerHook(EHookTypes.POSTLOGINSTART, EMessageTypes.ACTIVITYPRINTMESSAGE, loginStartHook);
 
-			mService.registerLoginEndHook(loginEndHook);
+			mService.registerHook(EHookTypes.POSTLOGINEND, EMessageTypes.ACTIVITYPRINTMESSAGE, loginEndHook);
 
-			mService.registerPostLogoutHook(postLogoutHook);
+			mService.registerHook(EHookTypes.POSTLOGOUT, EMessageTypes.ACTIVITYPRINTMESSAGE, postLogoutHook);
 
 			mService.registerChangeTextFieldHook(changeTextFieldHook);
 
@@ -159,15 +160,15 @@ public class MosesActivity extends TabActivity {
 
 		@Override
 		public void onServiceDisconnected(ComponentName arg0) {
-			mService.unregisterPostLoginSuccessHook(postLoginSuccessHook);
+			mService.unregisterHook(EHookTypes.POSTLOGINSUCCESS, postLoginSuccessHook);
 
-			mService.unregisterPostLoginFailureHook(postLoginFailureHook);
+			mService.unregisterHook(EHookTypes.POSTLOGINFAILED, postLoginFailureHook);
 
-			mService.unregisterLoginStartHook(loginStartHook);
+			mService.unregisterHook(EHookTypes.POSTLOGINSTART, loginStartHook);
 
-			mService.unregisterLoginEndHook(loginEndHook);
+			mService.unregisterHook(EHookTypes.POSTLOGINEND, loginEndHook);
 
-			mService.unregisterPostLogoutHook(postLogoutHook);
+			mService.unregisterHook(EHookTypes.POSTLOGOUT, postLogoutHook);
 
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
 
@@ -177,7 +178,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	private boolean waitingForResult = false;
+	private static boolean waitingForResult = false;
 
 	private String onLoginCompleteShowUserStudy = null;
 
@@ -253,7 +254,7 @@ public class MosesActivity extends TabActivity {
 			case Activity.RESULT_CANCELED:
 				if (onLoginCompleteShowUserStudy != null) {
 					// TODO: handle cancelling of show user study operation
-					// (maybe: prevent notification from disappaering)
+					// (maybe: prevent notification from disappearing)
 				}
 
 				finish();
