@@ -64,7 +64,7 @@ public class Login {
 					Log.d("MoSeS.LOGIN",
 							"ACCESS GRANTED: " + j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
-					executeAll(postExecuteSuccessPriority);
+					executeAllWithType(postExecuteSuccessPriority);
 					mHandler.removeCallbacks(executeHooksTask);
 					mHandler.postDelayed(executeHooksTask, 500);
 				} else {
@@ -108,8 +108,8 @@ public class Login {
 	private String pw;
 
 	/** The e. */
-	private ConcurrentLinkedQueue<Executor> postExecuteSuccess;
-	private ConcurrentLinkedQueue<Executor> postExecuteSuccessPriority;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccess;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccessPriority;
 	private ConcurrentLinkedQueue<Executor> postExecuteFailure;
 	private ConcurrentLinkedQueue<Executor> loginStart;
 	private ConcurrentLinkedQueue<Executor> loginEnd;
@@ -123,6 +123,12 @@ public class Login {
 			e.execute();
 		}
 	}
+	
+	private void executeAllWithType(ConcurrentLinkedQueue<ExecutorWithType> el) {
+		for (ExecutorWithType e : el) {
+			e.e.execute();
+		}
+	}
 
 	private static Handler mHandler = new Handler();
 
@@ -131,7 +137,7 @@ public class Login {
 		@Override
 		public void run() {
 			Log.d("MoSeS.LOGIN", "Executing post login hooks:");
-			executeAll(postExecuteSuccess);
+			executeAllWithType(postExecuteSuccess);
 		}
 	};
 	
@@ -161,8 +167,8 @@ public class Login {
 	 *            the e
 	 */
 	public Login(String username, String password,
-			ConcurrentLinkedQueue<Executor> postExecuteSuccess,
-			ConcurrentLinkedQueue<Executor> postExecuteSuccessPriority,
+			ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccess,
+			ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccessPriority,
 			ConcurrentLinkedQueue<Executor> postExecuteFailure,
 			ConcurrentLinkedQueue<Executor> loginStart,
 			ConcurrentLinkedQueue<Executor> loginEnd) {
@@ -178,9 +184,9 @@ public class Login {
 		} else {
 			Log.d("MoSeS.LOGIN", "Session still active.");
 			Log.d("MoSeS.LOGIN", "Post login success priority: ");
-			executeAll(postExecuteSuccessPriority);
+			executeAllWithType(postExecuteSuccessPriority);
 			Log.d("MoSeS.LOGIN", "Post login success: ");
-			executeAll(postExecuteSuccess);
+			executeAllWithType(postExecuteSuccess);
 		}
 	}
 }

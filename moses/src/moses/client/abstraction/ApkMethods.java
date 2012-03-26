@@ -15,6 +15,7 @@ import moses.client.com.requests.RequestDownloadlink;
 import moses.client.com.requests.RequestGetListAPK;
 import moses.client.com.requests.RequestLogin;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -77,7 +78,7 @@ public class ApkMethods {
 			final ApkDownloadLinkRequestObserver observer) {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTDOWNLOADLINK, new Executor() {
 
 				@Override
 				public void execute() {
@@ -146,7 +147,7 @@ public class ApkMethods {
 			final ApkListRequestObserver observer) {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETLISTAPK, new Executor() {
 
 				@Override
 				public void execute() {

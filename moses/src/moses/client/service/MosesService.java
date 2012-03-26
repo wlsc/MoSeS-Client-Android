@@ -9,8 +9,10 @@ import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.com.NetworkJSON;
 import moses.client.service.helpers.C2DMManager;
+import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
+import moses.client.service.helpers.ExecutorWithType;
 import moses.client.service.helpers.Login;
 import moses.client.service.helpers.Logout;
 import moses.client.userstudy.UserstudyNotificationManager;
@@ -71,9 +73,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
-		public ConcurrentLinkedQueue<Executor> postLoginSuccessPriorityHook = new ConcurrentLinkedQueue<Executor>();
+		public ConcurrentLinkedQueue<ExecutorWithType> postLoginSuccessPriorityHook = new ConcurrentLinkedQueue<ExecutorWithType>();
 
-		public ConcurrentLinkedQueue<Executor> postLoginSuccessHook = new ConcurrentLinkedQueue<Executor>();
+		public ConcurrentLinkedQueue<ExecutorWithType> postLoginSuccessHook = new ConcurrentLinkedQueue<ExecutorWithType>();
 
 		public ConcurrentLinkedQueue<Executor> postLoginFailureHook = new ConcurrentLinkedQueue<Executor>();
 
@@ -114,11 +116,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void executeLoggedIn(Executor e) {
+	public void executeLoggedIn(EMessageTypes t, Executor e) {
 		if (isLoggedIn())
 			e.execute();
 		else {
-			registerPostLoginSuccessOneTimeHook(e);
+			registerPostLoginSuccessOneTimeHook(t, e);
 			login();
 		}
 	}
@@ -130,11 +132,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void executeLoggedInPriority(Executor e) {
+	public void executeLoggedInPriority(EMessageTypes t, Executor e) {
 		if (isLoggedIn())
 			e.execute();
 		else {
-			registerPostLoginSuccessOneTimePriorityHook(e);
+			registerPostLoginSuccessOneTimePriorityHook(t, e);
 			login();
 		}
 	}
@@ -405,12 +407,16 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void registerPostLoginSuccessHook(Executor e) {
-		if (!mset.postLoginSuccessHook.contains(e))
-			mset.postLoginSuccessHook.add(e);
+	public void registerPostLoginSuccessHook(EMessageTypes t, Executor e) {
+		for (ExecutorWithType et : mset.postLoginSuccessHook) {
+			if (t.equals(et.t)) {
+				unregisterPostLoginSuccessHook(e);
+			}
+		}
+		mset.postLoginSuccessHook.add(new ExecutorWithType(t, e));
 	}
 
-	public void registerPostLoginSuccessOneTimeHook(final Executor e) {
+	public void registerPostLoginSuccessOneTimeHook(EMessageTypes t, final Executor e) {
 		Executor n = new Executor() {
 			@Override
 			public void execute() {
@@ -418,10 +424,15 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				unregisterPostLoginSuccessHook(this);
 			}
 		};
-		mset.postLoginSuccessHook.add(n);
+		registerPostLoginSuccessHook(t, n);
 	}
 
-	public void registerPostLoginSuccessOneTimePriorityHook(final Executor e) {
+	public void registerPostLoginSuccessOneTimePriorityHook(EMessageTypes t, final Executor e) {
+		for (ExecutorWithType et : mset.postLoginSuccessPriorityHook) {
+			if (t.equals(et.t)) {
+				unregisterPostLoginSuccessPriorityHook(e);
+			}
+		}
 		Executor n = new Executor() {
 			@Override
 			public void execute() {
@@ -429,7 +440,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				unregisterPostLoginSuccessPriorityHook(this);
 			}
 		};
-		mset.postLoginSuccessPriorityHook.add(n);
+		mset.postLoginSuccessPriorityHook.add(new ExecutorWithType(t, n));
 	}
 
 	public void registerPostLogoutHook(Executor e) {
@@ -448,8 +459,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		mset.activitycontext = c;
 	}
 
-	/** 
+	/**
 	 * Set the filter in the program and in the shared preferences.
+	 * 
 	 * @param filter
 	 */
 	public void setFilter(JSONArray filter) {
@@ -460,9 +472,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	/**
-	 * This function will be executed on first run and shows some welcome dialog.
+	 * This function will be executed on first run and shows some welcome
+	 * dialog.
+	 * 
 	 * @param c
-	 * 			The context under which the dialog is shown.
+	 *            The context under which the dialog is shown.
 	 */
 	private void showWelcomeDialog(final Context c) {
 		AlertDialog a = new AlertDialog.Builder(c).create();
@@ -496,38 +510,52 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
-		if(mset.changeTextFieldHook.contains(e))
-		mset.changeTextFieldHook.remove(e);
+		if (mset.changeTextFieldHook.contains(e))
+			mset.changeTextFieldHook.remove(e);
 	}
 
 	public void unregisterLoginEndHook(Executor e) {
-		if(mset.loginEndHook.contains(e))
-		mset.loginEndHook.remove();
+		if (mset.loginEndHook.contains(e))
+			mset.loginEndHook.remove();
 	}
 
 	public void unregisterLoginStartHook(Executor e) {
-		if(mset.loginStartHook.contains(e))
-		mset.loginStartHook.remove(e);
+		if (mset.loginStartHook.contains(e))
+			mset.loginStartHook.remove(e);
 	}
 
 	public void unregisterPostLoginFailureHook(Executor e) {
-		if(mset.postLoginFailureHook.contains(e))
-		mset.postLoginFailureHook.remove(e);
+		if (mset.postLoginFailureHook.contains(e))
+			mset.postLoginFailureHook.remove(e);
 	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
-		if(mset.postLoginSuccessHook.contains(e))
-		mset.postLoginSuccessHook.remove(e);
+		Executor n = null;
+		for (ExecutorWithType t : mset.postLoginSuccessHook) {
+			if (t.e.equals(e)) {
+				n = t.e;
+				break;
+			}
+		}
+		if (n != null)
+			mset.postLoginSuccessHook.remove(n);
 	}
 
 	public void unregisterPostLoginSuccessPriorityHook(Executor e) {
-		if(mset.postLoginSuccessPriorityHook.contains(e))
-		mset.postLoginSuccessPriorityHook.remove(e);
+		Executor n = null;
+		for (ExecutorWithType t : mset.postLoginSuccessPriorityHook) {
+			if (t.e.equals(e)) {
+				n = t.e;
+				break;
+			}
+		}
+		if (n != null)
+			mset.postLoginSuccessPriorityHook.remove(n);
 	}
 
 	public void unregisterPostLogoutHook(Executor e) {
-		if(mset.postLogoutHook.contains(e))
-		mset.postLogoutHook.remove(e);
+		if (mset.postLogoutHook.contains(e))
+			mset.postLogoutHook.remove(e);
 	}
 
 	public void uploadFilter() {
@@ -542,9 +570,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			return MosesService.this;
 		}
 	}
-	
+
 	private final IBinder mBinder = new LocalBinder();
-	
+
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return mBinder;

@@ -18,6 +18,7 @@ import moses.client.com.requests.RequestSetFilter;
 import moses.client.com.requests.RequestSetHardwareParameters;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.C2DMManager;
+import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -326,7 +327,7 @@ public class HardwareAbstraction {
 	public void getFilter() {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETFILTER, new Executor() {
 
 				@Override
 				public void execute() {
@@ -344,7 +345,7 @@ public class HardwareAbstraction {
 	public void getHardwareParameters() {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
 
 				@Override
 				public void execute() {
@@ -362,7 +363,7 @@ public class HardwareAbstraction {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTSETFILTER, new Executor() {
 
 				@Override
 				public void execute() {
@@ -413,7 +414,7 @@ public class HardwareAbstraction {
 	 */
 	public void syncDeviceInformation(final boolean force) {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedInPriority(new Executor() {
+			MosesService.getInstance().executeLoggedInPriority(EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 				@Override
 				public void execute() {

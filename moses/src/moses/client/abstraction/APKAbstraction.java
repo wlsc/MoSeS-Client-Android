@@ -10,6 +10,7 @@ import moses.client.com.ReqTaskExecutor;
 import moses.client.com.requests.RequestGetListAPK;
 import moses.client.com.requests.RequestLogin;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 
 import org.json.JSONArray;
@@ -120,7 +121,7 @@ public class APKAbstraction {
 	public void getAPKs() {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(new Executor() {
+			MosesService.getInstance().executeLoggedIn(EMessageTypes.REQUESTGETLISTAPK, new Executor() {
 
 				@Override
 				public void execute() {

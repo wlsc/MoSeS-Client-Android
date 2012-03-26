@@ -5,6 +5,7 @@ import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
+import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
 import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.userstudy.UserstudyNotificationManager;
@@ -130,7 +131,7 @@ public class MosesActivity extends TabActivity {
 			mBound = true;
 
 			// Add hooks
-			mService.registerPostLoginSuccessHook(postLoginSuccessHook);
+			mService.registerPostLoginSuccessHook(EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginSuccessHook);
 
 			mService.registerPostLoginFailureHook(postLoginFailureHook);
 
