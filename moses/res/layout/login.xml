@@ -44,12 +44,12 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp" >
+        android:layout_height="60dp"
+        android:baselineAligned="false" >
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.20"
             android:orientation="vertical" >
 
             <TextView
@@ -67,15 +67,13 @@
 
         <FrameLayout
             android:id="@+id/frameLayout1"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.60" >
+            android:layout_width="20dip"
+            android:layout_height="match_parent" >
         </FrameLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.20"
             android:orientation="vertical" >
 
             <TextView
