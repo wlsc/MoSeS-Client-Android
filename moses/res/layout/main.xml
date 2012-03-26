@@ -39,12 +39,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent" />
         </LinearLayout>
-
+
         <LinearLayout
             android:id="@+id/btmButtons"
             android:layout_width="match_parent"
             android:layout_height="70dip"
-            android:layout_weight="0.00" >
+            android:layout_weight="0.00"
+            android:gravity="right" >
 
             <LinearLayout
                 android:id="@+id/linearLayout2"
