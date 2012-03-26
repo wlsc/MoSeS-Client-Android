@@ -1,6 +1,9 @@
 package moses.client.service;
 
 import java.io.FileDescriptor;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import moses.client.MosesAskForDeviceIDActivity;
@@ -117,7 +120,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 *            The task to be executed.
 	 */
 	public void executeLoggedIn(EMessageTypes t, Executor e) {
-		if (isLoggedIn())
+		if (isLoggedIn() && isOnline())
 			e.execute();
 		else {
 			registerPostLoginSuccessOneTimeHook(t, e);
@@ -133,7 +136,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 *            The task to be executed.
 	 */
 	public void executeLoggedInPriority(EMessageTypes t, Executor e) {
-		if (isLoggedIn())
+		if (isLoggedIn() && isOnline())
 			e.execute();
 		else {
 			registerPostLoginSuccessOneTimePriorityHook(t, e);
@@ -220,7 +223,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * This function is to be called after the service has been logged out.
 	 */
 	public void loggedOut() {
+		Login.removeLogoutTask();
 		mset.loggedIn = false;
+		mset.loggingIn = false;
 		mset.sessionid = "";
 	}
 
@@ -245,12 +250,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			for (ExecutorWithObject e : mset.changeTextFieldHook) {
 				e.execute("No internet connection.");
 			}
+			loggedOut();
 			return;
 		}
 		if (!mset.loggedIn && !mset.loggingIn) {
 			Log.d("MoSeS.SERVICE", "Logging in...");
 			mset.loggingIn = true;
-			Login.setService(this);
 			new Login(mset.username, mset.password, mset.postLoginSuccessHook, mset.postLoginSuccessPriorityHook,
 					mset.postLoginFailureHook, mset.loginStartHook, mset.loginEndHook);
 		}
@@ -408,9 +413,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 *            The task to be executed.
 	 */
 	public void registerPostLoginSuccessHook(EMessageTypes t, Executor e) {
-		for (ExecutorWithType et : mset.postLoginSuccessHook) {
-			if (t.equals(et.t)) {
-				unregisterPostLoginSuccessHook(e);
+		if (t != EMessageTypes.SPAMMABLE) {
+			for (ExecutorWithType et : mset.postLoginSuccessHook) {
+				if (t.equals(et.t)) {
+					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString());
+					unregisterPostLoginSuccessHook(et.e);
+				}
 			}
 		}
 		mset.postLoginSuccessHook.add(new ExecutorWithType(t, e));
@@ -428,9 +436,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void registerPostLoginSuccessOneTimePriorityHook(EMessageTypes t, final Executor e) {
-		for (ExecutorWithType et : mset.postLoginSuccessPriorityHook) {
-			if (t.equals(et.t)) {
-				unregisterPostLoginSuccessPriorityHook(e);
+		if (t != EMessageTypes.SPAMMABLE) {
+			for (ExecutorWithType et : mset.postLoginSuccessPriorityHook) {
+				if (t.equals(et.t)) {
+					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString());
+					unregisterPostLoginSuccessPriorityHook(et.e);
+				}
 			}
 		}
 		Executor n = new Executor() {
@@ -530,10 +541,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void unregisterPostLoginSuccessHook(Executor e) {
-		Executor n = null;
+		ExecutorWithType n = null;
 		for (ExecutorWithType t : mset.postLoginSuccessHook) {
 			if (t.e.equals(e)) {
-				n = t.e;
+				n = t;
 				break;
 			}
 		}
@@ -542,10 +553,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void unregisterPostLoginSuccessPriorityHook(Executor e) {
-		Executor n = null;
+		ExecutorWithType n = null;
 		for (ExecutorWithType t : mset.postLoginSuccessPriorityHook) {
 			if (t.e.equals(e)) {
-				n = t.e;
+				n = t;
 				break;
 			}
 		}

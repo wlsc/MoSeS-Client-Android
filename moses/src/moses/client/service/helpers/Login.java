@@ -57,7 +57,7 @@ public class Login {
 			try {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, uname)) {
-					serv.loggedIn(j.getString("SESSIONID"));
+					MosesService.getInstance().loggedIn(j.getString("SESSIONID"));
 					mHandler.removeCallbacks(logoutTask);
 					mHandler.postDelayed(logoutTask, sessionAliveTime - 1000);
 					lastLoggedIn = System.currentTimeMillis();
@@ -146,12 +146,13 @@ public class Login {
 		@Override
 		public void run() {
 			Log.d("MoSeS.LOGIN", "Session is now invalid.");
-			serv.logout();
+			MosesService.getInstance().logout();
 		}
 	};
 
-	public static void setService(MosesService s) {
-		serv = s;
+	public static void removeLogoutTask() {
+		lastLoggedIn = -1;
+		mHandler.removeCallbacks(logoutTask);
 	}
 
 	/**
@@ -161,8 +162,6 @@ public class Login {
 	 *            the username
 	 * @param password
 	 *            the password
-	 * @param serv
-	 *            the serv
 	 * @param e
 	 *            the e
 	 */
