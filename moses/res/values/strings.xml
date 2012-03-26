@@ -70,4 +70,5 @@
     <string name="deviceid_text">Device ID</string>
     <string name="deviceid_decr_text">Please enter your device id.\nThis id can be an arbitrary string and is used to identify a device in our system.</string>
     <string name="next_text">Next</string>
+    <string name="settings">Settings</string>
 </resources>

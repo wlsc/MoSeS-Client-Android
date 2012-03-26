@@ -22,28 +22,72 @@
             android:layout_weight="0.7"
             android:padding="5dp" />
 
-        <!--Button
-            android:id="@+id/buttonTestNotification1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Button" /-->
-
         <LinearLayout
             android:id="@+id/linearLayout1"
             android:layout_width="match_parent"
             android:layout_height="32dip"
             android:layout_weight="0.00" >
 
-            <TextView
-                android:id="@+id/success"
-                android:layout_width="256dp"
-                android:layout_height="48dp" />
-
             <ProgressBar
                 android:id="@+id/main_spinning_progress_bar"
                 style="?android:attr/progressBarStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/success"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btmButtons"
+            android:layout_width="match_parent"
+            android:layout_height="70dip"
+            android:layout_weight="0.00" >
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings" />
+
+                <Button
+                    android:id="@+id/btnSettings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_menu_preferences" />
+            </LinearLayout>
+            <FrameLayout
+                android:id="@+id/frameLayout1"
+                android:layout_width="30dip"
+                android:layout_height="match_parent" >
+            </FrameLayout>
+            <LinearLayout
+                android:id="@+id/linearLayout3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/exit" />
+
+                <Button
+                    android:id="@+id/btnCloseApp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ic_menu_close_clear_cancel" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 
