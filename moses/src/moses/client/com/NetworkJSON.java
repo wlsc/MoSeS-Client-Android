@@ -86,13 +86,14 @@ public class NetworkJSON
 	 */
 	@Override
 	protected String doInBackground(NetworkJSON.APIRequest... params) {
-		if(debug) {
-			signal = new CountDownLatch(1);
-			return response.generateAnswer(params[0].request);
-		}
 		publishProgress(new BackgroundException(ConnectionParam.INIT, null));
 		e = params[0].e;
 		String ret = "";
+		if(debug) {
+			signal = new CountDownLatch(1);
+			e.postExecution(response.generateAnswer(params[0].request));
+			return "";
+		}
 		try {
 			publishProgress(new BackgroundException(ConnectionParam.CONNECTING,
 					null));

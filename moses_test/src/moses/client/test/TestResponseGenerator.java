@@ -19,7 +19,7 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 
 	private static Hardware hp;
 
-	private static int sessionid = 0;
+	public static int sessionid = 0;
 	private HashMap<String, Integer> m = null;
 
 	public TestResponseGenerator() {
@@ -56,8 +56,9 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 		if(s.getString("LOGIN").equals("alex") && s.getString("PASSWORD").equals("777")) {
 			sessionid = (int) (Math.random()*10000000);
 			a.put("SESSIONID", Integer.toString(sessionid));
+			a.put("LOGIN", s.getString("LOGIN"));
 		} else {
-			a.put("SESSIONID", "");
+			a.put("SESSIONID", "NULL");
 		}
 		return a.toString();
 	}
