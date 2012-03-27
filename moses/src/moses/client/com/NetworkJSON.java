@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -27,6 +28,9 @@ import android.os.AsyncTask;
 public class NetworkJSON
 		extends
 		AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
+
+	// Needed for testing
+	public static CountDownLatch signal = new CountDownLatch(1);
 
 	/**
 	 * The Class APIRequest.
@@ -70,7 +74,7 @@ public class NetworkJSON
 	
 	public static boolean debug = false;
 	
-	public static LinkedList<JSONObject> returnObjects = new LinkedList<JSONObject>();
+	public static FakeResponseGenerator response = null;
 
 	/** The e. */
 	private ReqTaskExecutor e;
@@ -83,9 +87,8 @@ public class NetworkJSON
 	@Override
 	protected String doInBackground(NetworkJSON.APIRequest... params) {
 		if(debug) {
-			String ret = returnObjects.getFirst().toString();
-			returnObjects.removeFirst();
-			return ret;
+			signal = new CountDownLatch(1);
+			return response.generateAnswer(params[0].request);
 		}
 		publishProgress(new BackgroundException(ConnectionParam.INIT, null));
 		e = params[0].e;
@@ -141,6 +144,7 @@ public class NetworkJSON
 	@Override
 	protected void onPostExecute(String result) {
 		e.postExecution(result);
+		signal.countDown();
 	}
 
 	/**
