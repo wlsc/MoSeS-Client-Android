@@ -146,10 +146,15 @@ public class ExternalApplication {
 		if(isDescriptionSet()) {
 			result += SEPARATOR + TAG_DESCRIPTION + getName();
 		}
-		if(isDescriptionSet()) {
+		if(isNewestVersionSet()) {
 			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();
 		}
 		return result;
+	}
+	
+	@Override
+	public String toString() {
+		return asOnelineString();
 	}
 	
 	/**

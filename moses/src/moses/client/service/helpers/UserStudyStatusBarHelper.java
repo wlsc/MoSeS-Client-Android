@@ -32,10 +32,7 @@ public class UserStudyStatusBarHelper {
 		if(UserstudyNotificationManager.getInstance() != null) {
 			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(apkId);
 
-			Intent intent = new Intent(MosesService.getInstance(), ViewUserStudyActivity.class);
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
-					notification.getApplication().getID());
+			Intent intent = generateIntentForNotification(notification.getApplication().getID(), MosesService.getInstance());
 			Log.i("MoSeS.Service",
 					"starting intent to display user study notification");
 			showNotificationStatic(intent, apkId, context);
@@ -46,10 +43,22 @@ public class UserStudyStatusBarHelper {
 		}
 	}
 	
+	public static Intent generateIntentForNotification(String id,
+			Context context) {
+		Intent intent = new Intent(context, ViewUserStudyActivity.class);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, id);
+		return intent;
+	}
+
 	protected static void showNotificationStatic(Intent intent, String apkId, Context context) {
 		Log.i("MoSeS.Userstudy", "displayed user study notification in taskbar");
 		showNotificationStatic(intent, "A new user study is available for you\nClick here to view it", "MoSeS",
-			false, Math.abs(("Userstudy"+apkId).hashCode()), context);
+			false, notificationManagerIdForApkId(apkId), context);
+	}
+
+	public static int notificationManagerIdForApkId(String apkId) {
+		return Math.abs(("Userstudy"+apkId).hashCode());
 	}
 
 	private static void showNotificationStatic(Intent intent, String text, String title, boolean ongoing, int id, Context context) {

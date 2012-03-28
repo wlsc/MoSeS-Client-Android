@@ -527,8 +527,8 @@ public class MosesActivity extends TabActivity {
 	 *         properly log-in is complete.
 	 */
 	public static boolean isLoginInformationComplete() {
-		return PreferenceManager.getDefaultSharedPreferences(mService).getString("username_pref", "").equals("")
-				|| PreferenceManager.getDefaultSharedPreferences(mService).getString("password_pref", "").equals("");
+		return !(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("username_pref", "").equals("")
+				|| PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("password_pref", "").equals(""));
 	}
 
 }
