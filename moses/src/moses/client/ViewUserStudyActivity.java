@@ -173,60 +173,65 @@ public class ViewUserStudyActivity extends Activity {
 
 	protected void showDescisionDialog(final UserStudyNotification notification) {
 		Log.i("MoSeS.Userstudy", notification.getApplication().getID());
-		final Dialog myDialog = new Dialog(this);
-		myDialog.setContentView(R.layout.userstudynotificationdialog);
-		myDialog.setTitle("A new user study \"" + notification.getApplication().getName() + "\" is available for you");
-		((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
-			+ notification.getApplication().getName());
-		((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
-			+ notification.getApplication().getDescription());
-		OnClickListener clickListenerYes = new View.OnClickListener() {
+		runOnUiThread(new Runnable() {
 			@Override
-			public void onClick(View v) {
-				Log.i("MoSes.Userstudy", "starting download process...");
-				downloadUserstudyApp(notification);
-				myDialog.dismiss();
-			}
-		};
-		View.OnClickListener clickListenerNo = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				notification.setStatus(Status.DENIED);
-				UserstudyNotificationManager.getInstance().updateNotification(notification);
-				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
-				
-				myDialog.dismiss();
-				cancelActivity();
-			}
-		};
-		View.OnClickListener clickListenerLater = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				myDialog.dismiss();
-				cancelActivity();
-			}
-		};
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(clickListenerYes );
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(clickListenerNo);
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
+			public void run() {
+				final Dialog myDialog = new Dialog(ViewUserStudyActivity.this);
+				myDialog.setContentView(R.layout.userstudynotificationdialog);
+				myDialog.setTitle("A new user study \"" + notification.getApplication().getName() + "\" is available for you");
+				((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
+					+ notification.getApplication().getName());
+				((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
+					+ notification.getApplication().getDescription());
+				OnClickListener clickListenerYes = new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Log.i("MoSes.Userstudy", "starting download process...");
+						downloadUserstudyApp(notification);
+						myDialog.dismiss();
+					}
+				};
+				View.OnClickListener clickListenerNo = new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						notification.setStatus(Status.DENIED);
+						UserstudyNotificationManager.getInstance().updateNotification(notification);
+						UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
+						
+						myDialog.dismiss();
+						cancelActivity();
+					}
+				};
+				View.OnClickListener clickListenerLater = new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						myDialog.dismiss();
+						cancelActivity();
+					}
+				};
+				((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(clickListenerYes );
+				((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(clickListenerNo);
+				((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
 
-		myDialog.setOwnerActivity(this);
-		myDialog.show();
-		
-		synchronized(autoActions) {
-			if(autoActions.size() > 0) {
-				long t0 = System.currentTimeMillis();
-				while(!myDialog.isShowing() && (System.currentTimeMillis()-t0<1000));
-				Status action = autoActions.poll();
-				if(action == Status.ACCEPTED) {
-					clickListenerYes.onClick(null);
-				} else if(action == Status.DENIED) {
-					clickListenerNo.onClick(null);
-				} else if(action == Status.UNDECIDED) {
-					clickListenerLater.onClick(null);
+				myDialog.setOwnerActivity(ViewUserStudyActivity.this);
+				myDialog.show();
+				
+				synchronized(autoActions) {
+					if(autoActions.size() > 0) {
+						long t0 = System.currentTimeMillis();
+						while(!myDialog.isShowing() && (System.currentTimeMillis()-t0<1000));
+						Status action = autoActions.poll();
+						if(action == Status.ACCEPTED) {
+							clickListenerYes.onClick(null);
+						} else if(action == Status.DENIED) {
+							clickListenerNo.onClick(null);
+						} else if(action == Status.UNDECIDED) {
+							clickListenerLater.onClick(null);
+						}
+					}			
 				}
-			}			
-		}
+			}
+		});
 
 	}
 

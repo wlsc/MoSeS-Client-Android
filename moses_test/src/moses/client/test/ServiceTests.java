@@ -63,6 +63,7 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 	static class UIThreadBinder {
 		public boolean finished = false;
 	}
+	
 	public void testNotification() throws Throwable {
 		final UIThreadBinder binder = new UIThreadBinder();
 		
@@ -74,43 +75,32 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 		long t0 = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t0 < 2000);
 		
-		
-//		launchActivityWithIntent("moses.client", ViewUserStudyActivity.class, UserStudyStatusBarHelper.generateIntentForNotification(FAKE_NOTIFICATION_ID, MosesService.getInstance()));
-		
 		//cancel the notification
 		mNotificationManager.cancel(UserStudyStatusBarHelper.notificationManagerIdForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID));
+
 		//launch the intent as if it were by clicking the notification
 		ViewUserStudyActivity.autoActions.add(Status.UNDECIDED);
 		Log.d("TEST", "starting activity ViewUserStudiesActivity");
+
+		MosesService.getInstance().startActivity(UserStudyStatusBarHelper.generateIntentForNotification(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID, MosesService.getInstance()));
 		
-		runTestOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				MosesService.getInstance().startActivity(UserStudyStatusBarHelper.generateIntentForNotification(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID, MosesService.getInstance()));
-				binder.finished = true;
+		boolean canProceed = false;
+		while(!canProceed) {
+			synchronized(ViewUserStudyActivity.autoActions) {
+				canProceed = ViewUserStudyActivity.autoActions.size() == 0;
 			}
-		});
-		while(!binder.finished);
-		binder.finished = false;
-		
-		myWait(5000);
+		}
+		myWait(500);
+
 		assertTrue(UserstudyNotificationManager.getInstance().getNotificationForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID) != null);
 		assertTrue(UserstudyNotificationManager.getInstance().getNotificationForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID).getStatus() == Status.UNDECIDED);
 		
-//		MosesService.getInstance().startActivity(UserStudyStatusBarHelper.generateIntentForNotification(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID, MosesService.getInstance()));
+		
 		
 //		while(UserstudyNotificationManager.getInstance().getNotificationForApkId(FAKE_NOTIFICATION_ID) == null) {
 //			Thread.sleep(100);
 //		}
-//		Log.d("TEST", "woke up");
-		
-		//queue "later" click
-//		boolean canProceed = false;
-//		while(!canProceed) {
-//			synchronized(ViewUserStudyActivity.autoActions) {
-//				canProceed = ViewUserStudyActivity.autoActions.size() == 0;
-//			}
-//		}
+
 		
 	}
 	
