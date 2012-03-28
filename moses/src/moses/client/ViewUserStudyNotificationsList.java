@@ -128,7 +128,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 			listContent,
 			R.layout.availablestudieslistitem,
 			new String[] { "name","description" },
-			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
+			new int[] { R.id.userstudylistitemtext, R.id.userstudylistitemdescription } );
 		
 		listView.setAdapter(contentAdapter);
 	}

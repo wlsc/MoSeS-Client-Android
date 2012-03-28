@@ -91,8 +91,8 @@ public class NetworkJSON
 		String ret = "";
 		if(debug) {
 			signal = new CountDownLatch(1);
-			e.postExecution(response.generateAnswer(params[0].request));
-			return "";
+			//e.postExecution(response.generateAnswer(params[0].request));
+			return response.generateAnswer(params[0].request);
 		}
 		try {
 			publishProgress(new BackgroundException(ConnectionParam.CONNECTING,

@@ -38,12 +38,6 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 		e.putBoolean("firststart", false);
 		e.commit();
 		
-		//initialization for notification test
-		if(UserstudyNotificationManager.getInstance()!=null) {
-			UserstudyNotificationManager.init(getActivity());
-		}
-		UserstudyNotificationManager.getInstance().removeNotificationWithApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID);
-		UserstudyNotificationManager.getInstance().saveToDisk(getActivity());
 	}
 
 	public void testIsServiceRunning() {
@@ -57,61 +51,6 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 		while(!MosesService.getInstance().isLoggedIn() || MosesService.getInstance().isLoggingIn());
 		assertTrue(MosesService.getInstance().isLoggedIn());
 		assertEquals(Integer.toString(TestResponseGenerator.sessionid), MosesService.getInstance().getSessionID());
-	}
-	
-	
-	static class UIThreadBinder {
-		public boolean finished = false;
-	}
-	
-	public void testNotification() throws Throwable {
-		final UIThreadBinder binder = new UIThreadBinder();
-		
-		UserstudyNotificationManager.userStudyNotificationArrived(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID);
-		
-		NotificationManager mNotificationManager = (NotificationManager) MosesService.getInstance().getSystemService(
-				Context.NOTIFICATION_SERVICE);
-		
-		long t0 = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t0 < 2000);
-		
-		//cancel the notification
-		mNotificationManager.cancel(UserStudyStatusBarHelper.notificationManagerIdForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID));
-
-		//launch the intent as if it were by clicking the notification
-		ViewUserStudyActivity.autoActions.add(Status.UNDECIDED);
-		Log.d("TEST", "starting activity ViewUserStudiesActivity");
-
-		MosesService.getInstance().startActivity(UserStudyStatusBarHelper.generateIntentForNotification(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID, MosesService.getInstance()));
-		
-		boolean canProceed = false;
-		while(!canProceed) {
-			synchronized(ViewUserStudyActivity.autoActions) {
-				canProceed = ViewUserStudyActivity.autoActions.size() == 0;
-			}
-		}
-		myWait(500);
-
-		assertTrue(UserstudyNotificationManager.getInstance().getNotificationForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID) != null);
-		assertTrue(UserstudyNotificationManager.getInstance().getNotificationForApkId(TestResponseGenerator.FAKE_NOTIFICATION_APK_ID).getStatus() == Status.UNDECIDED);
-		
-		
-		
-//		while(UserstudyNotificationManager.getInstance().getNotificationForApkId(FAKE_NOTIFICATION_ID) == null) {
-//			Thread.sleep(100);
-//		}
-
-		
-	}
-	
-	private static void myWait(int t) {
-		long t0 = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t0 < t);
-	}
-	
-	@UiThreadTest
-	public void testAPKDownload() throws Throwable {
-		
 	}
 	
 	

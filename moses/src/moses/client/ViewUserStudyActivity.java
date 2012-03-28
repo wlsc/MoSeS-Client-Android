@@ -218,8 +218,6 @@ public class ViewUserStudyActivity extends Activity {
 				
 				synchronized(autoActions) {
 					if(autoActions.size() > 0) {
-						long t0 = System.currentTimeMillis();
-						while(!myDialog.isShowing() && (System.currentTimeMillis()-t0<1000));
 						Status action = autoActions.poll();
 						if(action == Status.ACCEPTED) {
 							clickListenerYes.onClick(null);

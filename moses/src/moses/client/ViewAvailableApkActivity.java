@@ -192,9 +192,6 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 			new String[] { "name","description" },
 			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
 		
-//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, R.layout.availableabkslistitem,
-//			R.id.apklistitemtext, items) {
-//		};
 		listView.setAdapter(contentAdapter);
 	}
 

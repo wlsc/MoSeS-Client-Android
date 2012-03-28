@@ -9,7 +9,7 @@
 
     <TextView
 	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/apklistitemtext"
+	    android:id="@+id/userstudylistitemtext"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10sp"
@@ -20,7 +20,7 @@
 
 	<TextView
 	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:id="@+id/apklistitemdescription"
+	    android:id="@+id/userstudylistitemdescription"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10sp"
