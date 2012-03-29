@@ -15,9 +15,11 @@ import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.service.MosesService;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -129,7 +131,17 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 
 	private void requestExternalApplications() {
 		lastListRefreshTime = System.currentTimeMillis();
-		ApkMethods.getExternalApplications(this);
+		if(MosesService.getInstance() != null) {
+			ApkMethods.getExternalApplications(this);
+		} else {
+			Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					ApkMethods.getExternalApplications(ViewAvailableApkActivity.this);
+				}
+			}, 500);
+		}
 	}
 
 	@Override
