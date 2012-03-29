@@ -28,6 +28,7 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 	protected void setUp() throws Exception {
 		super.setUp();
 		NetworkJSON.debug = true;
+		NetworkJSON.threadProblem = true;
 		r = new TestResponseGenerator();
 		NetworkJSON.response = r;
 		SharedPreferences.Editor e = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
@@ -46,7 +47,8 @@ public class ServiceTests extends ActivityInstrumentationTestCase2<MosesActivity
 	
 	@UiThreadTest
 	public void testLoginLogsIn() throws Throwable {
-		assertFalse(MosesService.getInstance().isLoggedIn());
+		MosesService.getInstance().logout();
+		while(MosesService.getInstance().isLoggedIn());
 		MosesService.getInstance().login();
 		while(!MosesService.getInstance().isLoggedIn() || MosesService.getInstance().isLoggingIn());
 		assertTrue(MosesService.getInstance().isLoggedIn());

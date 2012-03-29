@@ -7,11 +7,13 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.com.FakeResponseGenerator;
+import moses.client.userstudy.UserStudyNotification;
 
 public class TestResponseGenerator implements FakeResponseGenerator {
 
-	public static final String FAKE_NOTIFICATION_APK_ID = "66";
+	
 	
 	private class Hardware {
 		public String devid;
@@ -26,6 +28,14 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 	public static int sessionid = 0;
 	private HashMap<String, Integer> m = null;
 
+	public static final String FAKE_NOTIFICATION_APK_ID = "66";
+	public static ExternalApplication userstudyApp;
+	static {
+		userstudyApp = new ExternalApplication(FAKE_NOTIFICATION_APK_ID);
+		userstudyApp.setName("Notification Test app 1");
+		userstudyApp.setDescription("Test app description");
+	}
+	
 	public TestResponseGenerator() {
 		m = new HashMap<String, Integer>();
 		m.put("LOGIN_REQUEST", 0);
@@ -33,6 +43,7 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 		m.put("CHANGE_DEVICE_ID", 2);
 		m.put("SET_HARDWARE_PARAMS", 3);
 		m.put("GET_APK_INFO", 4);
+		m.put("LOGOUT_REQUEST", 5);
 	}
 
 	@Override
@@ -59,6 +70,8 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 				return setHardwareParamsAnswer(s);
 			case 4:
 				return getApkInfoAnswer(s);
+			case 5:
+				return logoutAnswer(s);
 			default:
 				return defaultAnswer(s);
 			}
@@ -67,18 +80,35 @@ public class TestResponseGenerator implements FakeResponseGenerator {
 		}
 	}
 
+	private String logoutAnswer(JSONObject s) throws JSONException {
+		JSONObject a = new JSONObject();
+		a.put("MESSAGE", "LOGOUT_RESPONSE");
+		a.put("STATUS", "SUCCESS");
+		Log.d("TEST.LOGOUTREQUEST", "returning answer: " +a.toString());
+		return a.toString();
+	}
+
 	private String getApkInfoAnswer(JSONObject s) throws JSONException {
 		JSONObject a = new JSONObject();
 		a.put("MESSAGE", "GET_APK_INFO_RESPONSE");
 		a.put("STATUS", "SUCCESS");
 		a.put("ID", TestResponseGenerator.FAKE_NOTIFICATION_APK_ID);
-		a.put("NAME", "Notification Test App 1");
-		a.put("DESCR", "Please install =)");
-		Log.d("TEST.APKLISTREQUEST", "returning apk info request answer: "+a.toString());
+		a.put("NAME", userstudyApp.getName());
+		a.put("DESCR", userstudyApp.getDescription());
+		Log.d("TEST.APKINFOREQUEST", "returning apk info request answer: "+a.toString());
 		return a.toString();
 	}
 
 	private String defaultAnswer(JSONObject s) {
+		try {
+			if(s.getString("MESSAGE") != null) {
+				Log.w("TEST.TESTRESPONSEGENERATOR", "defaulting for incoming message: " + s.getString("MESSAGE") + "\n" + s.toString());
+			} else {
+				Log.w("TEST.TESTRESPONSEGENERATOR", "defaulting for incoming message: (not specified)" + "\n" + s.toString());
+			}
+		} catch (JSONException e) {
+		}
+		
 		return "";
 	}
 
