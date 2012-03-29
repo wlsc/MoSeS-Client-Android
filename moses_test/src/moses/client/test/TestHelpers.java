@@ -25,4 +25,14 @@ public class TestHelpers {
 		while (System.currentTimeMillis() - t0 < t)
 			;
 	}
+	
+	public static void myWaitRandom(int t) {
+		double div = (double)t*0.2D;
+		double divReal = Math.random()*2*div;
+		myWait((int)Math.round(t-div+divReal));
+	}
+	
+	public static boolean mystery() {
+		return true;
+	}
 }
