@@ -66,7 +66,12 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
-			((TextView) findViewById(R.id.success)).setText("Online");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					((TextView) findViewById(R.id.success)).setText("Online");
+				}
+			});
 		}
 	};
 
@@ -74,7 +79,12 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
-			((TextView) findViewById(R.id.success)).setText("Error while logging in.");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					((TextView) findViewById(R.id.success)).setText("Error while logging in.");
+				}
+			});
 		}
 	};
 
@@ -82,7 +92,12 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.VISIBLE);
+				}
+			});
 		}
 	};
 
@@ -90,8 +105,13 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
-			((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
-			((TextView) findViewById(R.id.success)).setText("Connected");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					((ProgressBar) findViewById(R.id.main_spinning_progress_bar)).setVisibility(View.GONE);
+					((TextView) findViewById(R.id.success)).setText("Connected");
+				}
+			});
 		}
 	};
 
@@ -100,16 +120,26 @@ public class MosesActivity extends TabActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "postLogoutHook");
-			((TextView) findViewById(R.id.success)).setText("Offline");
+			runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					((TextView) findViewById(R.id.success)).setText("Offline");
+				}
+			});
 		}
 	};
 
 	ExecutorWithObject changeTextFieldHook = new ExecutorWithObject() {
 
 		@Override
-		public void execute(Object o) {
+		public void execute(final Object o) {
 			if (o instanceof String) {
-				((TextView) findViewById(R.id.success)).setText((String) o);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						((TextView) findViewById(R.id.success)).setText((String) o);
+					}
+				});
 			}
 		}
 	};
