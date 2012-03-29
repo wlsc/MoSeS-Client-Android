@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Handler;
 import android.util.Log;
 
 public class ApkMethods {
@@ -147,7 +148,7 @@ public class ApkMethods {
 	public static void getExternalApplications(
 			final ApkListRequestObserver observer) {
 
-		if (MosesService.getInstance() != null)
+		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK, new Executor() {
 
 				@Override
@@ -157,6 +158,7 @@ public class ApkMethods {
 							RequestLogin.getSessionID()).send();
 				}
 			});
+		}
 	}
 
 	/**

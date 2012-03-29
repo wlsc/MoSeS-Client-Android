@@ -18,6 +18,7 @@ import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ListActivity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -33,7 +34,7 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewAvailableApkActivity extends Activity implements ApkListRequestObserver {
+public class ViewAvailableApkActivity extends ListActivity implements ApkListRequestObserver {
 
 	private static final int REFRESH_THRESHHOLD = 6000;
 	private ListView listView;
@@ -172,7 +173,7 @@ public class ViewAvailableApkActivity extends Activity implements ApkListRequest
 	}
 	
 	private void populateList(List<ExternalApplication> applications) {
-		listView = (ListView) findViewById(R.id.availableApkListView);
+		listView = getListView();
 		String[] items = new String[applications.size()];
 		int counter = 0;
 		for (ExternalApplication app : applications) {

@@ -9,9 +9,11 @@ import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.abstraction.apks.InstalledExternalApplication;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import android.widget.Toast;
  * 
  * @author Simon L
  */
-public class ViewInstalledApplicationsActivity extends Activity {
+public class ViewInstalledApplicationsActivity extends ListActivity {
 
 	private ListView listView;
 	private List<InstalledExternalApplication> installedApps;
@@ -81,11 +83,11 @@ public class ViewInstalledApplicationsActivity extends Activity {
 	/**
 	 * Shows the given applications in the list
 	 * 
-	 * @param applications
+	 * @param applications 
 	 */
 	private void populateList(List<InstalledExternalApplication> applications) {
 
-		listView = (ListView) findViewById(R.id.installedAppListView);
+		listView = getListView();
 		String[] items = new String[applications.size()];
 		int counter = 0;
 		for (ExternalApplication app : applications) {

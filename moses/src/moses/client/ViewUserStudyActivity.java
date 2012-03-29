@@ -76,7 +76,6 @@ public class ViewUserStudyActivity extends Activity {
 				startActivity(intent);
 				finish();
 			} else {
-				Log.d("TEST", "4");
 				UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(
 					studyApkId);
 				showActivityForNotification(notification);
@@ -110,7 +109,6 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	private void requestApkInfo(final String id) {
-		Log.d("TEST", "info requested");
 		if (MosesService.getInstance() != null) {
 			Executor executor = new Executor() {
 

@@ -65,7 +65,7 @@ public class UserStudyNotification {
 	 * saves this user study as an one line string
 	 */
 	public String asOnelineString() {
-		return application.asOnelineString()+SEPARATOR+this.status.toString()+this.date.getTime();
+		return application.asOnelineString()+SEPARATOR+this.status.toString()+SEPARATOR+this.date.getTime();
 	}
 	
 	/**
@@ -77,6 +77,11 @@ public class UserStudyNotification {
 	public static UserStudyNotification fromOnelineString(String s) {
 		String[] split = s.split(UserStudyNotification.SEPARATOR);
 		return new UserStudyNotification(ExternalApplication.fromOnelineString(split[0]), Status.valueOf(split[1]), new Date(Long.parseLong(split[2])));
+	}
+	
+	@Override
+	public String toString() {
+		return asOnelineString();
 	}
 
 }

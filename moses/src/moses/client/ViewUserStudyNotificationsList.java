@@ -9,6 +9,7 @@ import moses.client.service.MosesService;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,13 +17,14 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Viewing and installing apks from the server
  * 
  * @author Simon L
  */
-public class ViewUserStudyNotificationsList extends Activity {
+public class ViewUserStudyNotificationsList extends ListActivity {
 
 	private static final int showStudyRequestcode = 5;
 	private ListView listView;
@@ -73,7 +75,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	}
 
 	/**
-	 * Inits the controls.
+	 * Inits the controls.  
 	 */
 	private void initControls() {
 		if(UserstudyNotificationManager.getInstance() == null) {
@@ -102,7 +104,7 @@ public class ViewUserStudyNotificationsList extends Activity {
 	}
 	
 	private void populateList(List<UserStudyNotification> applications) {
-		listView = (ListView) findViewById(R.id.userstudyListListView);
+		listView = getListView();
 		
 		TextView instructionsView = (TextView) findViewById(R.id.userstudyListHeaderInstructions);
 		if(instructionsView != null) {
