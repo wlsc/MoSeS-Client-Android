@@ -148,7 +148,6 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	@Override
 	public void apkListRequestFinished(List<ExternalApplication> applications) {
 		externalApps = applications;
-		Log.e("MoSeS", applications.get(applications.size()/2).toString());
 		populateList(applications);
 	}
 
