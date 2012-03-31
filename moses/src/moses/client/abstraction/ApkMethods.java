@@ -107,6 +107,7 @@ public class ApkMethods {
 		public void postExecution(String s) {
 			JSONObject j = null;
 			try {
+				Log.d("MOSES.APK", "APK-List response recived:"+s);
 				j = new JSONObject(s);
 				if (RequestGetListAPK.isListRetrived(j)) {
 
