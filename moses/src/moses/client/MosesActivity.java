@@ -1,7 +1,10 @@
 package moses.client;
 
+import java.util.Observable;
+
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
+import moses.client.abstraction.apks.InstalledStateMonitor;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.MosesService.LocalBinder;
@@ -165,6 +168,10 @@ public class MosesActivity extends TabActivity {
 					&& !waitingForResult) {
 				mService.startedFirstTime(MosesActivity.this);
 			}
+			
+			// only use installedStateMonitor when the service is running to avoid unsent messages
+			installedStateMonitor = InstalledStateMonitor.getDefault();
+			checkInstalledStatesOfApks();
 		}
 
 		@Override
@@ -185,6 +192,9 @@ public class MosesActivity extends TabActivity {
 
 			mService.setActivityContext(null);
 
+			//only use InstalledStateManager when the service is running to avoid unsent messages
+			installedStateMonitor = null;
+			
 			mBound = false;
 		}
 	};
@@ -192,6 +202,8 @@ public class MosesActivity extends TabActivity {
 	private static boolean waitingForResult = false;
 
 	private String onLoginCompleteShowUserStudy = null;
+	
+	public static InstalledStateMonitor installedStateMonitor = null;
 
 	/**
 	 * Connect to the server and save (changed) settings
@@ -493,6 +505,27 @@ public class MosesActivity extends TabActivity {
 	protected void onStop() {
 		super.onStop();
 		disconnectService();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		checkInstalledStatesOfApks();
+	}
+
+	/**
+	 * If the MoSeS Service is running, this checks the consistency of installed applications and installed apps local database.
+	 * 
+	 * @return null if the MosesService was not running or any other circumstance prevented successful checking; returns true for a valid database and false for a database that was invalid but has been made valid (refresh of apk list necessary).
+	 */
+	public static Boolean checkInstalledStatesOfApks() {
+		if(MosesService.getInstance() != null && installedStateMonitor != null) {
+			Log.d("MoSeS.APK", "synchronizing installed applications with internal installed app database");
+			return installedStateMonitor.checkForValidState(MosesService.getInstance());
+		} else {
+			Log.d("MoSeS.APK", "Wanted to check stae of installed apks, but service was not started yet or some other failure");
+		}
+		return null;
 	}
 
 	/**

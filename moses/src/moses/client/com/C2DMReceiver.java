@@ -79,7 +79,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 		} else if (intent.getStringExtra("unregistered") != null) {
 			// unregistration done
 		} else if (registrationId != null) {
-			Toast.makeText(MosesService.getInstance().getApplicationContext(), "C2dm!", Toast.LENGTH_LONG).show();
+			Log.d("MoSeS.C2DM", "C2DM-ID arrived");
 			notifyAboutC2DMId(registrationId, context);
 		}
 	}

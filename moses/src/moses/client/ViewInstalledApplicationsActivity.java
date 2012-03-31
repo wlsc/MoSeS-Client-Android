@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -36,7 +38,26 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		refreshInstalledApplications();
 	}
 
+	//variable for limiting retries for requesting a check of calidity of the installed apks database
+	private int retriesCheckValidState = 0;
 	private void refreshInstalledApplications() {
+		if(MosesActivity.checkInstalledStatesOfApks() == null) {
+			if(retriesCheckValidState < 2) {
+				Handler delayedRetryHandler = new Handler();
+				delayedRetryHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						refreshInstalledApplications();
+					}
+				}, 3000);
+				retriesCheckValidState++;
+			} else {
+				//TODO:show error when all retries didn't work?
+				//TODO:BIG also do this for viewAvailableApplicationsList? 
+			}
+		} else {
+			retriesCheckValidState = 0;
+		}
 		installedApps = new LinkedList<InstalledExternalApplication>(
 				InstalledExternalApplicationsManager.getInstance().getApps());
 		populateList(installedApps);
@@ -73,10 +94,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		try {
 			app.startApplication(this);
 		} catch (NameNotFoundException e) {
-			Toast.makeText(
-					this.getApplicationContext(),
-					"app was not found - maybe because it was uninstalled since last database refresh",
-					Toast.LENGTH_LONG).show();
+			Log.e("MoSeS.APK", "Appstart: app was not found - maybe because it was uninstalled since last database refresh");
 		}
 	}
 

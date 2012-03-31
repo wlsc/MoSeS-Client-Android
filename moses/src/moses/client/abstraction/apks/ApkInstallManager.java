@@ -106,7 +106,6 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 			Log.e("MoSeS.InstallApk", errorMsg);
 		}
 
-		Toast.makeText(mosesService, errorMsg, Toast.LENGTH_LONG).show();
 		setState(State.ERROR);
 	}
 

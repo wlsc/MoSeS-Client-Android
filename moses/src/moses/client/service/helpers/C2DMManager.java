@@ -70,18 +70,12 @@ public class C2DMManager {
 						try {
 							JSONObject j = new JSONObject(s);
 							if (RequestC2DM.C2DMRequestAccepted(j)) {
-								Toast.makeText(context, "C2DM send request returned POSITIVE", Toast.LENGTH_LONG)
-									.show();
 								Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
 							} else {
-								Toast.makeText(context, "C2DM send request returned NEGATIVE", Toast.LENGTH_LONG)
-									.show();
 								Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
 							}
 
 						} catch (JSONException e) {
-							Toast.makeText(context, "C2DMToMosesServer returned malformed message", Toast.LENGTH_LONG)
-								.show();
 							Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
 						}
 					}
@@ -90,7 +84,7 @@ public class C2DMManager {
 					public void handleException(Exception e) {
 						// TODO: make very sure that the id is really sent to
 						// the server!
-						Toast.makeText(context, "sendC2DM failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+						Log.e("MoSeS.C2DM",  "sendC2DM failed: " + e.getMessage(), e);
 					}
 				}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
 

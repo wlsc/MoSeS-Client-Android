@@ -93,7 +93,6 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 			Log.e("MoSeS.Download", errorMsg);
 		}
 
-		Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show();
 		setState(State.ERROR);
 	}
 
@@ -116,6 +115,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 			URL url = new URL(urlString);
 			requestApkDownload(url);
 		} catch (MalformedURLException e) {
+			Log.e("MoSeS.APK", "Server sent malformed url; could not download application: " + urlString);
 			Toast.makeText(this.context, "Server sent malformed url; could not download application: " + urlString,
 				Toast.LENGTH_LONG).show();
 		}

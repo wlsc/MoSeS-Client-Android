@@ -135,25 +135,17 @@ public class ViewUserStudyActivity extends Activity {
 								} else {
 									Log.e("MoSeS.UserStudy",
 										"user study info request: Server returned negative" + j.toString());
-									Toast.makeText(getApplicationContext(),
-										"user study info request: Server returned negative" + j.toString(),
-										Toast.LENGTH_LONG).show();
 									cancelActivity();
 								}
 							} catch (JSONException e) {
 								Log.e("MoSeS.UserStudy", "requesting study information: json exception" + e.getMessage());
-								Toast.makeText(getApplicationContext(),
-									"requesting study information: json exception" + e.getMessage(), Toast.LENGTH_LONG)
-									.show();
 								cancelActivity();
 							}
 						}
 
 						@Override
 						public void handleException(Exception e) {
-							Log.e("MoSeS.UserStudy", "couldn't load user study information" + e.getMessage());
-							Toast.makeText(getApplicationContext(),
-								"couldn't load user study information" + e.getMessage(), Toast.LENGTH_LONG).show();
+							Log.e("MoSeS.UserStudy", "couldn't load user study information" + e.getMessage(), e);
 						}
 					}, id, MosesService.getInstance().getSessionID());
 
