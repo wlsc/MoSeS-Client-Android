@@ -453,7 +453,13 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * 
 	 */
 	public void syncDeviceInformation(boolean force) {
-		new HardwareAbstraction(this).syncDeviceInformation(force);
+		executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+
+			@Override
+			public void execute() {
+				new HardwareAbstraction(MosesService.this).syncDeviceInformation(false);
+			}
+		});
 	}
 
 	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
