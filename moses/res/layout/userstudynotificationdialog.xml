@@ -8,7 +8,8 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
         android:layout_marginTop="6sp"
         android:text="A user study is a sensing app which is released for only a limited number of devices"
         android:textAppearance="?android:attr/textAppearanceSmall" />
@@ -29,7 +30,7 @@
         android:id="@+id/userstudydialog_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
+        android:layout_marginLeft="10sp"
         android:layout_marginTop="5sp"
         android:text="Name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -38,7 +39,8 @@
         android:id="@+id/userstudydialog_descr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
         android:text="Description lorem ipsum dolor sit amet, consectetur, ire illam." />
 
     <ImageView
@@ -57,7 +59,8 @@
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
         android:layout_marginTop="3sp"
         android:text="The author of this app would be happy if you would participate in this app&apos;s user study. If you don&apos;t want to accept immediately, you can make this descision [Later]. Consider that user study offers are only valid for 24 hours." />
 

@@ -2,6 +2,7 @@ package moses.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.Observer;
 
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
@@ -19,11 +21,15 @@ import moses.client.service.MosesService;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -36,10 +42,21 @@ import android.widget.Toast;
  */
 public class ViewAvailableApkActivity extends ListActivity implements ApkListRequestObserver {
 
-	private static final int REFRESH_THRESHHOLD = 6000;
+	private static enum LayoutState {
+		NORMAL_LIST, SENSORS_HINT, EMPTYLIST_HINT, PENDINGREQUEST, NOCONNECTIVITY;
+	}
+	
+	private static final String PREFKEY_SHOW_SET_SENSORS_HINT = "showInitialSetSensorsHint";
+	private static final int REFRESH_THRESHHOLD = 800;
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
 	private Long lastListRefreshTime = null;
+	LayoutState lastSetLayout = null; 
+
+	public void setLastSetLayout(LayoutState lastSetLayout) {
+		this.lastSetLayout = lastSetLayout;
+		Log.d("MoSeS.UI", "Layouted showAvailableApkList to state " + lastSetLayout);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -88,7 +105,225 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	 * Inits the controls.
 	 */
 	private void initControls() {
+		if(showInitialSensorHint()) {
+			initControlsShowSensorsHint();
+		} else {
+			if(appsLocallyInCacheStillAvailable()) {
+				initControlsNormalList(externalApps);
+			} else {
+				if(MosesService.isOnline(getApplicationContext())) {
+					initControlsPendingListRequest();
+				} else {
+					initControlsNoConnectivity();
+				}
+			}
+		}
 		requestExternalApplications();
+	}
+
+	private boolean appsLocallyInCacheStillAvailable() {
+		return externalApps != null && externalApps.size() > 0;
+	}
+	
+	private void initControlsOnRequestApks() {
+		if(showInitialSensorHint()) {
+			initControlsShowSensorsHint();
+		} else {
+			if(!MosesService.isOnline(getApplicationContext())) {
+				if(! appsLocallyInCacheStillAvailable()) {
+					initControlsNoConnectivity();
+				} else {
+					initControlsNormalList(externalApps);
+				}
+			} else {
+				initControlsPendingListRequest();
+			}
+		}
+	}
+
+	private void initControlsNoConnectivity() {
+		if(lastSetLayout != LayoutState.NOCONNECTIVITY) {
+			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
+			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
+			apkListCtrls.setVisibility(LinearLayout.GONE);
+			
+			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
+			mainHint.setText(R.string.apklist_hint_noconnectivity);
+			
+			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
+			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
+			actionBtn1.setText("Refresh");
+			actionBtn2.setVisibility(Button.GONE);
+			
+			refreshResfreshBtnTimeout(actionBtn1, "Retry", LayoutState.NOCONNECTIVITY);
+			
+			actionBtn1.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					refreshResfreshBtnTimeout(actionBtn1, "Retry", LayoutState.NOCONNECTIVITY);
+					requestExternalApplications();
+				}
+			});
+			setLastSetLayout(LayoutState.NOCONNECTIVITY);
+		}
+	}
+
+	private void initControlsPendingListRequest() {
+		if(lastSetLayout != LayoutState.PENDINGREQUEST) {
+			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
+			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
+			apkListCtrls.setVisibility(LinearLayout.GONE);
+			
+			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
+			mainHint.setText(R.string.apklist_hint_pendingrequest);
+			
+			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
+			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
+			actionBtn1.setText("Refresh");
+			actionBtn2.setVisibility(Button.GONE);
+			
+			refreshResfreshBtnTimeout(actionBtn1, "Refresh", LayoutState.PENDINGREQUEST);
+			
+			actionBtn1.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					refreshResfreshBtnTimeout(actionBtn1, "Refresh", LayoutState.PENDINGREQUEST);
+					requestExternalApplications();
+				}
+			});
+			setLastSetLayout(LayoutState.PENDINGREQUEST);
+		}
+	}
+	
+	private void refreshResfreshBtnTimeout(final Button refreshButton, final String minimalString, final LayoutState parentLayout) {
+		refreshButton.setEnabled(false);
+		refreshButton.setText("Refresh");
+		Handler enableRefreshHandler = new Handler();
+		enableRefreshHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if(!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString +".");
+				}
+			}
+		}, 800);
+		enableRefreshHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if(!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString +"..");
+				}
+			}
+		}, 1600);
+		enableRefreshHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if(!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString +"...");
+				}
+			}
+		}, 2400);
+		enableRefreshHandler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if(!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setEnabled(true);
+				}
+			}
+		}, 3000);
+	}
+
+	private void initLayoutFromArrivedList(
+			List<ExternalApplication> applications) {
+		if(showInitialSensorHint()) {
+			// even if there is an arrived list, do not show it, but show the sensors hint
+			initControlsShowSensorsHint();
+		} else {
+			if(applications.size() > 0) {
+				initControlsNormalList(applications);
+			} else {
+				initControlsEmptyArrivedList(false);
+			}
+		}
+		populateList(applications);
+	}
+
+	private void initControlsEmptyArrivedList(boolean mayShowSensorsList) {
+		if(mayShowSensorsList) {
+			initControlsShowSensorsHint();
+		} else {
+			if(lastSetLayout != LayoutState.EMPTYLIST_HINT) {
+				LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
+				emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+				LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
+				apkListCtrls.setVisibility(LinearLayout.GONE);
+				
+				TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
+				mainHint.setText(R.string.availableApkList_emptyHint);
+				
+				Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
+				Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
+				actionBtn1.setVisibility(Button.GONE);
+				actionBtn2.setVisibility(Button.GONE);
+				setLastSetLayout(LayoutState.EMPTYLIST_HINT);
+			}
+		}
+	}
+
+	private void initControlsNormalList(List<ExternalApplication> applications) {
+		LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
+		emptylistCtrls.setVisibility(LinearLayout.GONE);
+		LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
+		apkListCtrls.setVisibility(LinearLayout.VISIBLE);
+		
+		setLastSetLayout(LayoutState.NORMAL_LIST);
+		populateList(applications);
+	}
+
+	
+	private void initControlsShowSensorsHint() {
+		if(lastSetLayout != LayoutState.SENSORS_HINT) {
+			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
+			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
+			apkListCtrls.setVisibility(LinearLayout.GONE);
+			
+			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
+			mainHint.setText(R.string.apklist_hint_sensors_main);
+			
+			Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
+			Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
+			actionBtn1.setText("Yes");
+			actionBtn2.setText("No, Thanks");
+			actionBtn2.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this)
+					.edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
+					initControls();
+				}
+			});
+			actionBtn1.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this)
+					.edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
+					invokeSensorDialog();
+				}
+			});
+			setLastSetLayout(LayoutState.SENSORS_HINT);
+		}
+	}
+
+	protected void invokeSensorDialog() {
+		// TODO !implement
+	}
+
+	private boolean showInitialSensorHint() {
+		boolean doShow = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true);
+		return doShow;
 	}
 
 	private void handleInstallApp(ExternalApplication app) {
@@ -130,29 +365,40 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		installer.start();
 	}
 
+	int requestListRetries = 0;
+	private boolean isPaused;
 	private void requestExternalApplications() {
-		lastListRefreshTime = System.currentTimeMillis();
-		if(MosesService.getInstance() != null) {
-			ApkMethods.getExternalApplications(this);
+		if(MosesService.getInstance() == null) {
+			if(requestListRetries < 5) {
+				Handler delayedRetryHandler = new Handler();
+				delayedRetryHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						requestExternalApplications();
+					}
+				}, 1000);
+				requestListRetries++;
+			} else {
+				//TODO:show error when all retries didn't work?
+			}
 		} else {
-			Handler handler = new Handler();
-			handler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					ApkMethods.getExternalApplications(ViewAvailableApkActivity.this);
-				}
-			}, 500);
+			requestListRetries = 0;
+			lastListRefreshTime = System.currentTimeMillis();
+			ApkMethods.getExternalApplications(ViewAvailableApkActivity.this);
+			initControlsOnRequestApks();
 		}
 	}
 
 	@Override
 	public void apkListRequestFinished(List<ExternalApplication> applications) {
 		externalApps = applications;
-		populateList(applications);
+		initLayoutFromArrivedList(applications);
 	}
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
+		//TODO: receive failures that point out no connection, too.
+		//TODO: show user some hint about this
 		Log.w("MoSeS.APKMETHODS", "invalid response for apk list request: " + e.getMessage());
 	}
 
@@ -164,10 +410,21 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		this.isPaused = true;
+	}
+	
+	@Override
 	protected void onResume() {
 		super.onResume();
-		if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
-			requestExternalApplications();
+		this.isPaused = false;
+		if(lastSetLayout == LayoutState.SENSORS_HINT) {
+			initControls();
+		} else {
+			if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
+				requestExternalApplications();
+			}
 		}
 	}
 	
