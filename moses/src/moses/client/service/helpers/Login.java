@@ -3,6 +3,7 @@ package moses.client.service.helpers;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import moses.client.R;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
@@ -37,12 +38,17 @@ public class Login {
 		@Override
 		public void handleException(Exception e) {
 			executeAll(postExecuteFailure);
-			if (e instanceof UnknownHostException || e instanceof JSONException) {
-				Log.d("MoSeS.LOGIN",
-						"No internet connection present (or DNS problems.)");
-			} else
-				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString()
+			if (e instanceof UnknownHostException) {
+				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.no_internet_connection));
+				MosesService.getInstance().executeChangeTextFieldHook(MosesService.getInstance().getString(R.string.no_internet_connection));
+			} else if(e instanceof JSONException) {
+				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.unknown_response_from_server));
+				MosesService.getInstance().executeChangeTextFieldHook(MosesService.getInstance().getString(R.string.unknown_response_from_server));
+			} else {
+				Log.d("MoSeS.LOGIN", "Unknown failure: " + e.getClass().toString()
 						+ " " + e.getMessage());
+				MosesService.getInstance().executeChangeTextFieldHook("Unknown failure during login.");
+			}
 		}
 
 		/*

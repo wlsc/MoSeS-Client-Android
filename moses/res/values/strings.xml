@@ -79,4 +79,6 @@
     <string name="check_internet">Not able to connect to MoSeS. Check your Internet connection.</string>
     <string name="wrong_credentials">Username and/or password are wrong.</string>
     <string name="checking_credentials">Checking credentials...</string>
+    <string name="no_internet_connection">No internet connection.</string>
+    <string name="unknown_response_from_server">Unknown response from server. Maybe you forgot to login to your HotSpot?</string>
 </resources>

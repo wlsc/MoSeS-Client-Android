@@ -79,6 +79,8 @@ public class MosesActivity extends TabActivity {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
 			((TextView) findViewById(R.id.success))
 					.setText("Error while logging in.");
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
+			.setVisibility(View.GONE);
 		}
 	};
 

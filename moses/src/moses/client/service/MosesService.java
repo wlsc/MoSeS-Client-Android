@@ -104,6 +104,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		return thisInstance;
 	}
 
+	public void executeChangeTextFieldHook(String s) {
+		for(ExecutorWithObject e : mset.changeTextFieldHook) {
+			e.execute(s);
+		}
+	}
+	
 	/**
 	 * Execute something as a logged in user. If the service is currently not
 	 * logged in a login request will be issued first.
@@ -178,7 +184,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	public boolean isOnline() {
 		return isOnline(this);
 	}
-	
+
 	/**
 	 * Checks if the device is connected to the Internet.
 	 * 
@@ -234,7 +240,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (!isOnline()) {
 			Log.d("MoSeS.SERVICE", "Tried logging in but no internet connection was present.");
 			for (ExecutorWithObject e : mset.changeTextFieldHook) {
-				e.execute("No internet connection.");
+				e.execute(getString(R.string.no_internet_connection));
 			}
 			loggedOut();
 			return;
@@ -283,11 +289,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		super.onCreate();
 		thisInstance = this;
 
-		for(EHookTypes h : EHookTypes.values()) {
+		for (EHookTypes h : EHookTypes.values()) {
 			mset.hooks.put(h, new ConcurrentLinkedQueue<ExecutorWithType>());
 		}
 
-		registerHook(EHookTypes.POSTLOGINFAILED,EMessageTypes.SPAMMABLE,new Executor() {
+		registerHook(EHookTypes.POSTLOGINFAILED, EMessageTypes.SPAMMABLE, new Executor() {
 			@Override
 			public void execute() {
 				mset.loggingIn = false;
@@ -305,7 +311,14 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (PreferenceManager.getDefaultSharedPreferences(this).getString("c2dm_pref", "").equals(""))
 			C2DMManager.requestC2DMId(MosesService.this);
 
+		if (PreferenceManager.getDefaultSharedPreferences(this).contains("url_pref")) {
+			mset.url = PreferenceManager.getDefaultSharedPreferences(this).getString("url_pref", "");
+		} else {
+			PreferenceManager.getDefaultSharedPreferences(this).edit().putString("url_pref", mset.url);
+		}
+
 		NetworkJSON.url = mset.url;
+
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
 		if (mset.filter == null)
 			new HardwareAbstraction(MosesService.this).getFilter();
@@ -347,7 +360,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				mset.password = sharedPreferences.getString("password_pref", "");
 			} else if (key.equals("deviceid_pref")) {
 				Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
-				if(sharedPreferences.getBoolean("deviceidsetsuccessfully", false)) {
+				if (sharedPreferences.getBoolean("deviceidsetsuccessfully", false)) {
 					new HardwareAbstraction(this).changeDeviceID(false);
 				} else {
 					syncDeviceInformation(false);
@@ -365,7 +378,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (t != EMessageTypes.SPAMMABLE) {
 			for (ExecutorWithType et : hook) {
 				if (t.equals(et.t)) {
-					Log.d("MoSeS.SERVICE", "Removed a duplicated message of type " + t.toString() + " from hook " + h.toString());
+					Log.d("MoSeS.SERVICE",
+							"Removed a duplicated message of type " + t.toString() + " from hook " + h.toString());
 					unregisterHook(h, et.e);
 				}
 			}
@@ -386,7 +400,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 
 	/**
 	 * This hook is used for status updates that shall be shown to the user.
-	 *
+	 * 
 	 * @param e
 	 *            The task to be executed.
 	 */
@@ -454,13 +468,14 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * 
 	 */
 	public void syncDeviceInformation(boolean force) {
-		executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+		executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS,
+				new Executor() {
 
-			@Override
-			public void execute() {
-				new HardwareAbstraction(MosesService.this).syncDeviceInformation(false);
-			}
-		});
+					@Override
+					public void execute() {
+						new HardwareAbstraction(MosesService.this).syncDeviceInformation(false);
+					}
+				});
 	}
 
 	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
@@ -486,7 +501,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 
 			@Override
 			public void execute() {
-				new HardwareAbstraction(MosesService.this).setFilter(PreferenceManager.getDefaultSharedPreferences(MosesService.this).getString("sensor_data", "[]"));
+				new HardwareAbstraction(MosesService.this).setFilter(PreferenceManager.getDefaultSharedPreferences(
+						MosesService.this).getString("sensor_data", "[]"));
 			}
 		});
 	}
