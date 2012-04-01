@@ -47,7 +47,13 @@
             android:text="@string/close" />
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+id/startapp"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:text="Start" />
+
+        <Button
+            android:id="@+id/update"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:text="@string/update" />

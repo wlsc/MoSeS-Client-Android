@@ -91,11 +91,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 	}
 
 	private void handleStartApp(InstalledExternalApplication app) {
-		try {
-			app.startApplication(this);
-		} catch (NameNotFoundException e) {
-			Log.e("MoSeS.APK", "Appstart: app was not found - maybe because it was uninstalled since last database refresh");
-		}
+		app.startApplication(this);
 	}
 
 	/**

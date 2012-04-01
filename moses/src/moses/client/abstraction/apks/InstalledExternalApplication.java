@@ -6,6 +6,10 @@ import moses.client.abstraction.ESensor;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.TextView;
 
@@ -104,20 +108,47 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *             should only occur if the application was uninstalled after
 	 *             the creation of this InstalledExternalApplication instance.
 	 */
-	public void startApplication(Activity baseActivity) throws NameNotFoundException {
-		Dialog d = new Dialog(baseActivity);
+	public void startApplication(final Activity baseActivity) {
+		final Dialog d = new Dialog(baseActivity);
 		d.setContentView(R.layout.app_info_dialog);
 		TextView t = (TextView)d.findViewById(R.id.appname);
 		t.setText(getName());
 		t = (TextView)d.findViewById(R.id.description);
 		t.setText(getDescription());
 		Gallery g = (Gallery)d.findViewById(R.id.sensors);
-		Integer[] imageIds = new Integer[];
-		for(int i = 0; i < getSensors().length; ++i) {
-			imageIds[i] = getSensors()[i];
-		}
-		g.setAdapter(new ImageAdapter(this, imageIds));
-		ApkMethods.startApplication(packageName, baseActivity);
+		Integer[] imageIds = (Integer[]) getSensors().toArray();
+		g.setAdapter(new ImageAdapter(baseActivity, imageIds));
+		Button b = (Button)d.findViewById(R.id.startapp);
+		b.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				try {
+					ApkMethods.startApplication(packageName, baseActivity);
+				} catch (NameNotFoundException e) {
+					Log.e("MoSeS.APK", "Appstart: app was not found - maybe because it was uninstalled since last database refresh");
+				}
+			}
+		});
+		
+		b = (Button)d.findViewById(R.id.update);
+		b.setVisibility(updateAvailable ? View.VISIBLE : View.GONE);
+		b.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO UPDATE METHOD
+			}
+		});
+		
+		b = (Button)d.findViewById(R.id.close);
+		b.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				d.dismiss();
+			}
+		});
+		d.show();
 	}
 
 	/**
