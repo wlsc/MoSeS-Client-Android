@@ -17,6 +17,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	private static final String SEPARATOR = "#IEA#";
 	private String packageName;
 	private boolean wasInstalledAsUserStudy;
+	private boolean updateAvailable;
 	private double installedVersion;
 
 	/**
@@ -176,6 +177,14 @@ public class InstalledExternalApplication extends ExternalApplication {
 		String[] split = s.split(SEPARATOR);
 		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]),
 			Boolean.parseBoolean(split[2]), Double.parseDouble(split[3]));
+	}
+
+	public boolean isUpdateAvailable() {
+		return updateAvailable;
+	}
+
+	public void setUpdateAvailable(boolean updateAvailable) {
+		this.updateAvailable = updateAvailable;
 	}
 
 }
