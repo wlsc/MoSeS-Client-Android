@@ -34,8 +34,8 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = new ImageView(mContext);
         imageView.setImageResource(mImageIds[position]);
-        imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+        //imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
+        //imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
         return imageView;
     }
