@@ -22,7 +22,12 @@ public class MosesAskForDeviceIDActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.askfordeviceid);
-
+		TextView t = (TextView) findViewById(R.id.askfordeviceid_deviceid_text);
+		t.setText(PreferenceManager.getDefaultSharedPreferences(this).getString("deviceid_pref", ""));
+		if(getIntent().getBooleanExtra("showFailedDialog", false)) {
+			((TextView) findViewById(R.id.changedeviceidtext)).setText(R.string.change_dev_id_text);
+		}
+			
 		((ImageButton) findViewById(R.id.askfordeviceid_forward_btn)).setOnClickListener(new OnClickListener() {
 
 			@Override

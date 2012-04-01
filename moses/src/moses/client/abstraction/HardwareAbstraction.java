@@ -221,12 +221,12 @@ public class HardwareAbstraction {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 			MosesService.getInstance().noOnSharedPreferenceChanged(true);
 			PreferenceManager
-			.getDefaultSharedPreferences(appContext)
-			.edit()
-			.putString(
-					"deviceid_pref",
-					PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-							.getString("lastdeviceid", "")).commit();
+					.getDefaultSharedPreferences(appContext)
+					.edit()
+					.putString(
+							"deviceid_pref",
+							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+									"lastdeviceid", "")).commit();
 			MosesService.getInstance().noOnSharedPreferenceChanged(false);
 		}
 
@@ -284,12 +284,12 @@ public class HardwareAbstraction {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 			MosesService.getInstance().noOnSharedPreferenceChanged(true);
 			PreferenceManager
-			.getDefaultSharedPreferences(appContext)
-			.edit()
-			.putString(
-					"deviceid_pref",
-					PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-							.getString("lastdeviceid", "")).commit();
+					.getDefaultSharedPreferences(appContext)
+					.edit()
+					.putString(
+							"deviceid_pref",
+							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+									"lastdeviceid", "")).commit();
 			MosesService.getInstance().noOnSharedPreferenceChanged(false);
 		}
 
@@ -485,16 +485,22 @@ public class HardwareAbstraction {
 
 	public void changeDeviceID(final boolean force) {
 		if (MosesService.getInstance() != null) {
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-					EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+			if (!PreferenceManager
+					.getDefaultSharedPreferences(MosesService.getInstance())
+					.getString("deviceid_pref", "")
+					.equals(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+							"lastdeviceid", ""))) {
+				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+						EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
 
-						@Override
-						public void execute() {
-							new RequestChangeDeviceIDParameters(new ReqClassUpdateHWParams(), force, PreferenceManager
-									.getDefaultSharedPreferences(MosesService.getInstance()).getString("deviceid_pref",
-											""), RequestLogin.getSessionID()).send();
-						}
-					});
+							@Override
+							public void execute() {
+								new RequestChangeDeviceIDParameters(new ReqClassUpdateHWParams(), force,
+										PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+												.getString("deviceid_pref", ""), RequestLogin.getSessionID()).send();
+							}
+						});
+			}
 		}
 	}
 

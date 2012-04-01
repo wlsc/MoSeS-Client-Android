@@ -74,4 +74,5 @@
     <string name="apklist_hint_sensors_main">Your current settings do not enable any sensors of your device for usage with MoSeS apps. Most of the apps in the MoSeS system require sensors. Would you like to change your sensor settings now?</string>
     <string name="apklist_hint_pendingrequest">Waiting for server...</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the app list anyway:</string>
+    <string name="change_dev_id_text">Changing the device id failed, please select another device id or proceed if you don\'t want to change the id anymore.</string>
 </resources>
