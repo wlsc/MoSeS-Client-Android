@@ -73,7 +73,6 @@ public class NetworkJSON
 	public static String url;
 	
 	public static boolean debug = false;
-	public static boolean threadProblem = false;
 	
 	public static FakeResponseGenerator response = null;
 
@@ -92,8 +91,6 @@ public class NetworkJSON
 		String ret = "";
 		if(debug) {
 			signal = new CountDownLatch(1);
-			if(threadProblem)
-				e.postExecution(response.generateAnswer(params[0].request));
 			return response.generateAnswer(params[0].request);
 		}
 		try {

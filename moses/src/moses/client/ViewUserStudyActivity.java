@@ -123,6 +123,7 @@ public class ViewUserStudyActivity extends Activity {
 						public void postExecution(String s) {
 							try {
 								Log.d("TEST", "STRINGRESPONSE: " + s);
+								Log.d("MoSeS.USERSTUDY", "getApkInfo Answer received: " + s);
 								JSONObject j = new JSONObject(s);
 								if (RequestGetApkInfo.isInfoRetrived(j)) {
 									String name = j.getString("NAME");

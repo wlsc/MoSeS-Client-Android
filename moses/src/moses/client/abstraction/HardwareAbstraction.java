@@ -232,6 +232,7 @@ public class HardwareAbstraction {
 		public void postExecution(String s) {
 			JSONObject j = null;
 			try {
+				Log.d("MoSeS.HARDWARE", "SetHWParams request response: " + s);
 				j = new JSONObject(s);
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
