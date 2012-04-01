@@ -10,10 +10,6 @@
         <item name="android:colorBackground">@color/moses_background_orange2</item>
         <item name="android:colorForeground">@color/moses_foreground_orange</item>
         <item name="android:textColorPrimary">@color/moses_foreground_orange</item>
-        <item name="android:tabWidgetStyle">@style/MoSeSThemeTabs</item>
-    </style>
-
-    <style name="MoSeSThemeTabs" parent="android:Widget.TabWidget">
     </style>
 
 </resources>

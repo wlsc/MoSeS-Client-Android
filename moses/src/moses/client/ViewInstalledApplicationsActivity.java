@@ -38,7 +38,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		refreshInstalledApplications();
 	}
 
-	//variable for limiting retries for requesting a check of calidity of the installed apks database
+	//variable for limiting retries for requesting a check of validity of the installed apks database
 	private int retriesCheckValidState = 0;
 	private void refreshInstalledApplications() {
 		if(MosesActivity.checkInstalledStatesOfApks() == null) {

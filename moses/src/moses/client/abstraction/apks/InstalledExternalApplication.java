@@ -1,8 +1,13 @@
 package moses.client.abstraction.apks;
 
+import moses.client.R;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.ESensor;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.widget.Gallery;
+import android.widget.TextView;
 
 /**
  * References an installed application (additional to ExternalApplication, the
@@ -100,6 +105,18 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *             the creation of this InstalledExternalApplication instance.
 	 */
 	public void startApplication(Activity baseActivity) throws NameNotFoundException {
+		Dialog d = new Dialog(baseActivity);
+		d.setContentView(R.layout.app_info_dialog);
+		TextView t = (TextView)d.findViewById(R.id.appname);
+		t.setText(getName());
+		t = (TextView)d.findViewById(R.id.description);
+		t.setText(getDescription());
+		Gallery g = (Gallery)d.findViewById(R.id.sensors);
+		Integer[] imageIds = new Integer[];
+		for(int i = 0; i < getSensors().length; ++i) {
+			imageIds[i] = getSensors()[i];
+		}
+		g.setAdapter(new ImageAdapter(this, imageIds));
 		ApkMethods.startApplication(packageName, baseActivity);
 	}
 
