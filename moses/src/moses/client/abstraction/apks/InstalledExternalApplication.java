@@ -119,7 +119,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 		t = (TextView)d.findViewById(R.id.description);
 		t.setText(getDescription());
 		Gallery g = (Gallery)d.findViewById(R.id.sensors);
-		Integer[] imageIds = (Integer[]) getSensors().toArray();
+		Integer[] imageIds = new Integer[getSensors().size()];
+		for(int i = 0; i < getSensors().size(); ++i) {
+			imageIds[i] = getSensors().get(i);
+		}
 		g.setAdapter(new ImageAdapter(baseActivity, imageIds));
 		Button b = (Button)d.findViewById(R.id.startapp);
 		b.setOnClickListener(new OnClickListener() {
