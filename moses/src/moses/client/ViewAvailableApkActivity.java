@@ -20,6 +20,7 @@ import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -27,6 +28,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -330,7 +332,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	protected void invokeSensorDialog() {
-		// TODO !implement
+		Intent startPreference = new Intent(getApplicationContext(), MosesPreferences.class);
+		startPreference.putExtra("startSensors", true);
+		startActivity(startPreference);
 	}
 
 	private boolean showInitialSensorHint() {

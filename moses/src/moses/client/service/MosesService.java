@@ -115,7 +115,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (isLoggedIn() && isOnline())
 			e.execute();
 		else {
-			registerHook(h, t, e);
+			registerOneTimeHook(h, t, e);
 			login();
 		}
 	}
@@ -346,7 +346,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				mset.password = sharedPreferences.getString("password_pref", "");
 			} else if (key.equals("deviceid_pref")) {
 				Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
-				syncDeviceInformation(false);
+				if(sharedPreferences.getBoolean("deviceidsetsuccessfully", false)) {
+					new HardwareAbstraction(this).changeDeviceID(false);
+				} else {
+					syncDeviceInformation(false);
+				}
 			}
 		}
 	}
@@ -430,6 +434,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Intent mainDialog = new Intent(c, MosesAskForDeviceIDActivity.class);
+				mainDialog.putExtra("firststart", true);
 				c.startActivity(mainDialog);
 				dialog.dismiss();
 			}
