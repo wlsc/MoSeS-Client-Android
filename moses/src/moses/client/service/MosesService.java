@@ -115,7 +115,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (isLoggedIn() && isOnline())
 			e.execute();
 		else {
-			registerHook(h, t, e);
+			registerOneTimeHook(h, t, e);
 			login();
 		}
 	}
