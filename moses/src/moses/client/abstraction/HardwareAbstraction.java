@@ -28,11 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -132,11 +134,22 @@ public class HardwareAbstraction {
 		}
 	}
 
+	private ProgressDialog gethwprogressdialog = null;
+	private Handler handler = new Handler();
+
 	private class ReqClassGetHWParams implements ReqTaskExecutor {
 
 		@Override
 		public void handleException(Exception e) {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
+			gethwprogressdialog.setMessage("Error while retrieving Hardware Informations.");
+			handler.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					gethwprogressdialog.dismiss();
+				}
+			}, 2000);
 		}
 
 		@Override
@@ -166,6 +179,7 @@ public class HardwareAbstraction {
 							dialog.dismiss();
 						}
 					});
+					gethwprogressdialog.dismiss();
 					ad.show();
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT retrived successfully from server! :(");
@@ -460,6 +474,10 @@ public class HardwareAbstraction {
 
 						@Override
 						public void execute() {
+							gethwprogressdialog = new ProgressDialog(appContext);
+							gethwprogressdialog.setTitle("Hardware Informations");
+							gethwprogressdialog.setMessage("Retrieving...");
+							gethwprogressdialog.show();
 							new RequestGetHardwareParameters(new ReqClassGetHWParams(), RequestLogin.getSessionID(),
 									extractDeviceId()).send();
 						}
