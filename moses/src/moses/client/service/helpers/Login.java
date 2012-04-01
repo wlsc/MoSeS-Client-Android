@@ -175,6 +175,7 @@ public class Login {
 			executeAll(postExecuteSuccessPriority);
 			Log.d("MoSeS.LOGIN", "Post login success: ");
 			executeAll(postExecuteSuccess);
+			MosesService.getInstance().loggedIn(MosesService.getInstance().getSessionID());
 		}
 	}
 }

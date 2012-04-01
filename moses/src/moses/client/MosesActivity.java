@@ -270,7 +270,9 @@ public class MosesActivity extends TabActivity {
 				e.putString("password_pref", password);
 				e.commit();
 				waitingForResult = false;
-				mService.login();
+				if(MosesService.getInstance() != null) {
+					MosesService.getInstance().login();
+				}
 				if (onLoginCompleteShowUserStudy != null) {
 					// if a user study is to be displayed
 					UserstudyNotificationManager.displayUserStudyContent(
