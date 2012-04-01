@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-			  xmlns:moses="http://schemas.android.com/apk/res/moses.client">
-    <PreferenceCategory android:title="@string/device_prefs" >
+			  xmlns:moses="http://schemas.android.com/apk/res/moses.client" android:key="base_pref">
+    <PreferenceCategory android:title="@string/device_prefs" android:key="dev_prefs">
         <moses.client.preferences.ListPreferenceMultiSelect
             android:defaultValue="[]"
             android:dialogIcon="@drawable/ic_launcher"
@@ -22,7 +22,7 @@
             android:title="@string/pref_deviceid" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/application_prefs">
+    <PreferenceCategory android:title="@string/application_prefs" android:key="app_prefs">
         <CheckBoxPreference android:key="splashscreen_pref" android:title="@string/show_splash" android:defaultValue="true"/>
 
     </PreferenceCategory>

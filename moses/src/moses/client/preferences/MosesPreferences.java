@@ -11,15 +11,17 @@ import moses.client.abstraction.HardwareAbstraction;
 import moses.client.service.MosesService;
 import android.hardware.Sensor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.ListPreference;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
 
 public class MosesPreferences extends PreferenceActivity {
 
 	private void loadSensors() {
 		HashSet<ESensor> l = new HashSet<ESensor>();
-		ArrayList<Sensor> sensors = (ArrayList<Sensor>) HardwareAbstraction
-				.getSensors();
+		ArrayList<Sensor> sensors = (ArrayList<Sensor>) HardwareAbstraction.getSensors();
 		for (int i = 0; i < sensors.size(); i++)
 			l.add(ESensor.values()[sensors.get(i).getType()]);
 
@@ -50,16 +52,54 @@ public class MosesPreferences extends PreferenceActivity {
 		lp.setEntryValues(entryValues);
 	}
 
+	private Handler handler = new Handler();
+	
+	private PreferenceScreen findPreferenceScreenForPreference( String key, PreferenceScreen screen ) {
+	    if( screen == null ) {
+	        screen = getPreferenceScreen();
+	    }
+
+	    PreferenceScreen result = null;
+
+	    android.widget.Adapter ada = screen.getRootAdapter();
+	    for( int i = 0; i < ada.getCount(); i++ ) {
+	        String prefKey = ((Preference)ada.getItem(i)).getKey();
+	        if( prefKey != null && prefKey.equals( key ) ) {
+	            return screen;
+	        }
+	        if( ada.getItem(i).getClass().equals(android.preference.PreferenceScreen.class) ) {
+	            result = findPreferenceScreenForPreference( key, (PreferenceScreen) ada.getItem(i) );
+	            if( result != null ) {
+	                return result;
+	            }
+	        }
+	    }
+
+	    return null;
+	}
+
+	private void openPreference( String key ) {
+	    PreferenceScreen screen = findPreferenceScreenForPreference( key, null );
+	    if( screen != null ) {
+	        screen.onItemClick(null, null, findPreference(key).getOrder(), 0);
+	    }
+	}
+
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		addPreferencesFromResource(R.xml.moses_pref);
 		loadSensors();
+		if (getIntent().getBooleanExtra("startSensors", false)) {
+			//TODO: DOESN'T WORK!
+			openPreference("sensors_data");
+		}
 	}
 	
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
-		if(MosesService.getInstance() != null) {
+		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().setActivityContext(this);
 		}
 	}

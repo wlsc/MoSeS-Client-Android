@@ -1,8 +1,11 @@
 package moses.client;
 
+import moses.client.preferences.MosesPreferences;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -29,6 +32,11 @@ public class MosesAskForDeviceIDActivity extends Activity {
 					return;
 				PreferenceManager.getDefaultSharedPreferences(MosesAskForDeviceIDActivity.this).edit()
 						.putString("deviceid_pref", t.getText().toString()).commit();
+				if (getIntent().getBooleanExtra("firststart", false)) {
+					Intent startPreference = new Intent(getApplicationContext(), MosesPreferences.class);
+					startPreference.putExtra("startSensors", true);
+					startActivity(startPreference);
+				}
 				finish();
 			}
 		});

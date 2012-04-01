@@ -11,6 +11,7 @@ import moses.client.R;
 import moses.client.com.ConnectionParam;
 import moses.client.com.NetworkJSON.BackgroundException;
 import moses.client.com.ReqTaskExecutor;
+import moses.client.com.requests.RequestChangeDeviceIDParameters;
 import moses.client.com.requests.RequestGetFilter;
 import moses.client.com.requests.RequestGetHardwareParameters;
 import moses.client.com.requests.RequestLogin;
@@ -50,8 +51,7 @@ public class HardwareAbstraction {
 		private String model;
 		private List<Integer> sensors;
 
-		public HardwareInfo(String deviceID, String vendor, String model,
-				String sdkbuildversion, List<Integer> sensors) {
+		public HardwareInfo(String deviceID, String vendor, String model, String sdkbuildversion, List<Integer> sensors) {
 			super();
 			this.deviceID = deviceID;
 			this.sdkbuildversion = sdkbuildversion;
@@ -122,8 +122,7 @@ public class HardwareAbstraction {
 	public static List<Sensor> getSensors() {
 		if (MosesService.getInstance() != null) {
 			List<Sensor> sensors = new ArrayList<Sensor>();
-			SensorManager s = (SensorManager) MosesService.getInstance()
-					.getSystemService(Context.SENSOR_SERVICE);
+			SensorManager s = (SensorManager) MosesService.getInstance().getSystemService(Context.SENSOR_SERVICE);
 			for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL))
 				sensors.add(sen);
 
@@ -148,10 +147,8 @@ public class HardwareAbstraction {
 				if (RequestGetHardwareParameters.parameterAcquiredFromServer(j)) {
 					StringBuffer sb = new StringBuffer(256);
 					sb.append("Parameters retrived successfully from server");
-					sb.append("\n").append("Device id:")
-							.append(j.get("DEVICEID"));
-					sb.append("\n").append("Android version:")
-							.append(j.get("ANDVER"));
+					sb.append("\n").append("Device id:").append(j.get("DEVICEID"));
+					sb.append("\n").append("Android version:").append(j.get("ANDVER"));
 					JSONArray sensors = j.getJSONArray("SENSORS");
 					sb.append("\n").append("SENSORS:").append("\n");
 					for (int i = 0; i < sensors.length(); i++) {
@@ -159,8 +156,7 @@ public class HardwareAbstraction {
 						sb.append(ESensor.values()[sensors.getInt(i)]);
 					}
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
-					AlertDialog ad = new AlertDialog.Builder(appContext)
-							.create();
+					AlertDialog ad = new AlertDialog.Builder(appContext).create();
 					ad.setCancelable(false); // This blocks the 'BACK' button
 					ad.setIcon(R.drawable.ic_launcher);
 					ad.setMessage(sb.toString());
@@ -172,8 +168,7 @@ public class HardwareAbstraction {
 					});
 					ad.show();
 				} else {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Parameters NOT retrived successfully from server! :(");
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT retrived successfully from server! :(");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -192,8 +187,7 @@ public class HardwareAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			Log.d("MoSeS.HARDWARE_ABSTRACTION",
-					"FAILURE SETTING FILTER: " + e.getMessage());
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE SETTING FILTER: " + e.getMessage());
 		}
 
 		@Override
@@ -202,11 +196,73 @@ public class HardwareAbstraction {
 			try {
 				j = new JSONObject(s);
 				if (RequestSetFilter.filterSetOnServer(j)) {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Filter set successfully, server returned positive response");
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Filter set successfully, server returned positive response");
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Filter NOT set successfully! Server returned negative response");
+				}
+			} catch (JSONException e) {
+				this.handleException(e);
+			}
+		}
+
+		@Override
+		public void updateExecution(BackgroundException c) {
+			if (c.c == ConnectionParam.EXCEPTION) {
+				handleException(c.e);
+			}
+		}
+	}
+
+	private class ReqClassUpdateHWParams implements ReqTaskExecutor {
+
+		@Override
+		public void handleException(Exception e) {
+			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
+			MosesService.getInstance().noOnSharedPreferenceChanged(true);
+			PreferenceManager
+			.getDefaultSharedPreferences(appContext)
+			.edit()
+			.putString(
+					"deviceid_pref",
+					PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+							.getString("lastdeviceid", "")).commit();
+			MosesService.getInstance().noOnSharedPreferenceChanged(false);
+		}
+
+		@Override
+		public void postExecution(String s) {
+			JSONObject j = null;
+			try {
+				Log.d("MoSeS.HARDWARE_ABSTRACTION", "Received: " + s);
+				j = new JSONObject(s);
+				if (j.getString("STATUS").equals("SUCCESS")) {
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Updated device id successfully, server returned positive response");
+					MosesService.getInstance().noOnSharedPreferenceChanged(true);
+					PreferenceManager
+							.getDefaultSharedPreferences(appContext)
+							.edit()
+							.putString(
+									"deviceid_pref",
+									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+											.getString("lastdeviceid", "")).commit();
+					MosesService.getInstance().noOnSharedPreferenceChanged(false);
+					syncDeviceInformation(true);
+				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
+					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
+							MosesService.getInstance().getActivityContext(), true);
+				} else {
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Update device id FAILED! Invalid session id.");
+					MosesService.getInstance().noOnSharedPreferenceChanged(true);
+					PreferenceManager
+							.getDefaultSharedPreferences(appContext)
+							.edit()
+							.putString(
+									"deviceid_pref",
+									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+											.getString("lastdeviceid", "")).commit();
+					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -226,6 +282,15 @@ public class HardwareAbstraction {
 		@Override
 		public void handleException(Exception e) {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
+			MosesService.getInstance().noOnSharedPreferenceChanged(true);
+			PreferenceManager
+			.getDefaultSharedPreferences(appContext)
+			.edit()
+			.putString(
+					"deviceid_pref",
+					PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+							.getString("lastdeviceid", "")).commit();
+			MosesService.getInstance().noOnSharedPreferenceChanged(false);
 		}
 
 		@Override
@@ -236,18 +301,24 @@ public class HardwareAbstraction {
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Parameters set successfully, server returned positive response");
+					MosesService.getInstance().noOnSharedPreferenceChanged(true);
+					PreferenceManager
+							.getDefaultSharedPreferences(appContext)
+							.edit()
+							.putBoolean("deviceidsetsuccessfully", true)
+							.putString(
+									"lastdeviceid",
+									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+											.getString("deviceid_pref", "")).commit();
+					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 					C2DMManager.sendCurrentC2DM();
 					MosesService.getInstance().uploadFilter();
 				} else {
-					if (j.getString("STATUS").equals(
-							"FAILURE_DEVICEID_DUPLICATED")) {
-						showForceDialog(j.getString("VENDOR_NAME"),
-								j.getString("MODEL_NAME"),
-								j.getString("ANDVER"), MosesService
-										.getInstance().getActivityContext());
+					if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
+						showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
+								MosesService.getInstance().getActivityContext(), false);
 					} else {
-						Log.d("MoSeS.HARDWARE_ABSTRACTION",
-								"Parameters NOT set successfully! Invalid session id.");
+						Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
 					}
 				}
 			} catch (JSONException e) {
@@ -261,48 +332,33 @@ public class HardwareAbstraction {
 				handleException(c.e);
 			}
 		}
+	}
 
-		public void showForceDialog(String vendor, String model, String andver,
-				Context c) {
-			AlertDialog a = new AlertDialog.Builder(c).create();
-			a.setIcon(R.drawable.ic_launcher);
-			a.setTitle(R.string.dialog_duplicated_devid_title);
-			a.setMessage(MosesService.getInstance().getString(
-					R.string.dialog_duplicated_devid_text)
-					+ "\nVendor: "
-					+ vendor
-					+ "\nModel: "
-					+ model
-					+ "\nSDK Version: "
-					+ andver
-					+ "\n"
-					+ MosesService.getInstance().getString(
-							R.string.dialog_duplicated_devid_text2));
-			a.setIcon(R.drawable.ic_launcher);
-			a.setButton(
-					MosesService.getInstance().getString(
-							R.string.dialog_duplicated_devid_update),
+	public void showForceDialog(String vendor, String model, String andver, Context c, boolean update) {
+		AlertDialog a = new AlertDialog.Builder(c).create();
+		a.setIcon(R.drawable.ic_launcher);
+		a.setTitle(R.string.dialog_duplicated_devid_title);
+		a.setMessage(MosesService.getInstance().getString(R.string.dialog_duplicated_devid_text) + "\nVendor: "
+				+ vendor + "\nModel: " + model + "\nSDK Version: " + andver + "\n"
+				+ MosesService.getInstance().getString(R.string.dialog_duplicated_devid_text2));
+		a.setIcon(R.drawable.ic_launcher);
+		if (update) {
+			a.setButton(MosesService.getInstance().getString(R.string.dialog_duplicated_devid_update),
 					new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().syncDeviceInformation(
-									true);
+							HardwareAbstraction.this.changeDeviceID(true);
 							arg0.dismiss();
 						}
-
 					});
-			a.setButton2(
-					MosesService.getInstance().getString(
-							R.string.dialog_duplicated_devid_cancel),
+			a.setButton2(MosesService.getInstance().getString(R.string.dialog_duplicated_devid_cancel),
 					new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
 							MosesService.getInstance().noOnSharedPreferenceChanged(true);
-							PreferenceManager
-									.getDefaultSharedPreferences(
-											MosesService.getInstance()).edit()
+							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
 									.putString("deviceid_pref", "").commit();
 							MosesService.getInstance().noOnSharedPreferenceChanged(false);
 							MosesService.getInstance().notSetDeviceID();
@@ -310,9 +366,33 @@ public class HardwareAbstraction {
 						}
 
 					});
-			a.setIcon(R.drawable.ic_launcher);
-			a.show();
+		} else {
+			a.setButton(MosesService.getInstance().getString(R.string.dialog_duplicated_devid_update),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							MosesService.getInstance().syncDeviceInformation(true);
+							arg0.dismiss();
+						}
+					});
+			a.setButton2(MosesService.getInstance().getString(R.string.dialog_duplicated_devid_cancel),
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							MosesService.getInstance().noOnSharedPreferenceChanged(true);
+							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
+									.putString("deviceid_pref", "").commit();
+							MosesService.getInstance().noOnSharedPreferenceChanged(false);
+							MosesService.getInstance().notSetDeviceID();
+							arg0.dismiss();
+						}
+
+					});
 		}
+		a.setIcon(R.drawable.ic_launcher);
+		a.show();
 	}
 
 	private Context appContext;
@@ -328,16 +408,16 @@ public class HardwareAbstraction {
 	public void getFilter() {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETFILTER, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETFILTER,
+					new Executor() {
 
-				@Override
-				public void execute() {
-					final RequestGetFilter rGetFilter = new RequestGetFilter(
-							new ReqClassGetFilter(), RequestLogin
-									.getSessionID(), extractDeviceId());
-					rGetFilter.send();
-				}
-			});
+						@Override
+						public void execute() {
+							final RequestGetFilter rGetFilter = new RequestGetFilter(new ReqClassGetFilter(),
+									RequestLogin.getSessionID(), extractDeviceId());
+							rGetFilter.send();
+						}
+					});
 	}
 
 	/**
@@ -346,15 +426,15 @@ public class HardwareAbstraction {
 	public void getHardwareParameters() {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+					EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
 
-				@Override
-				public void execute() {
-					new RequestGetHardwareParameters(new ReqClassGetHWParams(),
-							RequestLogin.getSessionID(), extractDeviceId())
-							.send();
-				}
-			});
+						@Override
+						public void execute() {
+							new RequestGetHardwareParameters(new ReqClassGetHWParams(), RequestLogin.getSessionID(),
+									extractDeviceId()).send();
+						}
+					});
 	}
 
 	/**
@@ -364,16 +444,16 @@ public class HardwareAbstraction {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER,
+					new Executor() {
 
-				@Override
-				public void execute() {
-					RequestSetFilter rSetFilter = new RequestSetFilter(
-							new ReqClassSetFilter(), RequestLogin
+						@Override
+						public void execute() {
+							RequestSetFilter rSetFilter = new RequestSetFilter(new ReqClassSetFilter(), RequestLogin
 									.getSessionID(), extractDeviceId(), filter);
-					rSetFilter.send();
-				}
-			});
+							rSetFilter.send();
+						}
+					});
 	}
 
 	/**
@@ -384,26 +464,38 @@ public class HardwareAbstraction {
 		// *** SENDING SET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 
 		LinkedList<Integer> sensors = new LinkedList<Integer>();
-		SensorManager s = (SensorManager) appContext
-				.getSystemService(Context.SENSOR_SERVICE);
+		SensorManager s = (SensorManager) appContext.getSystemService(Context.SENSOR_SERVICE);
 		for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) {
 			sensors.add(sen.getType());
 		}
 
-		return new HardwareInfo(extractDeviceId(), Build.MANUFACTURER,
-				Build.MODEL, Build.VERSION.SDK, sensors);
+		return new HardwareInfo(extractDeviceId(), Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK, sensors);
 	}
 
-	public void sendDeviceInformationToMosesServer(HardwareInfo hardware,
-			String c2dmRegistrationId, String sessionId) {
+	public void sendDeviceInformationToMosesServer(HardwareInfo hardware, String c2dmRegistrationId, String sessionId) {
 	}
 
 	public static String extractDeviceId() {
 		String deviceid = "";
 		if (MosesService.getInstance() != null)
-			deviceid = PreferenceManager.getDefaultSharedPreferences(
-					MosesService.getInstance()).getString("deviceid_pref", "");
+			deviceid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+					"deviceid_pref", "");
 		return deviceid;
+	}
+
+	public void changeDeviceID(final boolean force) {
+		if (MosesService.getInstance() != null) {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+					EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+
+						@Override
+						public void execute() {
+							new RequestChangeDeviceIDParameters(new ReqClassUpdateHWParams(), force, PreferenceManager
+									.getDefaultSharedPreferences(MosesService.getInstance()).getString("deviceid_pref",
+											""), RequestLogin.getSessionID()).send();
+						}
+					});
+		}
 	}
 
 	/**
@@ -414,15 +506,17 @@ public class HardwareAbstraction {
 	 * @param sessionID
 	 */
 	public void syncDeviceInformation(final boolean force) {
-		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+		if (MosesService.getInstance() != null) {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+					EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
-				@Override
-				public void execute() {
-					HardwareInfo hwInfo = retrieveHardwareParameters();
-					new RequestSetHardwareParameters(new ReqClassSetHWParams(),
-							hwInfo, force, RequestLogin.getSessionID()).send();
-				}
-			});
+						@Override
+						public void execute() {
+							HardwareInfo hwInfo = retrieveHardwareParameters();
+							new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, force, RequestLogin
+									.getSessionID()).send();
+						}
+					});
+		}
 	}
 }
