@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
+	private static final String C2DM_PUSH_MESSAGTYPE_USERSTUDY = "USERSTUDY";
 	public static final String EXTRAFIELD_USERSTUDY_NOTIFICATION = "UserStudyNotification";
 	private static final String C2DN_MESSAGETYPE_FIELD = "MESSAGE";
 	private static final String C2DN_USERSTUDY_APKID_FIELD = "APKID";
@@ -34,14 +35,18 @@ public class C2DMReceiver extends BroadcastReceiver {
 				C2DN_USERSTUDY_APKID_FIELD);
 		boolean receivedGoodThing = false;
 		if (messagetype != null) {
-			if (apkidString != null) {
-				Log.i("MoSeS.C2DM",
-						"User study notification received!! APK ID = "
-								+ apkidString);
-				receivedGoodThing = true;
+			if(messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
+				if (apkidString != null) {
+					Log.i("MoSeS.C2DM",
+							"User study notification received!! APK ID = "
+									+ apkidString);
+					receivedGoodThing = true;
+				} else {
+					Log.i("MoSeS.C2DM",
+							"User study notification received but bad apkid (null)");
+				}
 			} else {
-				Log.i("MoSeS.C2DM",
-						"User study notification received but bad apkid (null)");
+				Log.w("MoSeS.C2DM", "Unhandled C2DM Message from type: " + messagetype);
 			}
 		} else {
 			Log.i("MoSeS.C2DM",
