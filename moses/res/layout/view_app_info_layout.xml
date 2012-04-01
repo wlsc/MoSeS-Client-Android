@@ -10,6 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
         android:layout_marginTop="5sp"
         android:text="Name"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -20,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20sp"
-        android:layout_marginRight="40sp"
+        android:layout_marginRight="20sp"
         android:text="Description lorem ipsum dolor sit amet, consectetur, ire illam." />
     
     <ImageView
@@ -40,6 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
         android:layout_marginTop="5sp"
         android:text="Required sensors:"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -48,6 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20sp"
+        android:layout_marginRight="20sp"
         android:layout_marginTop="5sp"
         android:text="[...]" />
 

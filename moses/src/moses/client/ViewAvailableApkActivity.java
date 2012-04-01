@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
 import moses.client.abstraction.HardwareAbstraction;
@@ -331,7 +334,19 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private boolean showInitialSensorHint() {
+		boolean enoughEnabledSensors = false;
+		try {
+			JSONArray sensors = new JSONArray(PreferenceManager.getDefaultSharedPreferences(this).getString("sensor_data", "[]"));
+			enoughEnabledSensors = ! (sensors!=null && sensors.length()<1);
+		} catch (JSONException e) {
+			enoughEnabledSensors = false;
+		}
 		boolean doShow = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true);
+		if(enoughEnabledSensors) {
+			doShow = false;
+			PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true).commit();
+		}
+		
 		return doShow;
 	}
 
