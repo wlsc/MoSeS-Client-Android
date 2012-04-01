@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,6 +29,7 @@ import android.util.Log;
 public class UserstudyNotificationManager {
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
+	private static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
 	
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -106,7 +108,7 @@ public class UserstudyNotificationManager {
 		FileWriter writer;
 		BufferedWriter bufWriter = null;
 		try {
-			writer = new FileWriter(FileLocationUtil.getAppDatabaseFile(appContext));
+			writer = new FileWriter(FileLocationUtil.getNotificationDatabaseFile(appContext));
 			bufWriter = new BufferedWriter(writer);
 			for (UserStudyNotification notification : notifications) {
 				bufWriter.append(notification.asOnelineString() + "\n");
@@ -189,25 +191,40 @@ public class UserstudyNotificationManager {
 	 */
 	public static void userStudyNotificationArrived(String apkId) {
 		//create a new user study object and save it to the manager
-		
-		if (UserstudyNotificationManager.getInstance() == null) {
-			UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
-		}
+		boolean doIt = true;
 
-		if (UserstudyNotificationManager.getInstance() != null) {
-			UserStudyNotification notification = new UserStudyNotification(
-					new ExternalApplication(apkId));
-			UserstudyNotificationManager.getInstance().addNotification(
-					notification);
-			try {
-				UserstudyNotificationManager.getInstance().saveToDisk(
-					MosesService.getInstance().getApplicationContext());
-			} catch (IOException e) {
-				Log.e("MoSeS", "Error when saving user study notifications");
-			}
+		//Threshold C2DM shotgun messages
+		if(userstudyArrivalTimes.containsKey(apkId) && System.currentTimeMillis()-userstudyArrivalTimes.get(apkId)<10000) {
+				doIt = false;
 		}
+		userstudyArrivalTimes.put(apkId, System.currentTimeMillis());
 		
-		displayStatusBarNotificationForUserStudy(apkId);
+		if(doIt) {
+			if (UserstudyNotificationManager.getInstance() == null) {
+				if(MosesService.getInstance() != null) {
+					UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
+				} else {
+					Log.e("MoSeS.USERSTUDY", "Could not initialize Userstudy notification manager because of dead service");
+				}
+			}
+			
+			if (UserstudyNotificationManager.getInstance() != null) {
+				UserStudyNotification notification = new UserStudyNotification(
+						new ExternalApplication(apkId));
+				UserstudyNotificationManager.getInstance().addNotification(
+						notification);
+				try {
+					UserstudyNotificationManager.getInstance().saveToDisk(
+							MosesService.getInstance().getApplicationContext());
+				} catch (IOException e) {
+					Log.e("MoSeS", "Error when saving user study notifications");
+				}
+			} else {
+				Log.e("MoSeS.USERSTUDY", "Could not save userstudy notification to manager because the manager could not be initialized");
+			}
+			
+			displayStatusBarNotificationForUserStudy(apkId);
+		}
 	}
 
 	/**
@@ -219,7 +236,7 @@ public class UserstudyNotificationManager {
 		if(MosesService.getInstance() != null) {
 			UserStudyStatusBarHelper.displayStatusBarNotification(apkId, MosesService.getInstance());
 		} else {
-			Log.e("MoSeS.Userstudy", "Could not display notification that new userstudy has arrived, because moses service was null");
+			Log.e("MoSeS.USERSTUDY", "Could not display notification that new userstudy has arrived, because moses service was null");
 		}
 	}
 

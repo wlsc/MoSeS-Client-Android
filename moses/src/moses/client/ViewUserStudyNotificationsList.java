@@ -1,10 +1,17 @@
 package moses.client;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Set;
 
+import moses.client.abstraction.ExternalApplicationInfoRetriever;
+import moses.client.abstraction.ExternalApplicationInfoRetriever.State;
 import moses.client.service.MosesService;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserstudyNotificationManager;
@@ -26,6 +33,7 @@ import android.widget.Toast;
  */
 public class ViewUserStudyNotificationsList extends ListActivity {
 
+	private static final int REFRESH_REDUNDANT_TRESHOLD = 1000;
 	private static final int showStudyRequestcode = 5;
 	private ListView listView;
 	private List<UserStudyNotification> externalApps;
@@ -85,6 +93,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	}
 
 	private void drawUserStudies() {
+		if(UserstudyNotificationManager.getInstance() == null) UserstudyNotificationManager.init(this);
 		List<UserStudyNotification> studies = UserstudyNotificationManager.getInstance().getNotifications();
 		externalApps = studies;
 		populateList(studies);
@@ -94,15 +103,88 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		drawUserStudies();
+		refresherCalls(true);
+	}
+	
+	private void refresherCalls() {
+		refresherCalls(false);
+	}
+	
+	private long lastRefresherCallsTime = System.currentTimeMillis()-100000000;
+	private boolean isPaused;
+	private void refresherCalls(boolean maybeRedundantSource) {
+		boolean doIt = true;
+		if(maybeRedundantSource && System.currentTimeMillis()-lastRefresherCallsTime<REFRESH_REDUNDANT_TRESHOLD) {
+			doIt = false;
+		}
+		if(doIt) {
+			drawUserStudies();
+			scheduleRetrieveMissingInfos();
+			lastRefresherCallsTime = System.currentTimeMillis();
+		}
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		this.isPaused = true;
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		drawUserStudies();
+		this.isPaused = false;
+		refresherCalls(true);
 	}
 	
+	
+	Map<String, ExternalApplicationInfoRetriever.State> retrieveCancels = new HashMap<String, ExternalApplicationInfoRetriever.State>();  
+	private void scheduleRetrieveMissingInfos() {
+		retrieveCancels.clear();
+		for(UserStudyNotification n: UserstudyNotificationManager.getInstance().getNotifications()) {
+			if(! isNotificationToDisplay(n)) {
+				scheduleRetrieveMissingInfo(n);
+			}
+		}
+	}
+
+	private void scheduleRetrieveMissingInfo(final UserStudyNotification n) {
+		final ExternalApplicationInfoRetriever retriever = new ExternalApplicationInfoRetriever(n.getApplication().getID(), this);
+		retriever.sendEvenWhenNoNetwork = false;
+		retriever.addObserver(new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if (retriever.getState() == State.DONE) {
+					// TODO:
+					n.getApplication().setName(retriever.getResultName());
+					n.getApplication().setDescription(retriever.getResultDescription());
+					UserstudyNotificationManager.getInstance().updateNotification(n);
+					try {
+						UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyNotificationsList.this);
+					} catch (IOException e) {
+						Log.w("MoSeS.APK", "couldnt save manager: ", e);
+					}
+					if(!isPaused && !isFinishing()) {
+						drawUserStudies();
+					}
+				}
+				if (retriever.getState() == State.ERROR) {
+					Log.e("MoSeS.USERSTUDY",
+							"Wanted to display user study, but couldn't get app informations because of: ",
+							retriever.getException());
+					retrieveCancels.put(n.getApplication().getID(), State.ERROR);
+					drawUserStudies();
+				}
+				if (retriever.getState() == State.NO_NETWORK) {
+					retrieveCancels.put(n.getApplication().getID(), State.NO_NETWORK);
+					drawUserStudies();
+				}
+			}
+		});
+		retriever.start();
+	}
+
 	private void populateList(List<UserStudyNotification> applications) {
 		listView = getListView();
 		
@@ -123,6 +205,27 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 				rowMap.put("name", app.getApplication().getName());
 				rowMap.put("description", app.getApplication().getDescription());
 				listContent.add(rowMap);
+			} else {
+				HashMap<String, String> rowMap = new HashMap<String, String>();
+				String nameLbl = app.getApplication().isNameSet()?
+						app.getApplication().getName():
+						(retrieveCancels.containsKey(app.getApplication().getID())?
+								(retrieveCancels.get(app.getApplication().getID())==State.NO_NETWORK?
+									"User study " + app.getApplication().getID() + " (Could not load name: no network)":
+										"Description of user study " + app.getApplication().getID() + " (Error at loading name)"
+								):
+								"Loading name...");
+				String descriptionLbl = app.getApplication().isDescriptionSet()?
+						app.getApplication().getDescription():
+						(retrieveCancels.containsKey(app.getApplication().getID())?
+								(retrieveCancels.get(app.getApplication().getID())==State.NO_NETWORK?
+									"(Could not load description: no network)":
+									"(Could not load description)"
+								):
+								"Loading description...");
+				rowMap.put("name", nameLbl);
+				rowMap.put("description", descriptionLbl);
+				listContent.add(rowMap);
 			}
 		}
 		SimpleAdapter contentAdapter = new SimpleAdapter( 
@@ -136,7 +239,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	}
 
 	private static boolean isNotificationToDisplay(UserStudyNotification app) {
-		return (app.getApplication().getName()!=null)&&(app.getApplication().getDescription()!=null);
+		return (app.getApplication().isNameSet())&&(app.getApplication().isNameSet());
 	}
 
 	public static String concatStacktrace(Exception e) {

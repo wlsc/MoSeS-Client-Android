@@ -56,6 +56,12 @@ import android.widget.TextView;
  */
 public class MosesActivity extends TabActivity {
 
+	private static final String TAB_TAG_AVAILABLE_USER_STUDIES = "availableUserStudies";
+
+	private static final String TAB_TAG_AVAILABLE_APPS = "availableApps";
+
+	private static final String TAB_TAG_INSTALLED_APPS = "installedApps";
+
 	private static boolean showsplash = true;
 
 	public enum results {
@@ -202,6 +208,8 @@ public class MosesActivity extends TabActivity {
 	private static boolean waitingForResult = false;
 
 	private String onLoginCompleteShowUserStudy = null;
+
+	private String firstTabPreference = null;
 	
 	public static InstalledStateMonitor installedStateMonitor = null;
 
@@ -278,6 +286,7 @@ public class MosesActivity extends TabActivity {
 					UserstudyNotificationManager.displayUserStudyContent(
 							onLoginCompleteShowUserStudy,
 							this.getApplicationContext());
+					onLoginCompleteShowUserStudy = null;
 				}
 				break;
 			case Activity.RESULT_CANCELED:
@@ -312,11 +321,11 @@ public class MosesActivity extends TabActivity {
 
 		boolean isShowUserStudyCall = getIntent().getStringExtra(
 				ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID) != null;
-		if ((PreferenceManager.getDefaultSharedPreferences(this)
-				.getString("username_pref", "").equals("") || PreferenceManager
-				.getDefaultSharedPreferences(this)
-				.getString("password_pref", "").equals(""))
-				&& !waitingForResult) {
+		if (isShowUserStudyCall) {
+			onLoginCompleteShowUserStudy = getIntent().getStringExtra(
+					ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
+		}
+		if (!isLoginInformationComplete(this) && !waitingForResult) {
 			/*
 			 * here, the activity is called to display the login screen, and,
 			 * when filled in, redirect the user to the user study that was
@@ -325,18 +334,9 @@ public class MosesActivity extends TabActivity {
 
 			waitingForResult = true;
 			// set flag that on login creds arrival show a user study
-			if (isShowUserStudyCall) {
-				onLoginCompleteShowUserStudy = getIntent().getStringExtra(
-						ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
-			}
 			Intent mainDialog = new Intent(MosesActivity.this,
 					MosesLoginActivity.class);
 			startActivityForResult(mainDialog, 1);
-		} else if (isShowUserStudyCall) {
-			// if a User study has to be shown, and username and password are
-			// set, redirect this
-			UserstudyNotificationManager.displayUserStudyContent(
-					onLoginCompleteShowUserStudy, this.getApplicationContext());
 		}
 
 		if (!isShowUserStudyCall) {
@@ -370,7 +370,16 @@ public class MosesActivity extends TabActivity {
 			UserstudyNotificationManager.init(this);
 		}
 
+		if(isShowUserStudyCall && isLoginInformationComplete()) {
+			firstTabPreference  = TAB_TAG_AVAILABLE_USER_STUDIES;
+		}
 		initControls();
+		if (isShowUserStudyCall && isLoginInformationComplete()) {
+			// if a User study has to be shown, and username and password are
+			// set, redirect this
+			UserstudyNotificationManager.displayUserStudyContent(
+					onLoginCompleteShowUserStudy, this.getApplicationContext());
+		}
 	}
 
 	private Dialog mSplashDialog;
@@ -439,7 +448,7 @@ public class MosesActivity extends TabActivity {
 		intent = new Intent().setClass(this,
 				ViewInstalledApplicationsActivity.class);
 		tabHost.addTab(tabHost
-				.newTabSpec("installedApps")
+				.newTabSpec(TAB_TAG_INSTALLED_APPS)
 				.setIndicator(
 						createIndicatorView(tabHost, "Installed Apps",
 								res.getDrawable(R.drawable.ic_menu_agenda)))
@@ -447,7 +456,7 @@ public class MosesActivity extends TabActivity {
 
 		intent = new Intent().setClass(this, ViewAvailableApkActivity.class);
 		tabHost.addTab(tabHost
-				.newTabSpec("availableApps")
+				.newTabSpec(TAB_TAG_AVAILABLE_APPS)
 				.setIndicator(
 						createIndicatorView(tabHost, "Install Apps from MoSeS",
 								res.getDrawable(R.drawable.ic_menu_add)))
@@ -456,7 +465,7 @@ public class MosesActivity extends TabActivity {
 		intent = new Intent().setClass(this,
 				ViewUserStudyNotificationsList.class);
 		tabHost.addTab(tabHost
-				.newTabSpec("availableUserStudies")
+				.newTabSpec(TAB_TAG_AVAILABLE_USER_STUDIES)
 				.setIndicator(
 						createIndicatorView(tabHost, "View User Studies",
 								res.getDrawable(R.drawable.ic_menu_more)))
@@ -468,6 +477,9 @@ public class MosesActivity extends TabActivity {
 			tabHost.setCurrentTab(0);
 		} else {
 			tabHost.setCurrentTab(1);
+		}
+		if(firstTabPreference != null) {
+			tabHost.setCurrentTabByTag(firstTabPreference);
 		}
 
 		((Button) findViewById(R.id.btnSettings))
@@ -601,12 +613,20 @@ public class MosesActivity extends TabActivity {
 	 * @return whether the information that is required for the service to
 	 *         properly log-in is complete.
 	 */
-	public static boolean isLoginInformationComplete() {
+	public static boolean isLoginInformationComplete(Context c) {
 		return !(PreferenceManager
-				.getDefaultSharedPreferences(MosesService.getInstance())
+				.getDefaultSharedPreferences(c)
 				.getString("username_pref", "").equals("") || PreferenceManager
-				.getDefaultSharedPreferences(MosesService.getInstance())
+				.getDefaultSharedPreferences(c)
 				.getString("password_pref", "").equals(""));
+	}
+	
+	/**
+	 * @return whether the information that is required for the service to
+	 *         properly log-in is complete.
+	 */
+	public static boolean isLoginInformationComplete() {
+		return isLoginInformationComplete(MosesService.getInstance());
 	}
 
 }

@@ -2,6 +2,7 @@ package moses.client.service.helpers;
 
 import java.io.IOException;
 
+import moses.client.MosesActivity;
 import moses.client.R;
 import moses.client.ViewUserStudyActivity;
 import moses.client.abstraction.apks.ExternalApplication;
@@ -45,14 +46,14 @@ public class UserStudyStatusBarHelper {
 	
 	public static Intent generateIntentForNotification(String id,
 			Context context) {
-		Intent intent = new Intent(context, ViewUserStudyActivity.class);
+		Intent intent = new Intent(context, MosesActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, id);
 		return intent;
 	}
 
 	protected static void showNotificationStatic(Intent intent, String apkId, Context context) {
-		Log.i("MoSeS.Userstudy", "displayed user study notification in taskbar");
+		Log.i("MoSeS.USERSTUDY", "displayed user study notification in taskbar");
 		showNotificationStatic(intent, "A new user study is available for you\nClick here to view it", "MoSeS",
 			false, notificationManagerIdForApkId(apkId), context);
 	}
