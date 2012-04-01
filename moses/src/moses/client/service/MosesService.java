@@ -481,10 +481,13 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void uploadFilter() {
-		SharedPreferences settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		String s = settingsFile.getString("sensor_data", "[]");
-		HardwareAbstraction ha = new HardwareAbstraction(this);
-		ha.setFilter(s);
+		this.executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER, new Executor() {
+
+			@Override
+			public void execute() {
+				new HardwareAbstraction(MosesService.this).setFilter(PreferenceManager.getDefaultSharedPreferences(MosesService.this).getString("sensor_data", "[]"));
+			}
+		});
 	}
 
 	public class LocalBinder extends Binder {
