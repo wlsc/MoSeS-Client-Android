@@ -1,6 +1,14 @@
 package moses.client.abstraction.apks;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import android.util.Log;
 
 /**
  * Reference to an application on the server, referenced by it's MoSeS id
@@ -14,6 +22,8 @@ public class ExternalApplication {
 	private static final String TAG_DESCRIPTION = "[description]";
 
 	private static final String TAG_NAME = "[name]";
+	
+	private static final String TAG_SENSORS = "[sensors]";
 
 	private static final String SEPARATOR = "#EA#";
 	
@@ -22,7 +32,8 @@ public class ExternalApplication {
 	// lazy loading variables for non-defining attributes
 	private String name;
 	private String description;
-	private Double newestVersion;
+	private String newestVersion;
+	private List<Integer> sensors = null;
 
 	public String getID() {
 		return ID;
@@ -106,11 +117,23 @@ public class ExternalApplication {
 		return "loading Description...";
 	}
 
-	public Double getNewestVersion() {
+	public String getNewestVersion() {
 		return newestVersion;
 	}
 
-	public void setNewestVersion(Double newestVersion) {
+	public List<Integer> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(Collection<Integer> sensors) {
+		this.sensors = new LinkedList(sensors);
+	}
+	
+	public boolean isSensorsSet() {
+		return sensors != null;
+	}
+
+	public void setNewestVersion(String newestVersion) {
 		this.newestVersion = newestVersion;
 	}
 	
@@ -149,6 +172,9 @@ public class ExternalApplication {
 		if(isNewestVersionSet()) {
 			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();
 		}
+		if(isSensorsSet()) {
+			result += SEPARATOR + TAG_SENSORS + new JSONArray(getSensors()).toString();
+		}
 		return result;
 	}
 	
@@ -168,7 +194,8 @@ public class ExternalApplication {
 		String ID = null;
 		String name = null;
 		String description = null;
-		Double newestVersion = null;
+		String newestVersion = null;
+		List<Integer> sensors = null;
 		for(int i=0; i<split.length; i++) {
 			if(i==0) {
 				ID = split[i];
@@ -180,7 +207,17 @@ public class ExternalApplication {
 					name = split[i].substring(TAG_NAME.length());
 				}
 				if(split[i].startsWith(TAG_NEWESTVERSION)) {
-					newestVersion = Double.valueOf(split[i].substring(TAG_NEWESTVERSION.length()));
+					newestVersion = split[i].substring(TAG_NEWESTVERSION.length());
+				}
+				if(split[i].startsWith(TAG_SENSORS)) {
+					sensors = new LinkedList<Integer>();
+					JSONArray jsonarray = null;
+					try {
+						jsonarray = new JSONArray(split[i].substring(TAG_SENSORS.length()));
+						for(int j=0; j<jsonarray.length(); j++) sensors.add(jsonarray.getInt(j));
+					} catch (JSONException e) {
+						Log.e("MoSeS.APK", "error parsing external application from settings file", e);
+					}
 				}
 			}
 		}
@@ -189,7 +226,15 @@ public class ExternalApplication {
 		externalApplication.setName(name);
 		externalApplication.setDescription(description);
 		externalApplication.setNewestVersion(newestVersion);
+		externalApplication.setSensors(sensors);
 		return externalApplication;
 	}
 
+	/**
+	 * @return true if all data that could be retrieved for this object (name, description, sensors, ...) is held in this object
+	 */
+	public boolean isDataComplete() {
+		return isDescriptionSet() && isNameSet() && isSensorsSet() && isNewestVersionSet();
+	}
+	
 }

@@ -13,12 +13,11 @@ import android.content.pm.PackageManager.NameNotFoundException;
  */
 public class InstalledExternalApplication extends ExternalApplication {
 
-	private static final double DEFAULT_VERSION = 0.0D;
 	private static final String SEPARATOR = "#IEA#";
 	private String packageName;
 	private boolean wasInstalledAsUserStudy;
 	private boolean updateAvailable;
-	private double installedVersion;
+	private String installedVersion;
 
 	/**
 	 * Creates the reference to the external application by specifying the
@@ -31,11 +30,11 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param wasInstalledAsUserStudy
 	 * @param version the version of the app which is installed 
 	 */
-	public InstalledExternalApplication(String packageName, String ID, boolean wasInstalledAsUserStudy, double version) {
+	public InstalledExternalApplication(String packageName, String ID, boolean wasInstalledAsUserStudy, String version) {
 		super(ID);
 		
 		//assume this version as the newest version
-		double newestVersion = version;
+		String newestVersion = version;
 		super.setNewestVersion(newestVersion);
 		this.installedVersion = version;
 		
@@ -56,11 +55,9 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param version the version of the app which is installed 
 	 */
 	public InstalledExternalApplication(String packageName, ExternalApplication externalApp,
-		boolean wasInstalledAsUserStudy, double version) {
+		boolean wasInstalledAsUserStudy, String version) {
 		
 		this(packageName, externalApp.getID(), wasInstalledAsUserStudy, version);
-		
-		this.installedVersion = version;
 		
 		if (externalApp.isDescriptionSet()) {
 			setDescription(externalApp.getDescription());
@@ -72,30 +69,15 @@ public class InstalledExternalApplication extends ExternalApplication {
 			super.setNewestVersion(externalApp.getNewestVersion());
 		} else {
 			//assume this version as the newest version
-			double newestVersion = version;
+			String newestVersion = version;
 			super.setNewestVersion(newestVersion);
 		}
 	}
 	
 	/**
-	 * Creates the reference to the external application by specifying the
-	 * package name
-	 * 
-	 * @param packageName
-	 *            the name of the package of the application
-	 * @param ID
-	 *            the moses id of the application
-	 * @param wasInstalledAsUserStudy
-	 * @param appContext
-	 */
-	public InstalledExternalApplication(String packageName, String ID, boolean wasInstalledAsUserStudy) {
-		this(packageName, ID, wasInstalledAsUserStudy, DEFAULT_VERSION);
-	}
-
-	/**
 	 * Creates the instance by adapting an already existing ExternalApplication
 	 * reference. This has the advantage of copying already retrieved name and
-	 * description over.
+	 * description over. The external applicatiopn object must have its installed version set!
 	 * 
 	 * @param packageName
 	 *            the package name of the installed app
@@ -106,7 +88,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	public InstalledExternalApplication(String packageName, ExternalApplication externalApp,
 		boolean wasInstalledAsUserStudy) {
 		
-		this(packageName, externalApp, wasInstalledAsUserStudy, DEFAULT_VERSION);
+		this(packageName, externalApp, wasInstalledAsUserStudy, externalApp.getNewestVersion());
 	}
 
 	/**
@@ -135,14 +117,14 @@ public class InstalledExternalApplication extends ExternalApplication {
 	/**
 	 * @return the version of the app which was installed
 	 */
-	public double getInstalledVersion() {
+	public String getInstalledVersion() {
 		return installedVersion;
 	}
 
 	/**
 	 * @param installedVersion sets the installed version
 	 */
-	public void setInstalledVersion(double installedVersion) {
+	public void setInstalledVersion(String installedVersion) {
 		this.installedVersion = installedVersion;
 	}
 
@@ -164,7 +146,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	@Override
 	public String asOnelineString() {
 		return super.asOnelineString() + SEPARATOR + this.getPackageName() + SEPARATOR
-			+ Boolean.valueOf(wasInstalledAsUserStudy).toString() + SEPARATOR + Double.valueOf(installedVersion).toString();
+			+ Boolean.valueOf(wasInstalledAsUserStudy).toString() + SEPARATOR + installedVersion;
 	}
 
 	/**
@@ -175,8 +157,9 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 */
 	public static InstalledExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(SEPARATOR);
-		return new InstalledExternalApplication(split[1], ExternalApplication.fromOnelineString(split[0]),
-			Boolean.parseBoolean(split[2]), Double.parseDouble(split[3]));
+		ExternalApplication exApp = ExternalApplication.fromOnelineString(split[0]);
+		return new InstalledExternalApplication(split[1], exApp, 
+			Boolean.parseBoolean(split[2]), split[3]);
 	}
 
 	public boolean isUpdateAvailable() {
@@ -185,6 +168,11 @@ public class InstalledExternalApplication extends ExternalApplication {
 
 	public void setUpdateAvailable(boolean updateAvailable) {
 		this.updateAvailable = updateAvailable;
+	}
+	
+	@Override
+	public boolean isDataComplete() {
+		return super.isDataComplete();
 	}
 
 }

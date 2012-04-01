@@ -1,7 +1,10 @@
 package moses.client.abstraction;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,10 +60,12 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	
 	private String resultName;
 	private String resultDescription;
+	private List<Integer> resultSensors;
 	private String errorMessage;
 	
 	public boolean sendEvenWhenNoNetwork = false;
 	private boolean cancelled = false;
+	
 	
 	public ExternalApplicationInfoRetriever(String apkId, Context c) {
 		this.context = c;
@@ -88,6 +93,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 					@Override
 					public void execute() {
 						final RequestGetApkInfo r = new RequestGetApkInfo(new ReqTaskExecutor() {
+
 							@Override
 							public void updateExecution(BackgroundException c) {
 							}
@@ -100,6 +106,11 @@ public class ExternalApplicationInfoRetriever extends Observable {
 									if (RequestGetApkInfo.isInfoRetrived(j)) {
 										resultName = j.getString("NAME");
 										resultDescription = j.getString("DESCR");
+										JSONArray sensorsArray = j.getJSONArray("SENSORS");
+										resultSensors = new LinkedList<Integer>();
+										for(int i=0; i<sensorsArray.length(); i++) {
+											resultSensors.add(sensorsArray.getInt(i));
+										}
 										setState(State.DONE);
 									} else {
 										Log.e("MoSeS.APK",
@@ -163,7 +174,9 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	public String getErrorMessage() {
 		return errorMessage;
 	}
-	
-	
+
+	public List<Integer> getResultSensors() {
+		return resultSensors;
+	}
 	
 }
