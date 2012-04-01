@@ -329,13 +329,11 @@ public class HardwareAbstraction {
 					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 					C2DMManager.sendCurrentC2DM();
 					MosesService.getInstance().uploadFilter();
+				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
+					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
+							MosesService.getInstance().getActivityContext(), false);
 				} else {
-					if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
-						showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
-								MosesService.getInstance().getActivityContext(), false);
-					} else {
-						Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
-					}
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -364,13 +362,14 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+									EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
 
-								@Override
-								public void execute() {
-									HardwareAbstraction.this.changeDeviceID(true);
-								}
-							});
+										@Override
+										public void execute() {
+											HardwareAbstraction.this.changeDeviceID(true);
+										}
+									});
 							arg0.dismiss();
 						}
 					});
@@ -394,13 +393,14 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+									EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
-								@Override
-								public void execute() {
-									HardwareAbstraction.this.syncDeviceInformation(true);
-								}
-							});
+										@Override
+										public void execute() {
+											HardwareAbstraction.this.syncDeviceInformation(true);
+										}
+									});
 							arg0.dismiss();
 						}
 					});

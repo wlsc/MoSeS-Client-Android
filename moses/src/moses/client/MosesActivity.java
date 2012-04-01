@@ -220,8 +220,8 @@ public class MosesActivity extends TabActivity {
 
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
-		if (mBound) {
-			mService.setActivityContext(this);
+		if (f && MosesService.getInstance() != null) {
+			MosesService.getInstance().setActivityContext(this);
 		}
 	}
 

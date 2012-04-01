@@ -148,6 +148,10 @@ public class Login {
 		lastLoggedIn = -1;
 		mHandler.removeCallbacks(logoutTask);
 	}
+	
+	public static void refresh() {
+		lastLoggedIn = System.currentTimeMillis();
+	}
 
 	/**
 	 * Instantiates a new login.
