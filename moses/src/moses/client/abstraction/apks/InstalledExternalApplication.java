@@ -74,6 +74,9 @@ public class InstalledExternalApplication extends ExternalApplication {
 		if (externalApp.isNameSet()) {
 			setName(externalApp.getName());
 		}
+		if (externalApp.isSensorsSet()) {
+			setSensors(externalApp.getSensors());
+		}
 		if(externalApp.isNewestVersionSet()) {
 			super.setNewestVersion(externalApp.getNewestVersion());
 		} else {

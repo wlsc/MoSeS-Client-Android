@@ -7,6 +7,7 @@ import java.util.Observable;
 
 import moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.service.MosesService;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -25,7 +26,7 @@ import android.widget.Toast;
 public class ApkDownloadManager extends Observable implements ApkDownloadObserver, ApkDownloadLinkRequestObserver {
 
 	public static enum State {
-		JUST_INITIALIZED, DOWNLOAD_LINK_REQUESTED, APK_FILE_REQUESTED_DOWNLOADING, FINISHED, ERROR
+		JUST_INITIALIZED, DOWNLOAD_LINK_REQUESTED, APK_FILE_REQUESTED_DOWNLOADING, FINISHED, ERROR, ERROR_NO_CONNECTION
 	}
 
 	private ExternalApplication app;
@@ -56,7 +57,12 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * file).
 	 */
 	public void start() {
-		requestUrlForApplication(this.app);
+		if(MosesService.isOnline(context)) {
+			requestUrlForApplication(this.app);
+		} else {
+			errorMsg = "No internet connection";
+			setState(State.ERROR_NO_CONNECTION);
+		}
 	}
 
 	/**

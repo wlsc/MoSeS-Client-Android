@@ -98,7 +98,11 @@ public class ViewUserStudyActivity extends Activity {
 	private void showActivityForNotification(UserStudyNotification notification) {
 		if (notification != null) {
 			this.handleSingleNotificationData = notification;
-			requestApkInfo(notification.getApplication().getID());
+			if(!notification.isDataComplete()) {
+				requestApkInfo(notification.getApplication().getID());
+			} else {
+				showDescisionDialog(notification);
+			}
 		} else {
 			Log.e("MoSeS.USERSTUDY", "aborting userstudy operation; no data");
 			cancelActivity();
@@ -134,6 +138,7 @@ public class ViewUserStudyActivity extends Activity {
 					// TODO:
 					handleSingleNotificationData.getApplication().setName(infoRequester.getResultName());
 					handleSingleNotificationData.getApplication().setDescription(infoRequester.getResultDescription());
+					handleSingleNotificationData.getApplication().setSensors(infoRequester.getResultSensors());
 					UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
 					try {
 						UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyActivity.this);
@@ -163,7 +168,7 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void showMessageBoxError(ExternalApplicationInfoRetriever infoRequester) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+		final AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
 						"An error occured when retrieving the informations for a user study: " + infoRequester.getErrorMessage()
 						+".\nSorry! This was a shock for both of us. Maybe you could try again from the user study tab later? Thanks!")
@@ -250,8 +255,10 @@ public class ViewUserStudyActivity extends Activity {
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
-				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
-					cancelActivity();
+				if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
+					showMessageBoxErrorNoConnection(downloader);
+				} else if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					showMessageBoxErrorDownloading(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult(),
 							notification);
@@ -262,6 +269,32 @@ public class ViewUserStudyActivity extends Activity {
 		downloader.start();
 	}
 
+	
+	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
+		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+				.setMessage(
+						"There seems to be no open internet connection present for downloading the app.")
+				.setTitle("No connection").setCancelable(true)
+				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						cancelActivity();
+					}
+				}).show();
+	}
+	
+	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
+		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+				.setMessage(
+						"An error occured when trying to download the app: " + downloader.getErrorMsg()
+						+".\nSorry!")
+				.setTitle("Error").setCancelable(true)
+				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						cancelActivity();
+					}
+				}).show();
+	}
+	
 	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef,
 			final UserStudyNotification notification) {
 		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);

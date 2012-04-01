@@ -83,5 +83,9 @@ public class UserStudyNotification {
 	public String toString() {
 		return asOnelineString();
 	}
+	
+	public boolean isDataComplete() {
+		return application.isDataComplete();
+	}
 
 }

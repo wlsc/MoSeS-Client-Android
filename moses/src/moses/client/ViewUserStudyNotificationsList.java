@@ -159,6 +159,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 					// TODO:
 					n.getApplication().setName(retriever.getResultName());
 					n.getApplication().setDescription(retriever.getResultDescription());
+					n.getApplication().setSensors(retriever.getResultSensors());
 					UserstudyNotificationManager.getInstance().updateNotification(n);
 					try {
 						UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyNotificationsList.this);

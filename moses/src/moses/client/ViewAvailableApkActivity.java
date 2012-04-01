@@ -15,6 +15,7 @@ import org.json.JSONException;
 
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.ExternalApplicationInfoRetriever;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
@@ -360,6 +361,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					showMessageBoxErrorDownloading(downloader);
+				} else if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
+					showMessageBoxErrorNoConnection(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
@@ -367,6 +371,29 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		};
 		downloader.addObserver(observer);
 		downloader.start();
+	}
+	
+	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
+		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
+				.setMessage(
+						"There seems to be no open internet connection present for downloading the app.")
+				.setTitle("No connection").setCancelable(true)
+				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+					}
+				}).show();
+	}
+	
+	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
+		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
+				.setMessage(
+						"An error occured when trying to download the app: " + downloader.getErrorMsg()
+						+".\nSorry!")
+				.setTitle("Error").setCancelable(true)
+				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+					}
+				}).show();
 	}
 
 	private void installDownloadedApk(final File originalApk, final ExternalApplication externalAppRef) {

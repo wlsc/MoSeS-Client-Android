@@ -126,7 +126,11 @@ public class ExternalApplication {
 	}
 
 	public void setSensors(Collection<Integer> sensors) {
-		this.sensors = new LinkedList(sensors);
+		if(sensors == null) {
+			this.sensors = null;
+		} else {
+			this.sensors = new LinkedList(sensors);
+		}
 	}
 	
 	public boolean isSensorsSet() {

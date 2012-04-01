@@ -120,11 +120,17 @@ public class ApkMethods {
 						String id = apkInformation.getString("ID");
 						String name = apkInformation.getString("NAME");
 						String description = apkInformation.getString("DESCR");
+						JSONArray sensorsArray = apkInformation.getJSONArray("SENSORS");
+						List<Integer> resultSensors = new LinkedList<Integer>();
+						for(int k=0; k<sensorsArray.length(); k++) {
+							resultSensors.add(sensorsArray.getInt(k));
+						}
 
 						ExternalApplication externalApplication = new ExternalApplication(
 								id);
 						externalApplication.setName(name);
 						externalApplication.setDescription(description);
+						externalApplication.setSensors(resultSensors);
 						apps.add(externalApplication);
 					}
 
