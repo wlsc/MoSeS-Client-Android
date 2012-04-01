@@ -63,7 +63,7 @@
     <string name="installedApkList_defaultHint">Click on an app to start it:</string>
     <string name="installedApkList_emptyHint">No sensing applications are installed.</string>
     <string name="availableApkList_defaultHint">Click on an app to view the full description:</string>
-    <string name="availableApkList_emptyHint">No sensing applications are available that match your device and enabled sensors.</string>
+    <string name="availableApkList_emptyHint">No sensing applications are available that match your device and enabled sensors. Enabling more sensors in the settings may show more applications.</string>
     <string name="entercredentials">Please enter your login credentials:</string>
     <string name="login_text">Login</string>
     <string name="logout_text">Logout</string>
