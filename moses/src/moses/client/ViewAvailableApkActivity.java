@@ -19,9 +19,11 @@ import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.service.MosesService;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -72,9 +74,28 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	public void apkInstallClickHandler(View v) {
-		int pos = listView.getPositionForView(v);
-		final ExternalApplication app = externalApps.get(pos);
+		if(MosesService.isOnline(getApplicationContext())) {
+			int pos = listView.getPositionForView(v);
+			final ExternalApplication app = externalApps.get(pos);
+			showAppInfo(app);
+		} else {
+			showNoConnectionInfoBox();
+		}
+	}
 
+	private void showNoConnectionInfoBox() {
+		 AlertDialog alertDialog = new AlertDialog.Builder(this)
+	      .setMessage("Cannot display the app information because no internet connection seems to be present")
+	      .setTitle("No connection")
+	      .setCancelable(true)
+//	      .setNeutralButton("OK",
+//	         new DialogInterface.OnClickListener() {
+//	         public void onClick(DialogInterface dialog, int whichButton){}
+//	         })
+	      .show();
+	}
+
+	private void showAppInfo(final ExternalApplication app) {
 		final Dialog myDialog = new Dialog(this);
 		myDialog.setContentView(R.layout.view_app_info_layout);
 		myDialog.setTitle("App informations:");
@@ -105,19 +126,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	 * Inits the controls.
 	 */
 	private void initControls() {
-		if(showInitialSensorHint()) {
-			initControlsShowSensorsHint();
-		} else {
-			if(appsLocallyInCacheStillAvailable()) {
-				initControlsNormalList(externalApps);
-			} else {
-				if(MosesService.isOnline(getApplicationContext())) {
-					initControlsPendingListRequest();
-				} else {
-					initControlsNoConnectivity();
-				}
-			}
-		}
+		initControlsOnRequestApks();
 		requestExternalApplications();
 	}
 
@@ -129,14 +138,14 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		if(showInitialSensorHint()) {
 			initControlsShowSensorsHint();
 		} else {
-			if(!MosesService.isOnline(getApplicationContext())) {
-				if(! appsLocallyInCacheStillAvailable()) {
-					initControlsNoConnectivity();
-				} else {
-					initControlsNormalList(externalApps);
-				}
+			if(appsLocallyInCacheStillAvailable()) {
+				initControlsNormalList(externalApps);
 			} else {
-				initControlsPendingListRequest();
+				if(MosesService.isOnline(getApplicationContext())) {
+					initControlsPendingListRequest();
+				} else {
+					initControlsNoConnectivity();
+				}
 			}
 		}
 	}
@@ -199,7 +208,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	
 	private void refreshResfreshBtnTimeout(final Button refreshButton, final String minimalString, final LayoutState parentLayout) {
 		refreshButton.setEnabled(false);
-		refreshButton.setText("Refresh");
+		refreshButton.setText(minimalString);
 		Handler enableRefreshHandler = new Handler();
 		enableRefreshHandler.postDelayed(new Runnable() {
 			@Override
@@ -426,6 +435,16 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				requestExternalApplications();
 			}
 		}
+		
+		Handler secondTryConnect = new Handler();
+		secondTryConnect.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				if(!isPaused) {
+					requestExternalApplications();
+				}
+			}
+		}, 2500);
 	}
 	
 	private void populateList(List<ExternalApplication> applications) {
