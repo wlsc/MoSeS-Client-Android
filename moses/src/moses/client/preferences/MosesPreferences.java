@@ -16,6 +16,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class MosesPreferences extends PreferenceActivity {
 
@@ -52,39 +53,6 @@ public class MosesPreferences extends PreferenceActivity {
 		lp.setEntryValues(entryValues);
 	}
 
-	private Handler handler = new Handler();
-	
-	private PreferenceScreen findPreferenceScreenForPreference( String key, PreferenceScreen screen ) {
-	    if( screen == null ) {
-	        screen = getPreferenceScreen();
-	    }
-
-	    PreferenceScreen result = null;
-
-	    android.widget.Adapter ada = screen.getRootAdapter();
-	    for( int i = 0; i < ada.getCount(); i++ ) {
-	        String prefKey = ((Preference)ada.getItem(i)).getKey();
-	        if( prefKey != null && prefKey.equals( key ) ) {
-	            return screen;
-	        }
-	        if( ada.getItem(i).getClass().equals(android.preference.PreferenceScreen.class) ) {
-	            result = findPreferenceScreenForPreference( key, (PreferenceScreen) ada.getItem(i) );
-	            if( result != null ) {
-	                return result;
-	            }
-	        }
-	    }
-
-	    return null;
-	}
-
-	private void openPreference( String key ) {
-	    PreferenceScreen screen = findPreferenceScreenForPreference( key, null );
-	    if( screen != null ) {
-	        screen.onItemClick(null, null, findPreference(key).getOrder(), 0);
-	    }
-	}
-
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -92,8 +60,7 @@ public class MosesPreferences extends PreferenceActivity {
 		addPreferencesFromResource(R.xml.moses_pref);
 		loadSensors();
 		if (getIntent().getBooleanExtra("startSensors", false)) {
-			//TODO: DOESN'T WORK!
-			openPreference("sensors_data");
+			getPreferenceScreen().onItemClick(null, null, 1, 0);
 		}
 	}
 	
