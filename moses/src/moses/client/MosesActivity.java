@@ -85,6 +85,8 @@ public class MosesActivity extends TabActivity {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
 			((TextView) findViewById(R.id.success))
 					.setText("Error while logging in.");
+			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
+			.setVisibility(View.GONE);
 		}
 	};
 
@@ -228,8 +230,8 @@ public class MosesActivity extends TabActivity {
 
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
-		if (mBound) {
-			mService.setActivityContext(this);
+		if (f && MosesService.getInstance() != null) {
+			MosesService.getInstance().setActivityContext(this);
 		}
 	}
 

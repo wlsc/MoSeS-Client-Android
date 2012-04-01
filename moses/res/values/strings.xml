@@ -75,4 +75,10 @@
     <string name="apklist_hint_pendingrequest">Waiting for server...</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the app list anyway:</string>
     <string name="change_dev_id_text">Changing the device id failed, please select another device id or proceed if you don\'t want to change the id anymore.</string>
+    <string name="verifying_credentials">Verifying your login credentials.</string>
+    <string name="check_internet">Not able to connect to MoSeS. Check your Internet connection.</string>
+    <string name="wrong_credentials">Username and/or password are wrong.</string>
+    <string name="checking_credentials">Checking credentials...</string>
+    <string name="no_internet_connection">No internet connection.</string>
+    <string name="unknown_response_from_server">Unknown response from server. Maybe you forgot to login to your HotSpot?</string>
 </resources>

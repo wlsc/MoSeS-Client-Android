@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="moses_background_orange">#d9cfb4</color>
+    <color name="moses_background_orange2">#d0cfb4</color>
+    <color name="moses_foreground_orange">#ff8330</color>
+
+    <style name="MoSeSTheme" parent="android:Theme">
+        <item name="android:windowBackground">@color/moses_background_orange</item>
+        <item name="android:colorBackground">@color/moses_background_orange2</item>
+        <item name="android:colorForeground">@color/moses_foreground_orange</item>
+        <item name="android:textColorPrimary">@color/moses_foreground_orange</item>
+        <item name="android:tabWidgetStyle">@style/MoSeSThemeTabs</item>
+    </style>
+
+    <style name="MoSeSThemeTabs" parent="android:Widget.TabWidget">
+    </style>
+
+</resources>

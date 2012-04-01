@@ -244,14 +244,30 @@ public class HardwareAbstraction {
 							.getDefaultSharedPreferences(appContext)
 							.edit()
 							.putString(
-									"deviceid_pref",
+									"lastdeviceid",
 									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-											.getString("lastdeviceid", "")).commit();
+											.getString("deviceid_pref", "")).commit();
 					MosesService.getInstance().noOnSharedPreferenceChanged(false);
-					syncDeviceInformation(true);
+					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+
+								@Override
+								public void execute() {
+									syncDeviceInformation(false);
+								}
+							});
 				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
 					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
 							MosesService.getInstance().getActivityContext(), true);
+				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
+					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+
+								@Override
+								public void execute() {
+									syncDeviceInformation(false);
+								}
+							});
 				} else {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Update device id FAILED! Invalid session id.");
 					MosesService.getInstance().noOnSharedPreferenceChanged(true);
@@ -314,13 +330,11 @@ public class HardwareAbstraction {
 					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 					C2DMManager.sendCurrentC2DM();
 					MosesService.getInstance().uploadFilter();
+				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
+					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
+							MosesService.getInstance().getActivityContext(), false);
 				} else {
-					if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
-						showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
-								MosesService.getInstance().getActivityContext(), false);
-					} else {
-						Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
-					}
+					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -349,7 +363,14 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							HardwareAbstraction.this.changeDeviceID(true);
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+									EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
+
+										@Override
+										public void execute() {
+											HardwareAbstraction.this.changeDeviceID(true);
+										}
+									});
 							arg0.dismiss();
 						}
 					});
@@ -373,7 +394,14 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().syncDeviceInformation(true);
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+									EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
+
+										@Override
+										public void execute() {
+											HardwareAbstraction.this.syncDeviceInformation(true);
+										}
+									});
 							arg0.dismiss();
 						}
 					});
