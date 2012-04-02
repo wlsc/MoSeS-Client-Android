@@ -51,6 +51,7 @@ public class ApkMethods {
 		@Override
 		public void postExecution(String s) {
 			JSONObject j = null;
+			Log.d("MoSeS.APK", "DownloadLinkRequest response: " + s);
 			try {
 				j = new JSONObject(s);
 				if (RequestDownloadlink.downloadLinkRequestAccepted(j)) {
@@ -60,8 +61,8 @@ public class ApkMethods {
 
 				} else {
 					Log.d("MoSeS.APK_METHODS",
-							"Request not successful! Server returned negative response");
-					this.handleException(new RuntimeException("abc"));
+							"Download link Request not successful! Server returned negative response: "+s);
+					this.handleException(new RuntimeException("Download link Request not successful! Server returned negative response: "+s));
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
