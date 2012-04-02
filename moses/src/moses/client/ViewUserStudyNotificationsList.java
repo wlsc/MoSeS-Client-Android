@@ -87,10 +87,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	 * Inits the controls.  
 	 */
 	private void initControls() {
-		if(UserstudyNotificationManager.getInstance() == null) {
-			UserstudyNotificationManager.init(this.getApplicationContext());
-		}
-		drawUserStudies();
+		refresherCalls();
 	}
 
 	private void drawUserStudies() {
