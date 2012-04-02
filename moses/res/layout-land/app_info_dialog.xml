@@ -37,6 +37,13 @@
             android:text="DESCRIPTION" />
     </ScrollView>
 
+    <TextView
+        android:id="@+id/sensorname"
+        android:layout_width="match_parent"
+        android:layout_height="0dip"
+        android:layout_weight="0.1"
+        android:text="Sensor Name" />
+
     <Gallery
         android:id="@+id/sensors"
         android:layout_width="match_parent"
@@ -52,22 +59,22 @@
         <Button
             android:id="@+id/close"
             android:layout_width="0dip"
-            android:layout_weight="0.3"
             android:layout_height="match_parent"
+            android:layout_weight="0.3"
             android:text="@string/close" />
 
         <Button
             android:id="@+id/startapp"
             android:layout_width="0dip"
-            android:layout_weight="0.3"
             android:layout_height="match_parent"
+            android:layout_weight="0.3"
             android:text="Start" />
 
         <Button
             android:id="@+id/update"
             android:layout_width="0dip"
-            android:layout_weight="0.3"
             android:layout_height="match_parent"
+            android:layout_weight="0.3"
             android:text="@string/update" />
     </LinearLayout>
 

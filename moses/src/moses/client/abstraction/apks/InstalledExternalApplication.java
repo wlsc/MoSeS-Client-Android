@@ -21,12 +21,16 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -120,7 +124,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		
 		this(packageName, externalApp, wasInstalledAsUserStudy, externalApp.getNewestVersion());
 	}
-
+	
 	/**
 	 * starts the application this object is referencing
 	 * 
@@ -153,6 +157,14 @@ public class InstalledExternalApplication extends ExternalApplication {
 			imageIds[i] = ESensor.values()[getSensors().get(i)].imageID();
 			alternateText[i] = ESensor.values()[getSensors().get(i)].name();
 		}
+		g.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				((TextView)d.findViewById(R.id.sensorname)).setText(((ImageView)arg1).getContentDescription());
+			}
+			
+		});
 		g.setAdapter(new ImageAdapter(baseActivity, imageIds, alternateText));
 		Button b = (Button)d.findViewById(R.id.startapp);
 		b.setOnClickListener(new OnClickListener() {
