@@ -13,10 +13,12 @@ public class ImageAdapter extends BaseAdapter {
     private Context mContext;
 
     private Integer[] mImageIds;
+    private String[] mAlternateText;
 
-    public ImageAdapter(Context c, Integer[] i) {
+    public ImageAdapter(Context c, Integer[] i, String[] a) {
         mContext = c;
         mImageIds = i;
+        mAlternateText = a;
     }
 
     public int getCount() {
@@ -34,9 +36,7 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = new ImageView(mContext);
         imageView.setImageResource(mImageIds[position]);
-        //imageView.setLayoutParams(new Gallery.LayoutParams(150, 100));
-        //imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-
+        imageView.setContentDescription(mAlternateText[position]);
         return imageView;
     }
 }

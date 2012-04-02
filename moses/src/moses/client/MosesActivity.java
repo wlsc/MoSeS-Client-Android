@@ -325,7 +325,6 @@ public class MosesActivity extends TabActivity {
 
 		boolean isShowUserStudyCall = getIntent().getStringExtra(
 				ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID) != null;
-		boolean isShowUpdateCall = getIntent().getStringExtra(EXTRA_UPDATE_APK_ID) != null;
 		if (isShowUserStudyCall) {
 			onLoginCompleteShowUserStudy = getIntent().getStringExtra(
 					ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
@@ -374,21 +373,7 @@ public class MosesActivity extends TabActivity {
 		if (UserstudyNotificationManager.getInstance() == null) {
 			UserstudyNotificationManager.init(this);
 		}
-
-		if(isShowUserStudyCall && isLoginInformationComplete()) {
-			firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
-		}
-		if(isShowUpdateCall) {
-			firstTabPreference = TAB_TAG_INSTALLED_APPS;
-			//TODO: maybe more; display some ui magic to show the update or whatever
-		}
 		initControls();
-		if (isShowUserStudyCall && isLoginInformationComplete()) {
-			// if a User study has to be shown, and username and password are
-			// set, redirect this
-			UserstudyNotificationManager.displayUserStudyContent(
-					onLoginCompleteShowUserStudy, this.getApplicationContext());
-		}
 	}
 
 	private Dialog mSplashDialog;
@@ -437,6 +422,18 @@ public class MosesActivity extends TabActivity {
 	}
 
 	private void initControls() {
+		
+		boolean isShowUserStudyCall = getIntent().getStringExtra(
+				ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID) != null;
+		boolean isShowUpdateCall = getIntent().getStringExtra(EXTRA_UPDATE_APK_ID) != null;
+		
+		if(isShowUserStudyCall && isLoginInformationComplete()) {
+			firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
+		}
+		if(isShowUpdateCall) {
+			firstTabPreference = TAB_TAG_INSTALLED_APPS;
+			//TODO: maybe more; display some ui magic to show the update or whatever
+		}
 
 		Resources res = getResources(); // Resource object to get Drawables
 		TabHost tabHost = getTabHost(); // The activity TabHost
@@ -507,6 +504,13 @@ public class MosesActivity extends TabActivity {
 						finish();
 					}
 				});
+		
+		if (isShowUserStudyCall && isLoginInformationComplete()) {
+			// if a User study has to be shown, and username and password are
+			// set, redirect this
+			UserstudyNotificationManager.displayUserStudyContent(
+					onLoginCompleteShowUserStudy, this.getApplicationContext());
+		}
 	}
 
 	/**
@@ -636,6 +640,14 @@ public class MosesActivity extends TabActivity {
 	 */
 	public static boolean isLoginInformationComplete() {
 		return isLoginInformationComplete(MosesService.getInstance());
+	}
+	
+	// Maybe needed later
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		setContentView(R.layout.main);
+		initControls();
 	}
 
 }

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.TextView;
@@ -116,16 +117,24 @@ public class InstalledExternalApplication extends ExternalApplication {
 	public void startApplication(final Activity baseActivity) {
 		final Dialog d = new Dialog(baseActivity);
 		d.setContentView(R.layout.app_info_dialog);
+		
+	    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+	    lp.copyFrom(d.getWindow().getAttributes());
+	    lp.width = WindowManager.LayoutParams.FILL_PARENT;
+	    lp.height = WindowManager.LayoutParams.FILL_PARENT;
+	    
 		TextView t = (TextView)d.findViewById(R.id.appname);
 		t.setText(getName());
 		t = (TextView)d.findViewById(R.id.description);
 		t.setText(getDescription());
 		Gallery g = (Gallery)d.findViewById(R.id.sensors);
 		Integer[] imageIds = new Integer[getSensors().size()];
+		String[] alternateText = new String[getSensors().size()];
 		for(int i = 0; i < getSensors().size(); ++i) {
 			imageIds[i] = ESensor.values()[getSensors().get(i)].imageID();
+			alternateText[i] = ESensor.values()[getSensors().get(i)].name();
 		}
-		g.setAdapter(new ImageAdapter(baseActivity, imageIds));
+		g.setAdapter(new ImageAdapter(baseActivity, imageIds, alternateText));
 		Button b = (Button)d.findViewById(R.id.startapp);
 		b.setOnClickListener(new OnClickListener() {
 			@Override
@@ -157,6 +166,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 			}
 		});
 		d.show();
+		d.getWindow().setAttributes(lp);
 	}
 
 	/**
