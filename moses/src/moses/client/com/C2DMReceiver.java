@@ -1,5 +1,6 @@
 package moses.client.com;
 
+import moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.C2DMManager;
 import moses.client.userstudy.UserstudyNotificationManager;
@@ -12,9 +13,11 @@ import android.widget.Toast;
 public class C2DMReceiver extends BroadcastReceiver {
 
 	private static final String C2DM_PUSH_MESSAGTYPE_USERSTUDY = "USERSTUDY";
+	private static final String C2DM_PUSH_MESSAGTYPE_UPDATE = "UPDATE";
 	public static final String EXTRAFIELD_USERSTUDY_NOTIFICATION = "UserStudyNotification";
 	private static final String C2DN_MESSAGETYPE_FIELD = "MESSAGE";
 	private static final String C2DN_USERSTUDY_APKID_FIELD = "APKID";
+	private static final String C2DN_UPDATE_APKID_FIELD = "APKID";
 	public static final String EXTRAFIELD_C2DM_ID = "c2dmId";
 
 	@Override
@@ -31,19 +34,33 @@ public class C2DMReceiver extends BroadcastReceiver {
 	private static void handleNotifications(Context context, Intent intent) {
 		String messagetype = intent.getExtras().getString(
 				C2DN_MESSAGETYPE_FIELD);
-		String apkidString = intent.getExtras().getString(
-				C2DN_USERSTUDY_APKID_FIELD);
 		boolean receivedGoodThing = false;
 		if (messagetype != null) {
 			if(messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
+				String apkidString = intent.getExtras().getString(
+						C2DN_USERSTUDY_APKID_FIELD);
 				if (apkidString != null) {
 					Log.i("MoSeS.C2DM",
 							"User study notification received!! APK ID = "
 									+ apkidString);
-					receivedGoodThing = true;
+					Log.i("MoSeS.USERSTUDY", "userstudy id incoming: " + apkidString);
+					UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
 				} else {
 					Log.i("MoSeS.C2DM",
 							"User study notification received but bad apkid (null)");
+				}
+			} else if(messagetype.equals(C2DM_PUSH_MESSAGTYPE_UPDATE)) {
+				String apkidString = intent.getExtras().getString(
+						C2DN_UPDATE_APKID_FIELD);
+				if (apkidString != null) {
+					Log.i("MoSeS.C2DM",
+							"update notification received!! APK ID = "
+									+ apkidString);
+					Log.i("MoSeS.UPDATE", "update incoming: " + apkidString);
+					InstalledExternalApplicationsManager.updateArrived(apkidString);
+				} else {
+					Log.i("MoSeS.C2DM",
+							"Update notification received but bad apkid (null)");
 				}
 			} else {
 				Log.w("MoSeS.C2DM", "Unhandled C2DM Message from type: " + messagetype);
@@ -52,12 +69,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 			Log.i("MoSeS.C2DM",
 					"Notification received but bad MESSAGE String (null)");
 		}
-
-		if (receivedGoodThing) {
-			//TODO: !remove
-			Log.i("MoSeS", "userstudy id incoming: " + apkidString);
-			UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
-		}
+		
 	}
 
 	private static void handleC2DMRegistrationMsgFromGoogle(Context context, Intent intent) {

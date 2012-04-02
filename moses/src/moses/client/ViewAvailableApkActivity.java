@@ -28,7 +28,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -357,14 +359,23 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 
 	private void handleInstallApp(ExternalApplication app) {
 		final ApkDownloadManager downloader = new ApkDownloadManager(app, getApplicationContext());
+		final ProgressDialog progressDialog = ProgressDialog.show(this, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				downloader.cancel();
+			}
+		});
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					progressDialog.dismiss();
 					showMessageBoxErrorDownloading(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
+					progressDialog.dismiss();
 					showMessageBoxErrorNoConnection(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
+					progressDialog.dismiss();
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult());
 				}
 			}

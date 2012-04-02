@@ -252,14 +252,23 @@ public class ViewUserStudyActivity extends Activity {
 	protected void downloadUserstudyApp(final UserStudyNotification notification) {
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
 				getApplicationContext());
+		final ProgressDialog progressDialog = ProgressDialog.show(this, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				downloader.cancel();
+			}
+		});
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
+					progressDialog.dismiss();
 					showMessageBoxErrorNoConnection(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					progressDialog.dismiss();
 					showMessageBoxErrorDownloading(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
+					progressDialog.dismiss();
 					installDownloadedApk(downloader.getDownloadedApk(), downloader.getExternalApplicationResult(),
 							notification);
 				}

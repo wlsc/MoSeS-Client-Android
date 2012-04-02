@@ -62,6 +62,8 @@ public class MosesActivity extends TabActivity {
 
 	private static final String TAB_TAG_INSTALLED_APPS = "installedApps";
 
+	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
+
 	private static boolean showsplash = true;
 
 	public enum results {
@@ -323,6 +325,7 @@ public class MosesActivity extends TabActivity {
 
 		boolean isShowUserStudyCall = getIntent().getStringExtra(
 				ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID) != null;
+		boolean isShowUpdateCall = getIntent().getStringExtra(EXTRA_UPDATE_APK_ID) != null;
 		if (isShowUserStudyCall) {
 			onLoginCompleteShowUserStudy = getIntent().getStringExtra(
 					ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
@@ -373,7 +376,11 @@ public class MosesActivity extends TabActivity {
 		}
 
 		if(isShowUserStudyCall && isLoginInformationComplete()) {
-			firstTabPreference  = TAB_TAG_AVAILABLE_USER_STUDIES;
+			firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
+		}
+		if(isShowUpdateCall) {
+			firstTabPreference = TAB_TAG_INSTALLED_APPS;
+			//TODO: maybe more; display some ui magic to show the update or whatever
 		}
 		initControls();
 		if (isShowUserStudyCall && isLoginInformationComplete()) {

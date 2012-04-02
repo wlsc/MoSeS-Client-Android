@@ -42,14 +42,14 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 	private int retriesCheckValidState = 0;
 	private void refreshInstalledApplications() {
 		if(MosesActivity.checkInstalledStatesOfApks() == null) {
-			if(retriesCheckValidState < 2) {
+			if(retriesCheckValidState < 4) {
 				Handler delayedRetryHandler = new Handler();
 				delayedRetryHandler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
 						refreshInstalledApplications();
 					}
-				}, 3000);
+				}, 1500);
 				retriesCheckValidState++;
 			} else {
 				//TODO:show error when all retries didn't work?

@@ -234,10 +234,8 @@ public class ApkMethods {
 		try {
 			context.getPackageManager().getApplicationInfo(packageName, 0);
 		} catch (NameNotFoundException e) {
-			Log.i("MoSeS.BLA", "false");
 			return false;
 		}
-		Log.i("MoSeS.BLA", "true");
 		return true;
 	}
 

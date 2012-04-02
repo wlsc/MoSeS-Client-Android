@@ -192,10 +192,11 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 		TextView instructionsView = (TextView) findViewById(R.id.userstudyListHeaderInstructions);
 		if(instructionsView != null) {
 			//TODO: check if there is no notification WITH DATA (or just load all descriptions/names in this activity, too)
+			String staticStr = "A user study is an app which has been released to a limited number of devices for testing.";
 			if(applications.size() == 0) {
-				instructionsView.setText("No user studies available.");
+				instructionsView.setText(staticStr+"\nNo user studies available.");
 			} else {
-				instructionsView.setText("Click on a user study to see the details.");
+				instructionsView.setText(staticStr+"\nClick on a user study to see the details.");
 			}
 		}
 		

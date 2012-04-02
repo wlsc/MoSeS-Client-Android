@@ -32,7 +32,7 @@ public class ExternalApplication {
 	// lazy loading variables for non-defining attributes
 	private String name;
 	private String description;
-	private String newestVersion;
+	private String newestVersion="0";
 	private List<Integer> sensors = null;
 
 	public String getID() {

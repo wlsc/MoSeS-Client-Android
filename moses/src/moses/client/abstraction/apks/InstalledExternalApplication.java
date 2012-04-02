@@ -49,6 +49,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 		
 		this.wasInstalledAsUserStudy = wasInstalledAsUserStudy;
 		this.packageName = packageName;
+		
+		this.updateAvailable = false;
 	}
 	
 	/**
@@ -200,20 +202,23 @@ public class InstalledExternalApplication extends ExternalApplication {
 	@Override
 	public String asOnelineString() {
 		return super.asOnelineString() + SEPARATOR + this.getPackageName() + SEPARATOR
-			+ Boolean.valueOf(wasInstalledAsUserStudy).toString() + SEPARATOR + installedVersion;
+			+ Boolean.valueOf(wasInstalledAsUserStudy).toString() + SEPARATOR + installedVersion + SEPARATOR + Boolean.valueOf(updateAvailable).toString();
 	}
 
 	/**
 	 * creates an installed external application from a string (@see {@link #asOnelineString()})
 	 * 
-	 * @param s the string-exncoded installed external application
+	 * @param s the string-encoded installed external application
 	 * @return the decoded installed external application
 	 */
 	public static InstalledExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(SEPARATOR);
 		ExternalApplication exApp = ExternalApplication.fromOnelineString(split[0]);
-		return new InstalledExternalApplication(split[1], exApp, 
+		InstalledExternalApplication result = new InstalledExternalApplication(split[1], exApp, 
 			Boolean.parseBoolean(split[2]), split[3]);
+		boolean isUpdateAvailable = Boolean.parseBoolean(split[4]);
+		result.setUpdateAvailable(isUpdateAvailable);
+		return result;
 	}
 
 	public boolean isUpdateAvailable() {

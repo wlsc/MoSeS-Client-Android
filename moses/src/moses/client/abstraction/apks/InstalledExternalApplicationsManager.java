@@ -11,6 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import moses.client.service.MosesService;
+import moses.client.service.helpers.UpdateStatusBarHelper;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.util.Log;
@@ -26,7 +28,7 @@ import android.util.Log;
 public class InstalledExternalApplicationsManager {
 	private List<InstalledExternalApplication> apps;
 	private static InstalledExternalApplicationsManager defaultInstance;
-	private static int managerVersion = 6;
+	private static int managerVersion = 8;
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -104,6 +106,33 @@ public class InstalledExternalApplicationsManager {
 			if (app.getPackageName().equals(packageName)) return true;
 		}
 		return false;
+	}
+	
+	public InstalledExternalApplication getAppForId(String id) {
+		for (InstalledExternalApplication app : apps) {
+			if (app.getID().equals(id)) return app;
+		}
+		return null;
+	}
+	public boolean containsAppForId(String id) {
+		return getAppForId(id) != null;
+	}
+	
+	public void updateApp(InstalledExternalApplication app) {
+		if(containsAppForId(app.getID())) {
+			forgetExternalApplication(app.getID());
+			addExternalApplication(app);
+		}
+	}
+
+	/**
+	 * see: {@link #forgetExternalApplication(InstalledExternalApplication)}
+	 * 
+	 * @param id the id of the apop to forget
+	 */
+	private void forgetExternalApplication(String id) {
+		InstalledExternalApplication app = getAppForId(id);
+		forgetExternalApplication(app);
 	}
 
 	/**
@@ -235,5 +264,38 @@ public class InstalledExternalApplicationsManager {
 
 	public void reset() {
 		apps.clear();
+	}
+
+	public static void updateArrived(String apkidString) {
+		if(getInstance() == null) {
+			if(MosesService.getInstance() != null) {
+				init(MosesService.getInstance());
+			} else {
+				Log.e("MoSeS.Update", "Could not initialize Installed External Application Manager because of dead MoSeS Service, and such not save the incoming update for " + apkidString);
+			}
+		}
+		if(getInstance() != null) {
+			InstalledExternalApplicationsManager m = getInstance();
+			if(m.containsAppForId(apkidString)) {
+				InstalledExternalApplication app = m.getAppForId(apkidString);
+				app.setUpdateAvailable(true);
+				m.updateApp(app);
+				try {
+					m.saveToDisk(MosesService.getInstance());
+				} catch (IOException e) {
+					Log.e("MoSeS.UPDATE", "Could not save manager with new update data to file", e);
+				}
+				
+				if(MosesService.getInstance() != null) {
+					UpdateStatusBarHelper.displayStatusBarNotification(app.getID(), MosesService.getInstance());
+				} else {
+					Log.e("MoSeS.UPDATE", "MoSesService is dead, so no notification about the update could be shown");
+				}
+			} else {
+				Log.w("MoSeS.UPDATE", "The app for which an update arrived is not installed; update will be forgotten. apkid: " + apkidString);
+			}
+		} else {
+			Log.e("MoSeS.UPDATE", "Could not save incoming update to manager");
+		}
 	}
 }

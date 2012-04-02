@@ -35,6 +35,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	private State state;
 	private ExternalApplication externalApplicationResult;
 	private File downloadedApk;
+	private boolean cancelled = false;
 
 	/**
 	 * Creates this download manager with an observer which will be notified
@@ -71,9 +72,11 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * @param state
 	 */
 	private void setState(State state) {
-		this.state = state;
-		this.setChanged();
-		this.notifyObservers(state);
+		if(!cancelled) {
+			this.state = state;
+			this.setChanged();
+			this.notifyObservers(state);
+		}
 	}
 
 	/**
@@ -108,10 +111,17 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	}
 
 	private void requestApkDownload(URL url) {
-		ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context, generateApkFileNameFor(app));
-		downloadTask.setExternalApplicationReference(app);
-		setState(State.APK_FILE_REQUESTED_DOWNLOADING);
-		downloadTask.execute();
+		if(!cancelled) {
+			if(MosesService.isOnline(context)) {
+				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context, generateApkFileNameFor(app));
+				downloadTask.setExternalApplicationReference(app);
+				setState(State.APK_FILE_REQUESTED_DOWNLOADING);
+				downloadTask.execute();
+			} else {
+				errorMsg = "No internet connection";
+				setState(State.ERROR_NO_CONNECTION);
+			}
+		}
 	}
 
 	@Override
@@ -164,6 +174,10 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 
 	public File getDownloadedApk() {
 		return downloadedApk;
+	}
+
+	public void cancel() {
+		cancelled = true;
 	}
 
 }
