@@ -1,10 +1,14 @@
 package moses.client.com.requests;
 
+import moses.client.abstraction.HardwareAbstraction;
 import moses.client.com.NetworkJSON;
 import moses.client.com.ReqTaskExecutor;
+import moses.client.service.MosesService;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.preference.PreferenceManager;
 
 public class RequestInstalledAPK {
 	ReqTaskExecutor e;
@@ -14,8 +18,12 @@ public class RequestInstalledAPK {
 		j = new JSONObject();
 		this.e = e;
 		try {
+			String userid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+					"username_pref", "");
 			j.put("MESSAGE", "APK_INSTALLED");
 			j.put("SESSIONID", sessionID);
+			j.put("DEVICEID", HardwareAbstraction.extractDeviceId());
+			j.put("USERID", userid);
 			j.put("APKID", appId);
 		} catch (JSONException ex) {
 			e.handleException(ex);
