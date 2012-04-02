@@ -41,13 +41,13 @@
         android:id="@+id/sensors"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="0.2" />
+        android:layout_weight="0.1" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="0dip"
-        android:layout_weight="0.1" >
+        android:layout_weight="0.2" >
 
         <Button
             android:id="@+id/close"
