@@ -49,11 +49,26 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/userstudyIndicator"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.01"
+        android:orientation="vertical" >
+    
+    	<TextView
+        android:id="@+id/userstudyIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
         android:text="User study" />
-
+    	
+    	<TextView
+        android:id="@+id/updateIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textColor="#22BB22"
+        android:text="Update available" />
+    
+    </LinearLayout>
 </LinearLayout>

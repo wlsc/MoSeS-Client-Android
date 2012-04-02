@@ -1,5 +1,9 @@
 package moses.client;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +34,29 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 
 	private ListView listView;
 	private List<InstalledExternalApplication> installedApps;
+	private Comparator<? super InstalledExternalApplication> installedAppListComparator = new Comparator<InstalledExternalApplication>() {
+		@Override
+		public int compare(InstalledExternalApplication lhs, InstalledExternalApplication rhs) {
+			if(rhs == null && lhs == null) {
+				return 0;
+			}
+			if(rhs != null && lhs == null) {
+				return -1;
+			}
+			if(rhs == null && lhs != null) {
+				return 1;
+			}
+			if((rhs.isUpdateAvailable() && lhs.isUpdateAvailable()) || (!rhs.isUpdateAvailable() && !lhs.isUpdateAvailable())) {
+				if(rhs.getName().equals(lhs.getName())) {
+					return Integer.valueOf(rhs.hashCode()).compareTo(lhs.hashCode());
+				}
+				return rhs.getName().compareTo(lhs.getName());
+			}
+			if(rhs.isUpdateAvailable()) return -1;
+			return 1;
+		}
+		
+	};
 
 	/**
 	 * Inits the controls.
@@ -40,6 +67,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 
 	//variable for limiting retries for requesting a check of validity of the installed apks database
 	private int retriesCheckValidState = 0;
+
 	private void refreshInstalledApplications() {
 		if(MosesActivity.checkInstalledStatesOfApks() == null) {
 			if(retriesCheckValidState < 4) {
@@ -58,11 +86,20 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		} else {
 			retriesCheckValidState = 0;
 		}
-		installedApps = new LinkedList<InstalledExternalApplication>(
-				InstalledExternalApplicationsManager.getInstance().getApps());
+		if(InstalledExternalApplicationsManager.getInstance() == null) InstalledExternalApplicationsManager.init(this);
+		installedApps = sortForDisplay(new LinkedList<InstalledExternalApplication>(
+				InstalledExternalApplicationsManager.getInstance().getApps()));
 		populateList(installedApps);
 	}
 	
+	private List<InstalledExternalApplication> sortForDisplay(Collection<InstalledExternalApplication> linkedList) {
+		if(linkedList == null) throw new RuntimeException("installed app list was null");
+		List<InstalledExternalApplication> sortedList = new ArrayList<InstalledExternalApplication>(linkedList);
+		Comparator<? super InstalledExternalApplication> comparator = installedAppListComparator;
+		Collections.sort(sortedList, comparator);
+		return sortedList;
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -124,6 +161,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 			rowMap.put("name", app.getName());
 			rowMap.put("description", app.getDescription());
 			rowMap.put("userstudyIndicator", app.wasInstalledAsUserStudy()?"user study":"");
+			rowMap.put("updateIndicator", app.wasInstalledAsUserStudy()?"update available":"");
 			listContent.add(rowMap);
 
 		}

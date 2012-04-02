@@ -54,7 +54,7 @@ public class UpdateStatusBarHelper {
 
 	protected static void showNotificationStatic(Intent intent, String apkId, InstalledExternalApplication app, Context context) {
 		Log.i("MoSeS.USERSTUDY", "try to display update notification in taskbar");
-		showNotificationStatic(intent, "An update is available for the app " + app.getName() + ".", "MoSeS",
+		showNotificationStatic(intent, "An update is available for the app \"" + app.getName() + "\".", "MoSeS",
 			false, notificationManagerIdForApkId(apkId), context);
 	}
 
