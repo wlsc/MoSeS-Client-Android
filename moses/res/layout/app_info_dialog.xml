@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:maxWidth="300dip"
+    android:maxHeight="500dip"
     android:orientation="vertical" >
 
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.2" >
+        android:layout_height="wrap_content" >
 
         <ImageView
             android:id="@+id/appimage"
@@ -17,12 +18,27 @@
             android:src="@drawable/ic_launcher" />
 
         <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name: "
+            android:textStyle="bold"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
             android:id="@+id/appname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="APP NAME"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
+
+        <TextView
+            android:id="@+id/desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Application description: "
+            android:textStyle="bold" />
 
     <ScrollView
         android:id="@+id/scrollView1"
@@ -37,22 +53,39 @@
             android:text="DESCRIPTION" />
     </ScrollView>
 
-    <TextView
-        android:id="@+id/sensorname"
+    <LinearLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.1"
-        android:text="Sensor Name" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sensor: "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/sensorname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="" />
+
+    </LinearLayout>
 
     <Gallery
         android:id="@+id/sensors"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="0.2" />
+        android:layout_height="36dp"
+        android:spacing="1dip" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
+        android:minHeight="20dp"
+        android:maxHeight="40dp"
+        android:maxWidth="40dp"
         android:layout_height="0dip"
         android:layout_weight="0.1" >
 

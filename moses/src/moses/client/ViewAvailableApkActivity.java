@@ -15,12 +15,14 @@ import org.json.JSONException;
 
 import moses.client.abstraction.ApkListRequestObserver;
 import moses.client.abstraction.ApkMethods;
+import moses.client.abstraction.ESensor;
 import moses.client.abstraction.ExternalApplicationInfoRetriever;
 import moses.client.abstraction.HardwareAbstraction;
 import moses.client.abstraction.apks.APKInstalled;
 import moses.client.abstraction.apks.ApkDownloadManager;
 import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
+import moses.client.abstraction.apks.ImageAdapter;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
 import moses.client.service.helpers.ExecutorWithObject;
@@ -33,19 +35,25 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * Viewing and installing apks from the server
@@ -84,7 +92,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	public void apkInstallClickHandler(View v) {
-		if (MosesService.isOnline(getApplicationContext())) {
+		if (MosesService.isOnline(getApplicationContext()) && v != null) {
 			int pos = listView.getPositionForView(v);
 			final ExternalApplication app = externalApps.get(pos);
 			showAppInfo(app, this, new Runnable() {
@@ -94,7 +102,8 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				}
 			}, new Runnable() {
 				@Override
-				public void run() {}
+				public void run() {
+				}
 			});
 		} else {
 			showNoConnectionInfoBox();
@@ -113,30 +122,64 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				.show();
 	}
 
-	public static void showAppInfo(final ExternalApplication app, Activity baseActivity, final Runnable installAppClickAction, final Runnable cancelClickAction) {
-		final Dialog myDialog = new Dialog(baseActivity);
-		myDialog.setContentView(R.layout.view_app_info_layout);
-		myDialog.setTitle("App informations:");
-		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: " + app.getName());
-		((TextView) myDialog.findViewById(R.id.appinfodialog_descr)).setText("" + app.getDescription());
-		((Button) myDialog.findViewById(R.id.appinfodialog_installbtn)).setOnClickListener(new View.OnClickListener() {
+	public static void showAppInfo(final ExternalApplication app, Activity baseActivity,
+			final Runnable installAppClickAction, final Runnable cancelClickAction) {
+		ProgressDialog pd = new ProgressDialog(baseActivity);
+		pd.setTitle("Application informations:");
+		pd.setMessage("Retreiving data...");
+		pd.show();
+		final Dialog d = new Dialog(baseActivity);
+		d.setContentView(R.layout.app_info_dialog);
+		d.setTitle("App informations:");
+		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		lp.copyFrom(d.getWindow().getAttributes());
+		lp.width = WindowManager.LayoutParams.FILL_PARENT;
+		lp.height = WindowManager.LayoutParams.FILL_PARENT;
+
+		TextView t = (TextView) d.findViewById(R.id.appname);
+		t.setText(app.getName());
+		t = (TextView) d.findViewById(R.id.description);
+		t.setText(app.getDescription());
+		Gallery g = (Gallery) d.findViewById(R.id.sensors);
+		Integer[] imageIds = new Integer[app.getSensors().size()];
+		String[] alternateText = new String[app.getSensors().size()];
+		for (int i = 0; i < app.getSensors().size(); ++i) {
+			imageIds[i] = ESensor.values()[app.getSensors().get(i)].imageID();
+			alternateText[i] = ESensor.values()[app.getSensors().get(i)].toString();
+		}
+		g.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				((TextView) d.findViewById(R.id.sensorname)).setText(((ImageView) arg1).getContentDescription());
+			}
+
+		});
+		g.setAdapter(new ImageAdapter(baseActivity, imageIds, alternateText));
+		Button b = (Button) d.findViewById(R.id.startapp);
+		b.setText("Install");
+		b.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Log.i("MoSes.Install", "starting install process for app " + app.toString());
-				myDialog.dismiss();
+				d.dismiss();
 				installAppClickAction.run();
 			}
 		});
-		((Button) myDialog.findViewById(R.id.appinfodialog_cancelbtn)).setOnClickListener(new View.OnClickListener() {
+		b = (Button)d.findViewById(R.id.update);
+		b.setVisibility(View.GONE);
+		b = (Button)d.findViewById(R.id.close);
+		b.setOnClickListener(new OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
-				myDialog.dismiss();
+				d.dismiss();
 				cancelClickAction.run();
 			}
 		});
-
-		myDialog.setOwnerActivity(baseActivity);
-		myDialog.show();
+		pd.dismiss();
+		d.show();
+		d.getWindow().setAttributes(lp);
 	}
 
 	/**
@@ -382,7 +425,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 
 								@Override
 								public void run() {
-									progressDialog.incrementProgressBy(u-progressDialog.getProgress());
+									progressDialog.incrementProgressBy(u - progressDialog.getProgress());
 								}
 							});
 

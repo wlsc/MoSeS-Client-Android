@@ -136,12 +136,12 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 */
 	public void startApplication(final Activity baseActivity) {
 		ProgressDialog pd = new ProgressDialog(baseActivity);
-		pd.setTitle("Application info");
+		pd.setTitle("Application informations:");
 		pd.setMessage("Retreiving data...");
 		pd.show();
 		final Dialog d = new Dialog(baseActivity);
 		d.setContentView(R.layout.app_info_dialog);
-		
+		d.setTitle("Application informations:");
 	    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 	    lp.copyFrom(d.getWindow().getAttributes());
 	    lp.width = WindowManager.LayoutParams.FILL_PARENT;
@@ -156,7 +156,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		String[] alternateText = new String[getSensors().size()];
 		for(int i = 0; i < getSensors().size(); ++i) {
 			imageIds[i] = ESensor.values()[getSensors().get(i)].imageID();
-			alternateText[i] = ESensor.values()[getSensors().get(i)].name();
+			alternateText[i] = ESensor.values()[getSensors().get(i)].toString();
 		}
 		g.setOnItemClickListener(new OnItemClickListener() {
 
