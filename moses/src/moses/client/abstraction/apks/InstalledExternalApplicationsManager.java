@@ -86,7 +86,7 @@ public class InstalledExternalApplicationsManager {
 		} else {
 			for (Iterator<InstalledExternalApplication> iterator = apps.iterator(); iterator.hasNext();) {
 				InstalledExternalApplication currentApp = iterator.next();
-				if (currentApp.getPackageName().equals(app.getPackageName())) {
+				if (currentApp.getPackageName().equals(app.getPackageName()) || currentApp.getID().equals(app.getID())) {
 					iterator.remove();
 				}
 			}
@@ -141,7 +141,7 @@ public class InstalledExternalApplicationsManager {
 	 * 
 	 */
 	public boolean containsApp(InstalledExternalApplication app) {
-		return containsApp(app.getPackageName());
+		return containsApp(app.getPackageName()) || containsAppForId(app.getID());
 	}
 
 	/**

@@ -292,16 +292,24 @@ public class ViewUserStudyActivity extends Activity {
 	}
 	
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
+		showMessageBoxError("Error", 
+				"An error occured when trying to download the app: " + downloader.getErrorMsg()+".\nSorry!", 
+				cancelActivityOnClickListener());
+	}
+	
+	protected void showMessageBoxError(String title, String msg, DialogInterface.OnClickListener onClickListener) {
 		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
-				.setMessage(
-						"An error occured when trying to download the app: " + downloader.getErrorMsg()
-						+".\nSorry!")
-				.setTitle("Error").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int whichButton) {
-						cancelActivity();
-					}
-				}).show();
+				.setMessage(msg)
+				.setTitle(title).setCancelable(true)
+				.setNeutralButton("OK", onClickListener).show();
+	}
+	
+	private DialogInterface.OnClickListener cancelActivityOnClickListener() {
+		return new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				cancelActivity();
+			}
+		};
 	}
 	
 	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef,
@@ -311,7 +319,7 @@ public class ViewUserStudyActivity extends Activity {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
-					cancelActivity();
+					showMessageBoxError("Error", "An error occured when installing the user study app. Sorry!", cancelActivityOnClickListener());
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					cancelActivity();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {

@@ -52,7 +52,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 				}
 				return rhs.getName().compareTo(lhs.getName());
 			}
-			if(rhs.isUpdateAvailable()) return -1;
+			if(lhs.isUpdateAvailable()) return -1;
 			return 1;
 		}
 		
@@ -161,7 +161,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 			rowMap.put("name", app.getName());
 			rowMap.put("description", app.getDescription());
 			rowMap.put("userstudyIndicator", app.wasInstalledAsUserStudy()?"user study":"");
-			rowMap.put("updateIndicator", app.wasInstalledAsUserStudy()?"update available":"");
+			rowMap.put("updateIndicator", app.isUpdateAvailable()?"update available":"");
 			listContent.add(rowMap);
 
 		}
@@ -169,8 +169,8 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 			this, 
 			listContent,
 			R.layout.installedapplistitem,
-			new String[] { "name","description","userstudyIndicator" },
-			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription, R.id.userstudyIndicator } );
+			new String[] { "name","description","userstudyIndicator", "updateIndicator" },
+			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription, R.id.userstudyIndicator, R.id.updateIndicator } );
 		
 		listView.setAdapter(contentAdapter);
 	}

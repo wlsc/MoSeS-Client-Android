@@ -29,6 +29,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
@@ -85,7 +86,12 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		if(MosesService.isOnline(getApplicationContext())) {
 			int pos = listView.getPositionForView(v);
 			final ExternalApplication app = externalApps.get(pos);
-			showAppInfo(app);
+			showAppInfo(app, this, new Runnable() {
+				@Override
+				public void run() {
+					handleInstallApp(app);
+				}
+			});
 		} else {
 			showNoConnectionInfoBox();
 		}
@@ -103,8 +109,8 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	      .show();
 	}
 
-	private void showAppInfo(final ExternalApplication app) {
-		final Dialog myDialog = new Dialog(this);
+	public static void showAppInfo(final ExternalApplication app, Activity baseActivity, final Runnable installAppClickAction) {
+		final Dialog myDialog = new Dialog(baseActivity);
 		myDialog.setContentView(R.layout.view_app_info_layout);
 		myDialog.setTitle("App informations:");
 		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: "
@@ -116,7 +122,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			public void onClick(View v) {
 				Log.i("MoSes.Install", "starting install process for app " + app.toString());
 				myDialog.dismiss();
-				handleInstallApp(app);
+				installAppClickAction.run();
 			}
 		});
 		((Button) myDialog.findViewById(R.id.appinfodialog_cancelbtn)).setOnClickListener(new View.OnClickListener() {
@@ -126,7 +132,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			}
 		});
 
-		myDialog.setOwnerActivity(this);
+		myDialog.setOwnerActivity(baseActivity);
 		myDialog.show();
 	}
 

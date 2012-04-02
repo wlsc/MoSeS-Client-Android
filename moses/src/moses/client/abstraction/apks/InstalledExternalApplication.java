@@ -1,11 +1,25 @@
 package moses.client.abstraction.apks;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
+
 import moses.client.R;
+import moses.client.ViewUserStudyActivity;
 import moses.client.abstraction.ApkMethods;
 import moses.client.abstraction.ESensor;
+import moses.client.abstraction.ExternalApplicationInfoRetriever;
+import moses.client.abstraction.ExternalApplicationInfoRetriever.State;
+import moses.client.userstudy.UserStudyNotification;
+import moses.client.userstudy.UserstudyNotificationManager;
+import moses.client.userstudy.UserStudyNotification.Status;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.view.View;
@@ -154,11 +168,28 @@ public class InstalledExternalApplication extends ExternalApplication {
 		
 		b = (Button)d.findViewById(R.id.update);
 		b.setVisibility(updateAvailable ? View.VISIBLE : View.GONE);
+
+		final UpdateObserver updateObserver = new UpdateObserver() {
+			@Override
+			public void unsuccessful_exit() {
+				//Message should've been already shown; just do nothing here
+				d.show();
+			}
+			@Override
+			public void success(InstalledExternalApplication updatedApp) {
+				d.dismiss();
+			}
+			@Override
+			public void manual_abort() {
+				d.show();
+			}
+		};
 		b.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO UPDATE METHOD
+				d.hide();
+				InstalledExternalApplication.this.fetchUpdatedInfo(baseActivity, updateObserver);
 			}
 		});
 		
@@ -174,6 +205,127 @@ public class InstalledExternalApplication extends ExternalApplication {
 		d.show();
 		d.getWindow().setAttributes(lp);
 	}
+
+	protected void fetchUpdatedInfo(final Activity baseActivity, final UpdateObserver o) {
+		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(this.getID(), baseActivity);
+		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Loading...", "Loading userstudy information", true, true, new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				o.manual_abort();
+			}
+		});
+		infoRequester.sendEvenWhenNoNetwork = false;
+		infoRequester.addObserver(new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if (infoRequester.getState() == State.DONE) {
+					ExternalApplication updatedApplication = new ExternalApplication(InstalledExternalApplication.this.getID());
+					updatedApplication.setName(infoRequester.getResultName());
+					updatedApplication.setDescription(infoRequester.getResultDescription());
+					updatedApplication.setSensors(infoRequester.getResultSensors());
+					progressDialog.dismiss();
+					startInstallUpdate(updatedApplication, baseActivity, o);
+				}
+				if (infoRequester.getState() == State.ERROR) {
+					Log.e("MoSeS.USERSTUDY",
+							"Wanted to display user study, but couldn't get app informations because of: ",
+							infoRequester.getException());
+					progressDialog.dismiss();
+					showMessageBoxError(baseActivity, "Error", "Error when retrieving update information.", errorMessageBoxOkayBtnListener(o));
+				}
+				if (infoRequester.getState() == State.NO_NETWORK) {
+					Log.d("MoSeS.USERSTUDY",
+							"Wanted to display user study, but couldn't get app informations because of: ",
+							infoRequester.getException());
+					progressDialog.dismiss();
+					showMessageBoxErrorNoConnection(baseActivity, o);
+				}
+			}
+		});
+		infoRequester.start();
+	}
+
+	protected void startInstallUpdate(final ExternalApplication updatedApplication, final Activity baseActivity, final UpdateObserver o) {
+		final ApkDownloadManager downloader = new ApkDownloadManager(this,
+				baseActivity);
+		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				downloader.cancel();
+				o.manual_abort();
+			}
+		});
+		Observer observer = new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
+					progressDialog.dismiss();
+					showMessageBoxErrorNoConnection(baseActivity, o);
+				} else if (downloader.getState() == ApkDownloadManager.State.ERROR) {
+					progressDialog.dismiss();
+					showMessageBoxErrorDownloading(downloader, baseActivity, o);
+				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
+					progressDialog.dismiss();
+					installDownloadedApk(downloader.getDownloadedApk(), updatedApplication, baseActivity, o);
+				}
+			}
+		};
+		downloader.addObserver(observer);
+		downloader.start();
+	}
+	
+	///-----------------------------
+	
+	private void installDownloadedApk(final File result, final ExternalApplication updatedApplication, final Activity baseActivity, final UpdateObserver o) {
+		final ApkInstallManager installer = new ApkInstallManager(result, this);
+		installer.addObserver(new Observer() {
+			@Override
+			public void update(Observable observable, Object data) {
+				if (installer.getState() == ApkInstallManager.State.ERROR) {
+					showMessageBoxError(baseActivity, "Error", "An error occured when installing the user study app. Sorry!", errorMessageBoxOkayBtnListener(o));
+				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
+					o.manual_abort();
+				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
+					try {
+						o.success(ApkInstallManager.registerInstalledApk(result, updatedApplication,
+								baseActivity, InstalledExternalApplication.this.wasInstalledAsUserStudy()));
+					} catch (IOException e) {
+						Log.e("MoSeS.Install",
+								"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
+						showMessageBoxError(baseActivity, "Error", "An error occured when saving the app database.", errorMessageBoxOkayBtnListener(o));
+					}
+				}
+			}
+		});
+		installer.start();
+	}
+	
+	protected void showMessageBoxErrorNoConnection(Activity baseActivity, UpdateObserver o) {
+		showMessageBoxError(baseActivity, "No connection", "There seems to be no open internet connection present for downloading the app.", errorMessageBoxOkayBtnListener(o));
+	}
+	
+	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader, Activity baseActivity, UpdateObserver o) {
+		showMessageBoxError(baseActivity, "Error", 
+				"An error occured when trying to download the app: " + downloader.getErrorMsg()+".\nSorry!", 
+				errorMessageBoxOkayBtnListener(o));
+	}
+	
+	protected void showMessageBoxError(Activity baseActivity, String title, String msg, DialogInterface.OnClickListener onClickListener) {
+		AlertDialog alertDialog = new AlertDialog.Builder(baseActivity)
+				.setMessage(msg)
+				.setTitle(title).setCancelable(true)
+				.setNeutralButton("OK", onClickListener).show();
+	}
+
+	private DialogInterface.OnClickListener errorMessageBoxOkayBtnListener(final UpdateObserver o) {
+		return new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+				o.unsuccessful_exit();
+			}
+		};
+	}
+	
+	//----------------------------------
 
 	/**
 	 * @return the package name of the referenced application
