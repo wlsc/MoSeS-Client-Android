@@ -272,8 +272,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	}
 
 	protected void startInstallUpdate(final ExternalApplication updatedApplication, final Activity baseActivity, final UpdateObserver o) {
-		final ApkDownloadManager downloader = new ApkDownloadManager(this,
-				baseActivity);
+		final ApkDownloadManager downloader = new ApkDownloadManager(this, baseActivity, null);
 		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
