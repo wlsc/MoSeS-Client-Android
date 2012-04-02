@@ -22,6 +22,7 @@ import moses.client.service.MosesService;
 import moses.client.service.helpers.EHookTypes;
 import moses.client.service.helpers.EMessageTypes;
 import moses.client.service.helpers.Executor;
+import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.userstudy.UserStudyNotification;
 import moses.client.userstudy.UserStudyNotification.Status;
 import moses.client.userstudy.UserstudyNotificationManager;
@@ -98,7 +99,7 @@ public class ViewUserStudyActivity extends Activity {
 	private void showActivityForNotification(UserStudyNotification notification) {
 		if (notification != null) {
 			this.handleSingleNotificationData = notification;
-			if(!notification.isDataComplete()) {
+			if (!notification.isDataComplete()) {
 				requestApkInfo(notification.getApplication().getID());
 			} else {
 				showDescisionDialog(notification);
@@ -124,12 +125,13 @@ public class ViewUserStudyActivity extends Activity {
 
 	private void requestApkInfo(final String id) {
 		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(id, this);
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "Loading...", "Loading userstudy information", true, true, new OnCancelListener() {
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				
-			}
-		});
+		final ProgressDialog progressDialog = ProgressDialog.show(this, "Loading...", "Loading userstudy information",
+				true, true, new OnCancelListener() {
+					@Override
+					public void onCancel(DialogInterface dialog) {
+
+					}
+				});
 		infoRequester.sendEvenWhenNoNetwork = false;
 		infoRequester.addObserver(new Observer() {
 			@Override
@@ -170,10 +172,10 @@ public class ViewUserStudyActivity extends Activity {
 	protected void showMessageBoxError(ExternalApplicationInfoRetriever infoRequester) {
 		final AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
-						"An error occured when retrieving the informations for a user study: " + infoRequester.getErrorMessage()
-						+".\nSorry! This was a shock for both of us. Maybe you could try again from the user study tab later? Thanks!")
-				.setTitle("Error").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+						"An error occured when retrieving the informations for a user study: "
+								+ infoRequester.getErrorMessage()
+								+ ".\nSorry! This was a shock for both of us. Maybe you could try again from the user study tab later? Thanks!")
+				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
@@ -250,14 +252,38 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void downloadUserstudyApp(final UserStudyNotification notification) {
+		final ProgressDialog progressDialog = new ProgressDialog(this);
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
-				getApplicationContext());
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
+				getApplicationContext(), new ExecutorWithObject() {
+
+					@Override
+					public void execute(Object o) {
+						if (o instanceof Double) {
+							progressDialog.setProgress((int) (((Double) o) * 100));
+						}
+					}
+				});
+		progressDialog.setTitle("Downloading the app...");
+		progressDialog.setMessage("Please wait.");
+		progressDialog.setMax(100);
+		progressDialog.setProgress(0);
+		progressDialog.setOnCancelListener(new OnCancelListener() {
+
 			@Override
 			public void onCancel(DialogInterface dialog) {
 				downloader.cancel();
 			}
 		});
+		progressDialog.setCancelable(true);
+		progressDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				progressDialog.cancel();
+			}
+		});
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.show();
+
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
@@ -278,11 +304,9 @@ public class ViewUserStudyActivity extends Activity {
 		downloader.start();
 	}
 
-	
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
 		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
-				.setMessage(
-						"There seems to be no open internet connection present for downloading the app.")
+				.setMessage("There seems to be no open internet connection present for downloading the app.")
 				.setTitle("No connection").setCancelable(true)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
@@ -290,20 +314,18 @@ public class ViewUserStudyActivity extends Activity {
 					}
 				}).show();
 	}
-	
+
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
 		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
-						"An error occured when trying to download the app: " + downloader.getErrorMsg()
-						+".\nSorry!")
-				.setTitle("Error").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+						"An error occured when trying to download the app: " + downloader.getErrorMsg() + ".\nSorry!")
+				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
 				}).show();
 	}
-	
+
 	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef,
 			final UserStudyNotification notification) {
 		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);

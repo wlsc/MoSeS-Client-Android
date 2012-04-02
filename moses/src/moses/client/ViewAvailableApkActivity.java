@@ -23,6 +23,7 @@ import moses.client.abstraction.apks.ApkInstallManager;
 import moses.client.abstraction.apks.ExternalApplication;
 import moses.client.preferences.MosesPreferences;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.ExecutorWithObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -55,13 +56,13 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private static enum LayoutState {
 		NORMAL_LIST, SENSORS_HINT, EMPTYLIST_HINT, PENDINGREQUEST, NOCONNECTIVITY;
 	}
-	
+
 	private static final String PREFKEY_SHOW_SET_SENSORS_HINT = "showInitialSetSensorsHint";
 	private static final int REFRESH_THRESHHOLD = 800;
 	private ListView listView;
 	private List<ExternalApplication> externalApps;
 	private Long lastListRefreshTime = null;
-	LayoutState lastSetLayout = null; 
+	LayoutState lastSetLayout = null;
 
 	public void setLastSetLayout(LayoutState lastSetLayout) {
 		this.lastSetLayout = lastSetLayout;
@@ -82,7 +83,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	public void apkInstallClickHandler(View v) {
-		if(MosesService.isOnline(getApplicationContext())) {
+		if (MosesService.isOnline(getApplicationContext())) {
 			int pos = listView.getPositionForView(v);
 			final ExternalApplication app = externalApps.get(pos);
 			showAppInfo(app);
@@ -92,25 +93,23 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private void showNoConnectionInfoBox() {
-		 AlertDialog alertDialog = new AlertDialog.Builder(this)
-	      .setMessage("Cannot display the app information because no internet connection seems to be present")
-	      .setTitle("No connection")
-	      .setCancelable(true)
-//	      .setNeutralButton("OK",
-//	         new DialogInterface.OnClickListener() {
-//	         public void onClick(DialogInterface dialog, int whichButton){}
-//	         })
-	      .show();
+		AlertDialog alertDialog = new AlertDialog.Builder(this)
+				.setMessage("Cannot display the app information because no internet connection seems to be present")
+				.setTitle("No connection").setCancelable(true)
+				// .setNeutralButton("OK",
+				// new DialogInterface.OnClickListener() {
+				// public void onClick(DialogInterface dialog, int
+				// whichButton){}
+				// })
+				.show();
 	}
 
 	private void showAppInfo(final ExternalApplication app) {
 		final Dialog myDialog = new Dialog(this);
 		myDialog.setContentView(R.layout.view_app_info_layout);
 		myDialog.setTitle("App informations:");
-		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: "
-			+ app.getName());
-		((TextView) myDialog.findViewById(R.id.appinfodialog_descr)).setText(""
-			+ app.getDescription());
+		((TextView) myDialog.findViewById(R.id.appinfodialog_name)).setText("Name: " + app.getName());
+		((TextView) myDialog.findViewById(R.id.appinfodialog_descr)).setText("" + app.getDescription());
 		((Button) myDialog.findViewById(R.id.appinfodialog_installbtn)).setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -141,15 +140,15 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private boolean appsLocallyInCacheStillAvailable() {
 		return externalApps != null && externalApps.size() > 0;
 	}
-	
+
 	private void initControlsOnRequestApks() {
-		if(showInitialSensorHint()) {
+		if (showInitialSensorHint()) {
 			initControlsShowSensorsHint();
 		} else {
-			if(appsLocallyInCacheStillAvailable()) {
+			if (appsLocallyInCacheStillAvailable()) {
 				initControlsNormalList(externalApps);
 			} else {
-				if(MosesService.isOnline(getApplicationContext())) {
+				if (MosesService.isOnline(getApplicationContext())) {
 					initControlsPendingListRequest();
 				} else {
 					initControlsNoConnectivity();
@@ -159,22 +158,22 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private void initControlsNoConnectivity() {
-		if(lastSetLayout != LayoutState.NOCONNECTIVITY) {
+		if (lastSetLayout != LayoutState.NOCONNECTIVITY) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
 			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
 			apkListCtrls.setVisibility(LinearLayout.GONE);
-			
+
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_noconnectivity);
-			
+
 			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
 			actionBtn2.setVisibility(Button.GONE);
-			
+
 			refreshResfreshBtnTimeout(actionBtn1, "Retry", LayoutState.NOCONNECTIVITY);
-			
+
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -187,22 +186,22 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private void initControlsPendingListRequest() {
-		if(lastSetLayout != LayoutState.PENDINGREQUEST) {
+		if (lastSetLayout != LayoutState.PENDINGREQUEST) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
 			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
 			apkListCtrls.setVisibility(LinearLayout.GONE);
-			
+
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_pendingrequest);
-			
+
 			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
 			actionBtn2.setVisibility(Button.GONE);
-			
+
 			refreshResfreshBtnTimeout(actionBtn1, "Refresh", LayoutState.PENDINGREQUEST);
-			
+
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -213,52 +212,53 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			setLastSetLayout(LayoutState.PENDINGREQUEST);
 		}
 	}
-	
-	private void refreshResfreshBtnTimeout(final Button refreshButton, final String minimalString, final LayoutState parentLayout) {
+
+	private void refreshResfreshBtnTimeout(final Button refreshButton, final String minimalString,
+			final LayoutState parentLayout) {
 		refreshButton.setEnabled(false);
 		refreshButton.setText(minimalString);
 		Handler enableRefreshHandler = new Handler();
 		enableRefreshHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(!isPaused && lastSetLayout == parentLayout) {
-					refreshButton.setText(minimalString +".");
+				if (!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString + ".");
 				}
 			}
 		}, 800);
 		enableRefreshHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(!isPaused && lastSetLayout == parentLayout) {
-					refreshButton.setText(minimalString +"..");
+				if (!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString + "..");
 				}
 			}
 		}, 1600);
 		enableRefreshHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(!isPaused && lastSetLayout == parentLayout) {
-					refreshButton.setText(minimalString +"...");
+				if (!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString + "...");
 				}
 			}
 		}, 2400);
 		enableRefreshHandler.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(!isPaused && lastSetLayout == parentLayout) {
+				if (!isPaused && lastSetLayout == parentLayout) {
 					refreshButton.setEnabled(true);
 				}
 			}
 		}, 3000);
 	}
 
-	private void initLayoutFromArrivedList(
-			List<ExternalApplication> applications) {
-		if(showInitialSensorHint()) {
-			// even if there is an arrived list, do not show it, but show the sensors hint
+	private void initLayoutFromArrivedList(List<ExternalApplication> applications) {
+		if (showInitialSensorHint()) {
+			// even if there is an arrived list, do not show it, but show the
+			// sensors hint
 			initControlsShowSensorsHint();
 		} else {
-			if(applications.size() > 0) {
+			if (applications.size() > 0) {
 				initControlsNormalList(applications);
 			} else {
 				initControlsEmptyArrivedList(false);
@@ -268,18 +268,18 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private void initControlsEmptyArrivedList(boolean mayShowSensorsList) {
-		if(mayShowSensorsList) {
+		if (mayShowSensorsList) {
 			initControlsShowSensorsHint();
 		} else {
-			if(lastSetLayout != LayoutState.EMPTYLIST_HINT) {
+			if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
 				LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
 				emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
 				LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
 				apkListCtrls.setVisibility(LinearLayout.GONE);
-				
+
 				TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 				mainHint.setText(R.string.availableApkList_emptyHint);
-				
+
 				Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 				Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 				actionBtn1.setVisibility(Button.GONE);
@@ -294,22 +294,21 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		emptylistCtrls.setVisibility(LinearLayout.GONE);
 		LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
 		apkListCtrls.setVisibility(LinearLayout.VISIBLE);
-		
+
 		setLastSetLayout(LayoutState.NORMAL_LIST);
 		populateList(applications);
 	}
 
-	
 	private void initControlsShowSensorsHint() {
-		if(lastSetLayout != LayoutState.SENSORS_HINT) {
+		if (lastSetLayout != LayoutState.SENSORS_HINT) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
 			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
 			apkListCtrls.setVisibility(LinearLayout.GONE);
-			
+
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_sensors_main);
-			
+
 			Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 			Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Yes");
@@ -317,16 +316,16 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			actionBtn2.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this)
-					.edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
+					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this).edit()
+							.putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
 					initControls();
 				}
 			});
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this)
-					.edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
+					PreferenceManager.getDefaultSharedPreferences(ViewAvailableApkActivity.this).edit()
+							.putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false).commit();
 					invokeSensorDialog();
 				}
 			});
@@ -343,28 +342,63 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private boolean showInitialSensorHint() {
 		boolean enoughEnabledSensors = false;
 		try {
-			JSONArray sensors = new JSONArray(PreferenceManager.getDefaultSharedPreferences(this).getString("sensor_data", "[]"));
-			enoughEnabledSensors = ! (sensors!=null && sensors.length()<1);
+			JSONArray sensors = new JSONArray(PreferenceManager.getDefaultSharedPreferences(this).getString(
+					"sensor_data", "[]"));
+			enoughEnabledSensors = !(sensors != null && sensors.length() < 1);
 		} catch (JSONException e) {
 			enoughEnabledSensors = false;
 		}
-		boolean doShow = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true);
-		if(enoughEnabledSensors) {
+		boolean doShow = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(PREFKEY_SHOW_SET_SENSORS_HINT,
+				true);
+		if (enoughEnabledSensors) {
 			doShow = false;
-			PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true).commit();
+			PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true)
+					.commit();
 		}
-		
+
 		return doShow;
 	}
 
 	private void handleInstallApp(ExternalApplication app) {
-		final ApkDownloadManager downloader = new ApkDownloadManager(app, getApplicationContext());
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "Downloading...", "Downloading the app...", true, true, new OnCancelListener() {
+		final ProgressDialog progressDialog = new ProgressDialog(this);
+		final ApkDownloadManager downloader = new ApkDownloadManager(app, getApplicationContext(),
+				new ExecutorWithObject() {
+
+					@Override
+					public void execute(Object o) {
+						if (o instanceof Double) {
+							final int u = (int) (((Double) o) * 100);
+							runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									progressDialog.incrementProgressBy(u-progressDialog.getProgress());
+								}
+							});
+
+						}
+					}
+				});
+		progressDialog.setTitle("Downloading the app...");
+		progressDialog.setMessage("Please wait.");
+		progressDialog.setMax(100);
+		progressDialog.setProgress(0);
+		progressDialog.setOnCancelListener(new OnCancelListener() {
+
 			@Override
 			public void onCancel(DialogInterface dialog) {
 				downloader.cancel();
 			}
 		});
+		progressDialog.setCancelable(true);
+		progressDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				progressDialog.cancel();
+			}
+		});
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.show();
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
@@ -383,25 +417,22 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		downloader.addObserver(observer);
 		downloader.start();
 	}
-	
+
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
 		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
-				.setMessage(
-						"There seems to be no open internet connection present for downloading the app.")
+				.setMessage("There seems to be no open internet connection present for downloading the app.")
 				.setTitle("No connection").setCancelable(true)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 					}
 				}).show();
 	}
-	
+
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
 		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
 				.setMessage(
-						"An error occured when trying to download the app: " + downloader.getErrorMsg()
-						+".\nSorry!")
-				.setTitle("Error").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+						"An error occured when trying to download the app: " + downloader.getErrorMsg() + ".\nSorry!")
+				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 					}
 				}).show();
@@ -419,11 +450,10 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 					new APKInstalled(externalAppRef.getID());
 					try {
 						ApkInstallManager.registerInstalledApk(originalApk, externalAppRef,
-							ViewAvailableApkActivity.this.getApplicationContext(), false);
+								ViewAvailableApkActivity.this.getApplicationContext(), false);
 					} catch (IOException e) {
-						Log.e(
-							"MoSeS.Install",
-							"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
+						Log.e("MoSeS.Install",
+								"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
 					}
 				}
 			}
@@ -433,9 +463,10 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 
 	int requestListRetries = 0;
 	private boolean isPaused;
+
 	private void requestExternalApplications() {
-		if(MosesService.getInstance() == null) {
-			if(requestListRetries < 5) {
+		if (MosesService.getInstance() == null) {
+			if (requestListRetries < 5) {
 				Handler delayedRetryHandler = new Handler();
 				delayedRetryHandler.postDelayed(new Runnable() {
 					@Override
@@ -445,7 +476,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				}, 1000);
 				requestListRetries++;
 			} else {
-				//TODO:show error when all retries didn't work?
+				// TODO:show error when all retries didn't work?
 			}
 		} else {
 			requestListRetries = 0;
@@ -463,47 +494,49 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		//TODO: receive failures that point out no connection, too.
-		//TODO: show user some hint about this
+		// TODO: receive failures that point out no connection, too.
+		// TODO: show user some hint about this
 		Log.w("MoSeS.APKMETHODS", "invalid response for apk list request: " + e.getMessage());
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
-		if(hasFocus && (lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
+		if (hasFocus && (lastListRefreshTime == null) ? true
+				: (System.currentTimeMillis() - lastListRefreshTime > REFRESH_THRESHHOLD)) {
 			requestExternalApplications();
 		}
 	}
-	
+
 	@Override
 	protected void onPause() {
 		super.onPause();
 		this.isPaused = true;
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		this.isPaused = false;
-		if(lastSetLayout == LayoutState.SENSORS_HINT) {
+		if (lastSetLayout == LayoutState.SENSORS_HINT) {
 			initControls();
 		} else {
-			if((lastListRefreshTime == null)?true:(System.currentTimeMillis()-lastListRefreshTime>REFRESH_THRESHHOLD)) {
+			if ((lastListRefreshTime == null) ? true
+					: (System.currentTimeMillis() - lastListRefreshTime > REFRESH_THRESHHOLD)) {
 				requestExternalApplications();
 			}
 		}
-		
+
 		Handler secondTryConnect = new Handler();
 		secondTryConnect.postDelayed(new Runnable() {
 			@Override
 			public void run() {
-				if(!isPaused) {
+				if (!isPaused) {
 					requestExternalApplications();
 				}
 			}
 		}, 2500);
 	}
-	
+
 	private void populateList(List<ExternalApplication> applications) {
 		listView = getListView();
 		String[] items = new String[applications.size()];
@@ -512,31 +545,27 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			items[counter] = app.getName();
 			counter++;
 		}
-		
+
 		TextView instructionsView = (TextView) findViewById(R.id.availableApkHeaderInstructions);
-		if(instructionsView != null) {
-			if(applications.size() == 0) {
+		if (instructionsView != null) {
+			if (applications.size() == 0) {
 				instructionsView.setText(R.string.availableApkList_emptyHint);
 			} else {
 				instructionsView.setText(R.string.availableApkList_defaultHint);
 			}
 		}
-		
+
 		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
-		for(ExternalApplication app: applications) {
+		for (ExternalApplication app : applications) {
 			HashMap<String, String> rowMap = new HashMap<String, String>();
 			rowMap.put("name", app.getName());
 			rowMap.put("description", app.getDescription());
 			listContent.add(rowMap);
 
 		}
-		SimpleAdapter contentAdapter = new SimpleAdapter( 
-			this, 
-			listContent,
-			R.layout.availableabkslistitem,
-			new String[] { "name","description" },
-			new int[] { R.id.apklistitemtext, R.id.apklistitemdescription } );
-		
+		SimpleAdapter contentAdapter = new SimpleAdapter(this, listContent, R.layout.availableabkslistitem,
+				new String[] { "name", "description" }, new int[] { R.id.apklistitemtext, R.id.apklistitemdescription });
+
 		listView.setAdapter(contentAdapter);
 	}
 

@@ -8,6 +8,7 @@ import java.util.Observable;
 import moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import moses.client.abstraction.ApkMethods;
 import moses.client.service.MosesService;
+import moses.client.service.helpers.ExecutorWithObject;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	private ExternalApplication externalApplicationResult;
 	private File downloadedApk;
 	private boolean cancelled = false;
+	private ExecutorWithObject progressListener;
 
 	/**
 	 * Creates this download manager with an observer which will be notified
@@ -46,10 +48,11 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * @param applicationContext
 	 *            the context
 	 */
-	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext) {
+	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext, ExecutorWithObject progressListener) {
 		super();
 		this.app = externalApp;
 		this.context = applicationContext;
+		this.progressListener = progressListener;
 		setState(State.JUST_INITIALIZED);
 	}
 
@@ -110,10 +113,10 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		ApkMethods.getDownloadLinkFor(app, this);
 	}
 
-	private void requestApkDownload(URL url) {
+	private void requestApkDownload(URL url, ExecutorWithObject e) {
 		if(!cancelled) {
 			if(MosesService.isOnline(context)) {
-				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context, generateApkFileNameFor(app));
+				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context, generateApkFileNameFor(app), e);
 				downloadTask.setExternalApplicationReference(app);
 				setState(State.APK_FILE_REQUESTED_DOWNLOADING);
 				downloadTask.execute();
@@ -129,7 +132,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		// fire download of apk
 		try {
 			URL url = new URL(urlString);
-			requestApkDownload(url);
+			requestApkDownload(url, progressListener);
 		} catch (MalformedURLException e) {
 			Log.e("MoSeS.APK", "Server sent malformed url; could not download application: " + urlString);
 			Toast.makeText(this.context, "Server sent malformed url; could not download application: " + urlString,

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import moses.client.service.helpers.ExecutorWithObject;
 import moses.client.util.FileLocationUtil;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 	private IOException downloadException;
 	private ApkDownloadObserver observer;
 	private ExternalApplication externalAppRef;
+	private ExecutorWithObject progressListener;
 
 	/**
 	 * creates the downloading task with the required parameters
@@ -34,17 +36,25 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 	 * @param appContext context
 	 * @param apkFileName the file name of the apk file in the default location
 	 */
-	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName) {
+	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName, ExecutorWithObject progressListener) {
 		this.observer = observer;
 		this.url = url;
 		File downloadDir = FileLocationUtil.getApkDownloadFolder(appContext);
 		apkFile = new File(downloadDir, apkFileName);
 		downloadInterrupted = false;
+		this.progressListener = progressListener;
 	}
 
 	@Override
 	protected File doInBackground(Void... params) {
 		return downloadFile(url);
+	}
+
+	@Override
+	protected void onProgressUpdate(Double... doubles) {
+		if(progressListener != null) {
+			progressListener.execute(doubles[0]);
+		}
 	}
 
 	@Override
@@ -90,7 +100,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 				// add up the size so we know how much is downloaded
 				downloadedSize += bufferLength;
 				if (totalSize > 0) {
-					publishProgress(Double.valueOf(downloadedSize / totalSize));
+					publishProgress(Double.valueOf(downloadedSize / (double)totalSize));
 				} else {
 					publishProgress(Double.valueOf(0));
 				}
