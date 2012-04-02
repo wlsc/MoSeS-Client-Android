@@ -61,6 +61,10 @@ public class UserStudyNotification {
 		//TODO: Meldung an Server
 	}
 
+	public Date getDate() {
+		return date;
+	}
+	
 	/**
 	 * saves this user study as an one line string
 	 */

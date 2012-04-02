@@ -34,9 +34,10 @@ import android.widget.Toast;
 public class ViewUserStudyNotificationsList extends ListActivity {
 
 	private static final int REFRESH_REDUNDANT_TRESHOLD = 1000;
+	private final static long EXPIRATION_TIME_USERSTUDIES = 2L*60L*1000L;
 	private static final int showStudyRequestcode = 5;
 	private ListView listView;
-	private List<UserStudyNotification> externalApps;
+	private List<UserStudyNotification> userStudies;
 	private UserStudyNotification lastStartedDialog;
 
 	/*
@@ -69,7 +70,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	
 	public void studyOnClickHandler(View v) {
 		int pos = listView.getPositionForView(v);
-		final UserStudyNotification app = externalApps.get(pos);
+		final UserStudyNotification app = userStudies.get(pos);
 
 		Intent intent = new Intent(MosesService.getInstance(), ViewUserStudyActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -93,10 +94,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	}
 
 	private void drawUserStudies() {
-		if(UserstudyNotificationManager.getInstance() == null) UserstudyNotificationManager.init(this);
-		List<UserStudyNotification> studies = UserstudyNotificationManager.getInstance().getNotifications();
-		externalApps = studies;
-		populateList(studies);
+		populateList(userStudies);
 	}
 
 
@@ -118,12 +116,45 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 			doIt = false;
 		}
 		if(doIt) {
+			retrieveStudies();
+			removeExpiredUserStudies();
 			drawUserStudies();
 			scheduleRetrieveMissingInfos();
 			lastRefresherCallsTime = System.currentTimeMillis();
 		}
 	}
 	
+	private void retrieveStudies() {
+		if(UserstudyNotificationManager.getInstance() == null) UserstudyNotificationManager.init(this);
+		List<UserStudyNotification> studies = UserstudyNotificationManager.getInstance().getNotifications();
+		this.userStudies = studies;
+	}
+
+	private void removeExpiredUserStudies() {
+		boolean hasRemoved = false;
+		for(UserStudyNotification us: userStudies) {
+			if(isExpired(us)) {
+				UserstudyNotificationManager.getInstance().removeNotificationById(us.getApplication().getID());
+				hasRemoved = true;
+			}
+		}
+		if(hasRemoved) {
+			try {
+				UserstudyNotificationManager.getInstance().saveToDisk(this);
+			} catch (IOException e) {
+				Log.e("MoSeS.USERSTUDY", "Could not save expiration of user study because of IO Exception: ", e);
+			}
+			retrieveStudies();
+		}
+	}
+
+	private boolean isExpired(UserStudyNotification us) {
+		if(System.currentTimeMillis()-us.getDate().getTime()>EXPIRATION_TIME_USERSTUDIES) {
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub

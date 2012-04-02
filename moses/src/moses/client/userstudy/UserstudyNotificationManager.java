@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ import android.util.Log;
 public class UserstudyNotificationManager {
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
-	private static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
+	public static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
 	
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -192,6 +193,7 @@ public class UserstudyNotificationManager {
 	public static void userStudyNotificationArrived(String apkId) {
 		//create a new user study object and save it to the manager
 		boolean doIt = true;
+		
 
 		//Threshold C2DM shotgun messages
 		if(userstudyArrivalTimes.containsKey(apkId) && System.currentTimeMillis()-userstudyArrivalTimes.get(apkId)<10000) {
@@ -251,6 +253,15 @@ public class UserstudyNotificationManager {
 		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
 		applicationContext.startActivity(viewUserStudy);
+	}
+
+	public void removeNotificationById(String id) {
+		for (Iterator<UserStudyNotification> iterator = notifications.iterator(); iterator.hasNext();) {
+			UserStudyNotification us = iterator.next();
+			if(us.getApplication().getID().equals(id)) {
+				iterator.remove();
+			}
+		}
 	}
 	
 	
