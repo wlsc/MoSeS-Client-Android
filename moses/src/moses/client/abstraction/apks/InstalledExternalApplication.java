@@ -144,8 +144,9 @@ public class InstalledExternalApplication extends ExternalApplication {
 		d.setTitle("Application informations:");
 	    WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 	    lp.copyFrom(d.getWindow().getAttributes());
-	    lp.width = WindowManager.LayoutParams.FILL_PARENT;
-	    lp.height = WindowManager.LayoutParams.FILL_PARENT;
+	    //lp.width = WindowManager.LayoutParams.FILL_PARENT;
+	    //lp.height = WindowManager.LayoutParams.FILL_PARENT;
+
 	    
 		TextView t = (TextView)d.findViewById(R.id.appname);
 		t.setText(getName());

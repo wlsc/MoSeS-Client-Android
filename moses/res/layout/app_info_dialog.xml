@@ -2,8 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:maxWidth="300dip"
-    android:maxHeight="500dip"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -50,7 +48,8 @@
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="DESCRIPTION" />
+            android:text="DESCRIPTION" 
+            android:maxHeight="800dip"/>
     </ScrollView>
 
     <LinearLayout
@@ -83,17 +82,14 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:minHeight="20dp"
-        android:maxHeight="40dp"
-        android:maxWidth="40dp"
-        android:layout_height="0dip"
-        android:layout_weight="0.1" >
+        android:layout_height="40dip">
 
         <Button
             android:id="@+id/close"
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
+            android:maxWidth="60dip"
             android:text="@string/close" />
 
         <Button
@@ -101,6 +97,7 @@
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
+            android:maxWidth="60dip"
             android:text="Start" />
 
         <Button
@@ -108,6 +105,7 @@
             android:layout_width="0dip"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
+            android:maxWidth="60dip"
             android:text="@string/update" />
     </LinearLayout>
 
