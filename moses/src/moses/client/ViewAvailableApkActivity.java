@@ -91,6 +91,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				public void run() {
 					handleInstallApp(app);
 				}
+			}, new Runnable() {
+				@Override
+				public void run() {}
 			});
 		} else {
 			showNoConnectionInfoBox();
@@ -109,7 +112,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	      .show();
 	}
 
-	public static void showAppInfo(final ExternalApplication app, Activity baseActivity, final Runnable installAppClickAction) {
+	public static void showAppInfo(final ExternalApplication app, Activity baseActivity, final Runnable installAppClickAction, final Runnable cancelClickAction) {
 		final Dialog myDialog = new Dialog(baseActivity);
 		myDialog.setContentView(R.layout.view_app_info_layout);
 		myDialog.setTitle("App informations:");
@@ -129,6 +132,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			@Override
 			public void onClick(View v) {
 				myDialog.dismiss();
+				cancelClickAction.run();
 			}
 		});
 

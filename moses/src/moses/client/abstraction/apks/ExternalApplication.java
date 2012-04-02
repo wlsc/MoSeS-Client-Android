@@ -171,7 +171,7 @@ public class ExternalApplication {
 			result += SEPARATOR + TAG_NAME + getName();
 		}
 		if(isDescriptionSet()) {
-			result += SEPARATOR + TAG_DESCRIPTION + getName();
+			result += SEPARATOR + TAG_DESCRIPTION + getDescription();
 		}
 		if(isNewestVersionSet()) {
 			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();

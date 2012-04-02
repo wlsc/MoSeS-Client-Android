@@ -6,6 +6,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import moses.client.R;
+import moses.client.ViewAvailableApkActivity;
 import moses.client.ViewUserStudyActivity;
 import moses.client.abstraction.ApkMethods;
 import moses.client.abstraction.ESensor;
@@ -223,6 +224,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Loading...", "Loading userstudy information", true, true, new OnCancelListener() {
 			@Override
 			public void onCancel(DialogInterface dialog) {
+				infoRequester.cancel();
 				o.manual_abort();
 			}
 		});
@@ -231,12 +233,24 @@ public class InstalledExternalApplication extends ExternalApplication {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (infoRequester.getState() == State.DONE) {
-					ExternalApplication updatedApplication = new ExternalApplication(InstalledExternalApplication.this.getID());
+					final ExternalApplication updatedApplication = new ExternalApplication(InstalledExternalApplication.this.getID());
 					updatedApplication.setName(infoRequester.getResultName());
 					updatedApplication.setDescription(infoRequester.getResultDescription());
 					updatedApplication.setSensors(infoRequester.getResultSensors());
 					progressDialog.dismiss();
-					startInstallUpdate(updatedApplication, baseActivity, o);
+					ViewAvailableApkActivity.showAppInfo(updatedApplication, baseActivity, 
+							new Runnable() {
+								@Override
+								public void run() {
+									startInstallUpdate(updatedApplication, baseActivity, o);
+								}
+							}, 
+							new Runnable() {
+								@Override
+								public void run() {
+									o.manual_abort();
+								}
+							});
 				}
 				if (infoRequester.getState() == State.ERROR) {
 					Log.e("MoSeS.USERSTUDY",
