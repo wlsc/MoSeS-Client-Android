@@ -641,13 +641,5 @@ public class MosesActivity extends TabActivity {
 	public static boolean isLoginInformationComplete() {
 		return isLoginInformationComplete(MosesService.getInstance());
 	}
-	
-	// Maybe needed later
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		setContentView(R.layout.main);
-		initControls();
-	}
 
 }

@@ -5,6 +5,7 @@ import moses.client.abstraction.ApkMethods;
 import moses.client.abstraction.ESensor;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.util.Log;
 import android.view.View;
@@ -115,6 +116,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *             the creation of this InstalledExternalApplication instance.
 	 */
 	public void startApplication(final Activity baseActivity) {
+		ProgressDialog pd = new ProgressDialog(baseActivity);
+		pd.setTitle("Application info");
+		pd.setMessage("Retreiving data...");
+		pd.show();
 		final Dialog d = new Dialog(baseActivity);
 		d.setContentView(R.layout.app_info_dialog);
 		
@@ -165,6 +170,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 				d.dismiss();
 			}
 		});
+		pd.dismiss();
 		d.show();
 		d.getWindow().setAttributes(lp);
 	}
