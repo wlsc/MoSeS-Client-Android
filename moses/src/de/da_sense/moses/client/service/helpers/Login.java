@@ -40,16 +40,24 @@ public class Login {
 		public void handleException(Exception e) {
 			executeAll(postExecuteFailure);
 			if (e instanceof UnknownHostException) {
-				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.no_internet_connection));
+				Log.d("MoSeS.LOGIN",
+						MosesService.getInstance().getString(
+								R.string.no_internet_connection));
 				MosesService.getInstance().executeChangeTextFieldHook(
-						MosesService.getInstance().getString(R.string.no_internet_connection));
+						MosesService.getInstance().getString(
+								R.string.no_internet_connection));
 			} else if (e instanceof JSONException) {
-				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.unknown_response_from_server));
+				Log.d("MoSeS.LOGIN",
+						MosesService.getInstance().getString(
+								R.string.unknown_response_from_server));
 				MosesService.getInstance().executeChangeTextFieldHook(
-						MosesService.getInstance().getString(R.string.unknown_response_from_server));
+						MosesService.getInstance().getString(
+								R.string.unknown_response_from_server));
 			} else {
-				Log.d("MoSeS.LOGIN", "Unknown failure: " + e.getClass().toString() + " " + e.getMessage());
-				MosesService.getInstance().executeChangeTextFieldHook("Unknown failure during login.");
+				Log.d("MoSeS.LOGIN", "Unknown failure: "
+						+ e.getClass().toString() + " " + e.getMessage());
+				MosesService.getInstance().executeChangeTextFieldHook(
+						"Unknown failure during login.");
 			}
 		}
 
@@ -65,11 +73,13 @@ public class Login {
 			try {
 				j = new JSONObject(s);
 				if (RequestLogin.loginValid(j, uname)) {
-					MosesService.getInstance().loggedIn(j.getString("SESSIONID"));
+					MosesService.getInstance().loggedIn(
+							j.getString("SESSIONID"));
 					mHandler.removeCallbacks(logoutTask);
 					mHandler.postDelayed(logoutTask, sessionAliveTime - 1000);
 					lastLoggedIn = System.currentTimeMillis();
-					Log.d("MoSeS.LOGIN", "ACCESS GRANTED: " + j.getString("SESSIONID"));
+					Log.d("MoSeS.LOGIN",
+							"ACCESS GRANTED: " + j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
 					executeAll(postExecuteSuccessPriority);
 					mHandler.removeCallbacks(executeHooksTask);
@@ -120,7 +130,7 @@ public class Login {
 
 	public static long lastLoggedIn = -1;
 
-	private final long sessionAliveTime = 120000;
+	private static final long sessionAliveTime = 120000;
 
 	private void executeAll(ConcurrentLinkedQueue<ExecutorWithType> el) {
 		for (ExecutorWithType e : el) {
@@ -155,6 +165,8 @@ public class Login {
 
 	public static void refresh() {
 		lastLoggedIn = System.currentTimeMillis();
+		mHandler.removeCallbacks(logoutTask);
+		mHandler.postDelayed(logoutTask, sessionAliveTime - 10);
 	}
 
 	/**
@@ -170,11 +182,16 @@ public class Login {
 	public Login(String username, String password) {
 		this.pw = password;
 		this.uname = username;
-		this.postExecuteSuccess = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSUCCESS);
-		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSUCCESSPRIORITY);
-		this.postExecuteFailure = MosesService.getInstance().getHook(EHookTypes.POSTLOGINFAILED);
-		this.loginEnd = MosesService.getInstance().getHook(EHookTypes.POSTLOGINEND);
-		this.loginStart = MosesService.getInstance().getHook(EHookTypes.POSTLOGINSTART);
+		this.postExecuteSuccess = MosesService.getInstance().getHook(
+				EHookTypes.POSTLOGINSUCCESS);
+		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(
+				EHookTypes.POSTLOGINSUCCESSPRIORITY);
+		this.postExecuteFailure = MosesService.getInstance().getHook(
+				EHookTypes.POSTLOGINFAILED);
+		this.loginEnd = MosesService.getInstance().getHook(
+				EHookTypes.POSTLOGINEND);
+		this.loginStart = MosesService.getInstance().getHook(
+				EHookTypes.POSTLOGINSTART);
 		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
 			new RequestLogin(new LoginFunc(), uname, pw).send();
 		} else {
@@ -183,7 +200,8 @@ public class Login {
 			executeAll(postExecuteSuccessPriority);
 			Log.d("MoSeS.LOGIN", "Post login success: ");
 			executeAll(postExecuteSuccess);
-			MosesService.getInstance().loggedIn(MosesService.getInstance().getSessionID());
+			MosesService.getInstance().loggedIn(
+					MosesService.getInstance().getSessionID());
 		}
 	}
 }

@@ -16,6 +16,8 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import de.da_sense.moses.client.service.helpers.Login;
+
 import android.os.AsyncTask;
 
 /**
@@ -138,6 +140,7 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 	protected void onPostExecute(String result) {
 		e.postExecution(result);
 		signal.countDown();
+		Login.refresh();
 	}
 
 	/**

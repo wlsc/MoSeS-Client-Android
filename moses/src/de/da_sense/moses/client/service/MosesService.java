@@ -112,7 +112,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	public void executeLoggedIn(EHookTypes h, EMessageTypes t, Executor e) {
 		if (isLoggedIn() && isOnline()) {
 			e.execute();
-			Login.refresh();
 		} else {
 			registerOneTimeHook(h, t, e);
 			login();
