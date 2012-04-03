@@ -15,10 +15,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Point;
 import de.da_sense.moses.client.util.Log;
+import android.text.method.ScrollingMovementMethod;
+import android.view.Display;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -142,13 +146,40 @@ public class InstalledExternalApplication extends ExternalApplication {
 		d.setTitle("Application informations:");
 		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 		lp.copyFrom(d.getWindow().getAttributes());
-		// lp.width = WindowManager.LayoutParams.FILL_PARENT;
-		// lp.height = WindowManager.LayoutParams.FILL_PARENT;
+		WindowManager wm = (WindowManager) baseActivity.getSystemService(Context.WINDOW_SERVICE);
+		Display display = wm.getDefaultDisplay();
+		if (display.getWidth() > display.getHeight()) { // Landscape
+			if (display.getWidth() <= 426) {
+				lp.width = WindowManager.LayoutParams.FILL_PARENT;
+			} else {
+				lp.width = 426;
+			}
+
+			if (display.getHeight() <= 320) {
+				lp.height = WindowManager.LayoutParams.FILL_PARENT;
+			} else {
+				lp.height = 320;
+			}
+		} else { // Portrait
+			if (display.getWidth() <= 320) {
+				lp.width = WindowManager.LayoutParams.FILL_PARENT;
+			} else {
+				lp.width = 320;
+			}
+
+			if (display.getHeight() <= 426) {
+				lp.height = WindowManager.LayoutParams.FILL_PARENT;
+			} else {
+				lp.height = 426;
+			}
+		}
 
 		TextView t = (TextView) d.findViewById(R.id.appname);
 		t.setText(getName());
 		t = (TextView) d.findViewById(R.id.description);
-		t.setText(getDescription());
+		t.setMovementMethod(ScrollingMovementMethod.getInstance());
+		// t.setText(getDescription());
+		t.setText("A\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\n");
 		Gallery g = (Gallery) d.findViewById(R.id.sensors);
 		Integer[] imageIds = new Integer[getSensors().size()];
 		String[] alternateText = new String[getSensors().size()];
