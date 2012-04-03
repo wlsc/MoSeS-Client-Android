@@ -10,13 +10,9 @@ import android.util.AttributeSet;
 import android.widget.ListAdapter;
 
 /**
- * A {@link Preference} that displays a list of entries as a dialog and allows
- * multiple selections
- * <p>
- * This preference will store a string into the SharedPreferences. This string
- * will be the values selected from the {@link #setEntryValues(CharSequence[])}
- * array.
- * </p>
+ * 
+ * @author Jaco Hofmann
+ *
  */
 public class ListPreferenceMultiSelect extends ListPreference {
 	private static final String SEPARATOR = ",";

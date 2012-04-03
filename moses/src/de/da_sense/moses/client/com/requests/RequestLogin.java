@@ -9,7 +9,7 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
 /**
  * This class is used for logging in it provides some basic methods for it
  * 
- * @author Jaco
+ * @author Jaco Hofmann
  * 
  */
 

@@ -1,5 +1,12 @@
 package de.da_sense.moses.client.util;
 
+/**
+ * Wraps the android.util.Log class to be able to deactivate certain logging
+ * events e.g. for release
+ * 
+ * @author Jaco Hofmann
+ * 
+ */
 public class Log {
 	public static int LEVEL = android.util.Log.VERBOSE;
 

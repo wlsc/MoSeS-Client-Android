@@ -8,6 +8,10 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+/**
+ * @author Jaco Hofmann
+ *
+ */
 public class MosesAskForDeviceIDActivity extends Activity {
 	/**
 	 * Called when the activity is first created.

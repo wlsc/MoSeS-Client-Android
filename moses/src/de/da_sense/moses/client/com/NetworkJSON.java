@@ -17,6 +17,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.util.Log;
 
@@ -144,9 +145,9 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 		signal.countDown();
 		try {
 			JSONObject j = new JSONObject(result);
-			if(j.getString("STATUS").equals("SUCCESS")) {
-				Log.d("MoSeS.NETWORKJSON", "Refreshed session.");
-				Login.refresh();		
+			if(j.getString("STATUS").equals("INVALID_SESSION")) {
+				MosesService.getInstance().loggedOut();
+				MosesService.getInstance().login();
 			}
 		} catch (JSONException e1) {
 		}

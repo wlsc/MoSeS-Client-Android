@@ -14,6 +14,12 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
 
+/**
+ * 
+ * @author Jaco Hofmann
+ *
+ */
+
 public class ImageArrayAdapter extends ArrayAdapter<CharSequence> {
 	private boolean[] index = null;
 	private int[] resourceIds = null;

@@ -9,10 +9,9 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.util.Log;
 
 /**
- * This class is used for setting hardware parameters it provides some basic
- * methods for this
+ * This class provides the message to change the devicie id on the server
  * 
- * @author Zijad
+ * @author Jaco Hofmann
  * 
  */
 public class RequestChangeDeviceIDParameters {

@@ -17,6 +17,12 @@ import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestLogin;
 
+/**
+ * 
+ * @author Jaco Hofmann
+ *
+ */
+
 public class MosesLoginActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

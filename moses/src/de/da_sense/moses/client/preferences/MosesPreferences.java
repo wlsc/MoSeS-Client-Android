@@ -13,7 +13,11 @@ import de.da_sense.moses.client.R;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-
+/**
+ * 
+ * @author Jaco Hofmann
+ *
+ */
 public class MosesPreferences extends PreferenceActivity {
 
 	private void loadSensors() {

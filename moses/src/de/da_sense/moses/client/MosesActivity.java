@@ -49,7 +49,7 @@ import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
  * 
  * It's the first activity a user sees who starts our app.
  * 
- * @author Jaco
+ * @author Jaco Hofmann
  * 
  */
 public class MosesActivity extends TabActivity {
