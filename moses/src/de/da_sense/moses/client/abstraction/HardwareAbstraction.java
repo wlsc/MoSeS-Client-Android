@@ -268,7 +268,7 @@ public class HardwareAbstraction {
 
 								@Override
 								public void execute() {
-									syncDeviceInformation(false);
+									syncDeviceInformation(true);
 								}
 							});
 				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {

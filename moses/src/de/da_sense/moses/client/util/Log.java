@@ -1,7 +1,7 @@
 package de.da_sense.moses.client.util;
 
 public class Log {
-	public static int LEVEL = android.util.Log.ASSERT;
+	public static int LEVEL = android.util.Log.VERBOSE;
 
 	static public void d(String tag, String msg) {
 		if (LEVEL <= android.util.Log.DEBUG)
