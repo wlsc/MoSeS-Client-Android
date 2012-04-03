@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * Reference to an application on the server, referenced by it's MoSeS id

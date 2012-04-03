@@ -11,7 +11,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 public class UpdateStatusBarHelper {
 

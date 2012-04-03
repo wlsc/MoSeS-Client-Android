@@ -11,7 +11,7 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 
 import android.content.Context;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 import android.widget.Toast;
 
 /**

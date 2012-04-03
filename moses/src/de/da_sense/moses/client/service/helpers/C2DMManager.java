@@ -14,7 +14,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 public class C2DMManager {
 

@@ -28,7 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 public class ApkMethods {
 

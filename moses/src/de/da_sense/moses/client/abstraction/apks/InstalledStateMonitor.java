@@ -7,7 +7,7 @@ import java.util.List;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 
 import android.content.Context;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * Monitors installed apps whether their corresponding apps on the disk are

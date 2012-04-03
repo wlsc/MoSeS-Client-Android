@@ -37,7 +37,7 @@ import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * This class provides basic support for hardware sync with server

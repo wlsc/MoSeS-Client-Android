@@ -8,7 +8,7 @@ import de.da_sense.moses.client.abstraction.HardwareAbstraction.HardwareInfo;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * This class is used for setting hardware parameters it provides some basic

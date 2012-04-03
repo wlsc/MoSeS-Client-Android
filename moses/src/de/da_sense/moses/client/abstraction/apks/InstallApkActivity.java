@@ -10,7 +10,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * Activity for installing an application. call

@@ -15,7 +15,7 @@ import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.service.MosesService;
 
 import android.os.Handler;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -20,7 +20,7 @@ import de.da_sense.moses.client.util.FileLocationUtil;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * Manages pending user studies and their persistence

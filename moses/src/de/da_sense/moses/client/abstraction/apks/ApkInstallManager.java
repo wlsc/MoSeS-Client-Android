@@ -8,7 +8,7 @@ import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.service.MosesService;
 
 import android.content.Context;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * Abstraction for installing a single application package file.

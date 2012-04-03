@@ -12,7 +12,7 @@ import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.requests.RequestLogout;
 import de.da_sense.moses.client.service.MosesService;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 // TODO: Auto-generated Javadoc
 /**

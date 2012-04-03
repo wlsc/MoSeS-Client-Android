@@ -7,7 +7,7 @@ import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * This class represents a Request for obtaining the list of avaliable APKs for

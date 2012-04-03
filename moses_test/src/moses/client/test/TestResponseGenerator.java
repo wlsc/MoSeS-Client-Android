@@ -9,7 +9,7 @@ import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.com.FakeResponseGenerator;
 import de.da_sense.moses.client.userstudy.UserStudyNotification;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 
 public class TestResponseGenerator implements FakeResponseGenerator {

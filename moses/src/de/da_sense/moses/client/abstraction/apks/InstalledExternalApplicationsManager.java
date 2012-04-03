@@ -16,7 +16,7 @@ import de.da_sense.moses.client.service.helpers.UpdateStatusBarHelper;
 import de.da_sense.moses.client.util.FileLocationUtil;
 
 import android.content.Context;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 /**
  * An InstalledExternalApplicationsManager holds references to installed

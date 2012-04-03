@@ -17,7 +17,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.UiThreadTest;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 import static moses.client.test.TestHelpers.*;
 
 public class HookTests extends ActivityInstrumentationTestCase2<MosesActivity> {

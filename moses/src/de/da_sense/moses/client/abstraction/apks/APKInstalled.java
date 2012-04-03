@@ -13,7 +13,7 @@ import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
 import de.da_sense.moses.client.service.helpers.Executor;
 
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 
 public class APKInstalled {
 

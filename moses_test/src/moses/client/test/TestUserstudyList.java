@@ -12,7 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
+import de.da_sense.moses.client.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
