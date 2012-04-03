@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
+import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 import de.da_sense.moses.client.util.Log;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Display;
@@ -61,7 +62,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param version
 	 *            the version of the app which is installed
 	 */
-	public InstalledExternalApplication(String packageName, String ID, boolean wasInstalledAsUserStudy, String version) {
+	public InstalledExternalApplication(String packageName, String ID,
+			boolean wasInstalledAsUserStudy, String version) {
 		super(ID);
 
 		// assume this version as the newest version
@@ -88,8 +90,9 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param version
 	 *            the version of the app which is installed
 	 */
-	public InstalledExternalApplication(String packageName, ExternalApplication externalApp,
-			boolean wasInstalledAsUserStudy, String version) {
+	public InstalledExternalApplication(String packageName,
+			ExternalApplication externalApp, boolean wasInstalledAsUserStudy,
+			String version) {
 
 		this(packageName, externalApp.getID(), wasInstalledAsUserStudy, version);
 
@@ -123,13 +126,15 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 *            the preexisting reference that will be adapted
 	 * @param wasInstalledAsUserStudy
 	 */
-	public InstalledExternalApplication(String packageName, ExternalApplication externalApp,
-			boolean wasInstalledAsUserStudy) {
+	public InstalledExternalApplication(String packageName,
+			ExternalApplication externalApp, boolean wasInstalledAsUserStudy) {
 
-		this(packageName, externalApp, wasInstalledAsUserStudy, externalApp.getNewestVersion());
+		this(packageName, externalApp, wasInstalledAsUserStudy, externalApp
+				.getNewestVersion());
 	}
 
-	public static Dialog showAppInfoDialog(Context c, String name, String desc, List<Integer> sensors) {
+	public static Dialog showAppInfoDialog(Context c, String name, String desc,
+			List<Integer> sensors) {
 		final Dialog d = new Dialog(c);
 		d.setContentView(R.layout.app_info_dialog);
 		d.setTitle("Application informations:");
@@ -149,19 +154,22 @@ public class InstalledExternalApplication extends ExternalApplication {
 		g.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView) d.findViewById(R.id.sensorname)).setText(((ImageView) arg1).getContentDescription());
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				((TextView) d.findViewById(R.id.sensorname))
+						.setText(((ImageView) arg1).getContentDescription());
 			}
 
 		});
 		g.setAdapter(new ImageAdapter(c, imageIds, alternateText));
 		return d;
 	}
-	
+
 	public static WindowManager.LayoutParams getDialogSize(Context c, Dialog d) {
 		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 		lp.copyFrom(d.getWindow().getAttributes());
-		WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager) c
+				.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		if (display.getWidth() > display.getHeight()) { // Landscape
 			if (display.getWidth() <= 426) {
@@ -190,7 +198,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		}
 		return lp;
 	}
-	
+
 	/**
 	 * starts the application this object is referencing
 	 * 
@@ -204,7 +212,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 		pd.setTitle("Application informations:");
 		pd.setMessage("Retreiving data...");
 		pd.show();
-		final Dialog d = showAppInfoDialog(baseActivity, getName(), getDescription(), getSensors());
+		final Dialog d = showAppInfoDialog(baseActivity, getName(),
+				getDescription(), getSensors());
 		Button b = (Button) d.findViewById(R.id.startapp);
 		b.setOnClickListener(new OnClickListener() {
 			@Override
@@ -225,25 +234,30 @@ public class InstalledExternalApplication extends ExternalApplication {
 			@Override
 			public void unsuccessful_exit() {
 				// Message should've been already shown; just do nothing here
-				d.show();
+				if (!d.isShowing())
+					d.show();
 			}
 
 			@Override
 			public void success(InstalledExternalApplication updatedApp) {
-				d.dismiss();
+				if (d.isShowing())
+					d.dismiss();
 			}
 
 			@Override
 			public void manual_abort() {
-				d.show();
+				if (!d.isShowing())
+					d.show();
 			}
 		};
 		b.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				d.hide();
-				InstalledExternalApplication.this.fetchUpdatedInfo(baseActivity, updateObserver);
+				if (d.isShowing())
+					d.hide();
+				InstalledExternalApplication.this.fetchUpdatedInfo(
+						baseActivity, updateObserver);
 			}
 		});
 
@@ -260,11 +274,13 @@ public class InstalledExternalApplication extends ExternalApplication {
 		d.getWindow().setAttributes(getDialogSize(baseActivity, d));
 	}
 
-	protected void fetchUpdatedInfo(final Activity baseActivity, final UpdateObserver o) {
-		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(this.getID(),
-				baseActivity);
-		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Loading...",
-				"Loading userstudy information", true, true, new OnCancelListener() {
+	protected void fetchUpdatedInfo(final Activity baseActivity,
+			final UpdateObserver o) {
+		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(
+				this.getID(), baseActivity);
+		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity,
+				"Loading...", "Loading userstudy information", true, true,
+				new OnCancelListener() {
 					@Override
 					public void onCancel(DialogInterface dialog) {
 						infoRequester.cancel();
@@ -279,27 +295,32 @@ public class InstalledExternalApplication extends ExternalApplication {
 					final ExternalApplication updatedApplication = new ExternalApplication(
 							InstalledExternalApplication.this.getID());
 					updatedApplication.setName(infoRequester.getResultName());
-					updatedApplication.setDescription(infoRequester.getResultDescription());
-					updatedApplication.setSensors(infoRequester.getResultSensors());
+					updatedApplication.setDescription(infoRequester
+							.getResultDescription());
+					updatedApplication.setSensors(infoRequester
+							.getResultSensors());
 					progressDialog.dismiss();
-					ViewAvailableApkActivity.showAppInfo(updatedApplication, baseActivity, new Runnable() {
-						@Override
-						public void run() {
-							startInstallUpdate(updatedApplication, baseActivity, o);
-						}
-					}, new Runnable() {
-						@Override
-						public void run() {
-							o.manual_abort();
-						}
-					});
+					ViewAvailableApkActivity.showAppInfo(updatedApplication,
+							baseActivity, new Runnable() {
+								@Override
+								public void run() {
+									startInstallUpdate(updatedApplication,
+											baseActivity, o);
+								}
+							}, new Runnable() {
+								@Override
+								public void run() {
+									o.manual_abort();
+								}
+							});
 				}
 				if (infoRequester.getState() == State.ERROR) {
 					Log.e("MoSeS.USERSTUDY",
 							"Wanted to display user study, but couldn't get app informations because of: ",
 							infoRequester.getException());
 					progressDialog.dismiss();
-					showMessageBoxError(baseActivity, "Error", "Error when retrieving update information.",
+					showMessageBoxError(baseActivity, "Error",
+							"Error when retrieving update information.",
 							errorMessageBoxOkayBtnListener(o));
 				}
 				if (infoRequester.getState() == State.NO_NETWORK) {
@@ -313,18 +334,60 @@ public class InstalledExternalApplication extends ExternalApplication {
 		});
 		infoRequester.start();
 	}
+	
+	private int totalSize = -1;
 
-	protected void startInstallUpdate(final ExternalApplication updatedApplication, final Activity baseActivity,
-			final UpdateObserver o) {
-		final ApkDownloadManager downloader = new ApkDownloadManager(this, baseActivity, null);
-		final ProgressDialog progressDialog = ProgressDialog.show(baseActivity, "Downloading...",
-				"Downloading the app...", true, true, new OnCancelListener() {
+	protected void startInstallUpdate(
+			final ExternalApplication updatedApplication,
+			final Activity baseActivity, final UpdateObserver o) {
+		final ProgressDialog progressDialog = new ProgressDialog(baseActivity);
+		final ApkDownloadManager downloader = new ApkDownloadManager(this,
+				baseActivity, new ExecutorWithObject() {
+
 					@Override
-					public void onCancel(DialogInterface dialog) {
-						downloader.cancel();
-						o.manual_abort();
+					public void execute(final Object o) {
+						if (o instanceof Integer) {
+							baseActivity.runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									if (totalSize == -1) {
+										totalSize = (Integer) o / 1024;
+										progressDialog.setMax(totalSize);
+									} else {
+										progressDialog
+												.incrementProgressBy(((Integer) o / 1024)
+														- progressDialog
+																.getProgress());
+									}
+								}
+							});
+
+						}
 					}
 				});
+
+		progressDialog.setTitle("Downloading the app...");
+		progressDialog.setMessage("Please wait.");
+		progressDialog.setMax(0);
+		progressDialog.setProgress(0);
+		progressDialog.setOnCancelListener(new OnCancelListener() {
+
+			@Override
+			public void onCancel(DialogInterface dialog) {
+				downloader.cancel();
+			}
+		});
+		progressDialog.setCancelable(true);
+		progressDialog.setButton("Cancel",
+				new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						if (progressDialog.isShowing())
+							progressDialog.cancel();
+					}
+				});
+		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
@@ -336,36 +399,47 @@ public class InstalledExternalApplication extends ExternalApplication {
 					showMessageBoxErrorDownloading(downloader, baseActivity, o);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
 					progressDialog.dismiss();
-					installDownloadedApk(downloader.getDownloadedApk(), updatedApplication, baseActivity, o);
+					installDownloadedApk(downloader.getDownloadedApk(),
+							updatedApplication, baseActivity, o);
 				}
 			}
 		};
 		downloader.addObserver(observer);
+		totalSize = -1;
+		progressDialog.show();
 		downloader.start();
 	}
 
 	// /-----------------------------
 
-	private void installDownloadedApk(final File result, final ExternalApplication updatedApplication,
+	private void installDownloadedApk(final File result,
+			final ExternalApplication updatedApplication,
 			final Activity baseActivity, final UpdateObserver o) {
 		final ApkInstallManager installer = new ApkInstallManager(result, this);
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
-					showMessageBoxError(baseActivity, "Error",
+					showMessageBoxError(
+							baseActivity,
+							"Error",
 							"An error occured when installing the user study app. Sorry!",
 							errorMessageBoxOkayBtnListener(o));
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					o.manual_abort();
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					try {
-						o.success(ApkInstallManager.registerInstalledApk(result, updatedApplication, baseActivity,
-								InstalledExternalApplication.this.wasInstalledAsUserStudy()));
+						o.success(ApkInstallManager.registerInstalledApk(
+								result, updatedApplication, baseActivity,
+								InstalledExternalApplication.this
+										.wasInstalledAsUserStudy()));
 					} catch (IOException e) {
 						Log.e("MoSeS.Install",
 								"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
-						showMessageBoxError(baseActivity, "Error", "An error occured when saving the app database.",
+						showMessageBoxError(
+								baseActivity,
+								"Error",
+								"An error occured when saving the app database.",
 								errorMessageBoxOkayBtnListener(o));
 					}
 				}
@@ -374,25 +448,33 @@ public class InstalledExternalApplication extends ExternalApplication {
 		installer.start();
 	}
 
-	protected void showMessageBoxErrorNoConnection(Activity baseActivity, UpdateObserver o) {
-		showMessageBoxError(baseActivity, "No connection",
+	protected void showMessageBoxErrorNoConnection(Activity baseActivity,
+			UpdateObserver o) {
+		showMessageBoxError(
+				baseActivity,
+				"No connection",
 				"There seems to be no open internet connection present for downloading the app.",
 				errorMessageBoxOkayBtnListener(o));
 	}
 
-	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader, Activity baseActivity, UpdateObserver o) {
+	protected void showMessageBoxErrorDownloading(
+			ApkDownloadManager downloader, Activity baseActivity,
+			UpdateObserver o) {
 		showMessageBoxError(baseActivity, "Error",
-				"An error occured when trying to download the app: " + downloader.getErrorMsg() + ".\nSorry!",
+				"An error occured when trying to download the app: "
+						+ downloader.getErrorMsg() + ".\nSorry!",
 				errorMessageBoxOkayBtnListener(o));
 	}
 
-	protected void showMessageBoxError(Activity baseActivity, String title, String msg,
-			DialogInterface.OnClickListener onClickListener) {
-		new AlertDialog.Builder(baseActivity).setMessage(msg).setTitle(title).setCancelable(true)
-				.setNeutralButton("OK", onClickListener).show();
+	protected void showMessageBoxError(Activity baseActivity, String title,
+			String msg, DialogInterface.OnClickListener onClickListener) {
+		new AlertDialog.Builder(baseActivity).setMessage(msg).setTitle(title)
+				.setCancelable(true).setNeutralButton("OK", onClickListener)
+				.show();
 	}
 
-	private DialogInterface.OnClickListener errorMessageBoxOkayBtnListener(final UpdateObserver o) {
+	private DialogInterface.OnClickListener errorMessageBoxOkayBtnListener(
+			final UpdateObserver o) {
 		return new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -439,7 +521,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 		if (o instanceof InstalledExternalApplication) {
 			if (this.getPackageName() == null)
 				return false;
-			return this.getPackageName().equals(((InstalledExternalApplication) o).getPackageName());
+			return this.getPackageName().equals(
+					((InstalledExternalApplication) o).getPackageName());
 		} else {
 			return false;
 		}
@@ -447,8 +530,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 
 	@Override
 	public String asOnelineString() {
-		return super.asOnelineString() + SEPARATOR + this.getPackageName() + SEPARATOR
-				+ Boolean.valueOf(wasInstalledAsUserStudy).toString() + SEPARATOR + installedVersion + SEPARATOR
+		return super.asOnelineString() + SEPARATOR + this.getPackageName()
+				+ SEPARATOR
+				+ Boolean.valueOf(wasInstalledAsUserStudy).toString()
+				+ SEPARATOR + installedVersion + SEPARATOR
 				+ Boolean.valueOf(updateAvailable).toString();
 	}
 
@@ -462,9 +547,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 */
 	public static InstalledExternalApplication fromOnelineString(String s) {
 		String[] split = s.split(SEPARATOR);
-		ExternalApplication exApp = ExternalApplication.fromOnelineString(split[0]);
-		InstalledExternalApplication result = new InstalledExternalApplication(split[1], exApp,
-				Boolean.parseBoolean(split[2]), split[3]);
+		ExternalApplication exApp = ExternalApplication
+				.fromOnelineString(split[0]);
+		InstalledExternalApplication result = new InstalledExternalApplication(
+				split[1], exApp, Boolean.parseBoolean(split[2]), split[3]);
 		boolean isUpdateAvailable = Boolean.parseBoolean(split[4]);
 		result.setUpdateAvailable(isUpdateAvailable);
 		return result;

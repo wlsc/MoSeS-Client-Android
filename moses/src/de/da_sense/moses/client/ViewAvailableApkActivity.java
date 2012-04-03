@@ -139,7 +139,8 @@ public class ViewAvailableApkActivity extends ListActivity implements
 			public void onClick(View v) {
 				Log.i("MoSes.Install", "starting install process for app "
 						+ app.toString());
-				d.dismiss();
+				if (d.isShowing())
+					d.dismiss();
 				installAppClickAction.run();
 			}
 		});
@@ -150,7 +151,8 @@ public class ViewAvailableApkActivity extends ListActivity implements
 
 			@Override
 			public void onClick(View v) {
-				d.dismiss();
+				if (d.isShowing())
+					d.dismiss();
 				cancelClickAction.run();
 			}
 		});
@@ -448,7 +450,8 @@ public class ViewAvailableApkActivity extends ListActivity implements
 				new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						progressDialog.cancel();
+						if (progressDialog.isShowing())
+							progressDialog.cancel();
 					}
 				});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -456,13 +459,16 @@ public class ViewAvailableApkActivity extends ListActivity implements
 			@Override
 			public void update(Observable observable, Object data) {
 				if (downloader.getState() == ApkDownloadManager.State.ERROR) {
-					progressDialog.dismiss();
+					if (progressDialog.isShowing())
+						progressDialog.dismiss();
 					showMessageBoxErrorDownloading(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.ERROR_NO_CONNECTION) {
-					progressDialog.dismiss();
+					if (progressDialog.isShowing())
+						progressDialog.dismiss();
 					showMessageBoxErrorNoConnection(downloader);
 				} else if (downloader.getState() == ApkDownloadManager.State.FINISHED) {
-					progressDialog.dismiss();
+					if (progressDialog.isShowing())
+						progressDialog.dismiss();
 					installDownloadedApk(downloader.getDownloadedApk(),
 							downloader.getExternalApplicationResult());
 				}
