@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="moses.client"
+    package="de.da_sense.moses.client"
     android:versionCode="8"
-    android:versionName="0.9" >
+    android:versionName="1" >
 
     <uses-sdk android:minSdkVersion="10" />
 
@@ -11,10 +11,10 @@
 
     <!-- Only this application can receive the messages and registration result -->
     <permission
-        android:name="moses.client.permission.C2D_MESSAGE"
+        android:name="de.da_sense.moses.client.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="moses.client.permission.C2D_MESSAGE" />
+    <uses-permission android:name="de.da_sense.moses.client.permission.C2D_MESSAGE" />
 
     <!-- This app has permission to register and receive message -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -24,56 +24,58 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Light">
+        android:theme="@android:style/Theme.Light" >
 
         <!-- Only C2DM servers can send messages for the app. If permission is not set - any other app can generate it -->
         <receiver
-            android:name="moses.client.com.C2DMReceiver"
+            android:name="de.da_sense.moses.client.com.C2DMReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
 
             <!-- Receive the actual message -->
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-                <category android:name="moses.client" />
+                <category android:name="de.da_sense.moses.client" />
             </intent-filter>
             <!-- Receive the registration id -->
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="moses.client" />
+                <category android:name="de.da_sense.moses.client" />
             </intent-filter>
         </receiver>
 
         <activity
-            android:name="moses.client.MosesActivity"
+            android:name="de.da_sense.moses.client.MosesActivity"
             android:label="@string/app_name" >
-            <!--  android:configChanges="orientation|keyboardHidden" -->
+
+            <!-- android:configChanges="orientation|keyboardHidden" -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="moses.client.ViewAvailableApkActivity" >
+        <activity android:name="de.da_sense.moses.client.ViewAvailableApkActivity" >
         </activity>
-        <activity android:name="moses.client.ViewUserStudyNotificationsList" >
+        <activity android:name="de.da_sense.moses.client.ViewUserStudyNotificationsList" >
         </activity>
-        <activity android:name="moses.client.ViewInstalledApplicationsActivity" >
+        <activity android:name="de.da_sense.moses.client.ViewInstalledApplicationsActivity" >
         </activity>
-        <activity android:name="moses.client.abstraction.apks.InstallApkActivity" >
+        <activity android:name="de.da_sense.moses.client.abstraction.apks.InstallApkActivity" >
         </activity>
-        <activity android:name="moses.client.ViewUserStudyActivity" 
-            android:theme="@style/Theme.Transparent">
+        <activity
+            android:name="de.da_sense.moses.client.ViewUserStudyActivity"
+            android:theme="@style/Theme.Transparent" >
         </activity>
-        <activity android:name=".preferences.MosesPreferences" >
+        <activity android:name="de.da_sense.moses.client.preferences.MosesPreferences" >
         </activity>
-        <activity android:name="moses.client.MosesLoginActivity" >
+        <activity android:name="de.da_sense.moses.client.MosesLoginActivity" >
         </activity>
-        <activity android:name="moses.client.MosesAskForDeviceIDActivity" >
+        <activity android:name="de.da_sense.moses.client.MosesAskForDeviceIDActivity" >
         </activity>
 
-        <receiver android:name="moses.client.service.StartupIntentReceiver" >
+        <receiver android:name="de.da_sense.moses.client.service.StartupIntentReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
 
@@ -81,9 +83,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="moses.client.service.MosesService" >
+        <service android:name="de.da_sense.moses.client.service.MosesService" >
             <intent-filter>
-                <action android:name="moses.client.service.MosesService" />
+                <action android:name="de.da_sense.moses.client.service.MosesService" />
             </intent-filter>
         </service>
     </application>

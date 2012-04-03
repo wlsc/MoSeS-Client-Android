@@ -5,13 +5,14 @@ import static moses.client.test.TestHelpers.mystery;
 
 import org.json.JSONObject;
 
-import moses.client.MosesActivity;
-import moses.client.ViewUserStudyActivity;
-import moses.client.com.NetworkJSON;
-import moses.client.service.MosesService;
-import moses.client.service.helpers.UserStudyStatusBarHelper;
-import moses.client.userstudy.UserStudyNotification.Status;
-import moses.client.userstudy.UserstudyNotificationManager;
+import de.da_sense.moses.client.MosesActivity;
+import de.da_sense.moses.client.ViewUserStudyActivity;
+import de.da_sense.moses.client.com.NetworkJSON;
+import de.da_sense.moses.client.service.MosesService;
+import de.da_sense.moses.client.service.helpers.UserStudyStatusBarHelper;
+import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
+import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
+
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;

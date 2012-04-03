@@ -1,4 +1,4 @@
-package moses.client.test;
+package moses.client.test.notused;
 
 import de.da_sense.moses.client.MosesActivity;
 import de.da_sense.moses.client.ViewUserStudyActivity;
@@ -7,6 +7,7 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.UserStudyStatusBarHelper;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
+import moses.client.test.TestResponseGenerator;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;

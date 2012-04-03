@@ -5,11 +5,12 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.com.FakeResponseGenerator;
+import de.da_sense.moses.client.userstudy.UserStudyNotification;
+
 import android.util.Log;
 
-import moses.client.abstraction.apks.ExternalApplication;
-import moses.client.com.FakeResponseGenerator;
-import moses.client.userstudy.UserStudyNotification;
 
 public class TestResponseGenerator implements FakeResponseGenerator {
 

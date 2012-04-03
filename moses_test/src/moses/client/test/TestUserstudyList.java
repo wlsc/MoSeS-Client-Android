@@ -1,12 +1,12 @@
 package moses.client.test;
 
-import moses.client.ViewUserStudyActivity;
-import moses.client.ViewUserStudyNotificationsList;
-import moses.client.com.NetworkJSON;
-import moses.client.service.MosesService;
-import moses.client.userstudy.UserStudyNotification;
-import moses.client.userstudy.UserstudyNotificationManager;
-import moses.client.userstudy.UserStudyNotification.Status;
+import de.da_sense.moses.client.ViewUserStudyActivity;
+import de.da_sense.moses.client.ViewUserStudyNotificationsList;
+import de.da_sense.moses.client.com.NetworkJSON;
+import de.da_sense.moses.client.service.MosesService;
+import de.da_sense.moses.client.userstudy.UserStudyNotification;
+import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
+import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -145,8 +145,8 @@ public class TestUserstudyList extends
 	 */
 	protected void checkNameAndDescriptionOfListItem(View listRow,
 			UserStudyNotification notification) {
-		TextView nameTextView = (TextView) listRow.findViewById(moses.client.R.id.userstudylistitemtext);
-		TextView descriptionTextView = (TextView) listRow.findViewById(moses.client.R.id.userstudylistitemdescription);
+		TextView nameTextView = (TextView) listRow.findViewById(de.da_sense.moses.client.R.id.userstudylistitemtext);
+		TextView descriptionTextView = (TextView) listRow.findViewById(de.da_sense.moses.client.R.id.userstudylistitemdescription);
 		
 		assertNotNull(nameTextView);
 		assertNotNull(descriptionTextView);

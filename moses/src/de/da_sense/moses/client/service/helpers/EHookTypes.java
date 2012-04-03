@@ -1,0 +1,5 @@
+package de.da_sense.moses.client.service.helpers;
+
+public enum EHookTypes {
+	POSTLOGOUT, POSTLOGINSUCCESS, POSTLOGINSUCCESSPRIORITY, POSTLOGINFAILED, POSTLOGINSTART, POSTLOGINEND
+}
