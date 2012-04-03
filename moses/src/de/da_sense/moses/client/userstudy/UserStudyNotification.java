@@ -4,25 +4,24 @@ import java.util.Date;
 
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 
-
 /**
  * represents a notification about a user study
  * 
  * @author Simon L
- *
+ * 
  */
 public class UserStudyNotification {
-	
-	private final static String SEPARATOR = "#USN#"; 
-	
+
+	private final static String SEPARATOR = "#USN#";
+
 	public static enum Status {
 		ACCEPTED, DENIED, UNDECIDED
 	}
-	
+
 	private ExternalApplication application;
 	private Date date;
 	private Status status;
-	
+
 	/**
 	 * the external application reference which this user study is about
 	 * 
@@ -37,7 +36,7 @@ public class UserStudyNotification {
 		this.status = Status.UNDECIDED;
 		this.date = date;
 	}
-	
+
 	/**
 	 * @return the external applicatiuon this user study is about
 	 */
@@ -51,44 +50,47 @@ public class UserStudyNotification {
 	public Status getStatus() {
 		return status;
 	}
-	
+
 	/**
 	 * set the confirmation/refusal/undecided status of this user study
 	 * 
-	 * @param status the new status
+	 * @param status
+	 *            the new status
 	 */
 	public void setStatus(Status status) {
 		this.status = status;
-		//TODO: Meldung an Server
+		// TODO: Meldung an Server
 	}
 
 	public Date getDate() {
 		return date;
 	}
-	
+
 	/**
 	 * saves this user study as an one line string
 	 */
 	public String asOnelineString() {
-		return application.asOnelineString()+SEPARATOR+this.status.toString()+SEPARATOR+this.date.getTime();
+		return application.asOnelineString() + SEPARATOR + this.status.toString() + SEPARATOR + this.date.getTime();
 	}
-	
+
 	/**
-	 * decode this user study from an one line string 
+	 * decode this user study from an one line string
 	 * 
-	 * @param s the encoded user study
+	 * @param s
+	 *            the encoded user study
 	 * @return the decoded object
 	 */
 	public static UserStudyNotification fromOnelineString(String s) {
 		String[] split = s.split(UserStudyNotification.SEPARATOR);
-		return new UserStudyNotification(ExternalApplication.fromOnelineString(split[0]), Status.valueOf(split[1]), new Date(Long.parseLong(split[2])));
+		return new UserStudyNotification(ExternalApplication.fromOnelineString(split[0]), Status.valueOf(split[1]),
+				new Date(Long.parseLong(split[2])));
 	}
-	
+
 	@Override
 	public String toString() {
 		return asOnelineString();
 	}
-	
+
 	public boolean isDataComplete() {
 		return application.isDataComplete();
 	}

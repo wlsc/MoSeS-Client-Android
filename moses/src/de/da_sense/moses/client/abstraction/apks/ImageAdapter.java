@@ -7,37 +7,37 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 public class ImageAdapter extends BaseAdapter {
-    private Context mContext;
+	private Context mContext;
 
-    private Integer[] mImageIds;
-    private String[] mAlternateText;
+	private Integer[] mImageIds;
+	private String[] mAlternateText;
 
-    public ImageAdapter(Context c, Integer[] i, String[] a) {
-        mContext = c;
-        mImageIds = i;
-        mAlternateText = a;
-    }
+	public ImageAdapter(Context c, Integer[] i, String[] a) {
+		mContext = c;
+		mImageIds = i;
+		mAlternateText = a;
+	}
 
-    @Override
+	@Override
 	public int getCount() {
-        return mImageIds.length;
-    }
+		return mImageIds.length;
+	}
 
-    @Override
+	@Override
 	public Object getItem(int position) {
-        return position;
-    }
+		return position;
+	}
 
-    @Override
+	@Override
 	public long getItemId(int position) {
-        return position;
-    }
+		return position;
+	}
 
-    @Override
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-        ImageView imageView = new ImageView(mContext);
-        imageView.setImageResource(mImageIds[position]);
-        imageView.setContentDescription(mAlternateText[position]);
-        return imageView;
-    }
+		ImageView imageView = new ImageView(mContext);
+		imageView.setImageResource(mImageIds[position]);
+		imageView.setContentDescription(mAlternateText[position]);
+		return imageView;
+	}
 }

@@ -24,9 +24,7 @@ import android.os.AsyncTask;
  * @author Jaco Hofmann
  */
 
-public class NetworkJSON
-		extends
-		AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
+public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
 
 	// Needed for testing
 	public static CountDownLatch signal = new CountDownLatch(1);
@@ -70,9 +68,9 @@ public class NetworkJSON
 
 	/** The url. */
 	public static String url;
-	
+
 	public static boolean debug = false;
-	
+
 	public static FakeResponseGenerator response = null;
 
 	/** The e. */
@@ -88,21 +86,18 @@ public class NetworkJSON
 		publishProgress(new BackgroundException(ConnectionParam.INIT, null));
 		e = params[0].e;
 		String ret = "";
-		if(debug) {
+		if (debug) {
 			signal = new CountDownLatch(1);
 			return response.generateAnswer(params[0].request);
 		}
 		try {
-			publishProgress(new BackgroundException(ConnectionParam.CONNECTING,
-					null));
+			publishProgress(new BackgroundException(ConnectionParam.CONNECTING, null));
 			HttpResponse re = doPost(url, params[0].request);
 			ret = EntityUtils.toString(re.getEntity());
 		} catch (Exception e) {
-			publishProgress(new BackgroundException(ConnectionParam.EXCEPTION,
-					e));
+			publishProgress(new BackgroundException(ConnectionParam.EXCEPTION, e));
 		}
-		publishProgress(new BackgroundException(ConnectionParam.POSTEXECUTE,
-				null));
+		publishProgress(new BackgroundException(ConnectionParam.POSTEXECUTE, null));
 		return ret;
 	}
 
@@ -119,8 +114,7 @@ public class NetworkJSON
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	private HttpResponse doPost(String url, JSONObject j)
-			throws ClientProtocolException, IOException {
+	private HttpResponse doPost(String url, JSONObject j) throws ClientProtocolException, IOException {
 		HttpClient httpclient = new DefaultHttpClient();
 		HttpPost httppost = new HttpPost(url);
 

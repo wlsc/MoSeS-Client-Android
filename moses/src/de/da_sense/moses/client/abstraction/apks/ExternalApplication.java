@@ -22,17 +22,17 @@ public class ExternalApplication {
 	private static final String TAG_DESCRIPTION = "[description]";
 
 	private static final String TAG_NAME = "[name]";
-	
+
 	private static final String TAG_SENSORS = "[sensors]";
 
 	private static final String SEPARATOR = "#EA#";
-	
+
 	private String ID;
-	
+
 	// lazy loading variables for non-defining attributes
 	private String name;
 	private String description;
-	private String newestVersion="0";
+	private String newestVersion = "0";
 	private List<Integer> sensors = null;
 
 	public String getID() {
@@ -42,7 +42,8 @@ public class ExternalApplication {
 	/**
 	 * Creates a reference to an external application, specifying its ID
 	 * 
-	 * @param ID the id in the MoSeS database
+	 * @param ID
+	 *            the id in the MoSeS database
 	 */
 	public ExternalApplication(String ID) {
 		this.ID = ID;
@@ -51,7 +52,8 @@ public class ExternalApplication {
 	/**
 	 * sets the name of the application
 	 * 
-	 * @param name the name
+	 * @param name
+	 *            the name
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -60,7 +62,8 @@ public class ExternalApplication {
 	/**
 	 * sets the description of the application
 	 * 
-	 * @param description the description
+	 * @param description
+	 *            the description
 	 */
 	public void setDescription(String description) {
 		this.description = description;
@@ -126,13 +129,13 @@ public class ExternalApplication {
 	}
 
 	public void setSensors(Collection<Integer> sensors) {
-		if(sensors == null) {
+		if (sensors == null) {
 			this.sensors = null;
 		} else {
 			this.sensors = new LinkedList<Integer>(sensors);
 		}
 	}
-	
+
 	public boolean isSensorsSet() {
 		return sensors != null;
 	}
@@ -140,7 +143,7 @@ public class ExternalApplication {
 	public void setNewestVersion(String newestVersion) {
 		this.newestVersion = newestVersion;
 	}
-	
+
 	public boolean isNewestVersionSet() {
 		return newestVersion != null;
 	}
@@ -159,38 +162,40 @@ public class ExternalApplication {
 	public boolean isNameSet() {
 		return name != null;
 	}
-	
+
 	/**
 	 * writes this object into an one-line string
 	 * 
 	 * @return the encoded object
 	 */
-	public String asOnelineString() { //ID-{name}-{description}
+	public String asOnelineString() { // ID-{name}-{description}
 		String result = this.ID;
-		if(isNameSet()) {
+		if (isNameSet()) {
 			result += SEPARATOR + TAG_NAME + getName();
 		}
-		if(isDescriptionSet()) {
+		if (isDescriptionSet()) {
 			result += SEPARATOR + TAG_DESCRIPTION + getDescription();
 		}
-		if(isNewestVersionSet()) {
+		if (isNewestVersionSet()) {
 			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();
 		}
-		if(isSensorsSet()) {
+		if (isSensorsSet()) {
 			result += SEPARATOR + TAG_SENSORS + new JSONArray(getSensors()).toString();
 		}
 		return result;
 	}
-	
+
 	@Override
 	public String toString() {
 		return asOnelineString();
 	}
-	
+
 	/**
-	 * creates an external application from a string (@see {@link #asOnelineString()})
+	 * creates an external application from a string (@see
+	 * {@link #asOnelineString()})
 	 * 
-	 * @param s the string-exncoded external application
+	 * @param s
+	 *            the string-exncoded external application
 	 * @return the decoded external application
 	 */
 	public static ExternalApplication fromOnelineString(String s) {
@@ -200,32 +205,33 @@ public class ExternalApplication {
 		String description = null;
 		String newestVersion = null;
 		List<Integer> sensors = null;
-		for(int i=0; i<split.length; i++) {
-			if(i==0) {
+		for (int i = 0; i < split.length; i++) {
+			if (i == 0) {
 				ID = split[i];
 			} else {
-				if(split[i].startsWith(TAG_DESCRIPTION)) {
+				if (split[i].startsWith(TAG_DESCRIPTION)) {
 					description = split[i].substring(TAG_DESCRIPTION.length());
 				}
-				if(split[i].startsWith(TAG_NAME)) {
+				if (split[i].startsWith(TAG_NAME)) {
 					name = split[i].substring(TAG_NAME.length());
 				}
-				if(split[i].startsWith(TAG_NEWESTVERSION)) {
+				if (split[i].startsWith(TAG_NEWESTVERSION)) {
 					newestVersion = split[i].substring(TAG_NEWESTVERSION.length());
 				}
-				if(split[i].startsWith(TAG_SENSORS)) {
+				if (split[i].startsWith(TAG_SENSORS)) {
 					sensors = new LinkedList<Integer>();
 					JSONArray jsonarray = null;
 					try {
 						jsonarray = new JSONArray(split[i].substring(TAG_SENSORS.length()));
-						for(int j=0; j<jsonarray.length(); j++) sensors.add(jsonarray.getInt(j));
+						for (int j = 0; j < jsonarray.length(); j++)
+							sensors.add(jsonarray.getInt(j));
 					} catch (JSONException e) {
 						Log.e("MoSeS.APK", "error parsing external application from settings file", e);
 					}
 				}
 			}
 		}
-		
+
 		ExternalApplication externalApplication = new ExternalApplication(ID);
 		externalApplication.setName(name);
 		externalApplication.setDescription(description);
@@ -235,10 +241,11 @@ public class ExternalApplication {
 	}
 
 	/**
-	 * @return true if all data that could be retrieved for this object (name, description, sensors, ...) is held in this object
+	 * @return true if all data that could be retrieved for this object (name,
+	 *         description, sensors, ...) is held in this object
 	 */
 	public boolean isDataComplete() {
 		return isDescriptionSet() && isNameSet() && isSensorsSet() && isNewestVersionSet();
 	}
-	
+
 }

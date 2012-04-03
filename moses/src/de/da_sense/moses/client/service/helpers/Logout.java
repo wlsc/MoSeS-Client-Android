@@ -3,7 +3,6 @@ package de.da_sense.moses.client.service.helpers;
 import java.net.UnknownHostException;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +17,7 @@ import android.util.Log;
 // TODO: Auto-generated Javadoc
 /**
  * The Class Logout.
- *
+ * 
  * @author Jaco Hofmann
  */
 public class Logout {
@@ -30,22 +29,21 @@ public class Logout {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * moses.client.com.ReqTaskExecutor#handleException(java.lang.Exception)
 		 */
 		@Override
 		public void handleException(Exception e) {
 			if (e instanceof UnknownHostException || e instanceof JSONException) {
-				Log.d("MoSeS.LOGOUT",
-						"No internet connection present (or DNS problems.)");
+				Log.d("MoSeS.LOGOUT", "No internet connection present (or DNS problems.)");
 			} else
 				Log.d("MoSeS.LOGOUT", "FAILURE: " + e.getMessage());
 		}
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see moses.client.com.ReqTaskExecutor#postExecution(java.lang.String)
 		 */
 		@Override
@@ -57,7 +55,7 @@ public class Logout {
 				if (j.getString("MESSAGE").equals("LOGOUT_RESPONSE")) {
 					serv.loggedOut();
 					Login.lastLoggedIn = -1;
-					for(ExecutorWithType ex : e) {
+					for (ExecutorWithType ex : e) {
 						ex.e.execute();
 					}
 				}
@@ -69,7 +67,7 @@ public class Logout {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see
 		 * moses.client.com.ReqTaskExecutor#updateExecution(moses.client.com
 		 * .NetworkJSON.BackgroundException)
@@ -91,7 +89,7 @@ public class Logout {
 
 	/**
 	 * Instantiates a new logout.
-	 *
+	 * 
 	 * @param serv
 	 *            the serv
 	 * @param postLogoutHook

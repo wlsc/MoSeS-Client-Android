@@ -2,7 +2,6 @@ package de.da_sense.moses.client.abstraction.apks;
 
 import java.net.UnknownHostException;
 
-
 import org.json.JSONException;
 
 import de.da_sense.moses.client.com.ConnectionParam;
@@ -23,11 +22,9 @@ public class ApkUninstalled {
 		@Override
 		public void handleException(Exception e) {
 			if (e instanceof UnknownHostException || e instanceof JSONException) {
-				Log.d("MoSeS.LOGIN",
-						"No internet connection present (or DNS problems.)");
+				Log.d("MoSeS.LOGIN", "No internet connection present (or DNS problems.)");
 			} else
-				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString()
-						+ " " + e.getMessage());
+				Log.d("MoSeS.LOGIN", "FAILURE: " + e.getClass().toString() + " " + e.getMessage());
 		}
 
 		@Override
@@ -46,16 +43,17 @@ public class ApkUninstalled {
 	};
 
 	public ApkUninstalled(final String appID) {
-		//TODO: handle service == null
-        if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTUNINSTALLEDAPK, new Executor() {
+		// TODO: handle service == null
+		if (MosesService.getInstance() != null)
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+					EMessageTypes.REQUESTUNINSTALLEDAPK, new Executor() {
 
-				@Override
-				public void execute() {
-					Log.d("MoSeS.APK", "Sending information to server that app was uninstalled: " + appID);
-					new RequestUninstalledAPK(new APKUninstalledTaskExecutor(), MosesService
-							.getInstance().getSessionID(), appID).send();
-				}
-			});
+						@Override
+						public void execute() {
+							Log.d("MoSeS.APK", "Sending information to server that app was uninstalled: " + appID);
+							new RequestUninstalledAPK(new APKUninstalledTaskExecutor(), MosesService.getInstance()
+									.getSessionID(), appID).send();
+						}
+					});
 	}
 }

@@ -104,23 +104,26 @@ public class InstalledExternalApplicationsManager {
 	 */
 	public boolean containsApp(String packageName) {
 		for (InstalledExternalApplication app : apps) {
-			if (app.getPackageName().equals(packageName)) return true;
+			if (app.getPackageName().equals(packageName))
+				return true;
 		}
 		return false;
 	}
-	
+
 	public InstalledExternalApplication getAppForId(String id) {
 		for (InstalledExternalApplication app : apps) {
-			if (app.getID().equals(id)) return app;
+			if (app.getID().equals(id))
+				return app;
 		}
 		return null;
 	}
+
 	public boolean containsAppForId(String id) {
 		return getAppForId(id) != null;
 	}
-	
+
 	public void updateApp(InstalledExternalApplication app) {
-		if(containsAppForId(app.getID())) {
+		if (containsAppForId(app.getID())) {
 			forgetExternalApplication(app.getID());
 			addExternalApplication(app);
 		}
@@ -129,7 +132,8 @@ public class InstalledExternalApplicationsManager {
 	/**
 	 * see: {@link #forgetExternalApplication(InstalledExternalApplication)}
 	 * 
-	 * @param id the id of the apop to forget
+	 * @param id
+	 *            the id of the apop to forget
 	 */
 	private void forgetExternalApplication(String id) {
 		InstalledExternalApplication app = getAppForId(id);
@@ -185,7 +189,8 @@ public class InstalledExternalApplicationsManager {
 			throw e;
 		} finally {
 			try {
-				if (bufWriter != null) bufWriter.close();
+				if (bufWriter != null)
+					bufWriter.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -223,7 +228,8 @@ public class InstalledExternalApplicationsManager {
 				} else {
 					fileVersion = -1;
 					// return straight here because no lines are contained
-					Log.i("MoSeS.APK", "Initialized empty installed apps manager because the manager savefile was empty");
+					Log.i("MoSeS.APK",
+							"Initialized empty installed apps manager because the manager savefile was empty");
 					return new InstalledExternalApplicationsManager();
 				}
 				if (fileVersion == -1 || fileVersion != managerVersion) {
@@ -246,11 +252,12 @@ public class InstalledExternalApplicationsManager {
 				return new InstalledExternalApplicationsManager();
 			} finally {
 				if (reader != null) {
-					if (bufReader != null) try {
-						bufReader.close();
-					} catch (IOException e) {
-						Log.i("MoSeS.IO", "couldn't close reader");
-					}
+					if (bufReader != null)
+						try {
+							bufReader.close();
+						} catch (IOException e) {
+							Log.i("MoSeS.IO", "couldn't close reader");
+						}
 				}
 			}
 		} else {
@@ -268,16 +275,18 @@ public class InstalledExternalApplicationsManager {
 	}
 
 	public static void updateArrived(String apkidString) {
-		if(getInstance() == null) {
-			if(MosesService.getInstance() != null) {
+		if (getInstance() == null) {
+			if (MosesService.getInstance() != null) {
 				init(MosesService.getInstance());
 			} else {
-				Log.e("MoSeS.Update", "Could not initialize Installed External Application Manager because of dead MoSeS Service, and such not save the incoming update for " + apkidString);
+				Log.e("MoSeS.Update",
+						"Could not initialize Installed External Application Manager because of dead MoSeS Service, and such not save the incoming update for "
+								+ apkidString);
 			}
 		}
-		if(getInstance() != null) {
+		if (getInstance() != null) {
 			InstalledExternalApplicationsManager m = getInstance();
-			if(m.containsAppForId(apkidString)) {
+			if (m.containsAppForId(apkidString)) {
 				InstalledExternalApplication app = m.getAppForId(apkidString);
 				app.setUpdateAvailable(true);
 				m.updateApp(app);
@@ -286,14 +295,16 @@ public class InstalledExternalApplicationsManager {
 				} catch (IOException e) {
 					Log.e("MoSeS.UPDATE", "Could not save manager with new update data to file", e);
 				}
-				
-				if(MosesService.getInstance() != null) {
+
+				if (MosesService.getInstance() != null) {
 					UpdateStatusBarHelper.displayStatusBarNotification(app.getID(), MosesService.getInstance());
 				} else {
 					Log.e("MoSeS.UPDATE", "MoSesService is dead, so no notification about the update could be shown");
 				}
 			} else {
-				Log.w("MoSeS.UPDATE", "The app for which an update arrived is not installed; update will be forgotten. apkid: " + apkidString);
+				Log.w("MoSeS.UPDATE",
+						"The app for which an update arrived is not installed; update will be forgotten. apkid: "
+								+ apkidString);
 			}
 		} else {
 			Log.e("MoSeS.UPDATE", "Could not save incoming update to manager");

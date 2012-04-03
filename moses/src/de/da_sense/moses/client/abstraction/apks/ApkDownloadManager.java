@@ -49,7 +49,8 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * @param applicationContext
 	 *            the context
 	 */
-	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext, ExecutorWithObject progressListener) {
+	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext,
+			ExecutorWithObject progressListener) {
 		super();
 		this.app = externalApp;
 		this.context = applicationContext;
@@ -62,7 +63,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * file).
 	 */
 	public void start() {
-		if(MosesService.isOnline(context)) {
+		if (MosesService.isOnline(context)) {
 			requestUrlForApplication(this.app);
 		} else {
 			errorMsg = "No internet connection";
@@ -71,12 +72,13 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	}
 
 	/**
-	 * sets the state of this downloading process aand notifies observers about it
+	 * sets the state of this downloading process aand notifies observers about
+	 * it
 	 * 
 	 * @param state
 	 */
 	private void setState(State state) {
-		if(!cancelled) {
+		if (!cancelled) {
 			this.state = state;
 			this.setChanged();
 			this.notifyObservers(state);
@@ -94,10 +96,13 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	}
 
 	/**
-	 * sets the error state, with a message and a throwable as indicator of what went wrong
+	 * sets the error state, with a message and a throwable as indicator of what
+	 * went wrong
 	 * 
-	 * @param errorMsg error message
-	 * @param e throwable that was thrown when the error occured
+	 * @param errorMsg
+	 *            error message
+	 * @param e
+	 *            throwable that was thrown when the error occured
 	 */
 	private void setErrorState(String errorMsg, Throwable e) {
 		this.errorMsg = errorMsg;
@@ -116,9 +121,10 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	}
 
 	private void requestApkDownload(URL url, ExecutorWithObject e) {
-		if(!cancelled) {
-			if(MosesService.isOnline(context)) {
-				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context, generateApkFileNameFor(app), e);
+		if (!cancelled) {
+			if (MosesService.isOnline(context)) {
+				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context,
+						generateApkFileNameFor(app), e);
 				downloadTask.setExternalApplicationReference(app);
 				setState(State.APK_FILE_REQUESTED_DOWNLOADING);
 				downloadTask.execute();
@@ -138,7 +144,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		} catch (MalformedURLException e) {
 			Log.e("MoSeS.APK", "Server sent malformed url; could not download application: " + urlString);
 			Toast.makeText(this.context, "Server sent malformed url; could not download application: " + urlString,
-				Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG).show();
 		}
 	}
 

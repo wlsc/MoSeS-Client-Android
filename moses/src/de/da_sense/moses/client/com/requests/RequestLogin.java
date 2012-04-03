@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,8 +14,7 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
  */
 
 public class RequestLogin {
-	public static boolean loginValid(JSONObject j, String uname)
-			throws JSONException {
+	public static boolean loginValid(JSONObject j, String uname) throws JSONException {
 		String sessionID = j.getString("SESSIONID");
 		if (!sessionID.equals("NULL")) {
 			SESSION_ID = sessionID;

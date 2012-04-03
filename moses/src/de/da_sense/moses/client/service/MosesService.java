@@ -97,11 +97,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	public void executeChangeTextFieldHook(String s) {
-		for(ExecutorWithObject e : mset.changeTextFieldHook) {
+		for (ExecutorWithObject e : mset.changeTextFieldHook) {
 			e.execute(s);
 		}
 	}
-	
+
 	/**
 	 * Execute something as a logged in user. If the service is currently not
 	 * logged in a login request will be issued first.

@@ -49,7 +49,6 @@ public class MosesPreferences extends PreferenceActivity {
 		lp.setEntryValues(entryValues);
 	}
 
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,7 +59,7 @@ public class MosesPreferences extends PreferenceActivity {
 			getPreferenceScreen().onItemClick(null, null, 1, 0);
 		}
 	}
-	
+
 	@Override
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);

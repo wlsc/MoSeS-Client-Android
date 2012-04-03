@@ -17,7 +17,7 @@ import android.os.AsyncTask;
  * asynchronous downloading task for an apk file
  * 
  * @author Simon L
- *
+ * 
  */
 public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 
@@ -32,12 +32,18 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 	/**
 	 * creates the downloading task with the required parameters
 	 * 
-	 * @param observer observer interface - implementing class for notifications about progress etc.
-	 * @param url the url of the file to download
-	 * @param appContext context
-	 * @param apkFileName the file name of the apk file in the default location
+	 * @param observer
+	 *            observer interface - implementing class for notifications
+	 *            about progress etc.
+	 * @param url
+	 *            the url of the file to download
+	 * @param appContext
+	 *            context
+	 * @param apkFileName
+	 *            the file name of the apk file in the default location
 	 */
-	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName, ExecutorWithObject progressListener) {
+	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName,
+			ExecutorWithObject progressListener) {
 		this.observer = observer;
 		this.url = url;
 		File downloadDir = FileLocationUtil.getApkDownloadFolder(appContext);
@@ -53,7 +59,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 
 	@Override
 	protected void onProgressUpdate(Integer... integers) {
-		if(progressListener != null) {
+		if (progressListener != null) {
 			progressListener.execute(integers[0]);
 		}
 	}
@@ -70,7 +76,8 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 	/**
 	 * starts the download
 	 * 
-	 * @param url the url
+	 * @param url
+	 *            the url
 	 * @return
 	 */
 	private File downloadFile(URL url) {
@@ -122,7 +129,9 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 			if (apkFile.exists() && this.downloadInterrupted) {
 				apkFile.delete();
 				apkFile = null;
-			} else if (!apkFile.exists()) { return null; }
+			} else if (!apkFile.exists()) {
+				return null;
+			}
 		}
 
 		return apkFile;

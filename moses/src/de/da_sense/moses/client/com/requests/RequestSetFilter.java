@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,8 +25,7 @@ public class RequestSetFilter {
 
 	ReqTaskExecutor e;
 
-	public RequestSetFilter(ReqTaskExecutor e, String sessionID,
-			String deviceID, String filter) {
+	public RequestSetFilter(ReqTaskExecutor e, String sessionID, String deviceID, String filter) {
 		j = new JSONObject();
 		this.e = e;
 		try {

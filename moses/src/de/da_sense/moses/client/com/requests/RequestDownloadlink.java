@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,8 +14,7 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
  */
 
 public class RequestDownloadlink {
-	public static boolean downloadLinkRequestAccepted(JSONObject j)
-			throws JSONException {
+	public static boolean downloadLinkRequestAccepted(JSONObject j) throws JSONException {
 		String messageTitle = j.getString("MESSAGE");
 		return messageTitle.equals("DOWNLOAD_RESPONSE");
 	}

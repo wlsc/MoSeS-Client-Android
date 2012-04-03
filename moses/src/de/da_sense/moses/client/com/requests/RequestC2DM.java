@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,18 +14,15 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
  */
 
 public class RequestC2DM {
-	public static boolean C2DMRequestAccepted(JSONObject j)
-			throws JSONException {
+	public static boolean C2DMRequestAccepted(JSONObject j) throws JSONException {
 		String messageTitle = j.getString("MESSAGE");
-		return messageTitle.equals("C2DM")
-				&& j.getString("STATUS").equals("SUCCESS");
+		return messageTitle.equals("C2DM") && j.getString("STATUS").equals("SUCCESS");
 	}
 
 	private JSONObject j;
 	ReqTaskExecutor e;
 
-	public RequestC2DM(ReqTaskExecutor e, String sessionID, String deviceId,
-			String c2dmId) {
+	public RequestC2DM(ReqTaskExecutor e, String sessionID, String deviceId, String c2dmId) {
 		j = new JSONObject();
 		this.e = e;
 		try {

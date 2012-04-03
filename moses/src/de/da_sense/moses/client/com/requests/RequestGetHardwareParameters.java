@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,8 +23,7 @@ public class RequestGetHardwareParameters {
 	 * @return true when the server has returned a success-response, else false
 	 * @throws JSONException
 	 */
-	public static boolean parameterAcquiredFromServer(JSONObject j)
-			throws JSONException {
+	public static boolean parameterAcquiredFromServer(JSONObject j) throws JSONException {
 		if (j.getString("MESSAGE").equals("HARDWARE_PARAMS"))
 			return true;
 		return false;
@@ -45,8 +43,7 @@ public class RequestGetHardwareParameters {
 	 * @param deviceID
 	 *            id of the device
 	 */
-	public RequestGetHardwareParameters(ReqTaskExecutor e, String sessionID,
-			String deviceID) {
+	public RequestGetHardwareParameters(ReqTaskExecutor e, String sessionID, String deviceID) {
 		j = new JSONObject();
 		this.e = e;
 		try {

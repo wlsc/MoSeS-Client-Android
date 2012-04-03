@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +18,7 @@ import android.util.Log;
  * 
  */
 public class RequestSetHardwareParameters {
-	public static boolean parameterSetOnServer(JSONObject j)
-			throws JSONException {
+	public static boolean parameterSetOnServer(JSONObject j) throws JSONException {
 		if (j.getString("STATUS").equals("SUCCESS")) {
 			return true;
 		}
@@ -31,8 +29,7 @@ public class RequestSetHardwareParameters {
 
 	ReqTaskExecutor e;
 
-	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo,
-			boolean force, String sessionID) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, boolean force, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {

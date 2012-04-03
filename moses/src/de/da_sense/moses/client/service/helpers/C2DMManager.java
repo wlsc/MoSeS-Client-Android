@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.service.helpers;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,51 +45,57 @@ public class C2DMManager {
 		}
 		if (setNewC2DMID) {
 			c2dmRegistrationId = registrationId;
-			PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit().putString("c2dm_pref", registrationId).commit();
+			PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
+					.putString("c2dm_pref", registrationId).commit();
 			sendC2DMIdToServer(registrationId, MosesService.getInstance());
 		}
 	}
 
 	public static void sendCurrentC2DM() {
-		sendC2DMIdToServer(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("c2dm_pref", ""),MosesService.getInstance());
+		sendC2DMIdToServer(
+				PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("c2dm_pref", ""),
+				MosesService.getInstance());
 	}
 
 	private static void sendC2DMIdToServer(final String registrationId, final Context context) {
-		MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTC2DM, new Executor() {
-			@Override
-			public void execute() {
-				final RequestC2DM request = new RequestC2DM(new ReqTaskExecutor() {
+		MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTC2DM,
+				new Executor() {
 					@Override
-					public void updateExecution(BackgroundException c) {
-					}
-
-					@Override
-					public void postExecution(String s) {
-						// request sent!
-						try {
-							JSONObject j = new JSONObject(s);
-							if (RequestC2DM.C2DMRequestAccepted(j)) {
-								Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
-							} else {
-								Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
+					public void execute() {
+						final RequestC2DM request = new RequestC2DM(new ReqTaskExecutor() {
+							@Override
+							public void updateExecution(BackgroundException c) {
 							}
 
-						} catch (JSONException e) {
-							Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
-						}
-					}
+							@Override
+							public void postExecution(String s) {
+								// request sent!
+								try {
+									JSONObject j = new JSONObject(s);
+									if (RequestC2DM.C2DMRequestAccepted(j)) {
+										Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
+									} else {
+										Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
+									}
 
-					@Override
-					public void handleException(Exception e) {
-						// TODO: make very sure that the id is really sent to
-						// the server!
-						Log.e("MoSeS.C2DM",  "sendC2DM failed: " + e.getMessage(), e);
-					}
-				}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceId(), registrationId);
+								} catch (JSONException e) {
+									Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
+								}
+							}
 
-				request.send();
-			}
-		});
+							@Override
+							public void handleException(Exception e) {
+								// TODO: make very sure that the id is really
+								// sent to
+								// the server!
+								Log.e("MoSeS.C2DM", "sendC2DM failed: " + e.getMessage(), e);
+							}
+						}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceId(),
+								registrationId);
+
+						request.send();
+					}
+				});
 	}
 
 }

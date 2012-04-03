@@ -25,7 +25,7 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	 * States of progress that the ApkInstallManager can assume
 	 * 
 	 * @author Simon L
-	 *
+	 * 
 	 */
 	public static enum State {
 		JUST_INITIALIZED, INSTALLATION_REQUESTED, INSTALLATION_CANCELLED, INSTALLATION_COMPLETED, ERROR;
@@ -44,8 +44,11 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	/**
 	 * creates the installation manager with the required parameters
 	 * 
-	 * @param apkFile the file from which to install
-	 * @param appRef the reference to the external application that is being installed
+	 * @param apkFile
+	 *            the file from which to install
+	 * @param appRef
+	 *            the reference to the external application that is being
+	 *            installed
 	 */
 	public ApkInstallManager(File apkFile, ExternalApplication appRef) {
 		super();
@@ -93,10 +96,13 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	}
 
 	/**
-	 * sets the error state with a message and a related throwable; notifies observers
+	 * sets the error state with a message and a related throwable; notifies
+	 * observers
 	 * 
-	 * @param errorMsg the error message
-	 * @param e a throwable that was thrown when the error occured
+	 * @param errorMsg
+	 *            the error message
+	 * @param e
+	 *            a throwable that was thrown when the error occured
 	 */
 	private void setErrorState(String errorMsg, Throwable e) {
 		this.errorMsg = errorMsg;
@@ -143,7 +149,7 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	 *             InstalledExternalApplicationsManager after installing an app
 	 */
 	public static InstalledExternalApplication registerInstalledApk(File apk, ExternalApplication externalAppRef,
-		Context context, boolean isUserStudy) throws IOException { 
+			Context context, boolean isUserStudy) throws IOException {
 		// gather informations about the app
 		if (InstalledExternalApplicationsManager.getInstance() == null) {
 			InstalledExternalApplicationsManager.init(context);
@@ -153,7 +159,7 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 		packageName = ApkMethods.getPackageNameFromApk(apk, context);
 		Log.d("TEST", externalAppRef.asOnelineString());
 		InstalledExternalApplication installedExternalApp = new InstalledExternalApplication(packageName,
-			externalAppRef, isUserStudy);
+				externalAppRef, isUserStudy);
 		InstalledExternalApplicationsManager.getInstance().addExternalApplication(installedExternalApp);
 		InstalledExternalApplicationsManager.getInstance().saveToDisk(context);
 		return installedExternalApp;

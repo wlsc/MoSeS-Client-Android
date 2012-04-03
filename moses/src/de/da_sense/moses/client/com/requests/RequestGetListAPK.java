@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,8 +26,7 @@ public class RequestGetListAPK {
 	 * @throws JSONException
 	 */
 	public static boolean isListRetrived(JSONObject j) throws JSONException {
-		return j.getString("MESSAGE").equals("GET_APK_LIST_RESPONSE")
-				&& j.getString("STATUS").equals("SUCCESS");
+		return j.getString("MESSAGE").equals("GET_APK_LIST_RESPONSE") && j.getString("STATUS").equals("SUCCESS");
 	}
 
 	private JSONObject j;

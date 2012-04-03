@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +36,7 @@ public class ApkMethods {
 		private ApkDownloadLinkRequestObserver observer;
 		private ExternalApplication app;
 
-		public RequestDownloadLinkExecutor(
-				ApkDownloadLinkRequestObserver observer, ExternalApplication app) {
+		public RequestDownloadLinkExecutor(ApkDownloadLinkRequestObserver observer, ExternalApplication app) {
 			this.observer = observer;
 			this.app = app;
 		}
@@ -61,8 +59,9 @@ public class ApkMethods {
 
 				} else {
 					Log.d("MoSeS.APK_METHODS",
-							"Download link Request not successful! Server returned negative response: "+s);
-					this.handleException(new RuntimeException("Download link Request not successful! Server returned negative response: "+s));
+							"Download link Request not successful! Server returned negative response: " + s);
+					this.handleException(new RuntimeException(
+							"Download link Request not successful! Server returned negative response: " + s));
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -77,19 +76,18 @@ public class ApkMethods {
 		}
 	}
 
-	public static void getDownloadLinkFor(final ExternalApplication app,
-			final ApkDownloadLinkRequestObserver observer) {
+	public static void getDownloadLinkFor(final ExternalApplication app, final ApkDownloadLinkRequestObserver observer) {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTDOWNLOADLINK, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTDOWNLOADLINK,
+					new Executor() {
 
-				@Override
-				public void execute() {
-					new RequestDownloadlink(new RequestDownloadLinkExecutor(
-							observer, app), RequestLogin.getSessionID(), app
-							.getID()).send();
-				}
-			});
+						@Override
+						public void execute() {
+							new RequestDownloadlink(new RequestDownloadLinkExecutor(observer, app), RequestLogin
+									.getSessionID(), app.getID()).send();
+						}
+					});
 	}
 
 	private static class RequestApkListExecutor implements ReqTaskExecutor {
@@ -108,7 +106,7 @@ public class ApkMethods {
 		public void postExecution(String s) {
 			JSONObject j = null;
 			try {
-				Log.d("MOSES.APK", "APK-List response recived:"+s);
+				Log.d("MOSES.APK", "APK-List response recived:" + s);
 				j = new JSONObject(s);
 				if (RequestGetListAPK.isListRetrived(j)) {
 
@@ -116,19 +114,17 @@ public class ApkMethods {
 
 					JSONArray apkInformations = j.getJSONArray("APK_LIST");
 					for (int i = 0; i < apkInformations.length(); i++) {
-						JSONObject apkInformation = apkInformations
-								.getJSONObject(i);
+						JSONObject apkInformation = apkInformations.getJSONObject(i);
 						String id = apkInformation.getString("ID");
 						String name = apkInformation.getString("NAME");
 						String description = apkInformation.getString("DESCR");
 						JSONArray sensorsArray = apkInformation.getJSONArray("SENSORS");
 						List<Integer> resultSensors = new LinkedList<Integer>();
-						for(int k=0; k<sensorsArray.length(); k++) {
+						for (int k = 0; k < sensorsArray.length(); k++) {
 							resultSensors.add(sensorsArray.getInt(k));
 						}
 
-						ExternalApplication externalApplication = new ExternalApplication(
-								id);
+						ExternalApplication externalApplication = new ExternalApplication(id);
 						externalApplication.setName(name);
 						externalApplication.setDescription(description);
 						externalApplication.setSensors(resultSensors);
@@ -153,49 +149,52 @@ public class ApkMethods {
 		}
 	}
 
-	public static void getExternalApplications(
-			final ApkListRequestObserver observer) {
+	public static void getExternalApplications(final ApkListRequestObserver observer) {
 
 		if (MosesService.getInstance() != null) {
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK,
+					new Executor() {
 
-				@Override
-				public void execute() {
-					Log.d("MoSeS.APKMETHODS", "requesting apk list");
-					new RequestGetListAPK(new RequestApkListExecutor(observer),
-							RequestLogin.getSessionID()).send();
-				}
-			});
+						@Override
+						public void execute() {
+							Log.d("MoSeS.APKMETHODS", "requesting apk list");
+							new RequestGetListAPK(new RequestApkListExecutor(observer), RequestLogin.getSessionID())
+									.send();
+						}
+					});
 		}
 	}
 
 	/**
 	 * Installs a given apk file.
 	 * 
-	 * @param apk the apk file to install
-	 * @param baseActivity the base activity
-	 * @throws IOException if the file does not exist
+	 * @param apk
+	 *            the apk file to install
+	 * @param baseActivity
+	 *            the base activity
+	 * @throws IOException
+	 *             if the file does not exist
 	 */
 	public static void installApk(File apk, ExternalApplication appRef, ApkInstallObserver o) throws IOException {
 		MosesService service = MosesService.getInstance();
-		if(service != null) {
+		if (service != null) {
 			if (apk.exists()) {
 				InstallApkActivity.setAppToInstall(apk, appRef, o);
 				Intent installActivityIntent = new Intent(service, InstallApkActivity.class);
 				installActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				service.startActivity(installActivityIntent);
 			} else {
-				o.apkInstallError(apk, appRef, new RuntimeException("Could not install apk file because it was nonexistent."));
+				o.apkInstallError(apk, appRef, new RuntimeException(
+						"Could not install apk file because it was nonexistent."));
 			}
 		} else {
-			o.apkInstallError(apk, appRef, new RuntimeException("Could not install apk file because the service was not running."));
+			o.apkInstallError(apk, appRef, new RuntimeException(
+					"Could not install apk file because the service was not running."));
 		}
 	}
 
-	public static void startApplication(String packageName,
-			Activity baseActivity) throws NameNotFoundException {
-		Intent intent = baseActivity.getApplicationContext()
-				.getPackageManager().getLaunchIntentForPackage(packageName);
+	public static void startApplication(String packageName, Activity baseActivity) throws NameNotFoundException {
+		Intent intent = baseActivity.getApplicationContext().getPackageManager().getLaunchIntentForPackage(packageName);
 		baseActivity.startActivity(intent);
 	}
 
@@ -210,15 +209,12 @@ public class ApkMethods {
 	 * @throws IOException
 	 *             if the apk file could not be parsed correctly
 	 */
-	public static String getPackageNameFromApk(File apk, Context appContext)
-			throws IOException {
-		PackageInfo appInfo = appContext.getPackageManager()
-				.getPackageArchiveInfo(apk.getAbsolutePath(), 0);
+	public static String getPackageNameFromApk(File apk, Context appContext) throws IOException {
+		PackageInfo appInfo = appContext.getPackageManager().getPackageArchiveInfo(apk.getAbsolutePath(), 0);
 		if (appInfo != null) {
 			return appInfo.packageName;
 		} else {
-			throw new IOException(
-					"the given package could not be parsed correctly");
+			throw new IOException("the given package could not be parsed correctly");
 		}
 	}
 
@@ -230,8 +226,7 @@ public class ApkMethods {
 	 * @param context
 	 * @return
 	 */
-	public static boolean isApplicationInstalled(String packageName,
-			Context context) {
+	public static boolean isApplicationInstalled(String packageName, Context context) {
 		try {
 			context.getPackageManager().getApplicationInfo(packageName, 0);
 		} catch (NameNotFoundException e) {

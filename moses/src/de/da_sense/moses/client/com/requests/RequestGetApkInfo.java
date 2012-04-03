@@ -1,6 +1,5 @@
 package de.da_sense.moses.client.com.requests;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,8 +24,7 @@ public class RequestGetApkInfo {
 	 * @throws JSONException
 	 */
 	public static boolean isInfoRetrived(JSONObject j) throws JSONException {
-		return j.getString("MESSAGE").equals("GET_APK_INFO_RESPONSE")
-				&& j.getString("STATUS").equals("SUCCESS");
+		return j.getString("MESSAGE").equals("GET_APK_INFO_RESPONSE") && j.getString("STATUS").equals("SUCCESS");
 	}
 
 	private JSONObject j;

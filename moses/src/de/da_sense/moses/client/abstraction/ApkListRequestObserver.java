@@ -4,12 +4,11 @@ import java.util.List;
 
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 
-
 /**
  * Interface for getting notifications about an apk list request
  * 
  * @author Simon L
- *
+ * 
  */
 public interface ApkListRequestObserver {
 	/**
@@ -25,7 +24,8 @@ public interface ApkListRequestObserver {
 	/**
 	 * Notifies the observer that the request failed
 	 * 
-	 * @param e an exception object; may be null
+	 * @param e
+	 *            an exception object; may be null
 	 */
 	public void apkListRequestFailed(Exception e);
 }

@@ -18,33 +18,38 @@ import de.da_sense.moses.client.service.helpers.Executor;
 import android.content.Context;
 import android.util.Log;
 
-
 public class ExternalApplicationInfoRetriever extends Observable {
-	
+
 	public static enum State {
 		/**
 		 * not even sent
 		 */
-		INITIALIZED, 
+		INITIALIZED,
 		/**
 		 * terminal state, success! retrieve results via getResultName) etc.
 		 */
-		DONE, 
+		DONE,
 		/**
 		 * Request is pending
 		 */
-		PENDING, 
+		PENDING,
 		/**
-		 * non-terminal state, can only occur when the flag {@link ExternalApplicationInfoRetriever#sendEvenWhenNoNetwork} is true;
+		 * non-terminal state, can only occur when the flag
+		 * {@link ExternalApplicationInfoRetriever#sendEvenWhenNoNetwork} is
+		 * true;
 		 */
-		NO_NETWORK_PENDING, 
+		NO_NETWORK_PENDING,
 		/**
-		 * terminal state, can only occur when the flag {@link ExternalApplicationInfoRetriever#sendEvenWhenNoNetwork} is false;
+		 * terminal state, can only occur when the flag
+		 * {@link ExternalApplicationInfoRetriever#sendEvenWhenNoNetwork} is
+		 * false;
 		 */
-		NO_NETWORK, 
+		NO_NETWORK,
 		/**
-		 * An Error occured; retrieve the exception via {@link ExternalApplicationInfoRetriever#getException()}.
-		 * (The error is always signalized via exceptions, so some of them will be generic RuntimeExceptions with Messages indicating what happened).
+		 * An Error occured; retrieve the exception via
+		 * {@link ExternalApplicationInfoRetriever#getException()}. (The error
+		 * is always signalized via exceptions, so some of them will be generic
+		 * RuntimeExceptions with Messages indicating what happened).
 		 */
 		ERROR
 	}
@@ -53,32 +58,31 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	private Exception exception;
 	private State state;
 	private String apkId;
-	
+
 	private String resultName;
 	private String resultDescription;
 	private List<Integer> resultSensors;
 	private String errorMessage;
-	
+
 	public boolean sendEvenWhenNoNetwork = false;
 	private boolean cancelled = false;
-	
-	
+
 	public ExternalApplicationInfoRetriever(String apkId, Context c) {
 		this.context = c;
 		this.apkId = apkId;
 		setState(State.INITIALIZED);
 	}
-	
+
 	public void cancel() {
-		this.cancelled  = true;
+		this.cancelled = true;
 	}
-	
+
 	public void start() {
-		if(!sendEvenWhenNoNetwork && !MosesService.isOnline(context)) {
+		if (!sendEvenWhenNoNetwork && !MosesService.isOnline(context)) {
 			setState(State.NO_NETWORK);
 			return;
 		} else {
-			if(!MosesService.isOnline(context)) {
+			if (!MosesService.isOnline(context)) {
 				setState(State.NO_NETWORK_PENDING);
 			} else {
 				setState(State.PENDING);
@@ -104,14 +108,14 @@ public class ExternalApplicationInfoRetriever extends Observable {
 										resultDescription = j.getString("DESCR");
 										JSONArray sensorsArray = j.getJSONArray("SENSORS");
 										resultSensors = new LinkedList<Integer>();
-										for(int i=0; i<sensorsArray.length(); i++) {
+										for (int i = 0; i < sensorsArray.length(); i++) {
 											resultSensors.add(sensorsArray.getInt(i));
 										}
 										setState(State.DONE);
 									} else {
-										Log.e("MoSeS.APK",
-											"apk info request: Server returned negative" + j.toString());
-										setErrorState(new RuntimeException("APKINFOREQUEST: answer from server seems to be negative: "+s));
+										Log.e("MoSeS.APK", "apk info request: Server returned negative" + j.toString());
+										setErrorState(new RuntimeException(
+												"APKINFOREQUEST: answer from server seems to be negative: " + s));
 									}
 								} catch (JSONException e) {
 									Log.e("MoSeS.APK", "requesting study information: json exception" + e.getMessage());
@@ -130,7 +134,8 @@ public class ExternalApplicationInfoRetriever extends Observable {
 						r.send();
 					}
 				};
-				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETAPKINFO, executor);
+				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+						EMessageTypes.REQUESTGETAPKINFO, executor);
 			} else {
 				setErrorState(new RuntimeException("cannot send GETAPKINFO request because the Service is not present."));
 			}
@@ -138,13 +143,13 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	}
 
 	private void setState(State state) {
-		if(!cancelled) {
+		if (!cancelled) {
 			this.state = state;
 			setChanged();
 			notifyObservers();
 		}
 	}
-	
+
 	private void setErrorState(Exception e) {
 		this.exception = e;
 		this.errorMessage = e.getMessage();
@@ -174,5 +179,5 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	public List<Integer> getResultSensors() {
 		return resultSensors;
 	}
-	
+
 }

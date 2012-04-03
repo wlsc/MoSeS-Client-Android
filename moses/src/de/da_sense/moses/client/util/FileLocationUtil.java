@@ -23,7 +23,7 @@ public class FileLocationUtil {
 	public static File getAppDatabaseFile(Context context) {
 		return new File(getSettingsFolder(context), FileLocationUtil.APPDATABASE_FILENAME);
 	}
-	
+
 	public static File getNotificationDatabaseFile(Context context) {
 		return new File(getSettingsFolder(context), USERSTUDY_NOTIFICATION_DB_FILENAME);
 	}

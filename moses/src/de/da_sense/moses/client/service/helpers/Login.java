@@ -41,13 +41,14 @@ public class Login {
 			executeAll(postExecuteFailure);
 			if (e instanceof UnknownHostException) {
 				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.no_internet_connection));
-				MosesService.getInstance().executeChangeTextFieldHook(MosesService.getInstance().getString(R.string.no_internet_connection));
-			} else if(e instanceof JSONException) {
+				MosesService.getInstance().executeChangeTextFieldHook(
+						MosesService.getInstance().getString(R.string.no_internet_connection));
+			} else if (e instanceof JSONException) {
 				Log.d("MoSeS.LOGIN", MosesService.getInstance().getString(R.string.unknown_response_from_server));
-				MosesService.getInstance().executeChangeTextFieldHook(MosesService.getInstance().getString(R.string.unknown_response_from_server));
+				MosesService.getInstance().executeChangeTextFieldHook(
+						MosesService.getInstance().getString(R.string.unknown_response_from_server));
 			} else {
-				Log.d("MoSeS.LOGIN", "Unknown failure: " + e.getClass().toString()
-						+ " " + e.getMessage());
+				Log.d("MoSeS.LOGIN", "Unknown failure: " + e.getClass().toString() + " " + e.getMessage());
 				MosesService.getInstance().executeChangeTextFieldHook("Unknown failure during login.");
 			}
 		}
@@ -68,8 +69,7 @@ public class Login {
 					mHandler.removeCallbacks(logoutTask);
 					mHandler.postDelayed(logoutTask, sessionAliveTime - 1000);
 					lastLoggedIn = System.currentTimeMillis();
-					Log.d("MoSeS.LOGIN",
-							"ACCESS GRANTED: " + j.getString("SESSIONID"));
+					Log.d("MoSeS.LOGIN", "ACCESS GRANTED: " + j.getString("SESSIONID"));
 					Log.d("MoSeS.LOGIN", "Executing post login priority hooks:");
 					executeAll(postExecuteSuccessPriority);
 					mHandler.removeCallbacks(executeHooksTask);
@@ -138,7 +138,7 @@ public class Login {
 			executeAll(postExecuteSuccess);
 		}
 	};
-	
+
 	private static Runnable logoutTask = new Runnable() {
 
 		@Override
@@ -152,7 +152,7 @@ public class Login {
 		lastLoggedIn = -1;
 		mHandler.removeCallbacks(logoutTask);
 	}
-	
+
 	public static void refresh() {
 		lastLoggedIn = System.currentTimeMillis();
 	}

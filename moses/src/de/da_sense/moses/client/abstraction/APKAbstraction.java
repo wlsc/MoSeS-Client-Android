@@ -37,8 +37,7 @@ public class APKAbstraction {
 
 		@Override
 		public void handleException(Exception e) {
-			infoDialog.setMessage("FAILURE ON REQUESTING LIST OF APKs: "
-					+ e.getMessage());
+			infoDialog.setMessage("FAILURE ON REQUESTING LIST OF APKs: " + e.getMessage());
 			infoDialog.show();
 		}
 
@@ -57,25 +56,17 @@ public class APKAbstraction {
 					JSONArray apkInformations = j.getJSONArray("APK_LIST");
 					for (int i = 0; i < apkInformations.length(); i++) {
 						sb.append("\n");
-						JSONObject apkInformation = apkInformations
-								.getJSONObject(i);
-						sb.append("APK ID: ")
-								.append(apkInformation.getString("ID"))
-								.append("\n");
-						sb.append("NAME: ")
-								.append(apkInformation.getString("NAME"))
-								.append("\n");
-						sb.append("DESCRIPTION: ")
-								.append(apkInformation.getString("DESCR"))
-								.append("\n");
+						JSONObject apkInformation = apkInformations.getJSONObject(i);
+						sb.append("APK ID: ").append(apkInformation.getString("ID")).append("\n");
+						sb.append("NAME: ").append(apkInformation.getString("NAME")).append("\n");
+						sb.append("DESCRIPTION: ").append(apkInformation.getString("DESCR")).append("\n");
 					}
 
 					infoDialog.setMessage(sb.toString());
 					infoDialog.show();
 				} else {
 					// TODO handling
-					infoDialog
-							.setMessage("Request not successfull! Server returned negative response");
+					infoDialog.setMessage("Request not successfull! Server returned negative response");
 					infoDialog.show();
 				}
 			} catch (JSONException e) {
@@ -107,13 +98,12 @@ public class APKAbstraction {
 		infoDialog = new AlertDialog.Builder(c).create();
 		infoDialog.setIcon(R.drawable.ic_launcher);
 		infoDialog.setTitle("INFO:");
-		infoDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						infoDialog.dismiss();
-					}
-				});
+		infoDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Ok", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				infoDialog.dismiss();
+			}
+		});
 	}
 
 	/**
@@ -123,14 +113,14 @@ public class APKAbstraction {
 	public void getAPKs() {
 
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK, new Executor() {
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK,
+					new Executor() {
 
-				@Override
-				public void execute() {
-					new RequestGetListAPK(new ReqClassGetListAPK(),
-							RequestLogin.getSessionID()).send();
-				}
-			});
+						@Override
+						public void execute() {
+							new RequestGetListAPK(new ReqClassGetListAPK(), RequestLogin.getSessionID()).send();
+						}
+					});
 	}
 
 }
