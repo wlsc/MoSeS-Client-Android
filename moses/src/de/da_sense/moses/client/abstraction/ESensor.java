@@ -41,6 +41,7 @@ public enum ESensor {
 		this.imageID = imageID;
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}

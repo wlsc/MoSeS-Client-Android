@@ -1,22 +1,16 @@
 package de.da_sense.moses.client.service.helpers;
 
-import java.io.IOException;
-
 import de.da_sense.moses.client.MosesActivity;
-import de.da_sense.moses.client.ViewUserStudyActivity;
-import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
 
 import de.da_sense.moses.client.R;
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 public class UpdateStatusBarHelper {

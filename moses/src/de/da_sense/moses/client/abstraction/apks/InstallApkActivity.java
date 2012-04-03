@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import de.da_sense.moses.client.abstraction.ApkMethods;
-import de.da_sense.moses.client.service.MosesService;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -66,8 +65,6 @@ public class InstallApkActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		
-		MosesService service = MosesService.getInstance();
 		
 		File apkFile = callArgMapFile.get(requestCode);
 		ExternalApplication appRef = callArgMapAppRef.get(requestCode);

@@ -12,12 +12,7 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.R;
 import android.hardware.Sensor;
 import android.os.Bundle;
-import android.os.Handler;
-import android.preference.ListPreference;
-import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceScreen;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class MosesPreferences extends PreferenceActivity {
 
@@ -55,6 +50,7 @@ public class MosesPreferences extends PreferenceActivity {
 	}
 
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -65,6 +61,7 @@ public class MosesPreferences extends PreferenceActivity {
 		}
 	}
 	
+	@Override
 	public void onWindowFocusChanged(boolean f) {
 		super.onWindowFocusChanged(f);
 		if (f && MosesService.getInstance() != null) {

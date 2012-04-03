@@ -2,7 +2,6 @@ package de.da_sense.moses.client;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,11 +12,34 @@ import java.util.Observer;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ListActivity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
+import android.widget.Gallery;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.ApkListRequestObserver;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.abstraction.ESensor;
-import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
-import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.APKInstalled;
 import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
@@ -26,36 +48,6 @@ import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
-
-import de.da_sense.moses.client.R;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ListActivity;
-import android.app.PendingIntent;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.Intent;
-import android.os.Bundle;
-import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.Gallery;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * Viewing and installing apks from the server
@@ -113,7 +105,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	}
 
 	private void showNoConnectionInfoBox() {
-		AlertDialog alertDialog = new AlertDialog.Builder(this)
+		new AlertDialog.Builder(this)
 				.setMessage("Cannot display the app information because no internet connection seems to be present")
 				.setTitle("No connection").setCancelable(true)
 				// .setNeutralButton("OK",
@@ -135,8 +127,8 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		d.setTitle("App informations:");
 		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 		lp.copyFrom(d.getWindow().getAttributes());
-		lp.width = WindowManager.LayoutParams.FILL_PARENT;
-		lp.height = WindowManager.LayoutParams.FILL_PARENT;
+		lp.width = LayoutParams.FILL_PARENT;
+		lp.height = LayoutParams.FILL_PARENT;
 
 		TextView t = (TextView) d.findViewById(R.id.appname);
 		t.setText(app.getName());
@@ -168,9 +160,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				installAppClickAction.run();
 			}
 		});
-		b = (Button)d.findViewById(R.id.update);
+		b = (Button) d.findViewById(R.id.update);
 		b.setVisibility(View.GONE);
-		b = (Button)d.findViewById(R.id.close);
+		b = (Button) d.findViewById(R.id.close);
 		b.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -215,9 +207,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private void initControlsNoConnectivity() {
 		if (lastSetLayout != LayoutState.NOCONNECTIVITY) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			emptylistCtrls.setVisibility(View.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(LinearLayout.GONE);
+			apkListCtrls.setVisibility(View.GONE);
 
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_noconnectivity);
@@ -225,7 +217,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
-			actionBtn2.setVisibility(Button.GONE);
+			actionBtn2.setVisibility(View.GONE);
 
 			refreshResfreshBtnTimeout(actionBtn1, "Retry", LayoutState.NOCONNECTIVITY);
 
@@ -243,9 +235,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private void initControlsPendingListRequest() {
 		if (lastSetLayout != LayoutState.PENDINGREQUEST) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			emptylistCtrls.setVisibility(View.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(LinearLayout.GONE);
+			apkListCtrls.setVisibility(View.GONE);
 
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_pendingrequest);
@@ -253,7 +245,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			final Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 			final Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
-			actionBtn2.setVisibility(Button.GONE);
+			actionBtn2.setVisibility(View.GONE);
 
 			refreshResfreshBtnTimeout(actionBtn1, "Refresh", LayoutState.PENDINGREQUEST);
 
@@ -328,17 +320,17 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		} else {
 			if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
 				LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
-				emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+				emptylistCtrls.setVisibility(View.VISIBLE);
 				LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
-				apkListCtrls.setVisibility(LinearLayout.GONE);
+				apkListCtrls.setVisibility(View.GONE);
 
 				TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 				mainHint.setText(R.string.availableApkList_emptyHint);
 
 				Button actionBtn1 = (Button) findViewById(R.id.apklist_emptylistActionBtn1);
 				Button actionBtn2 = (Button) findViewById(R.id.apklist_emptylistActionBtn2);
-				actionBtn1.setVisibility(Button.GONE);
-				actionBtn2.setVisibility(Button.GONE);
+				actionBtn1.setVisibility(View.GONE);
+				actionBtn2.setVisibility(View.GONE);
 				setLastSetLayout(LayoutState.EMPTYLIST_HINT);
 			}
 		}
@@ -346,9 +338,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 
 	private void initControlsNormalList(List<ExternalApplication> applications) {
 		LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
-		emptylistCtrls.setVisibility(LinearLayout.GONE);
+		emptylistCtrls.setVisibility(View.GONE);
 		LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
-		apkListCtrls.setVisibility(LinearLayout.VISIBLE);
+		apkListCtrls.setVisibility(View.VISIBLE);
 
 		setLastSetLayout(LayoutState.NORMAL_LIST);
 		populateList(applications);
@@ -357,9 +349,9 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 	private void initControlsShowSensorsHint() {
 		if (lastSetLayout != LayoutState.SENSORS_HINT) {
 			LinearLayout emptylistCtrls = (LinearLayout) findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(LinearLayout.VISIBLE);
+			emptylistCtrls.setVisibility(View.VISIBLE);
 			LinearLayout apkListCtrls = (LinearLayout) findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(LinearLayout.GONE);
+			apkListCtrls.setVisibility(View.GONE);
 
 			TextView mainHint = (TextView) findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_sensors_main);
@@ -394,6 +386,8 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		startActivity(startPreference);
 	}
 
+	private int totalSize = -1;
+
 	private boolean showInitialSensorHint() {
 		boolean enoughEnabledSensors = false;
 		try {
@@ -420,14 +414,19 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				new ExecutorWithObject() {
 
 					@Override
-					public void execute(Object o) {
-						if (o instanceof Double) {
-							final int u = (int) (((Double) o) * 100);
+					public void execute(final Object o) {
+						if (o instanceof Integer) {
 							runOnUiThread(new Runnable() {
 
 								@Override
 								public void run() {
-									progressDialog.incrementProgressBy(u - progressDialog.getProgress());
+									if (totalSize == -1) {
+										totalSize = (Integer) o / 1024;
+										progressDialog.setMax(totalSize);
+									} else {
+										progressDialog.incrementProgressBy(((Integer) o / 1024)
+												- progressDialog.getProgress());
+									}
 								}
 							});
 
@@ -436,7 +435,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 				});
 		progressDialog.setTitle("Downloading the app...");
 		progressDialog.setMessage("Please wait.");
-		progressDialog.setMax(100);
+		progressDialog.setMax(0);
 		progressDialog.setProgress(0);
 		progressDialog.setOnCancelListener(new OnCancelListener() {
 
@@ -453,7 +452,6 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			}
 		});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-		progressDialog.show();
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
@@ -470,24 +468,28 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 			}
 		};
 		downloader.addObserver(observer);
+		totalSize = -1;
+		progressDialog.show();
 		downloader.start();
 	}
 
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
+		new AlertDialog.Builder(ViewAvailableApkActivity.this)
 				.setMessage("There seems to be no open internet connection present for downloading the app.")
 				.setTitle("No connection").setCancelable(true)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 					}
 				}).show();
 	}
 
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewAvailableApkActivity.this)
+		new AlertDialog.Builder(ViewAvailableApkActivity.this)
 				.setMessage(
 						"An error occured when trying to download the app: " + downloader.getErrorMsg() + ".\nSorry!")
 				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 					}
 				}).show();

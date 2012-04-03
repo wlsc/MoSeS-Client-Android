@@ -9,7 +9,6 @@ import de.da_sense.moses.client.service.MosesService;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Abstraction for installing a single application package file.

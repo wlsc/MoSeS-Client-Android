@@ -9,23 +9,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
-import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
-import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-
-import de.da_sense.moses.client.R;
-import android.app.Activity;
 import android.app.ListActivity;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 
 /**
  * Viewing installed apks from the server in a list
@@ -39,25 +32,27 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 	private Comparator<? super InstalledExternalApplication> installedAppListComparator = new Comparator<InstalledExternalApplication>() {
 		@Override
 		public int compare(InstalledExternalApplication lhs, InstalledExternalApplication rhs) {
-			if(rhs == null && lhs == null) {
+			if (rhs == null && lhs == null) {
 				return 0;
 			}
-			if(rhs != null && lhs == null) {
+			if (rhs != null && lhs == null) {
 				return -1;
 			}
-			if(rhs == null && lhs != null) {
+			if (rhs == null && lhs != null) {
 				return 1;
 			}
-			if((rhs.isUpdateAvailable() && lhs.isUpdateAvailable()) || (!rhs.isUpdateAvailable() && !lhs.isUpdateAvailable())) {
-				if(rhs.getName().equals(lhs.getName())) {
+			if ((rhs.isUpdateAvailable() && lhs.isUpdateAvailable())
+					|| (!rhs.isUpdateAvailable() && !lhs.isUpdateAvailable())) {
+				if (rhs.getName().equals(lhs.getName())) {
 					return Integer.valueOf(rhs.hashCode()).compareTo(lhs.hashCode());
 				}
 				return rhs.getName().compareTo(lhs.getName());
 			}
-			if(lhs.isUpdateAvailable()) return -1;
+			if (lhs.isUpdateAvailable())
+				return -1;
 			return 1;
 		}
-		
+
 	};
 
 	/**
@@ -67,12 +62,13 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		refreshInstalledApplications();
 	}
 
-	//variable for limiting retries for requesting a check of validity of the installed apks database
+	// variable for limiting retries for requesting a check of validity of the
+	// installed apks database
 	private int retriesCheckValidState = 0;
 
 	private void refreshInstalledApplications() {
-		if(MosesActivity.checkInstalledStatesOfApks() == null) {
-			if(retriesCheckValidState < 4) {
+		if (MosesActivity.checkInstalledStatesOfApks() == null) {
+			if (retriesCheckValidState < 4) {
 				Handler delayedRetryHandler = new Handler();
 				delayedRetryHandler.postDelayed(new Runnable() {
 					@Override
@@ -82,20 +78,22 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 				}, 1500);
 				retriesCheckValidState++;
 			} else {
-				//TODO:show error when all retries didn't work?
-				//TODO:BIG also do this for viewAvailableApplicationsList? 
+				// TODO:show error when all retries didn't work?
+				// TODO:BIG also do this for viewAvailableApplicationsList?
 			}
 		} else {
 			retriesCheckValidState = 0;
 		}
-		if(InstalledExternalApplicationsManager.getInstance() == null) InstalledExternalApplicationsManager.init(this);
+		if (InstalledExternalApplicationsManager.getInstance() == null)
+			InstalledExternalApplicationsManager.init(this);
 		installedApps = sortForDisplay(new LinkedList<InstalledExternalApplication>(
 				InstalledExternalApplicationsManager.getInstance().getApps()));
 		populateList(installedApps);
 	}
-	
+
 	private List<InstalledExternalApplication> sortForDisplay(Collection<InstalledExternalApplication> linkedList) {
-		if(linkedList == null) throw new RuntimeException("installed app list was null");
+		if (linkedList == null)
+			throw new RuntimeException("installed app list was null");
 		List<InstalledExternalApplication> sortedList = new ArrayList<InstalledExternalApplication>(linkedList);
 		Comparator<? super InstalledExternalApplication> comparator = installedAppListComparator;
 		Collections.sort(sortedList, comparator);
@@ -136,7 +134,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 	/**
 	 * Shows the given applications in the list
 	 * 
-	 * @param applications 
+	 * @param applications
 	 */
 	private void populateList(List<InstalledExternalApplication> applications) {
 
@@ -147,33 +145,31 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 			items[counter] = app.getName();
 			counter++;
 		}
-		
+
 		TextView instructionsView = (TextView) findViewById(R.id.installedAppHeaderInstructions);
-		if(instructionsView != null) {
-			if(applications.size() == 0) {
+		if (instructionsView != null) {
+			if (applications.size() == 0) {
 				instructionsView.setText(R.string.installedApkList_emptyHint);
 			} else {
 				instructionsView.setText(R.string.installedApkList_defaultHint);
 			}
 		}
-		
+
 		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
-		for(InstalledExternalApplication app: applications) {
+		for (InstalledExternalApplication app : applications) {
 			HashMap<String, String> rowMap = new HashMap<String, String>();
 			rowMap.put("name", app.getName());
 			rowMap.put("description", app.getDescription());
-			rowMap.put("userstudyIndicator", app.wasInstalledAsUserStudy()?"user study":"");
-			rowMap.put("updateIndicator", app.isUpdateAvailable()?"update available":"");
+			rowMap.put("userstudyIndicator", app.wasInstalledAsUserStudy() ? "user study" : "");
+			rowMap.put("updateIndicator", app.isUpdateAvailable() ? "update available" : "");
 			listContent.add(rowMap);
 
 		}
-		SimpleAdapter contentAdapter = new SimpleAdapter( 
-			this, 
-			listContent,
-			R.layout.installedapplistitem,
-			new String[] { "name","description","userstudyIndicator", "updateIndicator" },
-			new int[] { R.id.installedAppListItemText, R.id.installedAppListItemDescription, R.id.userstudyIndicator, R.id.updateIndicator } );
-		
+		SimpleAdapter contentAdapter = new SimpleAdapter(this, listContent, R.layout.installedapplistitem,
+				new String[] { "name", "description", "userstudyIndicator", "updateIndicator" }, new int[] {
+						R.id.installedAppListItemText, R.id.installedAppListItemDescription, R.id.userstudyIndicator,
+						R.id.updateIndicator });
+
 		listView.setAdapter(contentAdapter);
 	}
 

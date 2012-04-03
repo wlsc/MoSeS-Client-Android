@@ -19,7 +19,7 @@ import android.os.AsyncTask;
  * @author Simon L
  *
  */
-public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
+public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 
 	private URL url;
 	private File apkFile;
@@ -52,9 +52,9 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 	}
 
 	@Override
-	protected void onProgressUpdate(Double... doubles) {
+	protected void onProgressUpdate(Integer... integers) {
 		if(progressListener != null) {
-			progressListener.execute(doubles[0]);
+			progressListener.execute(integers[0]);
 		}
 	}
 
@@ -93,7 +93,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 			byte[] buffer = new byte[1024];
 			int bufferLength = 0; // used to store a temporary size of the
 									// buffer
-
+			publishProgress(totalSize);
 			while ((bufferLength = inputStream.read(buffer)) > 0) {
 				// add the data in the buffer to the file in the file output
 				// stream (the file on the sd card
@@ -101,12 +101,12 @@ public class ApkDownloadTask extends AsyncTask<Void, Double, File> {
 				// add up the size so we know how much is downloaded
 				downloadedSize += bufferLength;
 				if (totalSize > 0) {
-					publishProgress(Double.valueOf(downloadedSize / (double)totalSize));
+					publishProgress(downloadedSize);
 				} else {
-					publishProgress(Double.valueOf(0));
+					publishProgress(0);
 				}
 			}
-			publishProgress(Double.valueOf(1));
+			publishProgress(totalSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 			this.downloadInterrupted = true;

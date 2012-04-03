@@ -1,14 +1,12 @@
 package de.da_sense.moses.client.com;
 
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 public class C2DMReceiver extends BroadcastReceiver {
 
@@ -34,7 +32,6 @@ public class C2DMReceiver extends BroadcastReceiver {
 	private static void handleNotifications(Context context, Intent intent) {
 		String messagetype = intent.getExtras().getString(
 				C2DN_MESSAGETYPE_FIELD);
-		boolean receivedGoodThing = false;
 		if (messagetype != null) {
 			if(messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
 				String apkidString = intent.getExtras().getString(

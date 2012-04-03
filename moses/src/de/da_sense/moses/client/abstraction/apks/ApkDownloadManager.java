@@ -88,6 +88,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * 
 	 * @param errorMsg
 	 */
+	@SuppressWarnings("unused")
 	private void setErrorState(String errorMsg) {
 		setErrorState(errorMsg, null);
 	}

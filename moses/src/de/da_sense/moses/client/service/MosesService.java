@@ -1,9 +1,5 @@
 package de.da_sense.moses.client.service;
 
-import java.io.FileDescriptor;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,8 +7,6 @@ import de.da_sense.moses.client.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import de.da_sense.moses.client.MosesAskForDeviceIDActivity;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
@@ -37,9 +31,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.IInterface;
-import android.os.Parcel;
-import android.os.RemoteException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 

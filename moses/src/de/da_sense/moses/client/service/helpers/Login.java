@@ -105,9 +105,6 @@ public class Login {
 
 	}
 
-	/** The serv. */
-	private static MosesService serv;
-
 	/** The uname. */
 	private String uname;
 

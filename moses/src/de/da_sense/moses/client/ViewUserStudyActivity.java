@@ -2,35 +2,10 @@ package de.da_sense.moses.client;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
-
-import de.da_sense.moses.client.R;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
-import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
-import de.da_sense.moses.client.abstraction.apks.APKInstalled;
-import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
-import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
-import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
-import de.da_sense.moses.client.com.ReqTaskExecutor;
-import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
-import de.da_sense.moses.client.com.requests.RequestGetApkInfo;
-import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executor;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
-import de.da_sense.moses.client.userstudy.UserStudyNotification;
-import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
-import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -40,13 +15,21 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
+import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
+import de.da_sense.moses.client.abstraction.apks.APKInstalled;
+import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
+import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.userstudy.UserStudyNotification;
+import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
+import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 
 /**
  * Viewing and installing apks from the server
@@ -172,12 +155,13 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void showMessageBoxError(ExternalApplicationInfoRetriever infoRequester) {
-		final AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+		new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
 						"An error occured when retrieving the informations for a user study: "
 								+ infoRequester.getErrorMessage()
 								+ ".\nSorry! This was a shock for both of us. Maybe you could try again from the user study tab later? Thanks!")
 				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
@@ -185,12 +169,13 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void showMessageBoxNoNetwork(String id) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+		new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
 						"Sorry, I wanted to show you the details of a user study of MoSeS. "
 								+ "But it seems you have no active net connection. If you got this fixed, please select the user study again from the user study tab (the 3rd one). Thanks!")
 				.setTitle("No connection").setCancelable(true)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
@@ -307,10 +292,11 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this)
+		new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage("There seems to be no open internet connection present for downloading the app.")
 				.setTitle("No connection").setCancelable(true)
 				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
@@ -323,12 +309,13 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	protected void showMessageBoxError(String title, String msg, DialogInterface.OnClickListener onClickListener) {
-		AlertDialog alertDialog = new AlertDialog.Builder(ViewUserStudyActivity.this).setMessage(msg).setTitle(title)
-				.setCancelable(true).setNeutralButton("OK", onClickListener).show();
+		new AlertDialog.Builder(ViewUserStudyActivity.this).setMessage(msg).setTitle(title).setCancelable(true)
+				.setNeutralButton("OK", onClickListener).show();
 	}
 
 	private DialogInterface.OnClickListener cancelActivityOnClickListener() {
 		return new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				cancelActivity();
 			}

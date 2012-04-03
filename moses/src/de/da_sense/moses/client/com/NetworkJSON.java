@@ -2,7 +2,6 @@ package de.da_sense.moses.client.com;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -153,6 +152,7 @@ public class NetworkJSON
 	 * @param c
 	 *            the c
 	 */
+	@Override
 	protected void onProgressUpdate(BackgroundException... c) {
 		if (c != null && e != null)
 			e.updateExecution(c[0]);

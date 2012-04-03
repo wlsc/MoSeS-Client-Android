@@ -6,15 +6,10 @@ import java.util.Observable;
 import java.util.Observer;
 
 import de.da_sense.moses.client.ViewAvailableApkActivity;
-import de.da_sense.moses.client.ViewUserStudyActivity;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.abstraction.ESensor;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
-import de.da_sense.moses.client.userstudy.UserStudyNotification;
-import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
-import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
-
 import de.da_sense.moses.client.R;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,7 +18,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -338,7 +332,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	}
 	
 	protected void showMessageBoxError(Activity baseActivity, String title, String msg, DialogInterface.OnClickListener onClickListener) {
-		AlertDialog alertDialog = new AlertDialog.Builder(baseActivity)
+		new AlertDialog.Builder(baseActivity)
 				.setMessage(msg)
 				.setTitle(title).setCancelable(true)
 				.setNeutralButton("OK", onClickListener).show();
@@ -346,6 +340,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 
 	private DialogInterface.OnClickListener errorMessageBoxOkayBtnListener(final UpdateObserver o) {
 		return new DialogInterface.OnClickListener() {
+			@Override
 			public void onClick(DialogInterface dialog, int whichButton) {
 				o.unsuccessful_exit();
 			}

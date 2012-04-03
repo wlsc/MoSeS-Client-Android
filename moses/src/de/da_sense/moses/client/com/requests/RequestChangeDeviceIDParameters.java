@@ -1,11 +1,9 @@
 package de.da_sense.moses.client.com.requests;
 
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.da_sense.moses.client.abstraction.HardwareAbstraction.HardwareInfo;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 

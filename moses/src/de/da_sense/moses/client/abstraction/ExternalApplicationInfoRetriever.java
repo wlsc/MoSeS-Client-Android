@@ -8,8 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
-import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.requests.RequestGetApkInfo;
@@ -17,9 +15,6 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
 import de.da_sense.moses.client.service.helpers.Executor;
-import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
-
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.util.Log;
 

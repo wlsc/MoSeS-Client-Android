@@ -173,7 +173,7 @@ public class UserstudyNotificationManager {
 	 * @return all notifications this manager contains
 	 */
 	public List<UserStudyNotification> getNotifications() {
-		return new LinkedList(notifications);
+		return new LinkedList<UserStudyNotification>(notifications);
 	}
 
 	public UserStudyNotification getNotificationForApkId(String userstudyId) {

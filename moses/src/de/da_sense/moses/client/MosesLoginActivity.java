@@ -3,12 +3,6 @@ package de.da_sense.moses.client;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import de.da_sense.moses.client.com.ConnectionParam;
-import de.da_sense.moses.client.com.ReqTaskExecutor;
-import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
-import de.da_sense.moses.client.com.requests.RequestLogin;
-
-import de.da_sense.moses.client.R;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -18,8 +12,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import de.da_sense.moses.client.com.ConnectionParam;
+import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
+import de.da_sense.moses.client.com.ReqTaskExecutor;
+import de.da_sense.moses.client.com.requests.RequestLogin;
 
 public class MosesLoginActivity extends Activity {
+	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -52,7 +51,7 @@ public class MosesLoginActivity extends Activity {
 				finish();
 			}
 		});
-		
+
 	}
 
 	private void valid() {
@@ -96,7 +95,7 @@ public class MosesLoginActivity extends Activity {
 		public void postExecution(String s) {
 			try {
 				JSONObject j = new JSONObject(s);
-				if(j.getString("SESSIONID").equals("NULL")) {
+				if (j.getString("SESSIONID").equals("NULL")) {
 					d.setMessage(getString(R.string.wrong_credentials));
 					h.postDelayed(new Runnable() {
 						@Override
@@ -114,7 +113,7 @@ public class MosesLoginActivity extends Activity {
 
 		@Override
 		public void updateExecution(BackgroundException c) {
-			if(c.c == ConnectionParam.EXCEPTION) {
+			if (c.c == ConnectionParam.EXCEPTION) {
 				handleException(c.e);
 			}
 		}

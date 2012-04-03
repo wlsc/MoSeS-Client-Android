@@ -129,7 +129,7 @@ public class ExternalApplication {
 		if(sensors == null) {
 			this.sensors = null;
 		} else {
-			this.sensors = new LinkedList(sensors);
+			this.sensors = new LinkedList<Integer>(sensors);
 		}
 	}
 	

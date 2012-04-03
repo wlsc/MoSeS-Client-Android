@@ -3,7 +3,6 @@ package de.da_sense.moses.client.preferences;
 import de.da_sense.moses.client.R;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.preference.ListPreference;
 import android.preference.Preference;
