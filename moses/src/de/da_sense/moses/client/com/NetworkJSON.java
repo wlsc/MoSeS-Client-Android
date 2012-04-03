@@ -14,9 +14,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import de.da_sense.moses.client.service.helpers.Login;
+import de.da_sense.moses.client.util.Log;
 
 import android.os.AsyncTask;
 
@@ -140,7 +142,14 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 	protected void onPostExecute(String result) {
 		e.postExecution(result);
 		signal.countDown();
-		Login.refresh();
+		try {
+			JSONObject j = new JSONObject(result);
+			if(j.getString("STATUS").equals("SUCCESS")) {
+				Log.d("MoSeS.NETWORKJSON", "Refreshed session.");
+				Login.refresh();		
+			}
+		} catch (JSONException e1) {
+		}
 	}
 
 	/**
