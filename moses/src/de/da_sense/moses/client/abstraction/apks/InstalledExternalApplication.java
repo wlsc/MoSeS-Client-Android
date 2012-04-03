@@ -2,6 +2,7 @@ package de.da_sense.moses.client.abstraction.apks;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -128,25 +129,39 @@ public class InstalledExternalApplication extends ExternalApplication {
 		this(packageName, externalApp, wasInstalledAsUserStudy, externalApp.getNewestVersion());
 	}
 
-	/**
-	 * starts the application this object is referencing
-	 * 
-	 * @param baseActivity
-	 * @throws NameNotFoundException
-	 *             should only occur if the application was uninstalled after
-	 *             the creation of this InstalledExternalApplication instance.
-	 */
-	public void startApplication(final Activity baseActivity) {
-		ProgressDialog pd = new ProgressDialog(baseActivity);
-		pd.setTitle("Application informations:");
-		pd.setMessage("Retreiving data...");
-		pd.show();
-		final Dialog d = new Dialog(baseActivity);
+	public static Dialog showAppInfoDialog(Context c, String name, String desc, List<Integer> sensors) {
+		final Dialog d = new Dialog(c);
 		d.setContentView(R.layout.app_info_dialog);
 		d.setTitle("Application informations:");
+
+		TextView t = (TextView) d.findViewById(R.id.appname);
+		t.setText(name);
+		t = (TextView) d.findViewById(R.id.description);
+		t.setMovementMethod(ScrollingMovementMethod.getInstance());
+		t.setText(desc);
+		Gallery g = (Gallery) d.findViewById(R.id.sensors);
+		Integer[] imageIds = new Integer[sensors.size()];
+		String[] alternateText = new String[sensors.size()];
+		for (int i = 0; i < sensors.size(); ++i) {
+			imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
+			alternateText[i] = ESensor.values()[sensors.get(i)].toString();
+		}
+		g.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				((TextView) d.findViewById(R.id.sensorname)).setText(((ImageView) arg1).getContentDescription());
+			}
+
+		});
+		g.setAdapter(new ImageAdapter(c, imageIds, alternateText));
+		return d;
+	}
+	
+	public static WindowManager.LayoutParams getDialogSize(Context c, Dialog d) {
 		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
 		lp.copyFrom(d.getWindow().getAttributes());
-		WindowManager wm = (WindowManager) baseActivity.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager) c.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
 		if (display.getWidth() > display.getHeight()) { // Landscape
 			if (display.getWidth() <= 426) {
@@ -173,29 +188,23 @@ public class InstalledExternalApplication extends ExternalApplication {
 				lp.height = 426;
 			}
 		}
-
-		TextView t = (TextView) d.findViewById(R.id.appname);
-		t.setText(getName());
-		t = (TextView) d.findViewById(R.id.description);
-		t.setMovementMethod(ScrollingMovementMethod.getInstance());
-		// t.setText(getDescription());
-		t.setText("A\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\nA\n");
-		Gallery g = (Gallery) d.findViewById(R.id.sensors);
-		Integer[] imageIds = new Integer[getSensors().size()];
-		String[] alternateText = new String[getSensors().size()];
-		for (int i = 0; i < getSensors().size(); ++i) {
-			imageIds[i] = ESensor.values()[getSensors().get(i)].imageID();
-			alternateText[i] = ESensor.values()[getSensors().get(i)].toString();
-		}
-		g.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView) d.findViewById(R.id.sensorname)).setText(((ImageView) arg1).getContentDescription());
-			}
-
-		});
-		g.setAdapter(new ImageAdapter(baseActivity, imageIds, alternateText));
+		return lp;
+	}
+	
+	/**
+	 * starts the application this object is referencing
+	 * 
+	 * @param baseActivity
+	 * @throws NameNotFoundException
+	 *             should only occur if the application was uninstalled after
+	 *             the creation of this InstalledExternalApplication instance.
+	 */
+	public void startApplication(final Activity baseActivity) {
+		ProgressDialog pd = new ProgressDialog(baseActivity);
+		pd.setTitle("Application informations:");
+		pd.setMessage("Retreiving data...");
+		pd.show();
+		final Dialog d = showAppInfoDialog(baseActivity, getName(), getDescription(), getSensors());
 		Button b = (Button) d.findViewById(R.id.startapp);
 		b.setOnClickListener(new OnClickListener() {
 			@Override
@@ -248,7 +257,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		});
 		pd.dismiss();
 		d.show();
-		d.getWindow().setAttributes(lp);
+		d.getWindow().setAttributes(getDialogSize(baseActivity, d));
 	}
 
 	protected void fetchUpdatedInfo(final Activity baseActivity, final UpdateObserver o) {

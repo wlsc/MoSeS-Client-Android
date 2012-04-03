@@ -45,6 +45,7 @@ import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
+import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
@@ -122,34 +123,8 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		pd.setTitle("Application informations:");
 		pd.setMessage("Retreiving data...");
 		pd.show();
-		final Dialog d = new Dialog(baseActivity);
-		d.setContentView(R.layout.app_info_dialog);
-		d.setTitle("App informations:");
-		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-		lp.copyFrom(d.getWindow().getAttributes());
-		lp.width = LayoutParams.FILL_PARENT;
-		lp.height = LayoutParams.FILL_PARENT;
-
-		TextView t = (TextView) d.findViewById(R.id.appname);
-		t.setText(app.getName());
-		t = (TextView) d.findViewById(R.id.description);
-		t.setText(app.getDescription());
-		Gallery g = (Gallery) d.findViewById(R.id.sensors);
-		Integer[] imageIds = new Integer[app.getSensors().size()];
-		String[] alternateText = new String[app.getSensors().size()];
-		for (int i = 0; i < app.getSensors().size(); ++i) {
-			imageIds[i] = ESensor.values()[app.getSensors().get(i)].imageID();
-			alternateText[i] = ESensor.values()[app.getSensors().get(i)].toString();
-		}
-		g.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView) d.findViewById(R.id.sensorname)).setText(((ImageView) arg1).getContentDescription());
-			}
-
-		});
-		g.setAdapter(new ImageAdapter(baseActivity, imageIds, alternateText));
+		final Dialog d = InstalledExternalApplication.showAppInfoDialog(baseActivity, app.getName(),
+				app.getDescription(), app.getSensors());
 		Button b = (Button) d.findViewById(R.id.startapp);
 		b.setText("Install");
 		b.setOnClickListener(new OnClickListener() {
@@ -173,7 +148,7 @@ public class ViewAvailableApkActivity extends ListActivity implements ApkListReq
 		});
 		pd.dismiss();
 		d.show();
-		d.getWindow().setAttributes(lp);
+		d.getWindow().setAttributes(InstalledExternalApplication.getDialogSize(baseActivity, d));
 	}
 
 	/**
