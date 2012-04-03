@@ -22,13 +22,14 @@ public class RequestDownloadlink {
 	private JSONObject j;
 	ReqTaskExecutor e;
 
-	public RequestDownloadlink(ReqTaskExecutor e, String sessionID, String appId) {
+	public RequestDownloadlink(ReqTaskExecutor e, String sessionID, String deviceid, String appId) {
 		j = new JSONObject();
 		this.e = e;
 		try {
 			j.put("MESSAGE", "DOWNLOAD_REQUEST");
 			j.put("SESSIONID", sessionID);
 			j.put("APKID", appId);
+			j.put("DEVICEID", deviceid);
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}

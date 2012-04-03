@@ -545,7 +545,8 @@ public class HardwareAbstraction {
 							public void execute() {
 								new RequestChangeDeviceIDParameters(new ReqClassUpdateHWParams(), force,
 										PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-												.getString("deviceid_pref", ""), RequestLogin.getSessionID()).send();
+												.getString("deviceid_pref", ""), PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+												.getString("lastdeviceid", ""), RequestLogin.getSessionID()).send();
 							}
 						});
 			}

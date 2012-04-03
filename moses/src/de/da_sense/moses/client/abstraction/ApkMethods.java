@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.preference.PreferenceManager;
 import de.da_sense.moses.client.util.Log;
 
 public class ApkMethods {
@@ -85,7 +86,8 @@ public class ApkMethods {
 						@Override
 						public void execute() {
 							new RequestDownloadlink(new RequestDownloadLinkExecutor(observer, app), RequestLogin
-									.getSessionID(), app.getID()).send();
+									.getSessionID(), PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
+									.getString("deviceid_pref", ""), app.getID()).send();
 						}
 					});
 	}

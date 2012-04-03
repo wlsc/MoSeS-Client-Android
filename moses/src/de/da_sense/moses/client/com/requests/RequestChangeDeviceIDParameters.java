@@ -27,7 +27,7 @@ public class RequestChangeDeviceIDParameters {
 
 	ReqTaskExecutor e;
 
-	public RequestChangeDeviceIDParameters(ReqTaskExecutor e, boolean force, String deviceid, String sessionID) {
+	public RequestChangeDeviceIDParameters(ReqTaskExecutor e, boolean force, String deviceid, String old_deviceid, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		try {
@@ -35,6 +35,7 @@ public class RequestChangeDeviceIDParameters {
 			j.put("SESSIONID", sessionID);
 			j.put("FORCE", force);
 			j.put("DEVICEID", deviceid);
+			j.put("OLD_DEVICEID", old_deviceid);
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
