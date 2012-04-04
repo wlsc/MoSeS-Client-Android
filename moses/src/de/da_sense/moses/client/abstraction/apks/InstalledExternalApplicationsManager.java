@@ -29,7 +29,7 @@ import de.da_sense.moses.client.util.Log;
 public class InstalledExternalApplicationsManager {
 	private List<InstalledExternalApplication> apps;
 	private static InstalledExternalApplicationsManager defaultInstance;
-	private static int managerVersion = 8;
+	private static int managerVersion = 9;
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,

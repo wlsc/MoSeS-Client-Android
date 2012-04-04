@@ -1,6 +1,7 @@
 package de.da_sense.moses.client.userstudy;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 
@@ -66,6 +67,7 @@ public class UserStudyNotification {
 		return date;
 	}
 
+	
 	/**
 	 * saves this user study as an one line string
 	 */

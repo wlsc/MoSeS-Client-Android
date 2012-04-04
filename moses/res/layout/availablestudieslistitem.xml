@@ -25,6 +25,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="10sp"
 	    android:layout_marginBottom="15sp"
+	    android:maxLines="3"
 	    android:textAppearance="?android:attr/textAppearanceSmall"
 	    android:text="Description" >
 

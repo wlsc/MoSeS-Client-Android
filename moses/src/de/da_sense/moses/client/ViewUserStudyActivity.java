@@ -2,7 +2,9 @@ package de.da_sense.moses.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
@@ -109,6 +111,21 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	private void requestApkInfo(final String id) {
+//		if(id.equals("11")) {
+//			handleSingleNotificationData.getApplication().setName("Test");
+//			handleSingleNotificationData.getApplication().setDescription("asdasd asdkjhasdkj asdjkh\n\n\n\n\nas\n\n\ndas\n\n\ndf\n\n\nvb");
+//			List<Integer> sensors = new LinkedList<Integer>();
+//			sensors.add(1);
+//			handleSingleNotificationData.getApplication().setSensors(sensors);
+//			UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
+//			try {
+//				UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyActivity.this);
+//			} catch (IOException e) {
+//				Log.w("MoSeS.APK", "couldnt save manager: ", e);
+//			}
+//			showDescisionDialog(handleSingleNotificationData);
+//			return;
+//		}
 		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(id, this);
 		final ProgressDialog progressDialog = ProgressDialog.show(this, "Loading...", "Loading userstudy information",
 				true, true, new OnCancelListener() {
@@ -193,8 +210,7 @@ public class ViewUserStudyActivity extends Activity {
 			public void run() {
 				final Dialog myDialog = new Dialog(ViewUserStudyActivity.this);
 				myDialog.setContentView(R.layout.userstudynotificationdialog);
-				myDialog.setTitle("A new user study \"" + notification.getApplication().getName()
-						+ "\" is available for you");
+				myDialog.setTitle("A new user study is available for you");
 				((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
 						+ notification.getApplication().getName());
 				((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""

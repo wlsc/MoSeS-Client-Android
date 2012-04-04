@@ -31,7 +31,7 @@ import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 public class ViewUserStudyNotificationsList extends ListActivity {
 
 	private static final int REFRESH_REDUNDANT_TRESHOLD = 1000;
-	private final static long EXPIRATION_TIME_USERSTUDIES = 2L * 60L * 1000L;
+	private final static long EXPIRATION_TIME_USERSTUDIES = 1L * 60L * 1000L;
 	private static final int showStudyRequestcode = 5;
 	private ListView listView;
 	private List<UserStudyNotification> userStudies;

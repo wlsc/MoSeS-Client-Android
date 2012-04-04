@@ -22,6 +22,7 @@
 	    android:id="@+id/apklistitemdescription"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
+	    android:maxLines="3"
 	    android:layout_marginLeft="10sp"
 	    android:layout_marginBottom="15sp"
 	    android:textAppearance="?android:attr/textAppearanceSmall"

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
+import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 
 /**
  * Viewing installed apks from the server in a list
@@ -100,10 +101,14 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		return sortedList;
 	}
 
+//	long thr = System.currentTimeMillis();
 	@Override
 	protected void onResume() {
 		super.onResume();
 		refreshInstalledApplications();
+//		if(System.currentTimeMillis()-thr>6000) {
+//			UserstudyNotificationManager.getInstance().userStudyNotificationArrived("11");
+//		}
 	}
 
 	/*

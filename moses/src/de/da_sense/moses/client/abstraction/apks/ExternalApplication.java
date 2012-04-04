@@ -91,7 +91,6 @@ public class ExternalApplication {
 	 * @return the name of the application
 	 */
 	private String getGenericName() {
-		// TODO: implement, placeholder
 		return "loading Name...  (ID: " + getID() + ")";
 	}
 
@@ -163,6 +162,14 @@ public class ExternalApplication {
 		return name != null;
 	}
 
+	public static String LINEBREAK_SUBST = "#LINEBREAK";
+	public static String toLinebreakSubst(String s) {
+		return s.replaceAll(Pattern.quote("\r\n"), LINEBREAK_SUBST).replaceAll(Pattern.quote("\n"), LINEBREAK_SUBST);
+	}
+	public static String fromLinebreakSubst(String s) {
+		return s.replaceAll(Pattern.quote(LINEBREAK_SUBST), "\n");
+	}
+	
 	/**
 	 * writes this object into an one-line string
 	 * 
@@ -171,10 +178,10 @@ public class ExternalApplication {
 	public String asOnelineString() { // ID-{name}-{description}
 		String result = this.ID;
 		if (isNameSet()) {
-			result += SEPARATOR + TAG_NAME + getName();
+			result += SEPARATOR + TAG_NAME + toLinebreakSubst(getName());
 		}
 		if (isDescriptionSet()) {
-			result += SEPARATOR + TAG_DESCRIPTION + getDescription();
+			result += SEPARATOR + TAG_DESCRIPTION + toLinebreakSubst(getDescription());
 		}
 		if (isNewestVersionSet()) {
 			result += SEPARATOR + TAG_NEWESTVERSION + getNewestVersion().toString();
@@ -210,10 +217,10 @@ public class ExternalApplication {
 				ID = split[i];
 			} else {
 				if (split[i].startsWith(TAG_DESCRIPTION)) {
-					description = split[i].substring(TAG_DESCRIPTION.length());
+					description = fromLinebreakSubst(split[i].substring(TAG_DESCRIPTION.length()));
 				}
 				if (split[i].startsWith(TAG_NAME)) {
-					name = split[i].substring(TAG_NAME.length());
+					name = fromLinebreakSubst(split[i].substring(TAG_NAME.length()));
 				}
 				if (split[i].startsWith(TAG_NEWESTVERSION)) {
 					newestVersion = split[i].substring(TAG_NEWESTVERSION.length());
