@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="wrap_content"
@@ -53,7 +53,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10sp"
                 android:layout_marginRight="10sp"
-                android:text="Description lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam lorem ipsum dolor sit amet, consectetur, ire illam ." />
+                android:text="Description lorem ipsum dolor sit amet, consectetur," />
+
+            <TextView
+                android:id="@+id/sensors_descr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="10sp"
+                style="@android:style/TextAppearance.Medium"
+                android:text="Used sensors: " />
+            <Gallery
+                android:layout_marginLeft="10sp"
+                android:layout_marginRight="10sp"
+                android:id="@+id/sensors"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:spacing="2dip" />
 
             <ImageView
                 xmlns:android="http://schemas.android.com/apk/res/android"
@@ -76,9 +92,8 @@
                 android:layout_marginTop="3sp"
                 android:text="The author of this app would be happy if you would participate in this app&apos;s user study. If you don&apos;t want to accept immediately, you can make this descision [Later]. Consider that user study offers are only valid for 24 hours." />
         </LinearLayout>
-
     </ScrollView>
-
+
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
@@ -94,8 +109,6 @@
             android:onClick="dialogClickYay"
             android:text="Yes" />
 
-
-
         <Button
             android:id="@+id/userstudydialog_btn_nay"
             android:layout_width="wrap_content"
@@ -104,8 +117,6 @@
             android:onClick="dialogClickNay"
             android:text="No, thanks" />
 
-
-
         <Button
             android:id="@+id/userstudydialog_btn_later"
             android:layout_width="wrap_content"
@@ -113,8 +124,6 @@
             android:layout_weight="0.33"
             android:onClick="dialogClickLater"
             android:text="Later" />
-
     </LinearLayout>
 
-       
 </LinearLayout>

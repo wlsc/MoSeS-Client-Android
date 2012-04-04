@@ -20,14 +20,20 @@ import android.os.Bundle;
 import de.da_sense.moses.client.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Gallery;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
+import de.da_sense.moses.client.abstraction.ESensor;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
 import de.da_sense.moses.client.abstraction.apks.APKInstalled;
 import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
 import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 import de.da_sense.moses.client.userstudy.UserStudyNotification;
 import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
@@ -215,6 +221,27 @@ public class ViewUserStudyActivity extends Activity {
 						+ notification.getApplication().getName());
 				((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
 						+ notification.getApplication().getDescription());
+				
+				final String sensorsNeutralDescr = "Used sensors: ";
+				((TextView)myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr);
+				List<Integer> sensors = notification.getApplication().getSensors();
+				Gallery g = (Gallery) myDialog.findViewById(R.id.sensors);
+				Integer[] imageIds = new Integer[sensors.size()];
+				String[] alternateText = new String[sensors.size()];
+				for (int i = 0; i < sensors.size(); ++i) {
+					imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
+					alternateText[i] = ESensor.values()[sensors.get(i)].toString();
+				}
+				g.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+							long arg3) {
+						((TextView)myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr + ((ImageView) arg1).getContentDescription());
+					}
+
+				});
+				g.setAdapter(new ImageAdapter(ViewUserStudyActivity.this, imageIds, alternateText));
+				
 				OnClickListener clickListenerYes = new View.OnClickListener() {
 					@Override
 					public void onClick(View v) {
