@@ -117,21 +117,21 @@ public class ViewUserStudyActivity extends Activity {
 	}
 
 	private void requestApkInfo(final String id) {
-//		if(id.equals("11")) {
-//			handleSingleNotificationData.getApplication().setName("Test");
-//			handleSingleNotificationData.getApplication().setDescription("asdasd asdkjhasdkj asdjkh\n\n\n\n\nas\n\n\ndas\n\n\ndf\n\n\nvb");
-//			List<Integer> sensors = new LinkedList<Integer>();
-//			sensors.add(1);
-//			handleSingleNotificationData.getApplication().setSensors(sensors);
-//			UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
-//			try {
-//				UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyActivity.this);
-//			} catch (IOException e) {
-//				Log.w("MoSeS.APK", "couldnt save manager: ", e);
-//			}
-//			showDescisionDialog(handleSingleNotificationData);
-//			return;
-//		}
+		// if(id.equals("11")) {
+		// handleSingleNotificationData.getApplication().setName("Test");
+		// handleSingleNotificationData.getApplication().setDescription("asdasd asdkjhasdkj asdjkh\n\n\n\n\nas\n\n\ndas\n\n\ndf\n\n\nvb");
+		// List<Integer> sensors = new LinkedList<Integer>();
+		// sensors.add(1);
+		// handleSingleNotificationData.getApplication().setSensors(sensors);
+		// UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
+		// try {
+		// UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyActivity.this);
+		// } catch (IOException e) {
+		// Log.w("MoSeS.APK", "couldnt save manager: ", e);
+		// }
+		// showDescisionDialog(handleSingleNotificationData);
+		// return;
+		// }
 		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(id, this);
 		final ProgressDialog progressDialog = ProgressDialog.show(this, "Loading...", "Loading userstudy information",
 				true, true, new OnCancelListener() {
@@ -211,73 +211,67 @@ public class ViewUserStudyActivity extends Activity {
 
 	protected void showDescisionDialog(final UserStudyNotification notification) {
 		Log.i("MoSeS.USERSTUDY", notification.getApplication().getID());
-		runOnUiThread(new Runnable() {
+		final Dialog myDialog = new Dialog(ViewUserStudyActivity.this);
+		myDialog.setContentView(R.layout.userstudynotificationdialog);
+		myDialog.setTitle("A new user study is available for you");
+		((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
+				+ notification.getApplication().getName());
+		((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
+				+ notification.getApplication().getDescription());
+
+		final String sensorsNeutralDescr = "Used sensors: ";
+		((TextView) myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr);
+		List<Integer> sensors = notification.getApplication().getSensors();
+		Gallery g = (Gallery) myDialog.findViewById(R.id.sensors);
+		Integer[] imageIds = new Integer[sensors.size()];
+		String[] alternateText = new String[sensors.size()];
+		for (int i = 0; i < sensors.size(); ++i) {
+			imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
+			alternateText[i] = ESensor.values()[sensors.get(i)].toString();
+		}
+		g.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void run() {
-				final Dialog myDialog = new Dialog(ViewUserStudyActivity.this);
-				myDialog.setContentView(R.layout.userstudynotificationdialog);
-				myDialog.setTitle("A new user study is available for you");
-				((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
-						+ notification.getApplication().getName());
-				((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
-						+ notification.getApplication().getDescription());
-				
-				final String sensorsNeutralDescr = "Used sensors: ";
-				((TextView)myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr);
-				List<Integer> sensors = notification.getApplication().getSensors();
-				Gallery g = (Gallery) myDialog.findViewById(R.id.sensors);
-				Integer[] imageIds = new Integer[sensors.size()];
-				String[] alternateText = new String[sensors.size()];
-				for (int i = 0; i < sensors.size(); ++i) {
-					imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
-					alternateText[i] = ESensor.values()[sensors.get(i)].toString();
-				}
-				g.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-							long arg3) {
-						((TextView)myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr + ((ImageView) arg1).getContentDescription());
-					}
-
-				});
-				g.setAdapter(new ImageAdapter(ViewUserStudyActivity.this, imageIds, alternateText));
-				
-				OnClickListener clickListenerYes = new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						Log.i("MoSeS.USERSTUDY", "starting download process...");
-						downloadUserstudyApp(notification);
-						myDialog.dismiss();
-					}
-				};
-				View.OnClickListener clickListenerNo = new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						notification.setStatus(Status.DENIED);
-						UserstudyNotificationManager.getInstance().updateNotification(notification);
-						UserstudyNotificationManager.getInstance().removeNotificationWithApkId(
-								notification.getApplication().getID());
-
-						myDialog.dismiss();
-						cancelActivity();
-					}
-				};
-				View.OnClickListener clickListenerLater = new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						myDialog.dismiss();
-						cancelActivity();
-					}
-				};
-				((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(clickListenerYes);
-				((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(clickListenerNo);
-				((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
-
-				myDialog.setOwnerActivity(ViewUserStudyActivity.this);
-				myDialog.show();
-
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+				((TextView) myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr
+						+ ((ImageView) arg1).getContentDescription());
 			}
+
 		});
+		g.setAdapter(new ImageAdapter(ViewUserStudyActivity.this, imageIds, alternateText));
+
+		OnClickListener clickListenerYes = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.i("MoSeS.USERSTUDY", "starting download process...");
+				downloadUserstudyApp(notification);
+				myDialog.dismiss();
+			}
+		};
+		View.OnClickListener clickListenerNo = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				notification.setStatus(Status.DENIED);
+				UserstudyNotificationManager.getInstance().updateNotification(notification);
+				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(
+						notification.getApplication().getID());
+
+				myDialog.dismiss();
+				cancelActivity();
+			}
+		};
+		View.OnClickListener clickListenerLater = new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				myDialog.dismiss();
+				cancelActivity();
+			}
+		};
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(clickListenerYes);
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(clickListenerNo);
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
+
+		myDialog.setOwnerActivity(ViewUserStudyActivity.this);
+		myDialog.show();
 
 	}
 
