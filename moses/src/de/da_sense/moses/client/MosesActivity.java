@@ -41,8 +41,8 @@ import de.da_sense.moses.client.service.MosesService.LocalBinder;
 import de.da_sense.moses.client.service.MosesService.MosesSettings;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executor;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 
 /**
@@ -76,7 +76,7 @@ public class MosesActivity extends TabActivity {
 	/**
 	 * Login hooks
 	 */
-	Executor postLoginSuccessHook = new Executor() {
+	Executable postLoginSuccessHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
@@ -84,7 +84,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	Executor postLoginFailureHook = new Executor() {
+	Executable postLoginFailureHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
@@ -93,7 +93,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	Executor loginStartHook = new Executor() {
+	Executable loginStartHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
@@ -101,7 +101,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	Executor loginEndHook = new Executor() {
+	Executable loginEndHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
@@ -110,7 +110,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	Executor postLogoutHook = new Executor() {
+	Executable postLogoutHook = new Executable() {
 
 		@Override
 		public void execute() {
@@ -119,7 +119,7 @@ public class MosesActivity extends TabActivity {
 		}
 	};
 
-	ExecutorWithObject changeTextFieldHook = new ExecutorWithObject() {
+	ExecutableForObject changeTextFieldHook = new ExecutableForObject() {
 
 		@Override
 		public void execute(final Object o) {

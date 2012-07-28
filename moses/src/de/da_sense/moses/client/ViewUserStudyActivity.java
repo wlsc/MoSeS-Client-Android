@@ -34,7 +34,7 @@ import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.userstudy.UserStudyNotification;
 import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
@@ -278,7 +278,7 @@ public class ViewUserStudyActivity extends Activity {
 	protected void downloadUserstudyApp(final UserStudyNotification notification) {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
-				getApplicationContext(), new ExecutorWithObject() {
+				getApplicationContext(), new ExecutableForObject() {
 
 					@Override
 					public void execute(Object o) {
