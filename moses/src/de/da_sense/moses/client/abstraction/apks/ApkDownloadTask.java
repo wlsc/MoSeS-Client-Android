@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import de.da_sense.moses.client.service.helpers.ExecutableForObject;
+import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 import de.da_sense.moses.client.util.FileLocationUtil;
 
 import android.content.Context;
@@ -27,7 +27,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 	private IOException downloadException;
 	private ApkDownloadObserver observer;
 	private ExternalApplication externalAppRef;
-	private ExecutableForObject progressListener;
+	private ExecutorWithObject progressListener;
 
 	/**
 	 * creates the downloading task with the required parameters
@@ -43,7 +43,7 @@ public class ApkDownloadTask extends AsyncTask<Void, Integer, File> {
 	 *            the file name of the apk file in the default location
 	 */
 	public ApkDownloadTask(ApkDownloadObserver observer, URL url, Context appContext, String apkFileName,
-			ExecutableForObject progressListener) {
+			ExecutorWithObject progressListener) {
 		this.observer = observer;
 		this.url = url;
 		File downloadDir = FileLocationUtil.getApkDownloadFolder(appContext);

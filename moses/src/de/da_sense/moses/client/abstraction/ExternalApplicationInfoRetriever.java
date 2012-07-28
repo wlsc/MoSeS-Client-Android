@@ -14,7 +14,7 @@ import de.da_sense.moses.client.com.requests.RequestGetApkInfo;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.Executor;
 import android.content.Context;
 import de.da_sense.moses.client.util.Log;
 
@@ -88,7 +88,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 				setState(State.PENDING);
 			}
 			if (MosesService.getInstance() != null) {
-				Executable executor = new Executable() {
+				Executor executor = new Executor() {
 
 					@Override
 					public void execute() {

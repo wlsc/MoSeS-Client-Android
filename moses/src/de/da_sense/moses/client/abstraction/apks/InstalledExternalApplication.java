@@ -22,7 +22,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
-import de.da_sense.moses.client.service.helpers.ExecutableForObject;
+import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 import de.da_sense.moses.client.util.Log;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Display;
@@ -343,7 +343,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 			final Activity baseActivity, final UpdateObserver o) {
 		final ProgressDialog progressDialog = new ProgressDialog(baseActivity);
 		final ApkDownloadManager downloader = new ApkDownloadManager(this,
-				baseActivity, new ExecutableForObject() {
+				baseActivity, new ExecutorWithObject() {
 
 					@Override
 					public void execute(final Object o) {

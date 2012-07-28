@@ -122,18 +122,18 @@ public class Login {
 	private String pw;
 
 	/** The e. */
-	private ConcurrentLinkedQueue<ExecutableWithType> postExecuteSuccess;
-	private ConcurrentLinkedQueue<ExecutableWithType> postExecuteSuccessPriority;
-	private ConcurrentLinkedQueue<ExecutableWithType> postExecuteFailure;
-	private ConcurrentLinkedQueue<ExecutableWithType> loginStart;
-	private ConcurrentLinkedQueue<ExecutableWithType> loginEnd;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccess;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteSuccessPriority;
+	private ConcurrentLinkedQueue<ExecutorWithType> postExecuteFailure;
+	private ConcurrentLinkedQueue<ExecutorWithType> loginStart;
+	private ConcurrentLinkedQueue<ExecutorWithType> loginEnd;
 
 	public static long lastLoggedIn = -1;
 
 	private static final long sessionAliveTime = 120000;
 
-	private void executeAll(ConcurrentLinkedQueue<ExecutableWithType> el) {
-		for (ExecutableWithType e : el) {
+	private void executeAll(ConcurrentLinkedQueue<ExecutorWithType> el) {
+		for (ExecutorWithType e : el) {
 			e.e.execute();
 		}
 	}

@@ -17,7 +17,7 @@ import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.Executor;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -114,7 +114,7 @@ public class APKAbstraction {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK,
-					new Executable() {
+					new Executor() {
 
 						@Override
 						public void execute() {

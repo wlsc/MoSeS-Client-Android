@@ -11,7 +11,7 @@ import de.da_sense.moses.client.com.requests.RequestUninstalledAPK;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.Executor;
 
 import de.da_sense.moses.client.util.Log;
 
@@ -46,7 +46,7 @@ public class ApkUninstalled {
 		// TODO: handle service == null
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
-					EMessageTypes.REQUESTUNINSTALLEDAPK, new Executable() {
+					EMessageTypes.REQUESTUNINSTALLEDAPK, new Executor() {
 
 						@Override
 						public void execute() {

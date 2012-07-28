@@ -26,7 +26,7 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.Executor;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -264,7 +264,7 @@ public class HardwareAbstraction {
 											.getString("deviceid_pref", "")).commit();
 					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
+							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 								@Override
 								public void execute() {
@@ -276,7 +276,7 @@ public class HardwareAbstraction {
 							MosesService.getInstance().getActivityContext(), true);
 				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
 					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
+							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 								@Override
 								public void execute() {
@@ -379,7 +379,7 @@ public class HardwareAbstraction {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
 							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-									EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executable() {
+									EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
 
 										@Override
 										public void execute() {
@@ -410,7 +410,7 @@ public class HardwareAbstraction {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
 							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-									EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
+									EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 										@Override
 										public void execute() {
@@ -453,7 +453,7 @@ public class HardwareAbstraction {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETFILTER,
-					new Executable() {
+					new Executor() {
 
 						@Override
 						public void execute() {
@@ -471,7 +471,7 @@ public class HardwareAbstraction {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
-					EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executable() {
+					EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executor() {
 
 						@Override
 						public void execute() {
@@ -493,7 +493,7 @@ public class HardwareAbstraction {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER,
-					new Executable() {
+					new Executor() {
 
 						@Override
 						public void execute() {
@@ -539,7 +539,7 @@ public class HardwareAbstraction {
 					.equals(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
 							"lastdeviceid", ""))) {
 				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-						EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executable() {
+						EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executor() {
 
 							@Override
 							public void execute() {
@@ -563,7 +563,7 @@ public class HardwareAbstraction {
 	public void syncDeviceInformation(final boolean force) {
 		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
-					EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
+					EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executor() {
 
 						@Override
 						public void execute() {
