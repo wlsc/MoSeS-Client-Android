@@ -38,6 +38,7 @@ import de.da_sense.moses.client.abstraction.apks.InstalledStateMonitor;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.MosesService.LocalBinder;
+import de.da_sense.moses.client.service.MosesService.MosesSettings;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
 import de.da_sense.moses.client.service.helpers.Executor;
@@ -53,6 +54,10 @@ import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
  * 
  */
 public class MosesActivity extends TabActivity {
+    
+    // TODO Ibrahim
+    public String username;
+    // ----
 
 	private static final String TAB_TAG_AVAILABLE_USER_STUDIES = "availableUserStudies";
 
@@ -214,6 +219,7 @@ public class MosesActivity extends TabActivity {
 		if (mService != null) {
 			if (!mService.isLoggedIn()) {
 				mService.login();
+				this.username = mService.mset.username;
 			}
 		}
 	}
@@ -534,7 +540,7 @@ public class MosesActivity extends TabActivity {
 		if (null == startService(intent)) {
 			stopService(intent);
 			startService(intent);
-		}
+		} // skljsdkj
 		bindService(intent, mConnection, 0);
 	}
 

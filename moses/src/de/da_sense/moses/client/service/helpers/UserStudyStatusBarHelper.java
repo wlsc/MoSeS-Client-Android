@@ -61,7 +61,7 @@ public class UserStudyStatusBarHelper {
 		return Math.abs(("Userstudy" + apkId).hashCode());
 	}
 
-	private static void showNotificationStatic(Intent intent, String text, String title, boolean ongoing, int id,
+	public static void showNotificationStatic(Intent intent, String text, String title, boolean ongoing, int id,
 			Context context) {
 
 		Notification notification = new Notification(R.drawable.ic_launcher, text, System.currentTimeMillis());

@@ -174,27 +174,27 @@ public class InstalledExternalApplication extends ExternalApplication {
 		Display display = wm.getDefaultDisplay();
 		if (display.getWidth() > display.getHeight()) { // Landscape
 			if (display.getWidth() <= 426) {
-				lp.width = WindowManager.LayoutParams.FILL_PARENT;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			} else {
-				lp.width = 426;
+				lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			}
 
 			if (display.getHeight() <= 320) {
-				lp.height = WindowManager.LayoutParams.FILL_PARENT;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			} else {
-				lp.height = 320;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			}
 		} else { // Portrait
 			if (display.getWidth() <= 320) {
-				lp.width = WindowManager.LayoutParams.FILL_PARENT;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			} else {
-				lp.width = 320;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT); // TODO Ibrahim : Es war 320
 			}
 
 			if (display.getHeight() <= 426) {
-				lp.height = WindowManager.LayoutParams.FILL_PARENT;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
 			} else {
-				lp.height = 426;
+			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT); // TODO Ibrahim : Es war 426
 			}
 		}
 		return lp;

@@ -86,7 +86,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	/** Local settings. */
-	private MosesSettings mset = new MosesSettings();
+	public MosesSettings mset = new MosesSettings();
 
 	/** The current instance is saved in here. */
 	private static MosesService thisInstance = null;
@@ -140,6 +140,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	private void initConfig() {
 		SharedPreferences settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
 		mset.username = settingsFile.getString("username_pref", "");
+		// TODO Ibrahim
+		Log.d("LLL", "username_pref = " + mset.username);
+		// ----
 		mset.password = settingsFile.getString("password_pref", "");
 		mset.deviceid = settingsFile.getString("deviceid_pref", "");
 		try {
