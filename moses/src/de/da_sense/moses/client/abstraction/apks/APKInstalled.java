@@ -11,7 +11,7 @@ import de.da_sense.moses.client.com.requests.RequestInstalledAPK;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executor;
+import de.da_sense.moses.client.service.helpers.Executable;
 
 import de.da_sense.moses.client.util.Log;
 
@@ -46,7 +46,7 @@ public class APKInstalled {
 	public APKInstalled(final String appID) {
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTINSTALLEDAPK,
-					new Executor() {
+					new Executable() {
 
 						@Override
 						public void execute() {

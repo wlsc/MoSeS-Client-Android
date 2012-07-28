@@ -14,9 +14,9 @@ import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executor;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
-import de.da_sense.moses.client.service.helpers.ExecutorWithType;
+import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
+import de.da_sense.moses.client.service.helpers.ExecutableWithType;
 import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.service.helpers.Logout;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
@@ -70,9 +70,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		/** Saves the used filter. */
 		public JSONArray filter = new JSONArray();
 
-		public HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutorWithType>> hooks = new HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutorWithType>>();
+		/** A HashMap of EHookType => ConcurrentLinkedQueue<ExecutorWithType> */
+		public HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutableWithType>> hooks = new HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutableWithType>>();
 
-		public ConcurrentLinkedQueue<ExecutorWithObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutorWithObject>();
+		/** A ConcurrentLinkedQueue consisting of Implementations of the Interface
+		 * ExecutableForObject, containing an execute(Object o) Method. */
+		public ConcurrentLinkedQueue<ExecutableForObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutableForObject>();
 
 		/** The projects url. */
 		public String url = "http://www.da-sense.de/moses/test.php";
@@ -96,8 +99,13 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		return thisInstance;
 	}
 
+	/**
+	 * For all ExecutorWithObject in changeTextFieldHook do e.execute(s)
+	 * @param s
+	 * 			The string given to e.execute(s)
+	 */
 	public void executeChangeTextFieldHook(String s) {
-		for (ExecutorWithObject e : mset.changeTextFieldHook) {
+		for (ExecutableForObject e : mset.changeTextFieldHook) {
 			e.execute(s);
 		}
 	}
@@ -109,7 +117,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void executeLoggedIn(EHookTypes h, EMessageTypes t, Executor e) {
+	public void executeLoggedIn(EHookTypes h, EMessageTypes t, Executable e) {
 		if (isLoggedIn() && isOnline()) {
 			e.execute();
 		} else {
@@ -217,20 +225,20 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	public void login() {
 		if (mset.username.equals("") || mset.password.equals("")) {
-			for (ExecutorWithObject e : mset.changeTextFieldHook) {
+			for (ExecutableForObject e : mset.changeTextFieldHook) {
 				e.execute(getString(de.da_sense.moses.client.R.string.no_username_password));
 			}
 			return;
 		}
 		if (!PreferenceManager.getDefaultSharedPreferences(this).contains("deviceid_pref")) {
-			for (ExecutorWithObject e : mset.changeTextFieldHook) {
+			for (ExecutableForObject e : mset.changeTextFieldHook) {
 				e.execute(getString(de.da_sense.moses.client.R.string.no_deviceid));
 			}
 			return;
 		}
 		if (!isOnline()) {
 			Log.d("MoSeS.SERVICE", "Tried logging in but no internet connection was present.");
-			for (ExecutorWithObject e : mset.changeTextFieldHook) {
+			for (ExecutableForObject e : mset.changeTextFieldHook) {
 				e.execute(getString(R.string.no_internet_connection));
 			}
 			loggedOut();
@@ -281,10 +289,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		thisInstance = this;
 
 		for (EHookTypes h : EHookTypes.values()) {
-			mset.hooks.put(h, new ConcurrentLinkedQueue<ExecutorWithType>());
+			mset.hooks.put(h, new ConcurrentLinkedQueue<ExecutableWithType>());
 		}
 
-		registerHook(EHookTypes.POSTLOGINFAILED, EMessageTypes.SPAMMABLE, new Executor() {
+		registerHook(EHookTypes.POSTLOGINFAILED, EMessageTypes.SPAMMABLE, new Executable() {
 			@Override
 			public void execute() {
 				mset.loggingIn = false;
@@ -360,14 +368,14 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		}
 	}
 
-	public ConcurrentLinkedQueue<ExecutorWithType> getHook(EHookTypes h) {
+	public ConcurrentLinkedQueue<ExecutableWithType> getHook(EHookTypes h) {
 		return mset.hooks.get(h);
 	}
 
-	public void registerHook(EHookTypes h, EMessageTypes t, Executor e) {
-		ConcurrentLinkedQueue<ExecutorWithType> hook = getHook(h);
+	public void registerHook(EHookTypes h, EMessageTypes t, Executable e) {
+		ConcurrentLinkedQueue<ExecutableWithType> hook = getHook(h);
 		if (t != EMessageTypes.SPAMMABLE) {
-			for (ExecutorWithType et : hook) {
+			for (ExecutableWithType et : hook) {
 				if (t.equals(et.t)) {
 					Log.d("MoSeS.SERVICE",
 							"Removed a duplicated message of type " + t.toString() + " from hook " + h.toString());
@@ -375,11 +383,18 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				}
 			}
 		}
-		hook.add(new ExecutorWithType(t, e));
+		hook.add(new ExecutableWithType(t, e));
 	}
 
-	public void registerOneTimeHook(final EHookTypes h, EMessageTypes t, final Executor e) {
-		Executor n = new Executor() {
+	/**
+	 * Creates a Hook(h, t, n) with a new Executer n, who upon called
+	 * calls e.execute and afterwards unregisters the Hook
+	 * @param h EHookType The Type of Hook
+	 * @param t EMessageType The type of message
+	 * @param e Executor The Executor for the Hook
+	 */
+	public void registerOneTimeHook(final EHookTypes h, EMessageTypes t, final Executable e) {
+		Executable n = new Executable() {
 			@Override
 			public void execute() {
 				e.execute();
@@ -395,7 +410,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param e
 	 *            The task to be executed.
 	 */
-	public void registerChangeTextFieldHook(ExecutorWithObject e) {
+	public void registerChangeTextFieldHook(ExecutableForObject e) {
 		if (!mset.changeTextFieldHook.contains(e))
 			mset.changeTextFieldHook.add(e);
 	}
@@ -407,6 +422,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		initConfig();
 	}
 
+	/**
+	 * Sets the activityContext to c
+	 * @param c The context
+	 */
 	public void setActivityContext(Context c) {
 		mset.activitycontext = c;
 	}
@@ -450,6 +469,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("first_start", false).commit();
 	}
 
+	/**
+	 * TODO
+	 * @param c
+	 */
 	public void startedFirstTime(Context c) {
 		showWelcomeDialog(c);
 	}
@@ -460,7 +483,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	public void syncDeviceInformation(boolean force) {
 		executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS,
-				new Executor() {
+				new Executable() {
 
 					@Override
 					public void execute() {
@@ -469,15 +492,24 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				});
 	}
 
-	public void unregisterChangeTextFieldHook(ExecutorWithObject e) {
+	/**
+	 * TODO
+	 * @param e
+	 */
+	public void unregisterChangeTextFieldHook(ExecutableForObject e) {
 		if (mset.changeTextFieldHook.contains(e))
 			mset.changeTextFieldHook.remove(e);
 	}
 
-	public void unregisterHook(EHookTypes h, Executor e) {
-		ConcurrentLinkedQueue<ExecutorWithType> hook = getHook(h);
-		ExecutorWithType n = null;
-		for (ExecutorWithType t : hook) {
+	/**
+	 * Checks all hooks with type == h for the one containing the Executor e. If found it removes this hook.
+	 * @param h The type of Hook to unregister
+	 * @param e The Executer to unregister
+	 */
+	public void unregisterHook(EHookTypes h, Executable e) {
+		ConcurrentLinkedQueue<ExecutableWithType> hook = getHook(h);
+		ExecutableWithType n = null;
+		for (ExecutableWithType t : hook) {
 			if (t.e.equals(e)) {
 				n = t;
 				break;
@@ -487,8 +519,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			hook.remove(n);
 	}
 
+	/**
+	 * TODO
+	 */
 	public void uploadFilter() {
-		this.executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER, new Executor() {
+		this.executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER, new Executable() {
 
 			@Override
 			public void execute() {
@@ -498,6 +533,10 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		});
 	}
 
+	/**
+	 * TODO
+	 *
+	 */
 	public class LocalBinder extends Binder {
 		public MosesService getService() {
 			return MosesService.this;

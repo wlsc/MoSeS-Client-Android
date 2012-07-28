@@ -21,7 +21,7 @@ import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.EHookTypes;
 import de.da_sense.moses.client.service.helpers.EMessageTypes;
-import de.da_sense.moses.client.service.helpers.Executor;
+import de.da_sense.moses.client.service.helpers.Executable;
 
 import android.app.Activity;
 import android.content.Context;
@@ -81,7 +81,7 @@ public class ApkMethods {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTDOWNLOADLINK,
-					new Executor() {
+					new Executable() {
 
 						@Override
 						public void execute() {
@@ -155,7 +155,7 @@ public class ApkMethods {
 
 		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETLISTAPK,
-					new Executor() {
+					new Executable() {
 
 						@Override
 						public void execute() {

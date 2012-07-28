@@ -48,7 +48,7 @@ import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 
 /**
  * Viewing and installing apks from the server
@@ -410,7 +410,7 @@ public class ViewAvailableApkActivity extends ListActivity implements
 	private void handleInstallApp(ExternalApplication app) {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		final ApkDownloadManager downloader = new ApkDownloadManager(app,
-				getApplicationContext(), new ExecutorWithObject() {
+				getApplicationContext(), new ExecutableForObject() {
 
 					@Override
 					public void execute(final Object o) {
