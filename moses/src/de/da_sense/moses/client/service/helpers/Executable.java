@@ -2,11 +2,11 @@ package de.da_sense.moses.client.service.helpers;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Interface Executor.
+ * Interface, consisting of a non parametric function execute
  * 
  * @author Jaco Hofmann
  */
-public interface Executor {
+public interface Executable {
 
 	/**
 	 * Execute.

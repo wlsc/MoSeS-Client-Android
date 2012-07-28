@@ -5,9 +5,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.DialogInterface.OnCancelListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -29,15 +27,11 @@ public class MosesLoginActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.login);
-		
+
 		final EditText username = (EditText) findViewById(R.id.login_username);
 		final EditText password = (EditText) findViewById(R.id.login_password);
-		
-		// TODO Ibrahim : This is my code and can be deleted
-		
-		// --------
 
 		Button login = (Button) findViewById(R.id.login_login_button);
 		login.setOnClickListener(new OnClickListener() {
@@ -55,7 +49,7 @@ public class MosesLoginActivity extends Activity {
 		});
 		Button exit = (Button) findViewById(R.id.login_exit_button);
 		exit.setOnClickListener(new OnClickListener() {
-		    // TODO Ibrahim : This code has to be fixed
+
 			@Override
 			public void onClick(View v) {
 				Intent resultData = new Intent();
@@ -63,7 +57,6 @@ public class MosesLoginActivity extends Activity {
 				finish();
 			}
 		});
-		    // ----------
 
 	}
 
@@ -75,7 +68,6 @@ public class MosesLoginActivity extends Activity {
 		resultData.putExtra("username_pref", username.getText().toString());
 		resultData.putExtra("password_pref", password.getText().toString());
 		setResult(Activity.RESULT_OK, resultData);
-		
 		finish();
 	}
 

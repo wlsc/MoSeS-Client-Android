@@ -22,7 +22,7 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Point;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.util.Log;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Display;
@@ -174,27 +174,27 @@ public class InstalledExternalApplication extends ExternalApplication {
 		Display display = wm.getDefaultDisplay();
 		if (display.getWidth() > display.getHeight()) { // Landscape
 			if (display.getWidth() <= 426) {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.width = WindowManager.LayoutParams.FILL_PARENT;
 			} else {
-				lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.width = 426;
 			}
 
 			if (display.getHeight() <= 320) {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.height = WindowManager.LayoutParams.FILL_PARENT;
 			} else {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.height = 320;
 			}
 		} else { // Portrait
 			if (display.getWidth() <= 320) {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.width = WindowManager.LayoutParams.FILL_PARENT;
 			} else {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT); // TODO Ibrahim : Es war 320
+				lp.width = 320;
 			}
 
 			if (display.getHeight() <= 426) {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT);
+				lp.height = WindowManager.LayoutParams.FILL_PARENT;
 			} else {
-			    lp.width = (int)(WindowManager.LayoutParams.MATCH_PARENT); // TODO Ibrahim : Es war 426
+				lp.height = 426;
 			}
 		}
 		return lp;
@@ -343,7 +343,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 			final Activity baseActivity, final UpdateObserver o) {
 		final ProgressDialog progressDialog = new ProgressDialog(baseActivity);
 		final ApkDownloadManager downloader = new ApkDownloadManager(this,
-				baseActivity, new ExecutorWithObject() {
+				baseActivity, new ExecutableForObject() {
 
 					@Override
 					public void execute(final Object o) {

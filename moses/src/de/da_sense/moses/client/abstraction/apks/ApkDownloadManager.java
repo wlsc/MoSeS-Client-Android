@@ -8,7 +8,7 @@ import java.util.Observable;
 import de.da_sense.moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 
 import android.content.Context;
 import de.da_sense.moses.client.util.Log;
@@ -38,7 +38,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	private ExternalApplication externalApplicationResult;
 	private File downloadedApk;
 	private boolean cancelled = false;
-	private ExecutorWithObject progressListener;
+	private ExecutableForObject progressListener;
 
 	/**
 	 * Creates this download manager with an observer which will be notified
@@ -50,7 +50,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 *            the context
 	 */
 	public ApkDownloadManager(ExternalApplication externalApp, Context applicationContext,
-			ExecutorWithObject progressListener) {
+			ExecutableForObject progressListener) {
 		super();
 		this.app = externalApp;
 		this.context = applicationContext;
@@ -120,7 +120,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		ApkMethods.getDownloadLinkFor(app, this);
 	}
 
-	private void requestApkDownload(URL url, ExecutorWithObject e) {
+	private void requestApkDownload(URL url, ExecutableForObject e) {
 		if (!cancelled) {
 			if (MosesService.isOnline(context)) {
 				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context,
