@@ -493,7 +493,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	/**
-	 * TODO
+	 * This hook is no longer used for status updates that shall be shown to the user.
+	 * 
 	 * @param e
 	 */
 	public void unregisterChangeTextFieldHook(ExecutableForObject e) {
