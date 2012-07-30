@@ -25,6 +25,7 @@ import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
  * Viewing installed apks from the server in a list
  * 
  * @author Simon L
+ * 
  */
 public class ViewInstalledApplicationsActivity extends ListActivity {
 
@@ -42,8 +43,7 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 			if (rhs == null && lhs != null) {
 				return 1;
 			}
-			if ((rhs.isUpdateAvailable() && lhs.isUpdateAvailable())
-					|| (!rhs.isUpdateAvailable() && !lhs.isUpdateAvailable())) {
+			if ((rhs.isUpdateAvailable() && lhs.isUpdateAvailable())|| (!rhs.isUpdateAvailable() && !lhs.isUpdateAvailable())) {
 				if (rhs.getName().equals(lhs.getName())) {
 					return Integer.valueOf(rhs.hashCode()).compareTo(lhs.hashCode());
 				}
@@ -87,14 +87,12 @@ public class ViewInstalledApplicationsActivity extends ListActivity {
 		}
 		if (InstalledExternalApplicationsManager.getInstance() == null)
 			InstalledExternalApplicationsManager.init(this);
-		installedApps = sortForDisplay(new LinkedList<InstalledExternalApplication>(
-				InstalledExternalApplicationsManager.getInstance().getApps()));
+		installedApps = sortForDisplay(new LinkedList<InstalledExternalApplication>(InstalledExternalApplicationsManager.getInstance().getApps()));
 		populateList(installedApps);
 	}
 
 	private List<InstalledExternalApplication> sortForDisplay(Collection<InstalledExternalApplication> linkedList) {
-		if (linkedList == null)
-			throw new RuntimeException("installed app list was null");
+		if (linkedList == null)	throw new RuntimeException("installed app list was null");
 		List<InstalledExternalApplication> sortedList = new ArrayList<InstalledExternalApplication>(linkedList);
 		Comparator<? super InstalledExternalApplication> comparator = installedAppListComparator;
 		Collections.sort(sortedList, comparator);

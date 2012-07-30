@@ -34,7 +34,7 @@ import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
-import de.da_sense.moses.client.service.helpers.ExecutableForObject;
+import de.da_sense.moses.client.service.helpers.ExecutorWithObject;
 import de.da_sense.moses.client.userstudy.UserStudyNotification;
 import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
@@ -115,7 +115,9 @@ public class ViewUserStudyActivity extends Activity {
 		setResult(Activity.RESULT_OK);
 		finish();
 	}
-
+		/*
+		 * 
+		 */
 	private void requestApkInfo(final String id) {
 		// if(id.equals("11")) {
 		// handleSingleNotificationData.getApplication().setName("Test");
@@ -176,7 +178,10 @@ public class ViewUserStudyActivity extends Activity {
 		});
 		infoRequester.start();
 	}
-
+	
+	/*
+	 *  Function of error message
+	 */
 	protected void showMessageBoxError(ExternalApplicationInfoRetriever infoRequester) {
 		new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage(
@@ -252,8 +257,7 @@ public class ViewUserStudyActivity extends Activity {
 			public void onClick(View v) {
 				notification.setStatus(Status.DENIED);
 				UserstudyNotificationManager.getInstance().updateNotification(notification);
-				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(
-						notification.getApplication().getID());
+				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
 
 				myDialog.dismiss();
 				cancelActivity();
@@ -278,7 +282,7 @@ public class ViewUserStudyActivity extends Activity {
 	protected void downloadUserstudyApp(final UserStudyNotification notification) {
 		final ProgressDialog progressDialog = new ProgressDialog(this);
 		final ApkDownloadManager downloader = new ApkDownloadManager(notification.getApplication(),
-				getApplicationContext(), new ExecutableForObject() {
+				getApplicationContext(), new ExecutorWithObject() {
 
 					@Override
 					public void execute(Object o) {
@@ -307,7 +311,9 @@ public class ViewUserStudyActivity extends Activity {
 		});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		progressDialog.show();
-
+			/*
+			 * Observer Design Pattern
+			 */
 		Observer observer = new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
@@ -327,7 +333,7 @@ public class ViewUserStudyActivity extends Activity {
 		downloader.addObserver(observer);
 		downloader.start();
 	}
-
+	
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
 		new AlertDialog.Builder(ViewUserStudyActivity.this)
 				.setMessage("There seems to be no open internet connection present for downloading the app.")
@@ -382,7 +388,9 @@ public class ViewUserStudyActivity extends Activity {
 						UserstudyNotificationManager.getInstance().saveToDisk(getApplicationContext());
 					} catch (IOException e) {
 						Log.e("MoSeS.Install",
-								"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
+								"Problems with extracting package name from apk," +
+								" or problems with the InstalledExternalApplicationsManager " +
+								"after installing an app");
 					}
 					finishActivityOK();
 				}

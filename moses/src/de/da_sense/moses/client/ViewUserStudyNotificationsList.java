@@ -121,6 +121,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 			UserstudyNotificationManager.init(this);
 		List<UserStudyNotification> studies = UserstudyNotificationManager.getInstance().getNotifications();
 		this.userStudies = studies;
+		Log.d("DBSD", "userStudies = "+studies);
 	}
 
 	private void removeExpiredUserStudies() {
@@ -196,8 +197,7 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 					}
 				}
 				if (retriever.getState() == State.ERROR) {
-					Log.e("MoSeS.USERSTUDY",
-							"Wanted to display user study, but couldn't get app informations because of: ",
+					Log.e("MoSeS.USERSTUDY","Wanted to display user study, but couldn't get app informations because of: ",
 							retriever.getException());
 					retrieveCancels.put(n.getApplication().getID(), State.ERROR);
 					drawUserStudies();
@@ -257,7 +257,9 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 
 		listView.setAdapter(contentAdapter);
 	}
-
+		/*
+		 * Display Notification
+		 */
 	private static boolean isNotificationToDisplay(UserStudyNotification app) {
 		return (app.getApplication().isNameSet()) && (app.getApplication().isNameSet());
 	}
