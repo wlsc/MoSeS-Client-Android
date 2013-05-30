@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/availableApkListFragment" >
+   
+   <TextView
+        android:id="@+id/availableApkHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Available User Studies:"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <LinearLayout
+        android:id="@+id/apklist_emptylistLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+       	android:gravity="center"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/apklist_emptylistHintMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="500sp"
+            android:layout_marginTop="30sp"
+            android:text="@string/apklist_hint_sensors_main" />
+        <LinearLayout
+            android:id="@+id/emptylistBtnsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5sp"
+            android:gravity="center" >
+
+            <Button
+                android:id="@+id/apklist_emptylistActionBtn1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yes" />
+
+            <Button
+                android:id="@+id/apklist_emptylistActionBtn2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No, I&apos;m good" />
+        </LinearLayout>
+
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/apklist_mainListLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/availableApkHeaderInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="0dp"
+            android:text="@string/installedApkList_defaultHint"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <ListView
+            android:id="@id/android:list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="multipleChoice" >
+        </ListView>
+    </LinearLayout>
+    
+</LinearLayout>

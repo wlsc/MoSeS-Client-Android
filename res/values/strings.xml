@@ -1,0 +1,92 @@
+<resources>
+
+    <string name="app_name">MoSeS</string>
+    <string name="title_activity_main">MoSeS</string>
+    <string name="title_activity_questionnaire">Questionnaire</string>
+
+    <!-- Login screen -->
+    <string name="login_hint">username</string>
+    <string name="login_hint_pass">password</string>
+    <string name="checking_credentials">Checking credentials &#8230;</string>
+    <string name="wrong_credentials">Username and/or password are wrong</string>
+    <string name="verifying_credentials">Verifying your login credentials.</string>
+    <string name="check_internet">Not able to connect to MoSeS. Check your Internet connection.</string>
+
+    <!-- DeviceID -->
+    <string name="deviceID_text">Device ID</string>
+    <string name="deviceID_decr_text">Please enter an ID for your device.</string>
+    <string name="deviceID_decr_text2">This ID can be an arbitrary non-empty string and is used to identify your device in our system. Please note that special characters are not supported.</string>
+    <string name="deviceID_set_button">Set Device ID</string>
+    <string name="deviceID_not_entered">No device ID entered.</string>
+    <string name="deviceID_change_text">Changing the device ID failed, please select another device ID or proceed if you don\'t want to change the ID anymore.</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_duplicated_deviceID_title">Device ID is already in use.</string>
+    <string name="dialog_duplicated_deviceID_text">Your chosen device ID is already in use by: &#160;</string>
+    <string name="dialog_duplicated_deviceID_text2">Please choose update if you want to replace this device by your current.</string>
+    <string name="dialog_duplicated_deviceID_update">Update</string>
+    <string name="dialog_duplicated_deviceID_cancel">Cancel</string>
+
+    <!-- Installed List -->
+    <string name="installedApkList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="installedApkList_emptyHint">There are no running user studies on your device.</string>
+
+    <!-- Available List -->
+    <string name="availableApkList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="availableApkList_emptyHint">No user studies are available that match your device and enabled sensors. Enabling more sensors in the settings may show more user studies.</string>
+    
+    <!-- History List -->
+    <string name="historyList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="historyList_emptyHint">There are no past user studies on your device.</string>
+    
+    <!-- APK List -->
+    <string name="apklist_hint_sensors_main">Your current settings do not enable any sensors of your device for usage with MoSeS apps. Most of the apps in the MoSeS system require sensors. Would you like to change your sensor settings now?</string>
+    <string name="apklist_hint_pendingrequest">Waiting for server &#8230;</string>
+    <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the user study list anyway: &#160;</string>
+
+    <!-- App Info -->
+    <string name="text_sensor">Sensors: &#160;</string>
+    <string name="text_app_description">User study description: &#160;</string>
+
+    <!-- Moses Service -->
+    <string name="no_username_password">Please enter your username and password before logging in.</string>
+    <string name="no_internet_connection">No internet connection.</string>
+    <string name="no_deviceid">No device id entered.</string>
+    <string name="welcome_to_moses_title_string">Welcome to MoSeS!</string>
+    <string name="welcome_to_moses_string">You have to provide some information about your account and the sensors you want to share.</string>
+    <string name="unknown_response_from_server">Unknown response from server. Maybe you forgot to login to your HotSpot?</string>
+
+    <!-- Preferences -->
+    <string name="show_splash">Show splash screen</string>
+    <string name="sensor_data_pref_title">Sensor preferences</string>
+    <string name="sensor_data_pref_summary">Select the sensors you want to share.</string>
+    <string name="sensor_data_pref_dialog_title">Select the sensors you want to share: &#160;</string>
+    <string name="title_autologin_pref">Login automatically?</string>
+    <string name="summary_autologin_pref">Please tick this checkbox if you want to login to the service on each program start.</string>
+    <string name="dialog_title_password_pref">Password</string>
+    <string name="summary_password_pref">Please enter your MoSeS password.</string>
+    <string name="title_password_pref">Password</string>
+    <string name="device_prefs">Device settings</string>
+    <string name="pref_deviceid">Device ID</string>
+    <string name="pref_deviceid_message">Please enter an id for your device.</string>
+    <string name="application_prefs">Application settings</string>
+
+    <!-- Buttons -->
+    <string name="button_login">Login</string>
+    <string name="button_update">Update App</string>
+    <string name="button_close">Close</string>
+    <string name="button_start">Start</string>
+
+    <!-- Menus -->
+    <string name="menu_logout">Logout</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_hardwareinfo">Hardware Information</string>
+    <string name="menu_disconnect">Disconnect</string>
+    <string name="menu_connect">Connect</string>
+    <string name="btn_questionnaire">Questionnaire</string>
+    
+    <!-- Details -->
+    <string name="details_running_noquestionnaire">no questionnaire</string>
+    <string name="details_running_questionnairesent">questionnaire sent</string>
+
+</resources>
