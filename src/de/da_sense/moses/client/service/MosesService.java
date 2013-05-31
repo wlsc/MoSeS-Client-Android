@@ -89,7 +89,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		public ConcurrentLinkedQueue<ExecutableForObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutableForObject>();
 
 		/** The projects url. */
-		public String url = "http://www.da-sense.de/moses/test.php";
+		public String url = "http://www.da-sense.de/moses/api.php";
 
 		/**
 		 * True if an update from server is not required after some shared
