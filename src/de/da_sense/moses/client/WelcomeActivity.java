@@ -337,19 +337,19 @@ public class WelcomeActivity extends FragmentActivity {
         	mBound = true;
 
         	// Add hooks
-        	mService.registerHook(EHookTypes.POSTLOGINSUCCESS,
+        	mService.registerHook(EHookTypes.POST_LOGIN_SUCCESS,
         			EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginSuccessHook);
 
-        	mService.registerHook(EHookTypes.POSTLOGINFAILED,
+        	mService.registerHook(EHookTypes.POST_LOGIN_FAILED,
         			EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginFailureHook);
 
-        	mService.registerHook(EHookTypes.POSTLOGINSTART,
+        	mService.registerHook(EHookTypes.POST_LOGIN_START,
         			EMessageTypes.ACTIVITYPRINTMESSAGE, loginStartHook);
 
-        	mService.registerHook(EHookTypes.POSTLOGINEND,
+        	mService.registerHook(EHookTypes.POST_LOGIN_END,
         			EMessageTypes.ACTIVITYPRINTMESSAGE, loginEndHook);
 
-        	mService.registerHook(EHookTypes.POSTLOGOUT,
+        	mService.registerHook(EHookTypes.POST_LOGOUT,
         			EMessageTypes.ACTIVITYPRINTMESSAGE, postLogoutHook);
 
         	mService.registerChangeTextFieldHook(changeTextFieldHook);
@@ -379,15 +379,15 @@ public class WelcomeActivity extends FragmentActivity {
     	 */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-			mService.unregisterHook(EHookTypes.POSTLOGINSUCCESS,
+			mService.unregisterHook(EHookTypes.POST_LOGIN_SUCCESS,
 					postLoginSuccessHook);
-			mService.unregisterHook(EHookTypes.POSTLOGINFAILED,
+			mService.unregisterHook(EHookTypes.POST_LOGIN_FAILED,
 					postLoginFailureHook);
-			mService.unregisterHook(EHookTypes.POSTLOGINSTART, 
+			mService.unregisterHook(EHookTypes.POST_LOGIN_START, 
 					loginStartHook);
-			mService.unregisterHook(EHookTypes.POSTLOGINEND, 
+			mService.unregisterHook(EHookTypes.POST_LOGIN_END, 
 					loginEndHook);
-			mService.unregisterHook(EHookTypes.POSTLOGOUT, 
+			mService.unregisterHook(EHookTypes.POST_LOGOUT, 
 					postLogoutHook);
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
 			mService.setActivityContext(null);

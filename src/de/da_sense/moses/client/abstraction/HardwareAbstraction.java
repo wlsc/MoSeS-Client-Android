@@ -361,7 +361,7 @@ public class HardwareAbstraction {
 									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
 											.getString("deviceid_pref", "")).commit();
 					MosesService.getInstance().noOnSharedPreferenceChanged(false);
-					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+					MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
 								@Override
 								public void execute() {
@@ -374,7 +374,7 @@ public class HardwareAbstraction {
 							MosesService.getInstance().getActivityContext(), true);
 				}  else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
                     // if there is no device id been set for this device
-					MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+					MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 							EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
 								@Override
 								public void execute() {
@@ -514,7 +514,7 @@ public class HardwareAbstraction {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 									EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executable() {
 										@Override
 										public void execute() {
@@ -544,7 +544,7 @@ public class HardwareAbstraction {
 
 						@Override
 						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+							MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 									EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
 
 										@Override
@@ -591,7 +591,7 @@ public class HardwareAbstraction {
 	 */
 	public void getFilter() {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTGETFILTER,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, EMessageTypes.REQUESTGETFILTER,
 					new Executable() {
 						@Override
 						public void execute() {
@@ -608,7 +608,7 @@ public class HardwareAbstraction {
 	public void getHardwareParameters() {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS,
 					EMessageTypes.REQUESTGETHARDWAREPARAMETERS, new Executable() {
 						@Override
 						public void execute() {
@@ -628,7 +628,7 @@ public class HardwareAbstraction {
 	public void setFilter(final String filter) {
 		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTSETFILTER,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, EMessageTypes.REQUESTSETFILTER,
 					new Executable() {
 						@Override
 						public void execute() {
@@ -677,7 +677,7 @@ public class HardwareAbstraction {
 					.equals(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
 							"lastdeviceid", ""))) {
 			    // if the new device id is not like the last device id
-				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+				MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 						EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS, new Executable() {
 							@Override
 							public void execute() {
@@ -698,7 +698,7 @@ public class HardwareAbstraction {
 	 */
 	public void syncDeviceInformation(final boolean force) {
 		if (MosesService.getInstance() != null) {
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY,
 					EMessageTypes.REQUESTSETHARDWAREPARAMETERS, new Executable() {
 						@Override
 						public void execute() {

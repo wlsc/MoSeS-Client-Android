@@ -48,7 +48,7 @@ public class ApkUninstalled {
 	public ApkUninstalled(final String appID) {
 		// TODO: handle service == null
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS,
 					EMessageTypes.REQUESTUNINSTALLEDAPK, new Executable() {
 
 						@Override

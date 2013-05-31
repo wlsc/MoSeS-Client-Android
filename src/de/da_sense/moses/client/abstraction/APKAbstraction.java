@@ -133,7 +133,7 @@ public class APKAbstraction {
 	public void getAPKs() {
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POSTLOGINSUCCESS,
+					EHookTypes.POST_LOGIN_SUCCESS,
 					EMessageTypes.REQUESTGETLISTAPK, new Executable() {
 
 						@Override

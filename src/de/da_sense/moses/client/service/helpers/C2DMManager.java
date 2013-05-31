@@ -88,7 +88,7 @@ public class C2DMManager {
 	 * @param context
 	 */
 	private static void sendC2DMIdToServer(final String registrationId, final Context context) {
-		MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTC2DM,
+		MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, EMessageTypes.REQUESTC2DM,
 				new Executable() {
 					@Override
 					public void execute() {

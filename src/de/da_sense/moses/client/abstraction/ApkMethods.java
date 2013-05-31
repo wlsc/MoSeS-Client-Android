@@ -101,7 +101,7 @@ public class ApkMethods {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POSTLOGINSUCCESS,
+					EHookTypes.POST_LOGIN_SUCCESS,
 					EMessageTypes.REQUESTDOWNLOADLINK, new Executable() {
 
 						@Override
@@ -207,7 +207,7 @@ public class ApkMethods {
 			final ApkListRequestObserver observer) {
 		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POSTLOGINSUCCESS,
+					EHookTypes.POST_LOGIN_SUCCESS,
 					EMessageTypes.REQUESTGETLISTAPK, new Executable() {
 						@Override
 						public void execute() {

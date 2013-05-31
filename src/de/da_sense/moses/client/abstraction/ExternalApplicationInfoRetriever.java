@@ -142,7 +142,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 						r.send();
 					}
 				};
-				MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS,
+				MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS,
 						EMessageTypes.REQUESTGETAPKINFO, executor);
 			} else {
 				setErrorState(new RuntimeException("cannot send GETAPKINFO request because the Service is not present."));

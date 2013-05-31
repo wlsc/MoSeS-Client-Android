@@ -275,7 +275,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * Call this function if you want to log out from MoSeS.
 	 */
 	public void logout() {
-		new Logout(this, getHook(EHookTypes.POSTLOGOUT));
+		new Logout(this, getHook(EHookTypes.POST_LOGOUT));
 	}
 
 	/**
@@ -311,7 +311,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			mset.hooks.put(hookType, new ConcurrentLinkedQueue<ExecutableWithType>());
 		}
 
-		registerHook(EHookTypes.POSTLOGINFAILED, EMessageTypes.SPAMMABLE, new Executable() {
+		registerHook(EHookTypes.POST_LOGIN_FAILED, EMessageTypes.SPAMMABLE, new Executable() {
 			@Override
 			public void execute() {
 				mset.loggingIn = false;
@@ -481,12 +481,13 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 *            The context under which the dialog is shown.
 	 */
 	private void showWelcomeDialog(final Context context) {
-		AlertDialog a = new AlertDialog.Builder(context).create();
-		a.setIcon(R.drawable.ic_launcher);
-		a.setCancelable(false); // This blocks the 'BACK' button
-		a.setMessage(getString(R.string.welcome_to_moses_string));
-		a.setTitle(getString(R.string.welcome_to_moses_title_string));
-		a.setButton("OK", new DialogInterface.OnClickListener() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+		builder.setIcon(R.drawable.ic_launcher);
+		builder.setCancelable(false); // This blocks the 'BACK' button
+		builder.setMessage(getString(R.string.welcome_to_moses_string));
+		builder.setTitle(getString(R.string.welcome_to_moses_title_string));
+		builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				Intent mainDialog = new Intent(context, AskForDeviceIDActivity.class);
@@ -495,7 +496,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				dialog.dismiss();
 			}
 		});
-		a.show();
+		AlertDialog alert = builder.create();
+		alert.show();
 		Log.d("MoSeS.SERVICE", "First login.");
 		PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean("first_start", false).commit();
 	}
@@ -512,7 +514,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * Sends device information to the moses server.
 	 */
 	public void syncDeviceInformation(boolean force) {
-		executeLoggedIn(EHookTypes.POSTLOGINSUCCESSPRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS,
+		executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS,
 				new Executable() {
 					@Override
 					public void execute() {
@@ -555,7 +557,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * retrieved from the {@link PreferenceManager}.
 	 */
 	public void uploadFilter() {
-		this.executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, 
+		this.executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, 
 				EMessageTypes.REQUESTSETFILTER, new Executable() {
 			@Override
 			public void execute() {

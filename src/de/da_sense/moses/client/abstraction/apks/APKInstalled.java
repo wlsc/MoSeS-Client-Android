@@ -48,7 +48,7 @@ public class APKInstalled {
 	 */
 	public APKInstalled(final String appID) {
 		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(EHookTypes.POSTLOGINSUCCESS, EMessageTypes.REQUESTINSTALLEDAPK,
+			MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, EMessageTypes.REQUESTINSTALLEDAPK,
 					new Executable() {
 
 						@Override
