@@ -1,5 +1,26 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="AppTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>        
+    </style>
+    
+    <style name="ActionBarStyle">
+        <item name="android:background">#333333</item>
+    </style>
+    
+    <style name="Widget.Holo.TabWidget" parent="@android:style/Widget.TabWidget">
+        <item name="android:tabStripLeft">@null</item>
+        <item name="android:tabStripRight">@null</item>
+        <item name="android:tabStripEnabled">false</item>
+        <item name="android:divider">?android:attr/dividerVertical</item>
+        <item name="android:showDividers">middle</item>
+        <item name="android:dividerPadding">8dip</item>
+        <item name="android:measureWithLargestChild">true</item>
+    </style>
+    
+    <style name="Widget.ActionBar.TabView" parent="@android:style/Widget.ActionBar.TabView">
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:background">#FF0505</item>
+    </style>
 
 </resources>

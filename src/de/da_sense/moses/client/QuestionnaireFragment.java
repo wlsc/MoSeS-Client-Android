@@ -2,9 +2,9 @@ package de.da_sense.moses.client;
 
 import java.io.IOException;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -102,14 +102,13 @@ public class QuestionnaireFragment extends Fragment {
 		if (currentIndex == lastIndex) {
 		// Adding save button
 		btnSend = new Button(getActivity().getApplicationContext());
-		btnSend.setText("Send");
+		btnSend.setText(getString(R.string.q_send));
 		btnSend.setTag("SendButton");
 		btnSend.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				usQuestionnaire.setAnswers(layout);
-				Toast.makeText(getActivity().getApplicationContext(),
-						"Your answers have been sent", Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity().getApplicationContext(), getString(R.string.q_answersSent), Toast.LENGTH_LONG).show();
 				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getMultiQuestionnaire().sendAnswersToServer();
 				// XXX Test ob es speichern kann
 				try {
@@ -126,7 +125,7 @@ public class QuestionnaireFragment extends Fragment {
 		bLayout.addView(btnSend);
 		} else {
 		btnNext= new Button(getActivity().getApplicationContext());
-		btnNext.setText("Next");
+		btnNext.setText(getString(R.string.q_next));
 		btnNext.setTag("NextButton");
 		btnNext.setEnabled(true);
 		btnNext.setOnClickListener(new OnClickListener() {
@@ -135,7 +134,7 @@ public class QuestionnaireFragment extends Fragment {
 				// Sets he answers of the current Questionnaire in order
 				// to swap to the next one				
 				usQuestionnaire.setAnswers(layout);
-				FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+				FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
 				QuestionnaireFragment nextFragment = new QuestionnaireFragment();
 				nextFragment.setRetainInstance(true);
 				Bundle args = getArguments();

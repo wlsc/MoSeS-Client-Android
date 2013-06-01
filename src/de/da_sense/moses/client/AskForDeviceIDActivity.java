@@ -27,7 +27,7 @@ public class AskForDeviceIDActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		ActionBar ab = getActionBar();
-		this.setTitle("MoSeS - Device ID");
+		this.setTitle(getString(R.string.actionBar_deviceID_text));
 		ab.setDisplayShowTitleEnabled(true);
 
 		setContentView(R.layout.askfordeviceid);
@@ -58,7 +58,7 @@ public class AskForDeviceIDActivity extends Activity {
 		String deviceID = t.getText().toString();
 		if (deviceID.equals("")) {
 			Toast.makeText(getApplicationContext(),
-					"Please enter a non-empty string.",
+					getString(R.string.nonEmptyString),
 					Toast.LENGTH_SHORT).show();
 		} else {
 			Log.d("AskForDeviceID", "Device ID set to: " + t.getText());

@@ -4,6 +4,45 @@
     <string name="title_activity_main">MoSeS</string>
     <string name="title_activity_questionnaire">Questionnaire</string>
 
+	<!-- Todo: Sort it pls -->
+	<string name="online">Online</string>
+	<string name="offline">Offline</string>
+	<string name="connected">Connected</string>
+	<string name="login_error">Error while logging in.</string>
+    <string name="nonEmptyString">Please enter a non-empty string.</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="downloadingApp">Downloading the app...</string>
+    <string name="pleaseWait">Please wait.</string>
+    <string name="noInternetConnection_title">No connection</string>
+    <string name="noInternetConnection_message">There seems to be no open internet connection present for downloading the app.</string>
+    <string name="noInternetConnection_userStudy_message">Can\'t show user study details. No internet connection. Try to fix it and try again later.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="error">error</string>
+    <string name="downloadApk_errorMessage">An error occurred while trying to download the app: %1$s.</string>
+    <string name="apkInstallManager_errorMessage">Service is not started yet, thus the installation could not be started</string>
+    <string name="apkInstallManager_apkInstallFailed">Apk install failed</string>
+    <string name="open">Open</string>
+    <string name="install">Install</string>
+    <string name="q_send">Send</string>
+    <string name="q_answersSent">Your answers have been sent!</string>
+    <string name="q_next">Next</string>
+    <string name="userStudy_loading">Loading...</string>
+    <string name="userStudy_loadingInformation">Loading userstudy information</string>
+    <string name="userStudy_errorMessage">An error occurred when retrieving the informations for a user study: %1$s.\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!</string>
+    <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
+    <string name="userStudy_userStudyName">Name: %1$s</string>
+    <string name="userStudy_userStudyDescription">%1$s</string>
+    <string name="userStudy_userStudyUsedSensors">Used sensors: %1$s</string>
+   
+   <!-- Tabs -->
+   <string name="tab_available">Available</string>
+   <string name="tab_running">Running</string>
+   <string name="tab_history">History</string>
+    
+    
+    
     <!-- Login screen -->
     <string name="login_hint">username</string>
     <string name="login_hint_pass">password</string>
@@ -13,6 +52,7 @@
     <string name="check_internet">Not able to connect to MoSeS. Check your Internet connection.</string>
 
     <!-- DeviceID -->
+    <string name="actionBar_deviceID_text">MoSeS - Device ID</string>
     <string name="deviceID_text">Device ID</string>
     <string name="deviceID_decr_text">Please enter an ID for your device.</string>
     <string name="deviceID_decr_text2">This ID can be an arbitrary non-empty string and is used to identify your device in our system. Please note that special characters are not supported.</string>
@@ -34,6 +74,11 @@
     <!-- Available List -->
     <string name="availableApkList_defaultHint">Click on a user study to view the full description.</string>
     <string name="availableApkList_emptyHint">No user studies are available that match your device and enabled sensors. Enabling more sensors in the settings may show more user studies.</string>
+    <string name="availableTab_UserStudies">Available User Studies:</string>
+    <string name="availableTab_btnOk">Yes</string>
+    <string name="availableTab_btnCancel">No, I\'m good</string>
+    <string name="availableTab_noInternetConnection">Cannot display the app information because no internet connection seems to be present</string>
+    
     
     <!-- History List -->
     <string name="historyList_defaultHint">Click on a user study to view the full description.</string>
@@ -47,7 +92,7 @@
     <!-- App Info -->
     <string name="text_sensor">Sensors: &#160;</string>
     <string name="text_app_description">User study description: &#160;</string>
-
+    
     <!-- Moses Service -->
     <string name="no_username_password">Please enter your username and password before logging in.</string>
     <string name="no_internet_connection">No internet connection.</string>

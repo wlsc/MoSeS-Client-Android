@@ -24,7 +24,7 @@ import de.da_sense.moses.client.util.Log;
  * References an installed application (additional to ExternalApplication, the
  * package name of the installed application must be specified)
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  * 
  */
 public class InstalledExternalApplication extends ExternalApplication {
@@ -359,7 +359,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	private void installDownloadedApk(final File result,
 			final ExternalApplication updatedApplication,
 			final Activity baseActivity, final UpdateObserver o) {
-		final ApkInstallManager installer = new ApkInstallManager(result, this);
+		final ApkInstallManager installer = new ApkInstallManager(result, this, baseActivity.getApplicationContext());
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {

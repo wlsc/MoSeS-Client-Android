@@ -109,7 +109,7 @@ public class WelcomeActivity extends FragmentActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
-			((TextView) findViewById(R.id.success)).setText("Online");
+			((TextView) findViewById(R.id.success)).setText(getString(R.string.online));
 		}
 	};
 
@@ -119,7 +119,7 @@ public class WelcomeActivity extends FragmentActivity {
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
 			((TextView) findViewById(R.id.success))
-			.setText("Error while logging in.");
+			.setText(getString(R.string.login_error));
 			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
 			.setVisibility(View.GONE);
 		}
@@ -142,7 +142,7 @@ public class WelcomeActivity extends FragmentActivity {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
 			((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
 			.setVisibility(View.GONE);
-			((TextView) findViewById(R.id.success)).setText("Connected");
+			((TextView) findViewById(R.id.success)).setText(getString(R.string.connected));
 		}
 	};
 
@@ -151,7 +151,7 @@ public class WelcomeActivity extends FragmentActivity {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "postLogoutHook");
-			((TextView) findViewById(R.id.success)).setText("Offline");
+			((TextView) findViewById(R.id.success)).setText(getString(R.string.offline));
 		}
 	};
 
@@ -663,22 +663,22 @@ public class WelcomeActivity extends FragmentActivity {
 
 		// get ActionBar and set NavigationMode
 		ActionBar ab = getActionBar();
-		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		ab.setDisplayShowTitleEnabled(true);
-
+		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
+		
 		// add Tabs to the ActionBar
 		Tab availabletab = ab
 				.newTab()
-				.setText("available")
+				.setText(getString(R.string.tab_available))
 				.setTabListener(
 						new MosesTabListener<AvailableFragment>(this,
 								"available", AvailableFragment.class));
+		
 		// with parameter if tab is selected
 		ab.addTab(availabletab, availableSelected);
 
 		Tab runningtab = ab
 				.newTab()
-				.setText("running")
+				.setText(getString(R.string.tab_running))
 				.setTabListener(
 						new MosesTabListener<RunningFragment>(this, 
 								"running", RunningFragment.class));
@@ -686,7 +686,7 @@ public class WelcomeActivity extends FragmentActivity {
 
 		Tab historytab = ab
 				.newTab()
-				.setText("history")
+				.setText(getString(R.string.tab_history))
 				.setTabListener(
 						new MosesTabListener<HistoryFragment>(this, 
 								"history", HistoryFragment.class));
@@ -701,7 +701,7 @@ public class WelcomeActivity extends FragmentActivity {
 					onLoginCompleteShowUserStudy, this);
 		}
 	}
-
+	
 	/**
 	 * Disconnect service so android won't get angry.
 	 * @see com.actionbarsherlock.app.SherlockFragmentActivity#onStop()

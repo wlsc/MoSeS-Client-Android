@@ -32,14 +32,14 @@ public class QuestionnaireActivity extends FragmentActivity {
 			questionnaire = new QuestionnaireFragment();
 			questionnaire.setRetainInstance(true);
 			questionnaire.setArguments(getIntent().getExtras());
-			getSupportFragmentManager().beginTransaction()
+			getFragmentManager().beginTransaction()
 					.add(android.R.id.content, questionnaire).commit();
 		} else {
 			Log.d(TAG, "savedInstanceState != null");
 			questionnaire = new QuestionnaireFragment();
 			questionnaire.setRetainInstance(true);
 			questionnaire.setArguments(savedInstanceState);
-			getSupportFragmentManager().beginTransaction()
+			getFragmentManager().beginTransaction()
 					.add(android.R.id.content, questionnaire).commit();
 		}
 

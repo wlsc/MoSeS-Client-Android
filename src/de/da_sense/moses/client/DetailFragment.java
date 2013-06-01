@@ -264,7 +264,7 @@ public class DetailFragment extends Fragment {
 					Button button = (Button) detailFragmentView
 							.findViewById(R.id.startapp);
 					// change the text of it to install
-					button.setText("Install");
+					button.setText(getString(R.string.install));
 					// make an action listener for it
 					button.setOnClickListener(new OnClickListener() {
 						@Override
@@ -301,7 +301,7 @@ public class DetailFragment extends Fragment {
 							.getInstalledApps().get(getShownIndex())
 							.getUpdateAvailable() ? View.VISIBLE : View.GONE);
 					// change the text of it to install
-					button.setText("Open");
+					button.setText(getString(R.string.open));
 					// make an action listener for it
 					button.setOnClickListener(new OnClickListener() {
 						@Override
@@ -335,14 +335,14 @@ public class DetailFragment extends Fragment {
 					if (!hasQuestionnaire) {
 						Log.d(TAG, "no questionnaire available for userstudy "
 								+ appname);
-						button.setText(getResources().getString(
+						button.setText(getString(
 								R.string.details_running_noquestionnaire));
 						button.setClickable(false);
 						button.setEnabled(false);
 					} else if (isQuestionnaireSent) {
 						Log.d(TAG, "questionnaire to userstudy " + appname
 								+ " was already sent");
-						button.setText(getResources().getString(
+						button.setText(getString(
 								R.string.details_running_questionnairesent));
 						button.setClickable(false);
 						button.setEnabled(false);
@@ -412,12 +412,12 @@ public class DetailFragment extends Fragment {
 							: true;
 					// set button according to the booleans
 					if (!hasQuestionnaire) {
-						button.setText(getResources().getString(
+						button.setText(getString(
 								R.string.details_running_noquestionnaire));
 						button.setClickable(false);
 						button.setEnabled(false);
 					} else if (isQuestionnaireSent) {
-						button.setText(getResources().getString(
+						button.setText(getString(
 								R.string.details_running_questionnairesent));
 						button.setClickable(false);
 						button.setEnabled(false);
@@ -458,5 +458,4 @@ public class DetailFragment extends Fragment {
 		super.onResume();
 		Log.d(TAG, "onResume index=" + getShownIndex());
 	}
-
 }

@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 
+import android.app.Activity;
 import android.content.Context;
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
@@ -15,7 +17,7 @@ import de.da_sense.moses.client.util.Log;
  * Supports the {@link Observable} scheme for updates in the install process.
  * See {@link State}.
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  * 
  */
 public class ApkInstallManager extends Observable implements ApkInstallObserver {
@@ -54,6 +56,8 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	 * The corresponding ExternalApplication
 	 */
 	private ExternalApplication appRef;
+	
+	private Context context;
 
 	/**
 	 * creates the installation manager with the required parameters
@@ -63,14 +67,16 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 	 * @param appRef
 	 *            the reference to the external application that is being
 	 *            installed
+	 * @param context 
 	 */
-	public ApkInstallManager(File apkFile, ExternalApplication appRef) {
+	public ApkInstallManager(File apkFile, ExternalApplication appRef, Context context) {
 		super();
 		this.file = apkFile;
 		this.appRef = appRef;
+		this.context = context;
 		this.mosesService = MosesService.getInstance();
 		if (this.mosesService == null) {
-			setErrorState("service is not started yet, thus the installation could not be started");
+			setErrorState(context.getString(R.string.apkInstallManager_errorMessage));
 			return;
 		}
 
@@ -92,8 +98,8 @@ public class ApkInstallManager extends Observable implements ApkInstallObserver 
 			setState(State.INSTALLATION_REQUESTED);
 			ApkMethods.installApk(file, appRef, this);
 		} catch (IOException e) {
-			setErrorState("Apk install failed", e);
-			e.printStackTrace();
+			setErrorState(context.getString(R.string.apkInstallManager_apkInstallFailed), e);
+			Log.e("ApkInstallManager", e.getMessage());
 		}
 	}
 

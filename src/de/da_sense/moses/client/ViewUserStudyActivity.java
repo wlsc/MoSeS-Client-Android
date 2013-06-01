@@ -41,7 +41,7 @@ import de.da_sense.moses.client.util.Log;
 /**
  * Viewing and installing APKs from the server
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  */
 public class ViewUserStudyActivity extends Activity {
 
@@ -125,24 +125,9 @@ public class ViewUserStudyActivity extends Activity {
 	 * @param id the apkid for the user study app
 	 */
 	private void requestApkInfo(final String id) {
-		// TODO: this was already commented out ... probably save to remove
-		// if(id.equals("11")) {
-		// handleSingleNotificationData.getApplication().setName("Test");
-		// handleSingleNotificationData.getApplication().setDescription("asdasd asdkjhasdkj asdjkh\n\n\n\n\nas\n\n\ndas\n\n\ndf\n\n\nvb");
-		// List<Integer> sensors = new LinkedList<Integer>();
-		// sensors.add(1);
-		// handleSingleNotificationData.getApplication().setSensors(sensors);
-		// UserstudyNotificationManager.getInstance().updateNotification(handleSingleNotificationData);
-		// try {
-		// UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyActivity.this);
-		// } catch (IOException e) {
-		// Log.w("MoSeS.APK", "couldnt save manager: ", e);
-		// }
-		// showDescisionDialog(handleSingleNotificationData);
-		// return;
-		// }
+
 		final ExternalApplicationInfoRetriever infoRequester = new ExternalApplicationInfoRetriever(id, this);
-		final ProgressDialog progressDialog = ProgressDialog.show(this, "Loading...", "Loading userstudy information",
+		final ProgressDialog progressDialog = ProgressDialog.show(this, getString(R.string.userStudy_loading), getString(R.string.userStudy_loadingInformation),
 				true, true, new OnCancelListener() {
 					@Override
 					public void onCancel(DialogInterface dialog) {
@@ -154,7 +139,7 @@ public class ViewUserStudyActivity extends Activity {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (infoRequester.getState() == State.DONE) {
-					// TODO:
+
 					handleSingleNotificationData.getApplication().setName(infoRequester.getResultName());
 					handleSingleNotificationData.getApplication().setDescription(infoRequester.getResultDescription());
 					handleSingleNotificationData.getApplication().setSensors(infoRequester.getResultSensors());
@@ -196,11 +181,10 @@ public class ViewUserStudyActivity extends Activity {
 	 */
 	protected void showMessageBoxError(ExternalApplicationInfoRetriever infoRequester) {
 		new AlertDialog.Builder(ViewUserStudyActivity.this)
-				.setMessage(
-						"An error occured when retrieving the informations for a user study: "
-								+ infoRequester.getErrorMessage()
-								+ ".\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!")
-				.setTitle("Error").setCancelable(true).setNeutralButton("OK", new DialogInterface.OnClickListener() {
+				.setMessage(getString(R.string.userStudy_errorMessage, infoRequester.getErrorMessage()))
+				.setTitle(getString(R.string.error))
+				.setCancelable(true)
+				.setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
@@ -214,25 +198,14 @@ public class ViewUserStudyActivity extends Activity {
 	 */
 	protected void showMessageBoxNoNetwork(String id) {
 		new AlertDialog.Builder(ViewUserStudyActivity.this)
-				.setMessage(
-						"Sorry, I wanted to show you the details of a user study of MoSeS. "
-								+ "But it seems you have no active net connection. If you got this fixed, please select the user study again. Thanks!")
-				.setTitle("No connection").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+				.setMessage(getString(R.string.noInternetConnection_userStudy_message))
+				.setTitle(getString(R.string.no_internet_connection)).setCancelable(true)
+				.setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
 					}
 				}).show();
-	}
-
-	/**
-	 * ?
-	 * Just writes a log message.
-	 * @param view
-	 */
-	public void dialogClickLater(View view) {
-		Log.i("MoSeS.USERSTUDY", "click listener works");
 	}
 
 	/**
@@ -245,14 +218,15 @@ public class ViewUserStudyActivity extends Activity {
 		Log.i("MoSeS.USERSTUDY", notification.getApplication().getID());
 		final Dialog myDialog = new Dialog(ViewUserStudyActivity.this);
 		myDialog.setContentView(R.layout.userstudynotificationdialog);
-		myDialog.setTitle("A new user study is available for you");
-		((TextView) myDialog.findViewById(R.id.userstudydialog_name)).setText("Name: "
-				+ notification.getApplication().getName());
-		((TextView) myDialog.findViewById(R.id.userstudydialog_descr)).setText(""
-				+ notification.getApplication().getDescription());
+		myDialog.setTitle(getString(R.string.userStudy_newStudyAvailable));
+		((TextView) myDialog.findViewById(R.id.userstudydialog_name))
+			.setText(getString(R.string.userStudy_userStudyName, notification.getApplication().getName()));
+		((TextView) myDialog.findViewById(R.id.userstudydialog_descr))
+			.setText(getString(R.string.userStudy_userStudyDescription, notification.getApplication().getDescription()));
 
-		final String sensorsNeutralDescr = "Used sensors: ";
-		((TextView) myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr);
+
+		((TextView) myDialog.findViewById(R.id.sensors_descr))
+			.setText(getString(R.string.userStudy_userStudyUsedSensors, ""));
 		List<Integer> sensors = notification.getApplication().getSensors();
 		Gallery g = (Gallery) myDialog.findViewById(R.id.sensors);
 		Integer[] imageIds = new Integer[sensors.size()];
@@ -264,8 +238,8 @@ public class ViewUserStudyActivity extends Activity {
 		g.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView) myDialog.findViewById(R.id.sensors_descr)).setText(sensorsNeutralDescr
-						+ ((ImageView) arg1).getContentDescription());
+				((TextView) myDialog.findViewById(R.id.sensors_descr))
+					.setText(getString(R.string.userStudy_userStudyUsedSensors, ((ImageView) arg1).getContentDescription().toString()));
 			}
 
 		});
@@ -297,8 +271,8 @@ public class ViewUserStudyActivity extends Activity {
 				cancelActivity();
 			}
 		};
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yay)).setOnClickListener(clickListenerYes);
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_nay)).setOnClickListener(clickListenerNo);
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yes)).setOnClickListener(clickListenerYes);
+		((Button) myDialog.findViewById(R.id.userstudydialog_btn_no)).setOnClickListener(clickListenerNo);
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
 
 		myDialog.setOwnerActivity(ViewUserStudyActivity.this);
@@ -323,8 +297,8 @@ public class ViewUserStudyActivity extends Activity {
 						}
 					}
 				});
-		progressDialog.setTitle("Downloading the app...");
-		progressDialog.setMessage("Please wait.");
+		progressDialog.setTitle(getString(R.string.downloadingApp));
+		progressDialog.setMessage(getString(R.string.pleaseWait));
 		progressDialog.setMax(100);
 		progressDialog.setProgress(0);
 		progressDialog.setOnCancelListener(new OnCancelListener() {
@@ -335,12 +309,13 @@ public class ViewUserStudyActivity extends Activity {
 			}
 		});
 		progressDialog.setCancelable(true);
-		progressDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				progressDialog.cancel();
-			}
-		});
+		progressDialog.setButton(getString(R.string.cancel), (DialogInterface.OnClickListener) null);
+//		progressDialog.setButton("Cancel", new DialogInterface.OnClickListener() {
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				progressDialog.cancel();
+//			}
+//		});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		progressDialog.show();
 			/*
@@ -373,9 +348,9 @@ public class ViewUserStudyActivity extends Activity {
 	 */
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
 		new AlertDialog.Builder(ViewUserStudyActivity.this)
-				.setMessage("There seems to be no open internet connection present for downloading the app.")
-				.setTitle("No connection").setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+				.setMessage(getString(R.string.noInternetConnection_message))
+				.setTitle(getString(R.string.no_internet_connection)).setCancelable(true)
+				.setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int whichButton) {
 						cancelActivity();
@@ -388,8 +363,7 @@ public class ViewUserStudyActivity extends Activity {
 	 * @param downloader
 	 */
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
-		showMessageBoxError("Error", "An error occured when trying to download the app: " + downloader.getErrorMsg()
-				+ ".\nSorry!", cancelActivityOnClickListener());
+		showMessageBoxError(getString(R.string.error), getString(R.string.downloadApk_errorMessage, downloader.getErrorMsg()) , cancelActivityOnClickListener());
 	}
 
 	/**
@@ -400,8 +374,12 @@ public class ViewUserStudyActivity extends Activity {
 	 * @param onClickListener onClickListener for the button in the message
 	 */
 	protected void showMessageBoxError(String title, String msg, DialogInterface.OnClickListener onClickListener) {
-		new AlertDialog.Builder(ViewUserStudyActivity.this).setMessage(msg).setTitle(title).setCancelable(true)
-				.setNeutralButton("OK", onClickListener).show();
+		new AlertDialog.Builder(ViewUserStudyActivity.this)
+			.setMessage(msg)
+			.setTitle(title)
+			.setCancelable(true)
+			.setNeutralButton(getString(R.string.ok), onClickListener)
+			.show();
 	}
 
 	/**
@@ -426,12 +404,12 @@ public class ViewUserStudyActivity extends Activity {
 	 */
 	private void installDownloadedApk(final File result, final ExternalApplication externalAppRef,
 			final UserStudyNotification notification) {
-		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef);
+		final ApkInstallManager installer = new ApkInstallManager(result, externalAppRef, getApplicationContext());
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
-					showMessageBoxError("Error", "An error occured when installing the user study app. Sorry!",
+					showMessageBoxError(getString(R.string.error), getString(R.string.downloadApk_errorMessage, "Sorry!"),
 							cancelActivityOnClickListener());
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					cancelActivity();

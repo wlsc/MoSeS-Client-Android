@@ -75,7 +75,7 @@
 
 
         <Button
-            android:id="@+id/userstudydialog_btn_yay"
+            android:id="@+id/userstudydialog_btn_yes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
@@ -85,7 +85,7 @@
 
 
         <Button
-            android:id="@+id/userstudydialog_btn_nay"
+            android:id="@+id/userstudydialog_btn_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.33"

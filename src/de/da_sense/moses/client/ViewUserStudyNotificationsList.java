@@ -32,7 +32,7 @@ import de.da_sense.moses.client.util.Log;
  * 
  * Viewing and installing APKs from the server
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  */
 public class ViewUserStudyNotificationsList extends ListActivity {
 

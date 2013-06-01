@@ -1,6 +1,5 @@
 package de.da_sense.moses.client;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ public class DetailActivity extends FragmentActivity {
 	 * 
 	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
 	 */
-	@SuppressLint("NewApi") // because of isLayoutSizeAtLeast -> only gets called on >= Honeycomb TODO: check
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -102,6 +100,7 @@ public class DetailActivity extends FragmentActivity {
 	 * Helper method to check if we have at least API 11 or higher.
 	 * @return
 	 */
+	@Deprecated
 	public boolean isAtLeastHoneycomb() {
 		String version = android.os.Build.VERSION.RELEASE;
 		if (version.startsWith("1.") || version.startsWith("2.")) {

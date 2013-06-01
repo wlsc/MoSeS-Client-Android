@@ -56,13 +56,12 @@ import de.da_sense.moses.client.util.Log;
  * server.
  * @author Sandra Amend, Simon L
  */
-public class AvailableFragment extends ListFragment implements
-ApkListRequestObserver {
+public class AvailableFragment extends ListFragment implements ApkListRequestObserver {
 	/**
 	 * Enums for the state of the layout.
 	 */
 	public static enum LayoutState {
-		NORMAL_LIST, SENSORS_HINT, EMPTYLIST_HINT, PENDINGREQUEST, NOCONNECTIVITY;
+		NORMAL_LIST, SENSORS_HINT, EMPTYLIST_HINT, PENDING_REQUEST, NO_CONNECTIVITY;
 	}
 	
 	/** boolean for the combined list and detail mode */
@@ -386,9 +385,8 @@ ApkListRequestObserver {
 	 */
 	private void showNoConnectionInfoBox() {
 		new AlertDialog.Builder(getActivity())
-				.setMessage(
-						"Cannot display the app information because no internet connection seems to be present")
-				.setTitle("No connection").setCancelable(true)
+				.setMessage(getString(R.string.availableTab_noInternetConnection))
+				.setTitle(getString(R.string.noInternetConnection_title)).setCancelable(true)
 				// TODO: this was already commented out ...
 				// .setNeutralButton("OK",
 				// new DialogInterface.OnClickListener() {
@@ -441,7 +439,7 @@ ApkListRequestObserver {
 	 * Controls what to show and what to do when there is no connection.
 	 */
 	private void initControlsNoConnectivity() {
-		if (lastSetLayout != LayoutState.NOCONNECTIVITY) {
+		if (lastSetLayout != LayoutState.NO_CONNECTIVITY) {
 			// no connection so show an empty list
 			LinearLayout emptylistCtrls = (LinearLayout) getActivity()
 					.findViewById(R.id.apklist_emptylistLayout);
@@ -464,20 +462,20 @@ ApkListRequestObserver {
 			actionBtn1.setText("Refresh");
 			actionBtn2.setVisibility(View.GONE);
 
-			refreshResfreshBtnTimeout(actionBtn1, "Retry",
-					LayoutState.NOCONNECTIVITY);
+			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.retry),
+					LayoutState.NO_CONNECTIVITY);
 
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					refreshResfreshBtnTimeout(actionBtn1, "Retry",
-							LayoutState.NOCONNECTIVITY);
+					refreshResfreshBtnTimeout(actionBtn1, getString(R.string.retry),
+							LayoutState.NO_CONNECTIVITY);
 					requestExternalApplications();
 				}
 			});
 			
 			// set the last layout
-			setLastSetLayout(LayoutState.NOCONNECTIVITY);
+			setLastSetLayout(LayoutState.NO_CONNECTIVITY);
 		}
 	}
 
@@ -485,7 +483,7 @@ ApkListRequestObserver {
 	 * Controls what to show and what to do during a pending request.
 	 */
 	private void initControlsPendingListRequest() {
-		if (lastSetLayout != LayoutState.PENDINGREQUEST) {
+		if (lastSetLayout != LayoutState.PENDING_REQUEST) {
 			// during a pending request show an empty list
 			LinearLayout emptylistCtrls = (LinearLayout) getActivity()
 					.findViewById(R.id.apklist_emptylistLayout);
@@ -507,20 +505,20 @@ ApkListRequestObserver {
 			actionBtn1.setText("Refresh");
 			actionBtn2.setVisibility(View.GONE);
 
-			refreshResfreshBtnTimeout(actionBtn1, "Refresh",
-					LayoutState.PENDINGREQUEST);
+			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.refresh),
+					LayoutState.PENDING_REQUEST);
 
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					refreshResfreshBtnTimeout(actionBtn1, "Refresh",
-							LayoutState.PENDINGREQUEST);
+					refreshResfreshBtnTimeout(actionBtn1, getString(R.string.refresh),
+							LayoutState.PENDING_REQUEST);
 					requestExternalApplications();
 				}
 			});
 			
 			// set the last layout
-			setLastSetLayout(LayoutState.PENDINGREQUEST);
+			setLastSetLayout(LayoutState.PENDING_REQUEST);
 		}
 	}
 
@@ -678,8 +676,8 @@ ApkListRequestObserver {
 			Button actionBtn2 = (Button) WelcomeActivity.getInstance()
 					.findViewById(R.id.apklist_emptylistActionBtn2);
 			
-			actionBtn1.setText("Yes");
-			actionBtn2.setText("No, Thanks");
+			actionBtn1.setText(getString(R.string.availableTab_btnOk));
+			actionBtn2.setText(getString(R.string.availableTab_btnCancel));
 			actionBtn1.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -806,8 +804,8 @@ ApkListRequestObserver {
 					}
 				});
 		
-		progressDialog.setTitle("Downloading the app...");
-		progressDialog.setMessage("Please wait.");
+		progressDialog.setTitle(getString(R.string.downloadingApp));
+		progressDialog.setMessage(getString(R.string.pleaseWait));
 		progressDialog.setMax(0);
 		progressDialog.setProgress(0);
 		progressDialog.setOnCancelListener(new OnCancelListener() {
@@ -870,16 +868,10 @@ ApkListRequestObserver {
 	 */
 	protected void showMessageBoxErrorNoConnection(ApkDownloadManager downloader) {
 		new AlertDialog.Builder(WelcomeActivity.getInstance())
-				.setMessage("There seems to be no open internet connection " +
-						"present for downloading the app.")
-				.setTitle("No connection")
+				.setMessage(getString(R.string.noInternetConnection_message))
+				.setTitle(getString(R.string.noInternetConnection_title))
 				.setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton) {
-						// nothing
-					}
-				}).show();
+				.setNeutralButton(getString(R.string.ok), null).show();
 	}
 
 	/**
@@ -889,16 +881,10 @@ ApkListRequestObserver {
 	 */
 	protected void showMessageBoxErrorDownloading(ApkDownloadManager downloader) {
 		new AlertDialog.Builder(WelcomeActivity.getInstance())
-				.setMessage("An error occured while trying to download the app: "
-								+ downloader.getErrorMsg() + ".")
-				.setTitle("Error")
+				.setMessage(getString(R.string.downloadApk_errorMessage, downloader.getErrorMsg()))
+				.setTitle(getString(R.string.error))
 				.setCancelable(true)
-				.setNeutralButton("OK", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int whichButton) {
-						// nothing
-					}
-				}).show();
+				.setNeutralButton(getString(R.string.ok), null).show();
 	}
 
 	/**
@@ -908,8 +894,8 @@ ApkListRequestObserver {
 	 */
 	private void installDownloadedApk(final File originalApk,
 			final ExternalApplication externalAppRef) {
-		final ApkInstallManager installer = new ApkInstallManager(originalApk,
-				externalAppRef);
+		final ApkInstallManager installer = 
+				new ApkInstallManager(originalApk, externalAppRef, getActivity().getApplicationContext());
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {

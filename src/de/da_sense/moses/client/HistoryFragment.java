@@ -325,8 +325,9 @@ public class HistoryFragment extends ListFragment {
 	 * @param v the clicked view item representing an app
 	 */
 	public void openQuestionnaireClickHandler(View v) {
-		int pos = getListView().getPositionForView(v);
-		HistoryExternalApplication app = historyUS.get(pos);
+		// TODO: wtf is here?
+//		int pos = getListView().getPositionForView(v);
+//		HistoryExternalApplication app = historyUS.get(pos);
 		
 	}
 

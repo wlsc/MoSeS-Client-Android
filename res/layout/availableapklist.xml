@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="Available User Studies:"
+        android:text="@string/availableTab_UserStudies"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -39,13 +39,13 @@
                 android:id="@+id/apklist_emptylistActionBtn1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Yes" />
+                android:text="@string/availableTab_btnOk" />
 
             <Button
                 android:id="@+id/apklist_emptylistActionBtn2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="No, I&apos;m good" />
+                android:text="@string/availableTab_btnCancel" />
         </LinearLayout>
 
     </LinearLayout>

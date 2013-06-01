@@ -47,8 +47,8 @@ public class LoginActivity extends Activity {
     	final EditText username = (EditText) findViewById(R.id.login_username);
     	final EditText password = (EditText) findViewById(R.id.login_password);
     	// check if fields are empty -> no login try
-    	if (username.getText().toString().equals("") 
-    			|| password.getText().toString().equals("")) {
+    	if (username.getText().toString().isEmpty() 
+    			|| password.getText().toString().isEmpty()) {
     		return;
     	}
     	// show ProgressDialog while checking and verifying entered credentials
