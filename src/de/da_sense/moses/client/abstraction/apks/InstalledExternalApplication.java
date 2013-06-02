@@ -7,13 +7,11 @@ import java.util.Observer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.view.Display;
-import android.view.WindowManager;
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.WelcomeActivity;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
@@ -47,7 +45,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param version
 	 *            the version of the app which is installed
 	 */
-	public InstalledExternalApplication(String packageName, String ID,
+	private InstalledExternalApplication(String packageName, String ID,
 			boolean wasInstalledAsUserStudy, String version) {
 		super(Integer.valueOf(ID));
 		Log.d("InstalledExternalApp", "Here4");
@@ -76,7 +74,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param version
 	 *            the version of the app which is installed
 	 */
-	public InstalledExternalApplication(String packageName,
+	private InstalledExternalApplication(String packageName,
 			ExternalApplication externalApp, boolean wasInstalledAsUserStudy,
 			String version) {
 
@@ -149,51 +147,11 @@ public class InstalledExternalApplication extends ExternalApplication {
 	}
 
 	/**
-	 * XXX: probably also unnecessary, because we don't show a dialog anymore?
-	 * Get the width and size in respect to the display for the dialog.
-	 * @param c the context activity
-	 * @param d the dialog
-	 * @return LayoutParams object which contains the width and height
-	 */
-	public static WindowManager.LayoutParams getDialogSize(Context c, Dialog d) {
-		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-		lp.copyFrom(d.getWindow().getAttributes());
-		WindowManager wm = (WindowManager) c
-				.getSystemService(Context.WINDOW_SERVICE);
-		Display display = wm.getDefaultDisplay();
-		if (display.getWidth() > display.getHeight()) { // Landscape
-			if (display.getWidth() <= 426) {
-				lp.width = WindowManager.LayoutParams.FILL_PARENT;
-			} else {
-				lp.width = 426;
-			}
-
-			if (display.getHeight() <= 320) {
-				lp.height = WindowManager.LayoutParams.FILL_PARENT;
-			} else {
-				lp.height = 320;
-			}
-		} else { // Portrait
-			if (display.getWidth() <= 320) {
-				lp.width = WindowManager.LayoutParams.FILL_PARENT;
-			} else {
-				lp.width = 320;
-			}
-
-			if (display.getHeight() <= 426) {
-				lp.height = WindowManager.LayoutParams.FILL_PARENT;
-			} else {
-				lp.height = 426;
-			}
-		}
-		return lp;
-	}
-
-	/**
-	 * TODO: Javadoc
+	 * 
 	 * @param baseActivity
 	 * @param o
 	 */
+	@Deprecated
 	protected void fetchUpdatedInfo(final Activity baseActivity,
 			final UpdateObserver o) {
 		final ExternalApplicationInfoRetriever infoRequester = 
@@ -262,18 +220,16 @@ public class InstalledExternalApplication extends ExternalApplication {
 		infoRequester.start();
 	}
 	
-	/**
-	 * TODO: Javadoc
-	 */
+
 	private int totalSize = -1;
 
 	/**
-	 * TODO: Javadoc
+	 * 
 	 * @param updatedApplication
 	 * @param baseActivity
 	 * @param o
 	 */
-	protected void startInstallUpdate(
+	private void startInstallUpdate(
 			final ExternalApplication updatedApplication,
 			final Activity baseActivity, final UpdateObserver o) {
 		final ProgressDialog progressDialog = new ProgressDialog(baseActivity);
@@ -303,8 +259,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 					}
 				});
 
-		progressDialog.setTitle("Downloading the app...");
-		progressDialog.setMessage("Please wait.");
+		progressDialog.setTitle(baseActivity.getApplicationContext().getString(R.string.downloadingApp));
+		progressDialog.setMessage(baseActivity.getApplicationContext().getString(R.string.pleaseWait));
 		progressDialog.setMax(0);
 		progressDialog.setProgress(0);
 		progressDialog.setOnCancelListener(new OnCancelListener() {
@@ -315,14 +271,15 @@ public class InstalledExternalApplication extends ExternalApplication {
 			}
 		});
 		progressDialog.setCancelable(true);
-		progressDialog.setButton("Cancel",
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (progressDialog.isShowing())
-							progressDialog.cancel();
-					}
-				});
+		progressDialog.setButton(baseActivity.getApplicationContext().getString(R.string.cancel), (DialogInterface.OnClickListener) null);
+//		progressDialog.setButton(baseActivity.getApplicationContext().getString(R.string.cancel),
+//				new DialogInterface.OnClickListener() {
+//					@Override
+//					public void onClick(DialogInterface dialog, int which) {
+//						if (progressDialog.isShowing())
+//							progressDialog.cancel();
+//					}
+//				});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		Observer observer = new Observer() {
 			@Override
@@ -363,11 +320,14 @@ public class InstalledExternalApplication extends ExternalApplication {
 		installer.addObserver(new Observer() {
 			@Override
 			public void update(Observable observable, Object data) {
+				
+				Context context = baseActivity.getApplicationContext();
+				
 				if (installer.getState() == ApkInstallManager.State.ERROR) {
 					showMessageBoxError(
 							baseActivity,
-							"Error",
-							"An error occured when installing the user study app. Sorry!",
+							context.getString(R.string.error),
+							context.getString(R.string.userStudy_errorMessage2),
 							errorMessageBoxOkayBtnListener(o));
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_CANCELLED) {
 					o.manual_abort();
@@ -382,8 +342,8 @@ public class InstalledExternalApplication extends ExternalApplication {
 								"Problems with extracting package name from apk, or problems with the InstalledExternalApplicationsManager after installing an app");
 						showMessageBoxError(
 								baseActivity,
-								"Error",
-								"An error occured when saving the app database.",
+								context.getString(R.string.error),
+								context.getString(R.string.userStudy_errorMessage_saveDatabase),
 								errorMessageBoxOkayBtnListener(o));
 					}
 				}
@@ -398,12 +358,12 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param baseActivity the base activity for the dialog
 	 * @param o An implementation of UpdateObserver
 	 */
-	protected void showMessageBoxErrorNoConnection(Activity baseActivity,
+	private void showMessageBoxErrorNoConnection(Activity baseActivity,
 			UpdateObserver o) {
 		showMessageBoxError(
 				baseActivity,
-				"No connection",
-				"There seems to be no open internet connection present for downloading the app.",
+				baseActivity.getApplicationContext().getString(R.string.no_internet_connection),
+				baseActivity.getApplicationContext().getString(R.string.noInternetConnection_message),
 				errorMessageBoxOkayBtnListener(o));
 	}
 
@@ -414,12 +374,11 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param baseActivity the base activity for the dialog
 	 * @param o
 	 */
-	protected void showMessageBoxErrorDownloading(
+	private void showMessageBoxErrorDownloading(
 			ApkDownloadManager downloader, Activity baseActivity,
 			UpdateObserver o) {
-		showMessageBoxError(baseActivity, "Error",
-				"An error occured when trying to download the app: "
-						+ downloader.getErrorMsg() + ".\nSorry!",
+		showMessageBoxError(baseActivity, baseActivity.getApplicationContext().getString(R.string.error),
+				baseActivity.getApplicationContext().getString(R.string.downloadApk_errorMessage, downloader.getErrorMsg()),
 				errorMessageBoxOkayBtnListener(o));
 	}
 
@@ -430,10 +389,10 @@ public class InstalledExternalApplication extends ExternalApplication {
 	 * @param msg the message to show in the dialog
 	 * @param onClickListener the onClickListener for the button
 	 */
-	protected void showMessageBoxError(Activity baseActivity, String title,
+	private void showMessageBoxError(Activity baseActivity, String title,
 			String msg, DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(baseActivity).setMessage(msg).setTitle(title)
-				.setCancelable(true).setNeutralButton("OK", onClickListener)
+				.setCancelable(true).setNeutralButton(baseActivity.getApplicationContext().getString(R.string.ok), onClickListener)
 				.show();
 	}
 
@@ -462,7 +421,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		return packageName;
 	}
 
-	public boolean wasInstalledAsUserStudy() {
+	private boolean wasInstalledAsUserStudy() {
 		return wasInstalledAsUserStudy;
 	}
 

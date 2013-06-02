@@ -17,8 +17,8 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestGetListAPK;
 import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 
 /**
@@ -28,7 +28,7 @@ import de.da_sense.moses.client.service.helpers.Executable;
  * @author Zijad Maksuti
  * 
  */
-
+@Deprecated
 public class APKAbstraction {
 
 	private class ReqClassGetListAPK implements ReqTaskExecutor {
@@ -133,8 +133,8 @@ public class APKAbstraction {
 	public void getAPKs() {
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POST_LOGIN_SUCCESS,
-					EMessageTypes.REQUESTGETLISTAPK, new Executable() {
+					HookTypesEnum.POST_LOGIN_SUCCESS,
+					MessageTypesEnum.REQUEST_GET_LIST_APK, new Executable() {
 
 						@Override
 						public void execute() {

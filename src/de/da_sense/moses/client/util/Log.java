@@ -5,7 +5,7 @@ package de.da_sense.moses.client.util;
  * events e.g. for release. 
  * Use LEVEL to control the amount of messages you want to be displayed in log. 
  * 
- * @author Jaco Hofmann
+ * @author Jaco Hofmann, Wladimir Schmidt
  * 
  */
 public class Log {
@@ -15,7 +15,7 @@ public class Log {
 	 * {DEBUG, INFO, ERROR, VERBOSE, WARN, ASSERT} to control the amount
 	 * of messages displayed in the log.
 	 */
-	public static int LEVEL = android.util.Log.VERBOSE;
+	private static int LEVEL = android.util.Log.VERBOSE;
 
 	/**
 	 * Try to place a DEBUG message
@@ -51,7 +51,7 @@ public class Log {
 	 * Try to place a VERBOSE message
 	 * @param tag The tag of the message
 	 * @param msg The message
-	 */
+	 */	
 	static public void v(String tag, String msg) {
 		if (LEVEL <= android.util.Log.VERBOSE)
 			android.util.Log.v(tag, msg);

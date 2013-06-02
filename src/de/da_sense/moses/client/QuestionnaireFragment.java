@@ -43,12 +43,12 @@ public class QuestionnaireFragment extends Fragment {
 	 * To send (and to save on local) user's answers of a questionnaire to
 	 * server
 	 */
-	Button btnSend;
+	private Button btnSend;
 
 	/**
 	 * The Single Questionnaire to display
 	 */
-	Single_Questionnaire usQuestionnaire;
+	private Single_Questionnaire usQuestionnaire;
 	
 	/**
 	 * The APKID
@@ -73,8 +73,9 @@ public class QuestionnaireFragment extends Fragment {
 	/**
 	 * The possible types of a question
 	 */
-	public static final int SINGLE_QUESTION = 1, MULTIPLE_QUESTION = 2,
-			OPEN_QUESTION = 3;
+	private static final int SINGLE_QUESTION = 1, 
+							 MULTIPLE_QUESTION = 2,
+							 OPEN_QUESTION = 3;
 
 	/**
 	 * Remove the send button from the layout.

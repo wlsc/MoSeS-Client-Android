@@ -30,7 +30,7 @@ public class RequestGetListAPK {
 
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	/**
 	 * Generates a new Request for obtaining the the list of avaliable APKs from

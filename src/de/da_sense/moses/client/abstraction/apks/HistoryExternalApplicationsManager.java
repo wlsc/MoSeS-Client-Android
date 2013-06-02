@@ -74,7 +74,7 @@ public class HistoryExternalApplicationsManager {
 	 * @param packageNames
 	 *            the package names
 	 */
-	public HistoryExternalApplicationsManager(List<HistoryExternalApplication> externalApps) {
+	private HistoryExternalApplicationsManager(List<HistoryExternalApplication> externalApps) {
 		this.apps = new LinkedList<HistoryExternalApplication>();
 		for (HistoryExternalApplication app : externalApps) {
 			addExternalApplication(app);
@@ -143,7 +143,7 @@ public class HistoryExternalApplicationsManager {
 	 * @param id
 	 * @return
 	 */
-	public boolean containsAppForId(String id) {
+	private boolean containsAppForId(String id) {
 		return getAppForId(id) != null;
 	}
 
@@ -153,6 +153,7 @@ public class HistoryExternalApplicationsManager {
 	 * new one.
 	 * @param app
 	 */
+	@Deprecated
 	public void updateApp(HistoryExternalApplication app) {
 		if (containsAppForId(app.getID())) {
 			forgetExternalApplication(app.getID());
@@ -185,7 +186,7 @@ public class HistoryExternalApplicationsManager {
 	 * @param app
 	 *            the reference to the application
 	 */
-	public void forgetExternalApplication(HistoryExternalApplication app) {
+	private void forgetExternalApplication(HistoryExternalApplication app) {
 		apps.remove(app);
 	}
 
@@ -228,7 +229,7 @@ public class HistoryExternalApplicationsManager {
 	 * @return the loaded manager
 	 * @throws IOException
 	 */
-	public static HistoryExternalApplicationsManager loadAppDatabase(Context context) {
+	private static HistoryExternalApplicationsManager loadAppDatabase(Context context) {
 		File settingsFile = FileLocationUtil.getHistoryDatabaseFile(context);
 		HistoryExternalApplicationsManager manager = new HistoryExternalApplicationsManager();
 		if (settingsFile.exists()) {
@@ -295,6 +296,7 @@ public class HistoryExternalApplicationsManager {
 	/**
 	 * Clears the list of all known apps.
 	 */
+	@Deprecated
 	public void reset() {
 		apps.clear();
 	}

@@ -10,11 +10,11 @@ import android.content.ContextWrapper;
  */
 public class FileLocationUtil {
 	/** the filename for the user study notification database */
-	public static final String USERSTUDY_NOTIFICATION_DB_FILENAME = "userstudyNotifications";
+	private static final String USERSTUDY_NOTIFICATION_DB_FILENAME = "userstudyNotifications";
 	/** the filename for the installed apps */
-	public static final String APPDATABASE_FILENAME = "installedApps";
+	private static final String APPDATABASE_FILENAME = "installedApps";
 	/** the filename for the local history of the participated user studies */
-	public static final String HISTORYDATABASE_FILENAME = "localHistory";
+	private static final String HISTORYDATABASE_FILENAME = "localHistory";
 
 	/**
 	 * Create a folder for the installed app database.
@@ -31,7 +31,7 @@ public class FileLocationUtil {
 	 * @param context the context
 	 * @return the folder
 	 */
-	public static File getSettingsFolder(Context privateContext) {
+	private static File getSettingsFolder(Context privateContext) {
 		File dir = new ContextWrapper(privateContext).getExternalFilesDir(null);
 		return dir;
 	}

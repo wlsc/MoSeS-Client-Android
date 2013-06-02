@@ -1,5 +1,7 @@
 <resources>
 
+    <string name="app_c2dm_email">moses.tud@googlemail.com</string>
+    
     <string name="app_name">MoSeS</string>
     <string name="title_activity_main">MoSeS</string>
     <string name="title_activity_questionnaire">Questionnaire</string>
@@ -31,18 +33,54 @@
     <string name="userStudy_loading">Loading...</string>
     <string name="userStudy_loadingInformation">Loading userstudy information</string>
     <string name="userStudy_errorMessage">An error occurred when retrieving the informations for a user study: %1$s.\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!</string>
+    <string name="userStudy_errorMessage2">An error occurred when installing the user study app. Sorry!</string>
+    <string name="userStudy_errorMessage_saveDatabase">An error occurred when saving the app database.</string>
+    
     <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
     <string name="userStudy_userStudyUsedSensors">Used sensors: %1$s</string>
+    
+    <string name="loadingName">Loading Name... (ID: %1$s)</string>
+    <string name="loadingDescription">Loading Description...</string>
+    <string name="not_set">not set</string>
+    
+    
+    <string name="hwInfo_errorMessage">Error while retrieving Hardware Informations.</string>
+    <string name="hwInfo_parametersRetrievedSuccessfully">Parameters retrieved successfully from server</string>
+    <string name="hwInfo_androidVersion">Android version:</string>
+    <string name="hwInfo_sensors">SENSORS:</string>
+    
+    <string name="downloadApk_downloadFailed">Download failed.</string>
+    <string name="downloadApk_errorMessage2">Server sent malformed url. We could not download application: %1$s</string>
+    <string name="downloadApn_failedLinkRequest">Downloadlink request failed</string>
+    
+    <string name="appUpdateAvailable">An update is available for the app \"%1$s\".</string>
+    
+    <!-- Sensor names -->
+    <string name="sensor_all">All</string>
+    <string name="sensor_unknown">Unknown sensor</string>
+    <string name="sensor_accelerometer">Accelerometer</string>
+    <string name="sensor_magnetic_field">Magnetic field sensor</string>
+    <string name="sensor_orientation">Orientation sensor</string>
+    <string name="sensor_gyroscope">Gyroscope</string>
+    <string name="sensor_light">Light sensor</string>
+    <string name="sensor_pressure">Pressure sensor</string>
+    <string name="sensor_temperature">Temperature sensor</string>
+    <string name="sensor_proximity">Proximity sensor</string>
+    <string name="sensor_gravity">Gravity sensor</string>
+    <string name="sensor_linear_acceleration">Linear acceleration sensor</string>
+    <string name="sensor_rotation">Rotation sensor</string>
+    <string name="sensor_humidity">Humidity sensor</string>
+    <string name="sensor_ambient_temperature">Ambient temperature</string>
+    
    
-   <!-- Tabs -->
-   <string name="tab_available">Available</string>
-   <string name="tab_running">Running</string>
-   <string name="tab_history">History</string>
+    <!-- Tabs -->
+    <string name="tab_available">Available</string>
+    <string name="tab_running">Running</string>
+    <string name="tab_history">History</string>
     
-    
-    
+       
     <!-- Login screen -->
     <string name="login_hint">username</string>
     <string name="login_hint_pass">password</string>
@@ -54,6 +92,7 @@
     <!-- DeviceID -->
     <string name="actionBar_deviceID_text">MoSeS - Device ID</string>
     <string name="deviceID_text">Device ID</string>
+    <string name="deviceID_text2">Device ID:</string>
     <string name="deviceID_decr_text">Please enter an ID for your device.</string>
     <string name="deviceID_decr_text2">This ID can be an arbitrary non-empty string and is used to identify your device in our system. Please note that special characters are not supported.</string>
     <string name="deviceID_set_button">Set Device ID</string>
@@ -102,6 +141,7 @@
     <string name="unknown_response_from_server">Unknown response from server. Maybe you forgot to login to your HotSpot?</string>
 
     <!-- Preferences -->
+    <string name="settings_title">MoSeS - Settings</string>
     <string name="show_splash">Show splash screen</string>
     <string name="sensor_data_pref_title">Sensor preferences</string>
     <string name="sensor_data_pref_summary">Select the sensors you want to share.</string>

@@ -33,7 +33,7 @@ public class RequestGetHardwareParameters {
 	private JSONObject j;
 
 	// ReqTaskExecutor that is used to execute a message
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	/**
 	 * Generates RequestGetHardwareParameters used for retrieving the hardware

@@ -8,10 +8,15 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
 
+/**
+ * 
+ * @author Wladimir Schmidt & Co
+ *
+ */
 public class RequestMulti_Questionnaire {
 	
 	private JSONObject j;
-    ReqTaskExecutor executor;
+    private ReqTaskExecutor executor;
     
 
 	public RequestMulti_Questionnaire(ReqTaskExecutor getQuestionnaireExecutor, String id) {

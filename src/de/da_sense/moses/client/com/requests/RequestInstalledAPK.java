@@ -10,8 +10,8 @@ import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.service.MosesService;
 
 public class RequestInstalledAPK {
-	ReqTaskExecutor e;
-	JSONObject j;
+	private ReqTaskExecutor e;
+	private JSONObject j;
 
 	public RequestInstalledAPK(ReqTaskExecutor e, String sessionID, String appId) {
 		j = new JSONObject();

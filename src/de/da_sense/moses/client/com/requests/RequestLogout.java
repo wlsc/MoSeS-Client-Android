@@ -25,7 +25,7 @@ public class RequestLogout {
 	 */
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	/**
 	 * Creates a new Logout request

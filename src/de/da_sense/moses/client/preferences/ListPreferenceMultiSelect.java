@@ -7,10 +7,11 @@ import android.preference.ListPreference;
 import android.util.AttributeSet;
 import android.widget.ListAdapter;
 import de.da_sense.moses.client.R;
+import de.da_sense.moses.client.service.MosesService;
 
 /**
  * This class provides support for selecting and filtering sensors on a device
- * @author Jaco Hofmann
+ * @author Jaco Hofmann, Wladimir Schmidt
  */
 public class ListPreferenceMultiSelect extends ListPreference {
     /** separator between sensors defined */
@@ -35,7 +36,7 @@ public class ListPreferenceMultiSelect extends ListPreference {
 	 * @param attrs AttributeSet
 	 * @see android.preference.ListPreference#ListPreference(Context, AttributeSet)
 	 */
-	public ListPreferenceMultiSelect(Context context, AttributeSet attrs) {
+	private ListPreferenceMultiSelect(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		// Retrieve styled attribute information in this Context's theme
 		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.ListPreferenceMultiSelect);
@@ -93,7 +94,7 @@ public class ListPreferenceMultiSelect extends ListPreference {
 		}
 		// This array represents the list of sensors as text
 		CharSequence[] e = new CharSequence[getEntries().length + 1];
-		e[0] = "All";
+		e[0] = MosesService.getInstance().getApplicationContext().getString(R.string.sensor_all);
 		for (int i = 0; i < getEntries().length; ++i) {
 			e[i + 1] = getEntries()[i];
 		}
@@ -110,7 +111,7 @@ public class ListPreferenceMultiSelect extends ListPreference {
 	 * @param val the sensors as CharSequence to parse
 	 * @return a string array of sensors 
 	 */
-	public static String[] parseStoredValue(CharSequence val) {
+	private static String[] parseStoredValue(CharSequence val) {
 		// determine if there is no sensor to parse
 	    if (val == null || "[]".equals(val))
 			return null;

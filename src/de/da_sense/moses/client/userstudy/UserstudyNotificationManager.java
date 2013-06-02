@@ -31,7 +31,7 @@ import de.da_sense.moses.client.util.Log;
 public class UserstudyNotificationManager {
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
-	public static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
+	private static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -59,7 +59,7 @@ public class UserstudyNotificationManager {
 	 * @param context
 	 * @return the loaded manager
 	 */
-	public static UserstudyNotificationManager loadInstance(Context context) {
+	private static UserstudyNotificationManager loadInstance(Context context) {
 		File settingsFile = FileLocationUtil.getNotificationDatabaseFile(context);
 		UserstudyNotificationManager manager = new UserstudyNotificationManager();
 		if (settingsFile.exists()) {
@@ -133,7 +133,7 @@ public class UserstudyNotificationManager {
 	 * 
 	 * @param notification
 	 */
-	public void addNotification(UserStudyNotification notification) {
+	private void addNotification(UserStudyNotification notification) {
 		if (getNotificationForApkId(notification.getApplication().getID()) != null) {
 			removeNotificationWithApkId(notification.getApplication().getID());
 			notifications.add(notification);
@@ -243,7 +243,7 @@ public class UserstudyNotificationManager {
 	 * @param apkId
 	 *            the id of the study
 	 */
-	public static void displayStatusBarNotificationForUserStudy(String apkId) {
+	private static void displayStatusBarNotificationForUserStudy(String apkId) {
 		if (MosesService.getInstance() != null) {
 			UserStudyStatusBarHelper.displayStatusBarNotification(apkId, MosesService.getInstance());
 		} else {

@@ -29,7 +29,7 @@ import de.da_sense.moses.client.service.MosesService;
 public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.BackgroundException, String> {
 
 	// Needed for testing
-	public static CountDownLatch signal = new CountDownLatch(1);
+	private static CountDownLatch signal = new CountDownLatch(1);
 
 	/**
 	 * The Class APIRequest.
@@ -62,7 +62,7 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 		 * @param e
 		 *            An Exception e
 		 */
-		public BackgroundException(ConnectionParam c, Exception e) {
+		private BackgroundException(ConnectionParam c, Exception e) {
 			this.c = c;
 			this.e = e;
 		}
@@ -71,9 +71,9 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 	/** The url. */
 	public static String url;
 
-	public static boolean debug = false;
+	private static boolean debug = false;
 
-	public static FakeResponseGenerator response = null;
+	private static FakeResponseGenerator response = null;
 
 	/** The e. */
 	private ReqTaskExecutor e;

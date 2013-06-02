@@ -8,6 +8,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
@@ -22,13 +23,18 @@ import de.da_sense.moses.client.util.Log;
  * It does not contain C2DM functionality, it only establishes
  * and controls the connection, but does not handle C2DM.
  *
+ *	@author Wladimir Schmidt
  */
 public class C2DMManager {
 
 	/**
 	 * MoSeS Googlemail Account for Cloud 2 Device Messaging Services
 	 */
-	private static final String MOSES_TUD_GOOGLEMAIL_COM = "moses.tud@googlemail.com";
+	private static final String MOSES_TUD_GOOGLEMAIL_COM = 
+			MosesService
+			.getInstance()
+			.getApplicationContext()
+			.getString(R.string.app_c2dm_email);
 
 	/**
 	 * Contains the current registration ID for C2DM Services
@@ -88,7 +94,7 @@ public class C2DMManager {
 	 * @param context
 	 */
 	private static void sendC2DMIdToServer(final String registrationId, final Context context) {
-		MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, EMessageTypes.REQUESTC2DM,
+		MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS, MessageTypesEnum.REQUEST_C2DM,
 				new Executable() {
 					@Override
 					public void execute() {

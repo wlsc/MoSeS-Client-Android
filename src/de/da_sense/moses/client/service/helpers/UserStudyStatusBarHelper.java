@@ -65,10 +65,14 @@ public class UserStudyStatusBarHelper {
 	 * @param apkId apkid of the app for the user study
 	 * @param context the context
 	 */
-	protected static void showNotificationStatic(Intent intent, String apkId, Context context) {
+	private static void showNotificationStatic(Intent intent, String apkId, Context context) {
 		Log.i("MoSeS.USERSTUDY", "displayed user study notification in taskbar");
-		showNotificationStatic(intent, "A new user study is available\nClick here to view it", 
-				"MoSeS", false, notificationManagerIdForApkId(apkId), context);
+		showNotificationStatic(intent, 
+							   context.getString(R.string.userStudy_newStudyAvailable), 
+							   context.getString(R.string.app_name), 
+							   false, 
+							   notificationManagerIdForApkId(apkId), 
+							   context);
 	}
 
 	/**

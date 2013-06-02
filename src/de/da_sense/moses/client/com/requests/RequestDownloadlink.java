@@ -20,7 +20,7 @@ public class RequestDownloadlink {
 	}
 
 	private JSONObject j;
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	public RequestDownloadlink(ReqTaskExecutor e, String sessionID, String deviceid, String appId) {
 		j = new JSONObject();

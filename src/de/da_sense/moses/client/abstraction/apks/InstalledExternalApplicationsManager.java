@@ -76,7 +76,7 @@ public class InstalledExternalApplicationsManager {
 	 * @param packageNames
 	 *            the package names
 	 */
-	public InstalledExternalApplicationsManager(List<InstalledExternalApplication> externalApps) {
+	private InstalledExternalApplicationsManager(List<InstalledExternalApplication> externalApps) {
 		this.apps = new LinkedList<InstalledExternalApplication>();
 		for (InstalledExternalApplication app : externalApps) {
 			addExternalApplication(app);
@@ -149,7 +149,7 @@ public class InstalledExternalApplicationsManager {
 	 * @param packageName
 	 *            the name of a package
 	 */
-	public boolean containsApp(String packageName) {
+	private boolean containsApp(String packageName) {
 		for (InstalledExternalApplication app : apps) {
 			if (app.getPackageName().equals(packageName))
 				return true;
@@ -177,7 +177,7 @@ public class InstalledExternalApplicationsManager {
 	 * @param id
 	 * @return
 	 */
-	public boolean containsAppForId(String id) {
+	private boolean containsAppForId(String id) {
 		return getAppForId(id) != null;
 	}
 
@@ -187,7 +187,7 @@ public class InstalledExternalApplicationsManager {
 	 * new one.
 	 * @param app
 	 */
-	public void updateApp(InstalledExternalApplication app) {
+	private void updateApp(InstalledExternalApplication app) {
 		if (containsAppForId(app.getID())) {
 			forgetExternalApplication(app.getID());
 			addExternalApplication(app);
@@ -210,7 +210,7 @@ public class InstalledExternalApplicationsManager {
 	 * {@link #containsApp(String)})
 	 * 
 	 */
-	public boolean containsApp(InstalledExternalApplication app) {
+	private boolean containsApp(InstalledExternalApplication app) {
 		return containsApp(app.getPackageName()) || containsAppForId(app.getID());
 	}
 
@@ -271,7 +271,7 @@ public class InstalledExternalApplicationsManager {
 	 * @return the loaded manager
 	 * @throws IOException
 	 */
-	public static InstalledExternalApplicationsManager loadAppDatabase(Context context) {
+	private static InstalledExternalApplicationsManager loadAppDatabase(Context context) {
 		File settingsFile = FileLocationUtil.getAppDatabaseFile(context);
 		InstalledExternalApplicationsManager manager = new InstalledExternalApplicationsManager();
 	
@@ -343,6 +343,7 @@ public class InstalledExternalApplicationsManager {
 	/**
 	 * Clears he list of all known apps.
 	 */
+	@Deprecated
 	public void reset() {
 		apps.clear();
 	}

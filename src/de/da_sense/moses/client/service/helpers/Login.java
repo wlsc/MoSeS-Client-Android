@@ -215,15 +215,15 @@ public class Login {
 		this.pw = password;
 		this.uname = username;
 		this.postExecuteSuccess = MosesService.getInstance().getHook(
-				EHookTypes.POST_LOGIN_SUCCESS);
+				HookTypesEnum.POST_LOGIN_SUCCESS);
 		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(
-				EHookTypes.POST_LOGIN_SUCCESS_PRIORITY);
+				HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY);
 		this.postExecuteFailure = MosesService.getInstance().getHook(
-				EHookTypes.POST_LOGIN_FAILED);
+				HookTypesEnum.POST_LOGIN_FAILED);
 		this.loginEnd = MosesService.getInstance().getHook(
-				EHookTypes.POST_LOGIN_END);
+				HookTypesEnum.POST_LOGIN_END);
 		this.loginStart = MosesService.getInstance().getHook(
-				EHookTypes.POST_LOGIN_START);
+				HookTypesEnum.POST_LOGIN_START);
 		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
 			new RequestLogin(new LoginFunc(), uname, pw).send();
 		} else {

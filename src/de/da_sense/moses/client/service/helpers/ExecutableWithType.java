@@ -11,7 +11,7 @@ public class ExecutableWithType {
 	 * @param t the message type
 	 * @param e the executable
 	 */
-	public ExecutableWithType(EMessageTypes t, Executable e) {
+	public ExecutableWithType(MessageTypesEnum t, Executable e) {
 		this.e = e;
 		this.t = t;
 	}
@@ -19,5 +19,5 @@ public class ExecutableWithType {
 	/** the executable */
 	public Executable e;
 	/** the message type */
-	public EMessageTypes t;
+	public MessageTypesEnum t;
 }

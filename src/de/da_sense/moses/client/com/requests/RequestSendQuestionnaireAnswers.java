@@ -17,7 +17,7 @@ import de.da_sense.moses.client.util.Log;
 public class  RequestSendQuestionnaireAnswers{
 	
 	private JSONObject j;
-    ReqTaskExecutor e;
+    private ReqTaskExecutor e;
 
     public RequestSendQuestionnaireAnswers(ReqTaskExecutor e, String sessionID, Integer apkid, String answerString) {
         j = new JSONObject();

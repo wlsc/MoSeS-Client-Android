@@ -10,13 +10,13 @@ import de.da_sense.moses.client.util.Log;
 
 /**
  * Request for a Single_Questionnaire
- * @author Florian
+ * @author Florian, Wladimir Schmidt
  *
  */
 public class RequestSingle_Questionnaire {
 	
 	private JSONObject j;
-    ReqTaskExecutor executor;
+    private ReqTaskExecutor executor;
     
 
 	public RequestSingle_Questionnaire(ReqTaskExecutor executor, String apkid, String questID) {

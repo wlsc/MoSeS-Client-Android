@@ -24,8 +24,8 @@ import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsMana
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.service.helpers.ExecutableWithType;
@@ -53,49 +53,49 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	/**
 	 * The Class MosesSettings.
 	 */
-	public class MosesSettings {
+	private class MosesSettings {
 
 		/** This variable holds the username during runtime. */
-		public String username = "";
+		private String username = "";
 
 		/** This variable holds the password during runtime */
-		public String password = "";
+		private String password = "";
 
 		/** The current session id. */
-		public String sessionid = "";
+		private String sessionid = "";
 
 		/** This variable is true if the service is currently logged in. */
-		public boolean loggedIn = false;
+		private boolean loggedIn = false;
 
 		/** True if the service currently tries to log in. */
-		public boolean loggingIn = false;
+		private boolean loggingIn = false;
 
 		/** The device id currently in use. */
-		public String deviceid = "";
+		private String deviceid = "";
 
 		/** The context of the currently used activity. */
-		public Context activitycontext = null;
+		private Context activitycontext = null;
 
 		/** Saves the used filter. */
-		public JSONArray filter = new JSONArray();
+		private JSONArray filter = new JSONArray();
 
 		/** A HashMap of EHookType => ConcurrentLinkedQueue<ExecutorWithType> */
-		public HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutableWithType>> hooks = new HashMap<EHookTypes, ConcurrentLinkedQueue<ExecutableWithType>>();
+		private HashMap<HookTypesEnum, ConcurrentLinkedQueue<ExecutableWithType>> hooks = new HashMap<HookTypesEnum, ConcurrentLinkedQueue<ExecutableWithType>>();
 
 		/**
 		 * A ConcurrentLinkedQueue consisting of Implementations of the Interface
 		 * ExecutableForObject, containing an execute(Object o) Method. 
 		 */
-		public ConcurrentLinkedQueue<ExecutableForObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutableForObject>();
+		private ConcurrentLinkedQueue<ExecutableForObject> changeTextFieldHook = new ConcurrentLinkedQueue<ExecutableForObject>();
 
 		/** The projects url. */
-		public String url = "http://www.da-sense.de/moses/api.php";
+		private String url = "http://www.da-sense.de/moses/api.php";
 
 		/**
 		 * True if an update from server is not required after some shared
 		 * preference has changed.
 		 */
-		public boolean nopreferenceupdate = false;
+		private boolean nopreferenceupdate = false;
 
 	}
 
@@ -128,7 +128,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param executable
 	 *            The task to be executed.
 	 */
-	public void executeLoggedIn(EHookTypes hookType, EMessageTypes messageType, Executable executable) {
+	public void executeLoggedIn(HookTypesEnum hookType, MessageTypesEnum messageType, Executable executable) {
 		Log.d("Moses.SERVICE", "executeLoggedIn called");
 		if (isLoggedIn() && isOnline()) {
 			executable.execute();
@@ -275,7 +275,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * Call this function if you want to log out from MoSeS.
 	 */
 	public void logout() {
-		new Logout(this, getHook(EHookTypes.POST_LOGOUT));
+		new Logout(this, getHook(HookTypesEnum.POST_LOGOUT));
 	}
 
 	/**
@@ -307,11 +307,11 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		
 		thisInstance = this;
 
-		for (EHookTypes hookType : EHookTypes.values()) {
+		for (HookTypesEnum hookType : HookTypesEnum.values()) {
 			mset.hooks.put(hookType, new ConcurrentLinkedQueue<ExecutableWithType>());
 		}
 
-		registerHook(EHookTypes.POST_LOGIN_FAILED, EMessageTypes.SPAMMABLE, new Executable() {
+		registerHook(HookTypesEnum.POST_LOGIN_FAILED, MessageTypesEnum.SPAMMABLE, new Executable() {
 			@Override
 			public void execute() {
 				mset.loggingIn = false;
@@ -392,7 +392,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param hookType the hook type
 	 * @return all executables with hook type hookType
 	 */
-	public ConcurrentLinkedQueue<ExecutableWithType> getHook(EHookTypes hookType) {
+	public ConcurrentLinkedQueue<ExecutableWithType> getHook(HookTypesEnum hookType) {
 		return mset.hooks.get(hookType);
 	}
 
@@ -402,9 +402,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param messageType EMessageType The type of message
 	 * @param executable The Executable for the Hook
 	 */
-	public void registerHook(EHookTypes hookType, EMessageTypes messageType, Executable executable) {
+	public void registerHook(HookTypesEnum hookType, MessageTypesEnum messageType, Executable executable) {
 		ConcurrentLinkedQueue<ExecutableWithType> hook = getHook(hookType);
-		if (messageType != EMessageTypes.SPAMMABLE) {
+		if (messageType != MessageTypesEnum.SPAMMABLE) {
 			for (ExecutableWithType et : hook) {
 				if (messageType.equals(et.t)) {
 					Log.d("MoSeS.SERVICE",
@@ -424,7 +424,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param messageType EMessageType The type of message
 	 * @param executable Executor The Executor for the Hook
 	 */
-	public void registerOneTimeHook(final EHookTypes hookType, EMessageTypes messageType, final Executable executable) {
+	private void registerOneTimeHook(final HookTypesEnum hookType, MessageTypesEnum messageType, final Executable executable) {
 		Executable newExecuteable = new Executable() {
 			@Override
 			public void execute() {
@@ -514,7 +514,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * Sends device information to the moses server.
 	 */
 	public void syncDeviceInformation(boolean force) {
-		executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS_PRIORITY, EMessageTypes.REQUESTUPDATEHARDWAREPARAMETERS,
+		executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY, MessageTypesEnum.REQUEST_UPDATE_HARDWARE_PARAMETERS,
 				new Executable() {
 					@Override
 					public void execute() {
@@ -539,7 +539,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * @param hookType The type of Hook to unregister
 	 * @param executable The Executer to unregister
 	 */
-	public void unregisterHook(EHookTypes hookType, Executable executable) {
+	public void unregisterHook(HookTypesEnum hookType, Executable executable) {
 		ConcurrentLinkedQueue<ExecutableWithType> hook = getHook(hookType);
 		ExecutableWithType exeCutableWithTypeCurrent = null;
 		for (ExecutableWithType executableWithType : hook) {
@@ -557,8 +557,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 * retrieved from the {@link PreferenceManager}.
 	 */
 	public void uploadFilter() {
-		this.executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS, 
-				EMessageTypes.REQUESTSETFILTER, new Executable() {
+		this.executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS, 
+				MessageTypesEnum.REQUEST_SET_FILTER, new Executable() {
 			@Override
 			public void execute() {
 				new HardwareAbstraction(MosesService.this)

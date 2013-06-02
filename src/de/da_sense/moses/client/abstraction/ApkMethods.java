@@ -25,8 +25,8 @@ import de.da_sense.moses.client.com.requests.RequestDownloadlink;
 import de.da_sense.moses.client.com.requests.RequestGetListAPK;
 import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.util.Log;
 
@@ -101,8 +101,8 @@ public class ApkMethods {
 
 		if (MosesService.getInstance() != null)
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POST_LOGIN_SUCCESS,
-					EMessageTypes.REQUESTDOWNLOADLINK, new Executable() {
+					HookTypesEnum.POST_LOGIN_SUCCESS,
+					MessageTypesEnum.REQUEST_DOWNLOAD_LINK, new Executable() {
 
 						@Override
 						public void execute() {
@@ -207,8 +207,8 @@ public class ApkMethods {
 			final ApkListRequestObserver observer) {
 		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(
-					EHookTypes.POST_LOGIN_SUCCESS,
-					EMessageTypes.REQUESTGETLISTAPK, new Executable() {
+					HookTypesEnum.POST_LOGIN_SUCCESS,
+					MessageTypesEnum.REQUEST_GET_LIST_APK, new Executable() {
 						@Override
 						public void execute() {
 							Log.d("MoSeS.APKMETHODS", "requesting apk list");

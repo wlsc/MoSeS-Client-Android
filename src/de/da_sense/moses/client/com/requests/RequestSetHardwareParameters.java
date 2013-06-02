@@ -28,7 +28,7 @@ public class RequestSetHardwareParameters {
 
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, boolean force, String sessionID) {
 		j = new JSONObject();

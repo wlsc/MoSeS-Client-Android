@@ -7,6 +7,7 @@ import java.util.Observable;
 
 import android.content.Context;
 import android.widget.Toast;
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.service.MosesService;
@@ -21,7 +22,7 @@ import de.da_sense.moses.client.util.Log;
  * Supports the {@link Observable} scheme for updates in the download process.
  * See {@link State}.
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  * 
  */
 public class ApkDownloadManager extends Observable implements ApkDownloadObserver, ApkDownloadLinkRequestObserver {
@@ -65,7 +66,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 		if (MosesService.isOnline(context)) {
 			requestUrlForApplication(this.app);
 		} else {
-			errorMsg = "No internet connection";
+			errorMsg = context.getString(R.string.no_internet_connection);
 			setState(State.ERROR_NO_CONNECTION);
 		}
 	}
@@ -82,16 +83,6 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 			this.setChanged();
 			this.notifyObservers(state);
 		}
-	}
-
-	/**
-	 * sets the error state with a message as indicator of what wet wrong
-	 * 
-	 * @param errorMsg
-	 */
-	@SuppressWarnings("unused")
-	private void setErrorState(String errorMsg) {
-		setErrorState(errorMsg, null);
 	}
 
 	/**
@@ -128,7 +119,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 				setState(State.APK_FILE_REQUESTED_DOWNLOADING);
 				downloadTask.execute();
 			} else {
-				errorMsg = "No internet connection";
+				errorMsg = context.getString(R.string.no_internet_connection);
 				setState(State.ERROR_NO_CONNECTION);
 			}
 		}
@@ -142,14 +133,14 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 			requestApkDownload(url, progressListener);
 		} catch (MalformedURLException e) {
 			Log.e("MoSeS.APK", "Server sent malformed url; could not download application: " + urlString);
-			Toast.makeText(this.context, "Server sent malformed url; could not download application: " + urlString,
+			Toast.makeText(this.context,  context.getString(R.string.downloadApk_errorMessage2, urlString),
 					Toast.LENGTH_LONG).show();
 		}
 	}
 
 	@Override
 	public void apkDownloadLinkRequestFailed(Exception e) {
-		String errorMsg = "Downloadlink request failed";
+		String errorMsg = context.getString(R.string.downloadApn_failedLinkRequest);
 		setErrorState(errorMsg, e);
 	}
 
@@ -162,7 +153,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 
 	@Override
 	public void apkDownloadFailed(ApkDownloadTask downloader) {
-		String errorMsg = "Download failed";
+		String errorMsg = context.getString(R.string.downloadApk_downloadFailed);
 		setErrorState(errorMsg, downloader.getDownloadException());
 	}
 

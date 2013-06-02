@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
@@ -25,7 +26,7 @@ import de.da_sense.moses.client.util.Log;
 /**
  * Reference to an application on the server, referenced by it's MoSeS id
  * 
- * @author Simon L
+ * @author Simon L, Wladimir Schmidt
  * 
  */
 public class ExternalApplication {
@@ -163,7 +164,7 @@ public class ExternalApplication {
 	 * @return the name of the application
 	 */
 	private String getGenericName() {
-		return "loading Name...  (ID: " + getID() + ")";
+		return MosesService.getInstance().getApplicationContext().getString(R.string.loadingName, getID());
 	}
 
 	/**
@@ -177,18 +178,8 @@ public class ExternalApplication {
 		if (description != null) {
 			return description;
 		} else {
-			return retrieveDescription();
+			return MosesService.getInstance().getApplicationContext().getString(R.string.loadingDescription);
 		}
-	}
-
-	/**
-	 * retrieves the description of this application from the server in case it
-	 * was not set yet.
-	 * 
-	 * @return the description of the application
-	 */
-	private String retrieveDescription() {
-		return "loading Description...";
 	}
 
 	/**
@@ -316,7 +307,7 @@ public class ExternalApplication {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			date = format.format(startDate);
 		} else {
-			date = "not set";
+			date = MosesService.getInstance().getApplicationContext().getString(R.string.not_set);
 		}
 		return date;
 	}
@@ -364,7 +355,7 @@ public class ExternalApplication {
 			DateFormat format = SimpleDateFormat.getDateInstance();
 			date = format.format(endDate);
 		} else {
-			date = "not set";
+			date = MosesService.getInstance().getApplicationContext().getString(R.string.not_set);
 		}
 		return date;
 	}
@@ -378,7 +369,7 @@ public class ExternalApplication {
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			date = format.format(endDate);
 		} else {
-			date = "not set";
+			date = MosesService.getInstance().getApplicationContext().getString(R.string.not_set);
 		}
 		return date;
 	}
@@ -489,7 +480,7 @@ public class ExternalApplication {
 		return apkHasQuestOnServer;
 	}
 
-	public static String LINEBREAK_SUBST = "#LINEBREAK";
+	private static String LINEBREAK_SUBST = "#LINEBREAK";
 
 	/**
 	 * Replaces all "\r\n" and "\n" in the String with the LINEBREAK_SUBST
@@ -498,7 +489,7 @@ public class ExternalApplication {
 	 *            The original String
 	 * @return The String with the replacements
 	 */
-	public static String toLinebreakSubst(String s) {
+	private static String toLinebreakSubst(String s) {
 		return s.replaceAll(Pattern.quote("\r\n"), LINEBREAK_SUBST).replaceAll(
 				Pattern.quote("\n"), LINEBREAK_SUBST);
 	}
@@ -510,7 +501,7 @@ public class ExternalApplication {
 	 *            The original String
 	 * @return The String with replacements
 	 */
-	public static String fromLinebreakSubst(String s) {
+	private static String fromLinebreakSubst(String s) {
 		return s.replaceAll(Pattern.quote(LINEBREAK_SUBST), "\n");
 	}
 
@@ -702,7 +693,7 @@ public class ExternalApplication {
 	/**
 	 * Sets that this apk has neither an Questionnaire on the server nor locally
 	 */
-	public void hasNoQuestionnaire() {
+	void hasNoQuestionnaire() {
 		apkHasQuestLocal = false;
 		apkHasQuestOnServer = false;
 	}

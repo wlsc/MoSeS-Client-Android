@@ -13,8 +13,8 @@ import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestGetApkInfo;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.util.Log;
 
@@ -142,8 +142,8 @@ public class ExternalApplicationInfoRetriever extends Observable {
 						r.send();
 					}
 				};
-				MosesService.getInstance().executeLoggedIn(EHookTypes.POST_LOGIN_SUCCESS,
-						EMessageTypes.REQUESTGETAPKINFO, executor);
+				MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS,
+						MessageTypesEnum.REQUEST_GET_APK_INFO, executor);
 			} else {
 				setErrorState(new RuntimeException("cannot send GETAPKINFO request because the Service is not present."));
 			}

@@ -30,7 +30,7 @@ public class RequestGetFilter {
 
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	/**
 	 * Generates RequestGetHardwareParameters used for retrieving the hardware

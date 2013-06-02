@@ -14,6 +14,8 @@ import de.da_sense.moses.client.util.Log;
 
 /**
  * Class to show notifications for an available update for an app.
+ * 
+ * @author Wladimir Schmidt
  */
 public class UpdateStatusBarHelper {
 
@@ -49,7 +51,7 @@ public class UpdateStatusBarHelper {
 	 * @param context the context
 	 * @return the created intent
 	 */
-	public static Intent generateIntentForNotification(String id, Context context) {
+	private static Intent generateIntentForNotification(String id, Context context) {
 		Intent intent = new Intent(context, WelcomeActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(WelcomeActivity.EXTRA_UPDATE_APK_ID, id);
@@ -63,11 +65,15 @@ public class UpdateStatusBarHelper {
 	 * @param app
 	 * @param context
 	 */
-	protected static void showNotificationStatic(Intent intent, String apkId, InstalledExternalApplication app,
+	private static void showNotificationStatic(Intent intent, String apkId, InstalledExternalApplication app,
 			Context context) {
 		Log.i("MoSeS.USERSTUDY", "try to display update notification in taskbar");
-		showNotificationStatic(intent, "An update is available for the app \"" + app.getName() + "\".", "MoSeS", false,
-				notificationManagerIdForApkId(apkId), context);
+		showNotificationStatic(intent, 
+							   context.getString(R.string.appUpdateAvailable, app.getName()), 
+							   context.getString(R.string.app_name), 
+							   false,
+							   notificationManagerIdForApkId(apkId), 
+							   context);
 	}
 
 	/**
@@ -75,7 +81,7 @@ public class UpdateStatusBarHelper {
 	 * @param apkId the apps apkid
 	 * @return the hash code
 	 */
-	public static int notificationManagerIdForApkId(String apkId) {
+	private static int notificationManagerIdForApkId(String apkId) {
 		return Math.abs(("Update" + apkId).hashCode());
 	}
 

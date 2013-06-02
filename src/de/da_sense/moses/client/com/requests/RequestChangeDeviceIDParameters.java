@@ -23,7 +23,7 @@ public class RequestChangeDeviceIDParameters {
 
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	public RequestChangeDeviceIDParameters(ReqTaskExecutor e, boolean force, String deviceid, String old_deviceid, String sessionID) {
 		j = new JSONObject();

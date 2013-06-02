@@ -20,7 +20,7 @@ public class RequestC2DM {
 	}
 
 	private JSONObject j;
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	public RequestC2DM(ReqTaskExecutor e, String sessionID, String deviceId, String c2dmId) {
 		j = new JSONObject();

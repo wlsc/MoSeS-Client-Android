@@ -39,7 +39,7 @@ public class RequestLogin {
 	/**
 	 * The instance of ReqTaskExecutor
 	 */
-	ReqTaskExecutor reqTaskExecutor;
+	private ReqTaskExecutor reqTaskExecutor;
 
 	/**
 	 * The current ID of the login given by the server

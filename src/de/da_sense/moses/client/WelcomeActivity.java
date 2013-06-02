@@ -34,8 +34,8 @@ import de.da_sense.moses.client.abstraction.apks.InstalledStateMonitor;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.MosesService.LocalBinder;
-import de.da_sense.moses.client.service.helpers.EHookTypes;
-import de.da_sense.moses.client.service.helpers.EMessageTypes;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
@@ -68,17 +68,17 @@ public class WelcomeActivity extends FragmentActivity {
 	private static WelcomeActivity thisInstance = null;
 
 	/** This Object represents the underlying service. */
-    public static MosesService mService;
+    private static MosesService mService;
     /** Boolean to save if another activity is waiting for a result. */
 	private static boolean waitingForResult = false;
 	/** check if necessary */
 	private String onLoginCompleteShowUserStudy = null;
 	/** reference to the InstalledStateMonitor */
-	public static InstalledStateMonitor installedStateMonitor = null;
+	private static InstalledStateMonitor installedStateMonitor = null;
 	/** Boolean for the splashscreen */
 	private static boolean showsplash = true;
 	/** If this variable is true the activity is connected to the service. **/
-	public static boolean mBound = false;
+	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
 	
@@ -105,7 +105,7 @@ public class WelcomeActivity extends FragmentActivity {
 	}
 	
 	/** A hook that gets executed after a successful login. */
-	Executable postLoginSuccessHook = new Executable() {
+	private Executable postLoginSuccessHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginSuccessHook");
@@ -114,7 +114,7 @@ public class WelcomeActivity extends FragmentActivity {
 	};
 
 	/** A hook that gets executed after a failed login. */
-	Executable postLoginFailureHook = new Executable() {
+	private Executable postLoginFailureHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "PostLoginFailureHook");
@@ -126,7 +126,7 @@ public class WelcomeActivity extends FragmentActivity {
 	};
 
 	/** A hook that gets executed when Moses starts a login. */
-	Executable loginStartHook = new Executable() {
+	private Executable loginStartHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginStartHook");
@@ -136,7 +136,7 @@ public class WelcomeActivity extends FragmentActivity {
 	};
 
 	/** A hook that gets executed when a login ends. */
-	Executable loginEndHook = new Executable() {
+	private Executable loginEndHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "LoginEndHook");
@@ -147,7 +147,7 @@ public class WelcomeActivity extends FragmentActivity {
 	};
 
 	/** A hook that gets executed after a successful logout. */
-	Executable postLogoutHook = new Executable() {
+	private Executable postLogoutHook = new Executable() {
 		@Override
 		public void execute() {
 			Log.d("MoSeS.ACTIVITY", "postLogoutHook");
@@ -156,7 +156,7 @@ public class WelcomeActivity extends FragmentActivity {
 	};
 
 	/** A hook that gets executed when a text field gets changed. */
-	ExecutableForObject changeTextFieldHook = new ExecutableForObject() {
+	private ExecutableForObject changeTextFieldHook = new ExecutableForObject() {
 		@Override
 		public void execute(final Object o) {
 			if (o instanceof String) {
@@ -337,20 +337,20 @@ public class WelcomeActivity extends FragmentActivity {
         	mBound = true;
 
         	// Add hooks
-        	mService.registerHook(EHookTypes.POST_LOGIN_SUCCESS,
-        			EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginSuccessHook);
+        	mService.registerHook(HookTypesEnum.POST_LOGIN_SUCCESS,
+        			MessageTypesEnum.ACTIVITY_PRINT_MESSAGE, postLoginSuccessHook);
 
-        	mService.registerHook(EHookTypes.POST_LOGIN_FAILED,
-        			EMessageTypes.ACTIVITYPRINTMESSAGE, postLoginFailureHook);
+        	mService.registerHook(HookTypesEnum.POST_LOGIN_FAILED,
+        			MessageTypesEnum.ACTIVITY_PRINT_MESSAGE, postLoginFailureHook);
 
-        	mService.registerHook(EHookTypes.POST_LOGIN_START,
-        			EMessageTypes.ACTIVITYPRINTMESSAGE, loginStartHook);
+        	mService.registerHook(HookTypesEnum.POST_LOGIN_START,
+        			MessageTypesEnum.ACTIVITY_PRINT_MESSAGE, loginStartHook);
 
-        	mService.registerHook(EHookTypes.POST_LOGIN_END,
-        			EMessageTypes.ACTIVITYPRINTMESSAGE, loginEndHook);
+        	mService.registerHook(HookTypesEnum.POST_LOGIN_END,
+        			MessageTypesEnum.ACTIVITY_PRINT_MESSAGE, loginEndHook);
 
-        	mService.registerHook(EHookTypes.POST_LOGOUT,
-        			EMessageTypes.ACTIVITYPRINTMESSAGE, postLogoutHook);
+        	mService.registerHook(HookTypesEnum.POST_LOGOUT,
+        			MessageTypesEnum.ACTIVITY_PRINT_MESSAGE, postLogoutHook);
 
         	mService.registerChangeTextFieldHook(changeTextFieldHook);
 
@@ -379,15 +379,15 @@ public class WelcomeActivity extends FragmentActivity {
     	 */
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-			mService.unregisterHook(EHookTypes.POST_LOGIN_SUCCESS,
+			mService.unregisterHook(HookTypesEnum.POST_LOGIN_SUCCESS,
 					postLoginSuccessHook);
-			mService.unregisterHook(EHookTypes.POST_LOGIN_FAILED,
+			mService.unregisterHook(HookTypesEnum.POST_LOGIN_FAILED,
 					postLoginFailureHook);
-			mService.unregisterHook(EHookTypes.POST_LOGIN_START, 
+			mService.unregisterHook(HookTypesEnum.POST_LOGIN_START, 
 					loginStartHook);
-			mService.unregisterHook(EHookTypes.POST_LOGIN_END, 
+			mService.unregisterHook(HookTypesEnum.POST_LOGIN_END, 
 					loginEndHook);
-			mService.unregisterHook(EHookTypes.POST_LOGOUT, 
+			mService.unregisterHook(HookTypesEnum.POST_LOGOUT, 
 					postLogoutHook);
 			mService.unregisterChangeTextFieldHook(changeTextFieldHook);
 			mService.setActivityContext(null);
@@ -414,7 +414,7 @@ public class WelcomeActivity extends FragmentActivity {
 	/**
 	 * Show the settings window.
 	 */
-	public void settings() {
+	private void settings() {
 	    // make an intent between this activity and MosesPreferences to show the setting screen
         Intent mainDialog = new Intent(this, MosesPreferences.class);
         // switch screen to setting  
@@ -744,7 +744,7 @@ public class WelcomeActivity extends FragmentActivity {
 	 * @return whether the information that is required for the service to
 	 *         properly log-in is complete.
 	 */
-	public static boolean isLoginInformationComplete() {
+	private static boolean isLoginInformationComplete() {
 		return isLoginInformationComplete(MosesService.getInstance());
 	}
 
@@ -769,6 +769,7 @@ public class WelcomeActivity extends FragmentActivity {
 	 * @param installAppClickAction
 	 * @param cancelClickAction
 	 */
+	@Deprecated
 	public void showRunningDetails(InstalledExternalApplication app, Activity baseActivity, 
 			final Runnable AppClickAction,
 			final Runnable cancelClickAction) {
@@ -781,7 +782,7 @@ public class WelcomeActivity extends FragmentActivity {
 	 * @author Sandra Amend
 	 * @param <T> class which extends SherlockListFragment
 	 */
-	public static class MosesTabListener<T extends ListFragment> implements TabListener {
+	private static class MosesTabListener<T extends ListFragment> implements TabListener {
 		
 		/** the Fragment of the tab */
 		private ListFragment mFragment;
@@ -800,7 +801,7 @@ public class WelcomeActivity extends FragmentActivity {
 		 * @param tag the tag for the tab
 		 * @param clz the class of the tab
 		 */
-		public MosesTabListener(FragmentActivity activity, String tag, Class<T> clz) {
+		private MosesTabListener(FragmentActivity activity, String tag, Class<T> clz) {
             this(activity, tag, clz, null);
         }
 
@@ -811,7 +812,7 @@ public class WelcomeActivity extends FragmentActivity {
 		 * @param clz
 		 * @param args
 		 */
-        public MosesTabListener(FragmentActivity activity, String tag, Class<T> clz, Bundle args) {
+        private MosesTabListener(FragmentActivity activity, String tag, Class<T> clz, Bundle args) {
             mActivity = activity;
             mTag = tag;
             mClass = clz;

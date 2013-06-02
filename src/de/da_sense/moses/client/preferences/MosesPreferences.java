@@ -10,7 +10,7 @@ import android.hardware.Sensor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import de.da_sense.moses.client.R;
-import de.da_sense.moses.client.abstraction.ESensor;
+import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.service.MosesService;
 
@@ -28,26 +28,26 @@ public class MosesPreferences extends PreferenceActivity {
 	 */
 	private void loadSensors() {
 		// a Hashset will represent the available sensors on a device.
-		HashSet<ESensor> l = new HashSet<ESensor>();
+		HashSet<SensorsEnum> l = new HashSet<SensorsEnum>();
 		// an ArrayList represents the available sensors on a device.
 		ArrayList<Sensor> sensors = (ArrayList<Sensor>) HardwareAbstraction
 				.getSensors();
 		// Moving the name of the available sensors in l
 		for (int i = 0; i < sensors.size(); i++)
-			l.add(ESensor.values()[sensors.get(i).getType()]);
+			l.add(SensorsEnum.values()[sensors.get(i).getType()]);
 		// an Array will represents the available sensors on a device.
-		ESensor[] ls = new ESensor[l.size()];
+		SensorsEnum[] ls = new SensorsEnum[l.size()];
 		// Setting the contents
 		int z = 0;
-		for (ESensor i : l) {
+		for (SensorsEnum i : l) {
 			ls[z] = i;
 			++z;
 		}
 		// Sorting the name of the sensors
 		Arrays.sort(ls);
 		// LinkedList will represent the sorted available sensors
-		LinkedList<ESensor> s = new LinkedList<ESensor>();
-		for (ESensor i : ls)
+		LinkedList<SensorsEnum> s = new LinkedList<SensorsEnum>();
+		for (SensorsEnum i : ls)
 			s.add(i);
 		// an Array represents the sensors' names
 		CharSequence[] entries = new CharSequence[s.size()];
@@ -75,7 +75,7 @@ public class MosesPreferences extends PreferenceActivity {
 		super.onCreate(savedInstanceState);
 		// Actionbar
 		ActionBar ab = getActionBar();
-		ab.setTitle("MoSeS - Settings");
+		ab.setTitle(getString(R.string.settings_title));
 		ab.setDisplayShowTitleEnabled(true);
 		
 		// set the resource for preference screen

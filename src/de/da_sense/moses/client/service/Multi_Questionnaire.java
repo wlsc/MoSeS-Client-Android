@@ -12,6 +12,12 @@ import de.da_sense.moses.client.com.requests.RequestSendQuestionnaireAnswers;
 import de.da_sense.moses.client.com.requests.RequestSingle_Questionnaire;
 import de.da_sense.moses.client.util.Log;
 
+
+/**
+ * 
+ * @author Wladimir Schmidt & Co
+ *
+ */
 public class Multi_Questionnaire {
 
 	/**
@@ -64,7 +70,7 @@ public class Multi_Questionnaire {
 	 * IDs for the HardcodedQuestionnaires, -1 if not part of
 	 * this Multi_Questionnaire
 	 */
-	int SUS, Standard1, Standard2, Standard3 = -1;
+	private int SUS, Standard1, Standard2, Standard3 = -1;
 
 	/**
 	 * Constructor for Multi_Questionnaire. For further explanation on how the method
@@ -379,7 +385,7 @@ public class Multi_Questionnaire {
 	 * Returns the Single_Questionnaire with ID
 	 * @param i The ID
 	 */
-	public void getContentFromServer(String questionnaireID) {
+	private void getContentFromServer(String questionnaireID) {
 		int index = getIndexByID(questionnaireID);
 		if (index >= 0) getSingleQuestionnaire(index);
 	}
@@ -410,7 +416,7 @@ public class Multi_Questionnaire {
 	 * to the given string
 	 * @param questionnaireID
 	 */
-	public void setSingle_Questionnaire(String questionnaireID, String content) {
+	private void setSingle_Questionnaire(String questionnaireID, String content) {
 		int index = getIndexByID(questionnaireID);
 		if (index >= 0)
 			try {
@@ -443,7 +449,7 @@ public class Multi_Questionnaire {
 	/**
 	 * Retries to send the answers.
 	 */
-	public void retrySendAnswersToServer(){
+	private void retrySendAnswersToServer(){
 		triesAnswers++;		
 		if (triesAnswers > 3){
 			//
@@ -554,6 +560,4 @@ public class Multi_Questionnaire {
 			}
 		}
 	}
-
-
 }

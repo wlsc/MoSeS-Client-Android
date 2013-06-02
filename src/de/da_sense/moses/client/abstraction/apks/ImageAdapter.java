@@ -6,10 +6,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
-/**
- * TODO Class Comment
- *
- */
+
 public class ImageAdapter extends BaseAdapter {
 	private Context mContext;
 

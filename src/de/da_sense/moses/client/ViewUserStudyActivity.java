@@ -24,7 +24,7 @@ import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
-import de.da_sense.moses.client.abstraction.ESensor;
+import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
 import de.da_sense.moses.client.abstraction.apks.APKInstalled;
@@ -232,8 +232,8 @@ public class ViewUserStudyActivity extends Activity {
 		Integer[] imageIds = new Integer[sensors.size()];
 		String[] alternateText = new String[sensors.size()];
 		for (int i = 0; i < sensors.size(); ++i) {
-			imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
-			alternateText[i] = ESensor.values()[sensors.get(i)].toString();
+			imageIds[i] = SensorsEnum.values()[sensors.get(i)].imageID();
+			alternateText[i] = SensorsEnum.values()[sensors.get(i)].toString();
 		}
 		g.setOnItemClickListener(new OnItemClickListener() {
 			@Override

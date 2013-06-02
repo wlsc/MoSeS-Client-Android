@@ -29,7 +29,7 @@ public class RequestGetApkInfo {
 
 	private JSONObject j;
 
-	ReqTaskExecutor e;
+	private ReqTaskExecutor e;
 
 	/**
 	 * Generates a new Request for apk info

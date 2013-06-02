@@ -17,7 +17,7 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import de.da_sense.moses.client.abstraction.ESensor;
+import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
@@ -241,8 +241,8 @@ public class DetailFragment extends Fragment {
 				Integer[] imageIds = new Integer[sensors.size()];
 				String[] alternateText = new String[sensors.size()];
 				for (int i = 0; i < sensors.size(); ++i) {
-					imageIds[i] = ESensor.values()[sensors.get(i)].imageID();
-					alternateText[i] = ESensor.values()[sensors.get(i)]
+					imageIds[i] = SensorsEnum.values()[sensors.get(i)].imageID();
+					alternateText[i] = SensorsEnum.values()[sensors.get(i)]
 							.toString();
 				}
 				g.setOnItemClickListener(new OnItemClickListener() {

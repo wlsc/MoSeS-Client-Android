@@ -11,7 +11,7 @@ import de.da_sense.moses.client.util.Log;
  * References a past user study application (additional to ExternalApplication, the
  * package name of the installed application must be specified)
  * 
- * @author Sandra Amend, Simon L
+ * @author Sandra Amend, Simon L, Wladimir Schmidt
  * 
  */
 public class HistoryExternalApplication extends ExternalApplication {
@@ -30,7 +30,7 @@ public class HistoryExternalApplication extends ExternalApplication {
 	 * @param ID
 	 *            the moses id of the application
 	 */
-	public HistoryExternalApplication(String packageName, String ID) {
+	private HistoryExternalApplication(String packageName, String ID) {
 		super(Integer.valueOf(ID));
 		this.packageName = packageName;
 	}
@@ -47,7 +47,7 @@ public class HistoryExternalApplication extends ExternalApplication {
 	 * @param questionnaireSent true if the questionnaire was sent
 	 * @param hasEnded true if it has ended
 	 */
-	public HistoryExternalApplication(String packageName,
+	private HistoryExternalApplication(String packageName,
 			ExternalApplication externalApp, boolean questionnaireSent, boolean hasEnded) {
 
 		this(packageName, externalApp.getID());
@@ -79,6 +79,7 @@ public class HistoryExternalApplication extends ExternalApplication {
 		setHasEnded(hasEnded);
 	}
 	
+	@Deprecated
 	public HistoryExternalApplication(String packageName,
 			ExternalApplication externalApp) {
 		this(packageName, externalApp, false,
@@ -109,29 +110,12 @@ public class HistoryExternalApplication extends ExternalApplication {
 	 * @param msg the message to show in the dialog
 	 * @param onClickListener the onClickListener for the button
 	 */
+	@Deprecated
 	protected void showMessageBoxError(Activity baseActivity, String title,
 			String msg, DialogInterface.OnClickListener onClickListener) {
 		new AlertDialog.Builder(baseActivity).setMessage(msg).setTitle(title)
 				.setCancelable(true).setNeutralButton("OK", onClickListener)
 				.show();
-	}
-
-	/**
-	 * TODO: Verify if comment is valid
-	 * Creates an DialogInterface.OnClickListener for the Implementation of UpdateObserver
-	 * which only uses the unsuccessful_exit method. Use only as an OnClickListener for
-	 * Errormessages.
-	 * @param o Implementation of UpdateObserver
-	 * @return
-	 */
-	private DialogInterface.OnClickListener errorMessageBoxOkayBtnListener(
-			final UpdateObserver o) {
-		return new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int whichButton) {
-				o.unsuccessful_exit();
-			}
-		};
 	}
 
 	/**
@@ -212,6 +196,7 @@ public class HistoryExternalApplication extends ExternalApplication {
 	 * Check if the current date is after the end date (user study has ended).
 	 * @return true if user study is finished
 	 */
+	@Deprecated
 	public boolean hasEnded() {
 		Date today = new Date();
 		if (this.getEndDate().compareTo(today) > 0) {
