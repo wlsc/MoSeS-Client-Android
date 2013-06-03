@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:gravity="left"
-    android:padding="6dip" >
+    android:padding="6dp" >
 
     <ImageView
         android:id="@+id/image"
@@ -16,6 +16,6 @@
         android:layout_height="fill_parent"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:textColor="@android:color/black"
-        android:textSize="20dip" />
+        android:textSize="20sp" />
 
 </LinearLayout>

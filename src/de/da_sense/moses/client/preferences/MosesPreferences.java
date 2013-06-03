@@ -9,9 +9,10 @@ import android.app.ActionBar;
 import android.hardware.Sensor;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import de.da_sense.moses.client.R;
-import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
+import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.service.MosesService;
 
 /**
@@ -22,6 +23,45 @@ import de.da_sense.moses.client.service.MosesService;
  */
 public class MosesPreferences extends PreferenceActivity {
 
+	/**
+	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
+	 */
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+//		System.err.println("here 1");
+		// Actionbar
+		ActionBar ab = getActionBar();
+		ab.setTitle(getString(R.string.settings_title));
+		ab.setDisplayShowTitleEnabled(true);
+//		System.err.println("here 2");
+		// set the resource for preference screen
+		
+//		addPreferencesFromResource(R.xml.moses_pref);
+//		System.err.println("here 3");
+		// read the available sensors of this device
+		loadSensors();
+//		System.err.println("here 4");
+		// check if the user decide to filter the sensors' set
+		if (getIntent().getBooleanExtra("startSensors", false)) {
+//			System.err.println("here 5");
+			getPreferenceScreen().onItemClick(null, null, 1, 0);
+		}
+//		System.err.println("here 6");
+	}
+
+	
+	public static class PrefsFragment extends PreferenceFragment {
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			
+			// load preferences from XML resource
+			addPreferencesFromResource(R.xml.moses_pref);
+		}
+	}
+	
 	/**
 	 * This method reads the available sensors on a device and shows them on the
 	 * screen.
@@ -60,34 +100,19 @@ public class MosesPreferences extends PreferenceActivity {
 			entryPics[i] = s.get(i).image();
 			entryValues[i] = Integer.toString(s.get(i).ordinal());
 		}
-		ListPreferenceMultiSelect lp = (ListPreferenceMultiSelect) findPreference("sensor_data");
-		// set lp with the available sensors and their information
-		lp.setEntries(entries);
-		lp.setImages(getApplicationContext(), entryPics);
-		lp.setEntryValues(entryValues);
-	}
 
-	/**
-	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
-	 */
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// Actionbar
-		ActionBar ab = getActionBar();
-		ab.setTitle(getString(R.string.settings_title));
-		ab.setDisplayShowTitleEnabled(true);
-		
-		// set the resource for preference screen
-		addPreferencesFromResource(R.xml.moses_pref);
-		// read the available sensors of this device
-		loadSensors();
-		// check if the user decide to filter the sensors' set
-		if (getIntent().getBooleanExtra("startSensors", false)) {
-			getPreferenceScreen().onItemClick(null, null, 1, 0);
+		ListPreferenceMultiSelect lp = (ListPreferenceMultiSelect) findPreference("sensor_data");
+
+		// set lp with the available sensors and their information
+		// TODO: here lp null :(
+		if(lp != null){ 
+			lp.setEntries(entries);
+			lp.setImages(getApplicationContext(), entryPics);
+			lp.setEntryValues(entryValues);
 		}
 	}
-
+	
+	
 	/**
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
 	 */

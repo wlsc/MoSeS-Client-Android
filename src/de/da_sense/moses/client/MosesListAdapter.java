@@ -46,7 +46,7 @@ public class MosesListAdapter extends SimpleAdapter {
 				Log.d("MosesListAdapter", "onClick on item " + position);
 				WelcomeActivity mA = WelcomeActivity.getInstance();
 				
-				switch (mA.getmActiveTab()) {
+				switch (mA.getActiveTab()) {
 				case WelcomeActivity.TAB_AVAILABLE: {
 					Log.d("MosesListAdapter", "setting on click listener with available tab.");
 					final AvailableFragment aF = AvailableFragment.getInstance();

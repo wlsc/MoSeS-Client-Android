@@ -92,7 +92,7 @@ public class WelcomeActivity extends FragmentActivity {
 	/**
 	 * @return the active tab
 	 */
-	public int getmActiveTab() {
+	public int getActiveTab() {
 		return mActiveTab;
 	}
 
@@ -277,7 +277,12 @@ public class WelcomeActivity extends FragmentActivity {
         case R.id.Menu_Settings:
             // Settings entry in menu clicked
         	Log.d("MainActivity", "Settings in menu clicked");
-        	settings();
+        	// make an intent between this activity and MosesPreferences to show the setting screen
+            Intent settings = new Intent(getApplicationContext(), MosesPreferences.class);
+            // switch screen to settings 
+//            startActivityForResult(mainDialog, 0);
+            startActivity(settings);
+            
             return true;
         case R.id.Menu_HardwareInfo:
         	// Hardware Info entry in menu clicked
@@ -305,8 +310,8 @@ public class WelcomeActivity extends FragmentActivity {
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
 		// save the currently active tab
-		savedInstanceState.putInt("activeTab", getmActiveTab());
-		Log.d("MainActivity", "onSaveInstanceState called with activeTab="+getmActiveTab());	
+		savedInstanceState.putInt("activeTab", getActiveTab());
+		Log.d("MainActivity", "onSaveInstanceState called with activeTab="+getActiveTab());	
 	}
 
 	/**
@@ -409,16 +414,6 @@ public class WelcomeActivity extends FragmentActivity {
             startService(intent);
         }
         bindService(intent, mConnection, 0);
-    }
-    
-	/**
-	 * Show the settings window.
-	 */
-	private void settings() {
-	    // make an intent between this activity and MosesPreferences to show the setting screen
-        Intent mainDialog = new Intent(this, MosesPreferences.class);
-        // switch screen to setting  
-        startActivityForResult(mainDialog, 0);
     }
     
     /**
@@ -594,7 +589,7 @@ public class WelcomeActivity extends FragmentActivity {
 		setActiveTab(bundle.getInt("activeTab"));
 
 		Log.d("MainActivity", "initControls after getInt -> activeTab = "
-				+ getmActiveTab());		
+				+ getActiveTab());		
 
 		// now check if it is a user study call
 		boolean isShowUserStudyCall = getIntent().getStringExtra(
@@ -605,19 +600,19 @@ public class WelcomeActivity extends FragmentActivity {
 
 		if (isShowUserStudyCall && isLoginInformationComplete()) {
 			// firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
-			if (getmActiveTab() != TAB_AVAILABLE) {
+			if (getActiveTab() != TAB_AVAILABLE) {
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
 						+ "is going to change because of UserStudy-Call. ACTIVE TAB SET "
-						+ "FROM " + getmActiveTab() + " TO AVAILABLE (0)");
+						+ "FROM " + getActiveTab() + " TO AVAILABLE (0)");
 			}
 			firstTabPreference = TAB_AVAILABLE; // available user studies
 		}
 		if (isShowUpdateCall) {
 			// firstTabPreference = TAB_TAG_INSTALLED_APPS;
-			if (getmActiveTab() != TAB_RUNNING) {
+			if (getActiveTab() != TAB_RUNNING) {
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
 						+ "changed because of ShowUpdate-Call. ACTIVE TAB SET "
-						+ "FROM " + getmActiveTab() + " TO RUNNING (1)");
+						+ "FROM " + getActiveTab() + " TO RUNNING (1)");
 			}
 			firstTabPreference = TAB_RUNNING; // show the running user studies
 
@@ -635,7 +630,7 @@ public class WelcomeActivity extends FragmentActivity {
 		boolean runningSelected;
 		boolean historySelected;
 
-		switch (getmActiveTab()) {
+		switch (getActiveTab()) {
 		case TAB_AVAILABLE: // standard case (available tab)
 			availableSelected = true;
 			runningSelected = false;
