@@ -8,6 +8,7 @@ import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.service.MosesService;
+import de.da_sense.moses.client.service.helpers.Login;
 
 public class RequestUninstalledAPK {
 	ReqTaskExecutor e;
@@ -18,7 +19,7 @@ public class RequestUninstalledAPK {
 		this.e = e;
 		try {
 			String userid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
-					"username_pref", "");
+					Login.PREF_EMAIL, "");
 			j.put("MESSAGE", "APK_UNINSTALLED");
 			j.put("SESSIONID", sessionID);
 			j.put("DEVICEID", HardwareAbstraction.extractDeviceId());

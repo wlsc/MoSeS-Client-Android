@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-
+
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
@@ -14,12 +14,12 @@
         android:src="@drawable/ic_moses_logo" />
 
     <EditText
-        android:id="@+id/login_username"
+        android:id="@+id/login_email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:hint="@string/login_hint"
-        android:inputType="textNoSuggestions"
+        android:hint="@string/login_hint_email"
+        android:inputType="textEmailAddress"
         android:lines="@integer/login_max_lines"
         android:maxLines="@integer/login_max_lines" >
 
@@ -35,14 +35,14 @@
         android:inputType="textPassword"
         android:lines="@integer/login_max_lines"
         android:maxLines="@integer/login_max_lines" >
+    </EditText>
 
-    </EditText>
     <Button
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="@string/button_login"
-        android:onClick="handleClick" />
+        android:onClick="handleClick"
+        android:text="@string/button_login" />
 
 </LinearLayout>

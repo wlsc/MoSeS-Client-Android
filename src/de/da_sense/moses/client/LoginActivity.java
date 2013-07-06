@@ -14,11 +14,13 @@ import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestLogin;
+import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * Login screen for the application.
  * @author Sandra Amend, Jaco Hofmann
+ * @author Zijad Maksuti
  *
  */
 public class LoginActivity extends Activity {
@@ -44,10 +46,10 @@ public class LoginActivity extends Activity {
      * @param v View
      */
     public void handleClick(View v) {
-    	final EditText username = (EditText) findViewById(R.id.login_username);
+    	final EditText email = (EditText) findViewById(R.id.login_email);
     	final EditText password = (EditText) findViewById(R.id.login_password);
     	// check if fields are empty -> no login try
-    	if (username.getText().toString().isEmpty() 
+    	if (email.getText().toString().isEmpty() 
     			|| password.getText().toString().isEmpty()) {
     		return;
     	}
@@ -58,7 +60,7 @@ public class LoginActivity extends Activity {
 		d.show();
 		// request a login/session from the server
 		new RequestLogin(new ReqLogin(), 
-				username.getText().toString(), 
+				email.getText().toString(), 
 				password.getText().toString()).send();
     }
     
@@ -69,15 +71,15 @@ public class LoginActivity extends Activity {
     	Log.d("LoginActivity", "valid() called");
 		d.dismiss();
 		// get username and password
-		final EditText username = (EditText) findViewById(R.id.login_username);
+		final EditText email = (EditText) findViewById(R.id.login_email);
 		final EditText password = (EditText) findViewById(R.id.login_password);
 		// set the result of the Activity and put the username and password
 		Intent resultData = new Intent();
-		resultData.putExtra("username_pref", username.getText().toString());
-		resultData.putExtra("password_pref", password.getText().toString());
+		resultData.putExtra(Login.PREF_EMAIL, email.getText().toString());
+		resultData.putExtra(Login.PREF_PASSWORD, password.getText().toString());
 		setResult(Activity.RESULT_OK, resultData);
 
-    	Log.d("LoginActivity", "valid(): username = " + username.getText().toString() +
+    	Log.d("LoginActivity", "valid(): email = " + email.getText().toString() +
     			"\npassword = " + password.getText().toString());
 		
 		finish();
@@ -96,7 +98,7 @@ public class LoginActivity extends Activity {
 	 */
     private class ReqLogin implements ReqTaskExecutor {
     	/**
-    	 * If there is no internet connection, we display a message.
+    	 * If there is no Internet connection, we display a message.
     	 */
 		@Override
 		public void handleException(Exception e) {

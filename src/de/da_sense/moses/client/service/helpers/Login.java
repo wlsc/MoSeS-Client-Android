@@ -20,8 +20,19 @@ import de.da_sense.moses.client.util.Log;
  * The Class Login.
  * 
  * @author Jaco Hofmann
+ * @author Zijad Maksuti
  */
 public class Login {
+	
+	/**
+	 * Key for the shared preference EMAIL
+	 */
+	public static String PREF_EMAIL = "email_pref";
+	
+	/**
+	 * Key for the shared preference PASSWORD
+	 */
+	public static String PREF_PASSWORD = "password_pref";
 
 	/**
 	 * The Class LoginFunc - implements ReqTaskExecutor. Handles the
@@ -73,7 +84,7 @@ public class Login {
 			JSONObject j = null;
 			try {
 				j = new JSONObject(s);
-				if (RequestLogin.loginValid(j, uname)) {
+				if (RequestLogin.loginValid(j, email)) {
 					MosesService.getInstance().loggedIn(
 							j.getString("SESSIONID"));
 					mHandler.removeCallbacks(logoutTask);
@@ -114,8 +125,8 @@ public class Login {
 
 	}
 
-	/** The username. */
-	private String uname;
+	/** The email. */
+	private String email;
 
 	/** The password. */
 	private String pw;
@@ -200,20 +211,20 @@ public class Login {
 	/**
 	 * Instantiates a new login. This class sorts all hooks to be able
 	 * to call them once their needed state is reached. Furthermore it
-	 * checks if the device is logged in and if not loggs it in by
+	 * checks if the device is logged in and if not logs it in by
 	 * creating a RequestLogin. If the device is still logged in it
 	 * performs first all POSTLOGINSUCCESSPRIORITY hooks and afterwards
 	 * all POSTLOGINSUCCESS hooks. If the device is not logged in this
 	 * task is handled by LoginFunc.
 	 * 
-	 * @param username
-	 *            the username
+	 * @param email
+	 *            the email
 	 * @param password
 	 *            the password
 	 */
-	public Login(String username, String password) {
+	public Login(String email, String password) {
 		this.pw = password;
-		this.uname = username;
+		this.email = email;
 		this.postExecuteSuccess = MosesService.getInstance().getHook(
 				HookTypesEnum.POST_LOGIN_SUCCESS);
 		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(
@@ -225,7 +236,7 @@ public class Login {
 		this.loginStart = MosesService.getInstance().getHook(
 				HookTypesEnum.POST_LOGIN_START);
 		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
-			new RequestLogin(new LoginFunc(), uname, pw).send();
+			new RequestLogin(new LoginFunc(), this.email, this.pw).send();
 		} else {
 			Log.d("MoSeS.LOGIN", "Session still active.");
 			Log.d("MoSeS.LOGIN", "Post login success priority: ");

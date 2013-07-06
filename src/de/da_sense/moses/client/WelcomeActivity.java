@@ -35,6 +35,7 @@ import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.MosesService.LocalBinder;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
+import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
@@ -46,7 +47,8 @@ import de.da_sense.moses.client.util.Log;
  * responsible for the main application view.
  * It's the first activity a user sees who starts our app.
  * 
- * @author Jaco Hofmann, Sandra Amend, Wladimir Schmidt 
+ * @author Jaco Hofmann, Sandra Amend, Wladimir Schmidt
+ * @author Zijad Maksuti 
  *
  */
 public class WelcomeActivity extends FragmentActivity {
@@ -293,7 +295,7 @@ public class WelcomeActivity extends FragmentActivity {
         	// Logout entry in menu clicked
         	Log.d("MainActivity", "Logout in menu clicked");
         	PreferenceManager.getDefaultSharedPreferences(this).edit()
-        	.remove("username_pref").remove("password_pref").commit();
+        	.remove(Login.PREF_EMAIL).remove(Login.PREF_PASSWORD).commit();
         	waitingForResult = true;
         	Intent mainDialog = new Intent(WelcomeActivity.this, LoginActivity.class);
         	startActivityForResult(mainDialog, 1);
@@ -525,12 +527,12 @@ public class WelcomeActivity extends FragmentActivity {
 			case Activity.RESULT_OK:
 				SharedPreferences.Editor e = PreferenceManager
 						.getDefaultSharedPreferences(this).edit();
-				String username = data.getStringExtra("username_pref");
-				String password = data.getStringExtra("password_pref");
+				String username = data.getStringExtra(Login.PREF_EMAIL);
+				String password = data.getStringExtra(Login.PREF_PASSWORD);
 				Log.d("MoSeS.ACTIVITY", username);
 				Log.d("MoSeS.ACTIVITY", password);
-				e.putString("username_pref", username);
-				e.putString("password_pref", password);
+				e.putString(Login.PREF_EMAIL, username);
+				e.putString(Login.PREF_PASSWORD, password);
 				e.commit();
 				waitingForResult = false;
 				if (MosesService.getInstance() != null) {
@@ -729,9 +731,9 @@ public class WelcomeActivity extends FragmentActivity {
 	 */
 	public static boolean isLoginInformationComplete(Context c) {
 		return !(PreferenceManager.getDefaultSharedPreferences(c)
-				.getString("username_pref", "").equals("") ||
+				.getString(Login.PREF_EMAIL, "").equals("") ||
 				PreferenceManager.getDefaultSharedPreferences(c)
-				.getString("password_pref", "").equals(""));
+				.getString(Login.PREF_PASSWORD, "").equals(""));
 	}
 	
 	/**

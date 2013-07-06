@@ -159,8 +159,8 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	private void initConfig() {
 		SharedPreferences settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		mset.username = settingsFile.getString("username_pref", "");
-		mset.password = settingsFile.getString("password_pref", "");
+		mset.username = settingsFile.getString(Login.PREF_EMAIL, "");
+		mset.password = settingsFile.getString(Login.PREF_PASSWORD, "");
 		mset.deviceid = settingsFile.getString("deviceid_pref", "");
 		try {
 			mset.filter = new JSONArray(settingsFile.getString("sensor_data", "[]"));
@@ -370,12 +370,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			if (key.equals("sensor_data")) {
 				Log.d("MoSeS.SERVICE", "Sensor filter changed to: " + sharedPreferences.getString("sensor_data", ""));
 				uploadFilter();
-			} else if (key.equals("username_pref")) {
+			} else if (key.equals(Login.PREF_EMAIL)) {
 				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-				mset.username = sharedPreferences.getString("username_pref", "");
+				mset.username = sharedPreferences.getString(Login.PREF_EMAIL, "");
 			} else if (key.equals("password_pref")) {
 				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-				mset.password = sharedPreferences.getString("password_pref", "");
+				mset.password = sharedPreferences.getString(Login.PREF_PASSWORD, "");
 			} else if (key.equals("deviceid_pref")) {
 				Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
 				if (sharedPreferences.getBoolean("deviceidsetsuccessfully", false)) {

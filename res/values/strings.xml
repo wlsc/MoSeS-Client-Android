@@ -82,8 +82,8 @@
     
        
     <!-- Login screen -->
-    <string name="login_hint">username</string>
-    <string name="login_hint_pass">password</string>
+    <string name="login_hint_email">Email</string>
+    <string name="login_hint_pass">Password</string>
     <string name="checking_credentials">Checking credentials &#8230;</string>
     <string name="wrong_credentials">Username and/or password are wrong</string>
     <string name="verifying_credentials">Verifying your login credentials.</string>
