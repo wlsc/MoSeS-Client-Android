@@ -34,18 +34,18 @@ import de.da_sense.moses.client.abstraction.apks.InstalledStateMonitor;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.MosesService.LocalBinder;
+import de.da_sense.moses.client.service.helpers.Executable;
+import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
-import de.da_sense.moses.client.service.helpers.Executable;
-import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * This activity shows a login field to the user if necessary and is 
  * responsible for the main application view.
- * It's the first activity a user sees who starts our app.
+ * It's the first activity a user sees when he starts our App.
  * 
  * @author Jaco Hofmann, Sandra Amend, Wladimir Schmidt
  * @author Zijad Maksuti 
@@ -280,10 +280,10 @@ public class WelcomeActivity extends FragmentActivity {
             // Settings entry in menu clicked
         	Log.d("MainActivity", "Settings in menu clicked");
         	// make an intent between this activity and MosesPreferences to show the setting screen
-            Intent settings = new Intent(getApplicationContext(), MosesPreferences.class);
+            Intent settings = new Intent(this, MosesPreferences.class);
             // switch screen to settings 
-//            startActivityForResult(mainDialog, 0);
-            startActivity(settings);
+            startActivityForResult(settings, 0);
+//            startActivity(settings);
             
             return true;
         case R.id.Menu_HardwareInfo:
