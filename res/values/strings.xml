@@ -155,6 +155,8 @@
     <string name="pref_deviceid">Device ID</string>
     <string name="pref_deviceid_message">Please enter an id for your device.</string>
     <string name="application_prefs">Application settings</string>
+    <string name="general_settings">General</string>
+    <string name="general_settings_summary">Control spash screen or change the id of this device</string>
 
     <!-- Buttons -->
     <string name="button_login">Login</string>
