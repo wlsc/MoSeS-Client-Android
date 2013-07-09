@@ -85,21 +85,5 @@ public class RequestLogin {
 		req.reqTaskExecutor = this.reqTaskExecutor;
 		task.execute(req);
 	}
-
-	/**
-	 * Sets the Login and Password and sends the current information
-	 * to the server
-	 * @param email The Email
-	 * @param pw The Password
-	 * @deprecated this method ise useless and should be deleted, use {@link #send()} instead
-	 */
-	public void send(String email, String pw) {
-		try {
-			j.put("EMAIL", email);
-			j.put("PASSWORD", pw);
-		} catch (JSONException e) {
-			this.reqTaskExecutor.handleException(e);
-		}
-		send();
-	}
+	
 }

@@ -163,6 +163,9 @@
     <string name="button_update">Update App</string>
     <string name="button_close">Close</string>
     <string name="button_start">Start</string>
+    
+    <!-- Checkboxes -->
+    <string name="remember_credentials">Remember Credentials</string>
 
     <!-- Menus -->
     <string name="menu_logout">Logout</string>
