@@ -84,6 +84,8 @@
     <!-- Login screen -->
     <string name="login_hint_email">Email</string>
     <string name="login_hint_pass">Password</string>
+    <string name="login_hint_bad_email">Please enter a valid email address.</string>
+    <string name="login_hint_bad_pass">Please enter a password containing at least six characters.</string>
     <string name="checking_credentials">Checking credentials &#8230;</string>
     <string name="wrong_credentials">Username and/or password are wrong</string>
     <string name="verifying_credentials">Verifying your login credentials.</string>

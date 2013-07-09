@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -37,11 +38,12 @@ public class LoginActivity extends Activity {
 	/** handler for the runnables */
 	private Handler h = new Handler();
 	
-	/*
+	/**
+	 * The name of the file containing stored users credentials.
 	 * First line of this file contains the email, the second one the password.
-	 * If the file is empty, no credentials were saved.
+	 * If the file is empty or non-existent, no credentials were saved.
 	 */
-	private static final String FILENAME_CREDENTIALS = "credentials_filename";
+	public static final String FILENAME_CREDENTIALS = "credentials_filename";
 	private static final String LOG_TAG = LoginActivity.class.getName();
 	
 	/*
@@ -63,6 +65,7 @@ public class LoginActivity extends Activity {
         editTextEmail = (EditText) findViewById(R.id.login_email);
         editTextPassword = (EditText) findViewById(R.id.login_password);
         checkBoxRemember = (CheckBox) findViewById(R.id.checkbox_login_remember_me);
+        
         // set the previously persisted credentials if any
         try {
 			String[] credentials = readCredentials();
@@ -90,11 +93,11 @@ public class LoginActivity extends Activity {
      * @param v View
      */
     public void handleClick(View v) {
-    	String email = editTextEmail.getText().toString();
+    	String email = editTextEmail.getText().toString().trim();
 		String password = editTextPassword.getText().toString();
     	
-    	// check if fields are empty -> no login try
-    	if (email.isEmpty() || password.isEmpty()) {
+    	// validate the format of email and password before sending anything to server
+    	if (!validateEmail() || !validatePassword()) {
     		return;
     	}
     	// show ProgressDialog while checking and verifying entered credentials
@@ -112,8 +115,8 @@ public class LoginActivity extends Activity {
     private void valid() {
     	Log.d("LoginActivity", "valid() called");
 		d.dismiss();
-		// get username and password
-		String email = editTextEmail.getText().toString();
+		// get email and password
+		String email = editTextEmail.getText().toString().trim();
 		String password = editTextPassword.getText().toString();
 		
 		// set the result of the Activity and put the email and password
@@ -134,9 +137,18 @@ public class LoginActivity extends Activity {
     				e.printStackTrace();
     				
     			}
+    	else
+        	/* 
+        	 * delete users credentials because the box was not checked. We also want to forget
+        	 * previously stored credentials
+        	 */
+        	deleteFile(FILENAME_CREDENTIALS);
     	
-		finish();
-	}
+    	finish();
+    	
+    }
+    	
+    	
 
     /**
      * Called if we didn't get a SessionID from the server.
@@ -146,6 +158,90 @@ public class LoginActivity extends Activity {
 		d.dismiss();
 	}
     
+	/**
+	 * Persists users credentials to a private file.
+	 * @param email the email (should not be null or empty String)
+	 * @param password the password (should not be null or empty String)
+	 * @throws IOException if the file for storing the users credentials could not be opened
+	 * or the credentials could not be written to it. If one of the consumed arguments is null or an empty string,
+	 * this method will not persist anything.
+	 */
+	private void saveCredentials(String email, String password) throws IOException{
+		if(email != null && !email.isEmpty()&& password != null && !password.isEmpty()){
+			StringBuffer sb = new StringBuffer();
+	    	sb.append(email).append("\n").append(password);
+	    	FileOutputStream fos = openFileOutput(FILENAME_CREDENTIALS, Context.MODE_PRIVATE);
+	    	fos.write(sb.toString().getBytes());
+	    	fos.close();
+		}
+		else{
+			Log.w(LOG_TAG, "saveCredentials: persistation skipped; provided email or password are empty");
+		}
+	}
+
+	/**
+	 * Returns users credentials, that are persisted to the private file.
+	 * @return An array consisting of two entries. 0th entry contains users email, 1st entry the password.
+	 * If the file was empty or users email or password are not contained in it, this method returns null. 
+	 * @throws IOException if the file containing the credentials could not be read.
+	 */
+	private String[] readCredentials() throws IOException {
+		String[] result = null;
+		FileInputStream fis = null;
+		try {
+			fis = openFileInput(FILENAME_CREDENTIALS);
+		} catch (Exception e) {
+			Log.i(LOG_TAG, "readCredentials: no credentials to read");
+			return null;
+		}
+		BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+		StringBuffer sb = new StringBuffer();
+		String line = null;
+		while((line = br.readLine()) != null)
+			sb.append(line).append("\n");
+		fis.close();
+		if(sb.length() != 0)
+			result = sb.toString().split("\n");
+		if(result.length != 2)
+			return null;
+		else{
+			String email = result[0];
+			String password = result[1];
+			if(!email.isEmpty() && !password.isEmpty())
+				return result;
+			else
+				return null;
+		}
+	}
+	
+	/**
+	 * This method validates the email provided by the user. It shows the user proper messages,
+	 * if the entered email is not well formated or missing.
+	 * @return true if the entered email is well formated.
+	 */
+	private boolean validateEmail(){
+		String email = editTextEmail.getText().toString().trim();
+		if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+			editTextEmail.setError(getString(R.string.login_hint_bad_email));
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * This method validates the password provided by the user. It shows the user a proper messages,
+	 * if the entered password is not longer than 6 .
+	 * @return true if the entered email is well formated.
+	 */
+	private boolean validatePassword(){
+		String password = editTextPassword.getText().toString();
+		if(password.length() <6){
+			editTextPassword.setError(getString(R.string.login_hint_bad_pass));
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Handles the login request.
 	 */
@@ -207,62 +303,6 @@ public class LoginActivity extends Activity {
 				handleException(c.e);
 			}
 		}
-    }
-    
-    /**
-     * Persists users credentials to a private file.
-     * @param email the email (should not be null or empty String)
-     * @param password the password (should not be null or empty String)
-     * @throws IOException if the file for storing the users credentials could not be opened
-     * or the credentials could not be written to it. If one of the consumed arguments is null or an empty string,
-     * this method will not persist anything.
-     */
-    private void saveCredentials(String email, String password) throws IOException{
-    	if(email != null && !email.replaceAll(" ", "").isEmpty()&& password != null && !password.replaceAll(" ", "").isEmpty()){
-    		StringBuffer sb = new StringBuffer();
-        	sb.append(email).append("\n").append(password);
-        	FileOutputStream fos = openFileOutput(FILENAME_CREDENTIALS, Context.MODE_PRIVATE);
-        	fos.write(sb.toString().getBytes());
-        	fos.close();
-    	}
-    	else{
-    		Log.w(LOG_TAG, "saveCredentials: persistation skipped; provided email or password are empty");
-    	}
-    }
-    
-    /**
-     * Returns users credentials, that are persisted to the private file.
-     * @return An array consisting of two entries. 0th entry contains users email, 1st entry the password.
-     * If the file was empty or users email or password are not contained in it, this method returns null. 
-     * @throws IOException if the file containing the credentials could not be read.
-     */
-    private String[] readCredentials() throws IOException {
-    	String[] result = null;
-    	FileInputStream fis = null;
-		try {
-			fis = openFileInput(FILENAME_CREDENTIALS);
-		} catch (Exception e) {
-			Log.i(LOG_TAG, "readCredentials: no credentials to read");
-			return null;
-		}
-    	BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-    	StringBuffer sb = new StringBuffer();
-    	String line = null;
-    	while((line = br.readLine()) != null)
-    		sb.append(line).append("\n");
-    	fis.close();
-    	if(sb.length() != 0)
-    		result = sb.toString().split("\n");
-    	if(result.length != 2)
-    		return null;
-    	else{
-    		String email = result[0];
-    		String password = result[1];
-    		if(email.replaceAll(" ", "").length() != 0 && password.replaceAll(" ", "").length() != 0)
-    			return result;
-    		else
-    			return null;
-    	}
     }
     
 }

@@ -1,7 +1,5 @@
 package de.da_sense.moses.client.preferences;
 
-import java.util.List;
-
 import android.app.ActionBar;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
