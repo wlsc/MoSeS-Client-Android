@@ -11,9 +11,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
@@ -22,11 +19,8 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentActivity;
 import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,11 +36,9 @@ import de.da_sense.moses.client.abstraction.apks.APKInstalled;
 import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
-import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.util.Log;
@@ -55,13 +47,14 @@ import de.da_sense.moses.client.util.Log;
  * Responsible for displaying the available APKs which get fetched from the
  * server.
  * @author Sandra Amend, Simon L
+ * @author Zijad Maksuti
  */
 public class AvailableFragment extends ListFragment implements ApkListRequestObserver {
 	/**
 	 * Enums for the state of the layout.
 	 */
 	public static enum LayoutState {
-		NORMAL_LIST, SENSORS_HINT, EMPTYLIST_HINT, PENDING_REQUEST, NO_CONNECTIVITY;
+		NORMAL_LIST, EMPTYLIST_HINT, PENDING_REQUEST, NO_CONNECTIVITY;
 	}
 	
 	/** boolean for the combined list and detail mode */
@@ -70,8 +63,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	private int mCurAvaiPosition = 0;
 	/** The current instance is saved in here. */
 	private static AvailableFragment thisInstance = null;
-	/** Identifier for setting the sensor hint boolean in the preference manager. */
-	private static final String PREFKEY_SHOW_SET_SENSORS_HINT = "showInitialSetSensorsHint";
+
 	/** Threshold for the refresh time. */
 	private static final int REFRESH_THRESHHOLD = 800;
 	/** Listing of the applications */
@@ -80,8 +72,10 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	private Long lastListRefreshTime = null;
 	/** Save the last layout which was set. */
 	LayoutState lastSetLayout = null;
-	/** TODO: I have no idea what exactly this is for ... */
+	
+	/** Sie of the the APK being downloaded */
 	private int totalSize = -1;
+	
 	/** variable for requestExternalApplications  */
 	protected int requestListRetries = 0;
 	/** variable to check if the app is paused */
@@ -387,12 +381,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		new AlertDialog.Builder(getActivity())
 				.setMessage(getString(R.string.availableTab_noInternetConnection))
 				.setTitle(getString(R.string.noInternetConnection_title)).setCancelable(true)
-				// TODO: this was already commented out ...
-				// .setNeutralButton("OK",
-				// new DialogInterface.OnClickListener() {
-				// public void onClick(DialogInterface dialog, int
-				// whichButton){}
-				// })
 				.show();
 	}
 
@@ -418,19 +406,14 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 * the application.
 	 */
 	private void initControlsOnRequestApks() {
-		if (showInitialSensorHint()) {
-			// if the Sensor Hint boolean is set call this first
-			initControlsShowSensorsHint();
+		if (appsLocallyInCacheStillAvailable()) {
+			// if the App list is still cached just display it
+			initControlsNormalList(getExternalApps());
 		} else {
-			if (appsLocallyInCacheStillAvailable()) {
-				// if the App list is still cached just display it
-				initControlsNormalList(getExternalApps());
+			if (MosesService.isOnline(WelcomeActivity.getInstance())) {
+				initControlsPendingListRequest();
 			} else {
-				if (MosesService.isOnline(WelcomeActivity.getInstance())) {
-					initControlsPendingListRequest();
-				} else {
-					initControlsNoConnectivity();
-				}
+				initControlsNoConnectivity();
 			}
 		}
 	}
@@ -457,10 +440,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			// display button to refresh and set action to perform
 			final Button actionBtn1 = (Button) getActivity()
 					.findViewById(R.id.apklist_emptylistActionBtn1);
-			final Button actionBtn2 = (Button) getActivity()
-					.findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
-			actionBtn2.setVisibility(View.GONE);
 
 			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.retry),
 					LayoutState.NO_CONNECTIVITY);
@@ -500,10 +480,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			// show a refresh button an add an action
 			final Button actionBtn1 = (Button) getActivity()
 					.findViewById(R.id.apklist_emptylistActionBtn1);
-			final Button actionBtn2 = (Button) getActivity()
-					.findViewById(R.id.apklist_emptylistActionBtn2);
 			actionBtn1.setText("Refresh");
-			actionBtn2.setVisibility(View.GONE);
 
 			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.refresh),
 					LayoutState.PENDING_REQUEST);
@@ -572,17 +549,11 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 */
 	private void initLayoutFromArrivedList(
 			List<ExternalApplication> applications) {
-		if (showInitialSensorHint()) {
-			// even if there is an arrived list, do not show it, but show the
-			// sensors hint
-			initControlsShowSensorsHint();
-		} else {
 			if (applications.size() > 0) {
 				initControlsNormalList(applications);
 			} else {
 				initControlsEmptyArrivedList(false);
 			}
-		}
 		populateList(applications);  // TODO : Why should we execute this method when we do this in initControlsNormalList ?
 	}
 
@@ -591,34 +562,27 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 * @param mayShowSensorsList true to show the sensor hint
 	 */
 	private void initControlsEmptyArrivedList(boolean mayShowSensorsList) {
-		if (mayShowSensorsList) {
-			initControlsShowSensorsHint();
-		} else {
-			if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
-				// show an empty list, because the list we got was empty
-				LinearLayout emptylistCtrls = (LinearLayout) getActivity()
-						.findViewById(R.id.apklist_emptylistLayout);
-				emptylistCtrls.setVisibility(View.VISIBLE);
-				LinearLayout apkListCtrls = (LinearLayout) getActivity()
-						.findViewById(R.id.apklist_mainListLayout);
-				apkListCtrls.setVisibility(View.GONE);
+		if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
+			// show an empty list, because the list we got was empty
+			LinearLayout emptylistCtrls = (LinearLayout) getActivity()
+					.findViewById(R.id.apklist_emptylistLayout);
+			emptylistCtrls.setVisibility(View.VISIBLE);
+			LinearLayout apkListCtrls = (LinearLayout) getActivity()
+					.findViewById(R.id.apklist_mainListLayout);
+			apkListCtrls.setVisibility(View.GONE);
 
-				// show a hint, that there are no apks
-				TextView mainHint = (TextView) getActivity()
-						.findViewById(R.id.apklist_emptylistHintMain);
-				mainHint.setText(R.string.availableApkList_emptyHint);
+			// show a hint, that there are no apks
+			TextView mainHint = (TextView) getActivity()
+					.findViewById(R.id.apklist_emptylistHintMain);
+			mainHint.setText(R.string.availableApkList_emptyHint);
 
-				// we don't need any buttons here
-				Button actionBtn1 = (Button) getActivity()
-						.findViewById(R.id.apklist_emptylistActionBtn1);
-				Button actionBtn2 = (Button) getActivity()
-						.findViewById(R.id.apklist_emptylistActionBtn2);
-				actionBtn1.setVisibility(View.GONE);
-				actionBtn2.setVisibility(View.GONE);
-				
-				// set last layout
-				setLastSetLayout(LayoutState.EMPTYLIST_HINT);
-			}
+			// we don't need any buttons here
+			Button actionBtn1 = (Button) getActivity()
+					.findViewById(R.id.apklist_emptylistActionBtn1);
+			actionBtn1.setVisibility(View.GONE);
+
+			// set last layout
+			setLastSetLayout(LayoutState.EMPTYLIST_HINT);
 		}
 	}
 
@@ -646,109 +610,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		setLastSetLayout(LayoutState.NORMAL_LIST);
 		// and show the applications in the list
 		populateList(applications);
-	}
-
-	/**
-	 * Controls the displaying of the sensor hint.
-	 */
-	private void initControlsShowSensorsHint() {
-		Log.d("initControlsShowSensorHint", "lastSetLayout = " + lastSetLayout);
-		Log.d("initControlsShowSensorHint", "View " + WelcomeActivity.getInstance()
-				.findViewById(R.id.apklist_emptylistLayout));
-		
-		if (lastSetLayout != LayoutState.SENSORS_HINT) {
-			// show an empty list
-			LinearLayout emptylistCtrls = (LinearLayout) WelcomeActivity.getInstance()
-					.findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(View.VISIBLE);
-			LinearLayout apkListCtrls = (LinearLayout) WelcomeActivity.getInstance()
-					.findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(View.GONE);
-
-			// show hint that there are no sensors enabled in the settings
-			TextView mainHint = (TextView) WelcomeActivity.getInstance()
-					.findViewById(R.id.apklist_emptylistHintMain);
-			mainHint.setText(R.string.apklist_hint_sensors_main);
-
-			// give user the option to set the sensors
-			Button actionBtn1 = (Button) WelcomeActivity.getInstance()
-					.findViewById(R.id.apklist_emptylistActionBtn1);
-			Button actionBtn2 = (Button) WelcomeActivity.getInstance()
-					.findViewById(R.id.apklist_emptylistActionBtn2);
-			
-			actionBtn1.setText(getString(R.string.availableTab_btnOk));
-			actionBtn2.setText(getString(R.string.availableTab_btnCancel));
-			actionBtn1.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// disable sensor hint boolean in settings
-					// and edit sensor settings
-					PreferenceManager
-							.getDefaultSharedPreferences(
-									WelcomeActivity.getInstance()).edit()
-							.putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false)
-							.commit();
-					invokeSensorDialog();
-				}
-			});
-			actionBtn2.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					// disable sensor hint boolean in settings
-					// and call initControls again
-					PreferenceManager
-							.getDefaultSharedPreferences(
-									WelcomeActivity.getInstance()).edit()
-							.putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, false)
-							.commit();
-					initControls();
-				}
-			});
-			
-			// set last layout
-			setLastSetLayout(LayoutState.SENSORS_HINT);
-		}
-	}
-
-	/**
-	 * Start the settings dialog for the sensors.
-	 */
-	protected void invokeSensorDialog() {
-		Intent startPreference = new Intent(WelcomeActivity.getInstance(),
-				MosesPreferences.class);
-		startPreference.putExtra("startSensors", true);
-		startActivity(startPreference);
-	}
-
-	/**
-	 * Return if the sensor hint should be shown to the user.
-	 * @return true if sensor hint should be presented
-	 */
-	private boolean showInitialSensorHint() {
-		boolean enoughEnabledSensors = false;
-		FragmentActivity activity = (FragmentActivity) this.getActivity();
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(WelcomeActivity.getInstance());
-		try {			
-			Log.d("AvailableFragment", "sISH() - activity = " + activity);
-			Log.d("AvailableFragment", "showInitalSensorHint() - sensor_data = "
-			+ prefs.getString("sensor_data", "[]"));
-			
-			JSONArray sensors = new JSONArray(prefs.getString("sensor_data","[]"));
-			Log.d("AvailableFragment", "showInitalSensorHint() - sensors = "
-					+ sensors);
-			enoughEnabledSensors = !(sensors != null && sensors.length() < 1);
-		} catch (JSONException e) {
-			enoughEnabledSensors = false;
-		}
-		
-		boolean doShow = prefs.getBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true);
-		
-		if (enoughEnabledSensors) {
-			doShow = false;
-			prefs.edit().putBoolean(PREFKEY_SHOW_SET_SENSORS_HINT, true).commit();
-		}
-
-		return doShow;
 	}
 
 	/**
@@ -991,24 +852,19 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	}
 
 	/**
-	 * After the app is resumed we request the external applications,
-	 * and set up a second request. 
+	 * After the app is resumed we request the external applications, and set up
+	 * a second request.
+	 * 
 	 * @see android.support.v4.app.Fragment#onResume()
 	 */
 	@Override
 	public void onResume() {
 		super.onResume();
 		this.isPaused = false;
-		if (lastSetLayout == LayoutState.SENSORS_HINT) {
-			initControls();
-		} else {
-			boolean checkRefreshTime = (lastListRefreshTime == null)
-					? true 
-					: (System.currentTimeMillis() - lastListRefreshTime 
-							> REFRESH_THRESHHOLD);
-			if (checkRefreshTime) {
-				requestExternalApplications();
-			}
+		boolean checkRefreshTime = (lastListRefreshTime == null) ? true
+				: (System.currentTimeMillis() - lastListRefreshTime > REFRESH_THRESHHOLD);
+		if (checkRefreshTime) {
+			requestExternalApplications();
 		}
 
 		Handler secondTryConnect = new Handler();
@@ -1046,8 +902,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		// and history apps
 		if (HistoryExternalApplicationsManager.getInstance() == null)
 			HistoryExternalApplicationsManager.init(getActivity());
-		LinkedList<HistoryExternalApplication> historyApps = 
-				HistoryExternalApplicationsManager.getInstance().getApps();
 		
 		HashSet<String> hashAppIDs = new HashSet<String>();
 		// collect all IDs from installed apps

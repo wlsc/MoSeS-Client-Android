@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:maxWidth="500sp"
             android:layout_marginTop="30sp"
-            android:text="@string/apklist_hint_sensors_main" />
+            android:text="@string/apklist_hint_noconnectivity" />
         <LinearLayout
             android:id="@+id/emptylistBtnsLayout"
             android:layout_width="match_parent"
@@ -40,12 +40,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/availableTab_btnOk" />
-
-            <Button
-                android:id="@+id/apklist_emptylistActionBtn2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/availableTab_btnCancel" />
         </LinearLayout>
 
     </LinearLayout>

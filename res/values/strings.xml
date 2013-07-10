@@ -117,7 +117,6 @@
     <string name="availableApkList_emptyHint">No user studies are available that match your device and enabled sensors. Enabling more sensors in the settings may show more user studies.</string>
     <string name="availableTab_UserStudies">Available User Studies:</string>
     <string name="availableTab_btnOk">Yes</string>
-    <string name="availableTab_btnCancel">No, I\'m good</string>
     <string name="availableTab_noInternetConnection">Cannot display the app information because no internet connection seems to be present</string>
     
     
@@ -126,7 +125,6 @@
     <string name="historyList_emptyHint">There are no past user studies on your device.</string>
     
     <!-- APK List -->
-    <string name="apklist_hint_sensors_main">Your current settings do not enable any sensors of your device for usage with MoSeS apps. Most of the apps in the MoSeS system require sensors. Would you like to change your sensor settings now?</string>
     <string name="apklist_hint_pendingrequest">Waiting for server &#8230;</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the user study list anyway: &#160;</string>
 

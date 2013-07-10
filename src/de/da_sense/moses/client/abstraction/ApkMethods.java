@@ -35,7 +35,8 @@ import de.da_sense.moses.client.util.Log;
  * @author 
  */
 public class ApkMethods {
-
+	
+	private static final String LOG_TAG = ApkMethods.class.getName();
 	/**
 	 * Class for download link request executors.
 	 */
