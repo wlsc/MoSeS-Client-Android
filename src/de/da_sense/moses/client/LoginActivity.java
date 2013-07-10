@@ -16,9 +16,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
@@ -52,6 +57,9 @@ public class LoginActivity extends Activity {
 	private EditText editTextEmail;
 	private EditText editTextPassword;
 	private CheckBox checkBoxRemember;
+	private Button buttonLogin;
+	
+	private LoginActivity lg;
 	
 	/*
 	 * (non-Javadoc)
@@ -62,9 +70,11 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.login);
+        lg = this;
         editTextEmail = (EditText) findViewById(R.id.login_email);
         editTextPassword = (EditText) findViewById(R.id.login_password);
         checkBoxRemember = (CheckBox) findViewById(R.id.checkbox_login_remember_me);
+        buttonLogin = (Button) findViewById(R.id.login_button);
         
         // set the previously persisted credentials if any
         try {
@@ -85,11 +95,24 @@ public class LoginActivity extends Activity {
         	if(editTextPassword.getText().toString().isEmpty())
         		editTextPassword.requestFocus();
         
+        /*
+         * When user clicks the "Go" button on keyboard and the cursor is set on the password fields,
+         * it should be equivalent to pressing the login button
+         */
+        editTextPassword.setOnEditorActionListener(new OnEditorActionListener() {
+			
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)){
+					 lg.handleClick(buttonLogin);
+				}
+				return false;
+			}
+		});  
     }
     
     /**
      * Handles the click on the login button.
-     * Gets called on click on the login button (as specified in login.xml)
+     * Gets called on click on the login button.
      * @param v View
      */
     public void handleClick(View v) {
@@ -156,6 +179,7 @@ public class LoginActivity extends Activity {
 	private void invalid() {
 		Log.d("LoginActivity", "invalid() called, d.dismiss() follows");
 		d.dismiss();
+		showWrongCredentials();
 	}
     
 	/**
@@ -241,6 +265,15 @@ public class LoginActivity extends Activity {
 		}
 		return true;
 	}
+	
+	/**
+	 * This method shows to the user that his email or password
+	 * were wrong and the authentication failed.
+	 */
+	private void showWrongCredentials(){
+		editTextEmail.setError(getString(R.string.wrong_credentials));
+		editTextPassword.setError(getString(R.string.wrong_credentials));
+	}
 
 	/**
 	 * Handles the login request.
@@ -270,17 +303,10 @@ public class LoginActivity extends Activity {
 				JSONObject j = new JSONObject(s);
 				if (j.getString("SESSIONID").equals("NULL")) {
 					// we didn't get a session id 
-					// -> wrong username or password
+					// -> wrong email or password
 					Log.d("LoginActivity", "No valid session id received");
 					Log.d("LoginActivity", getString(R.string.wrong_credentials));
-					
-					d.setMessage(getString(R.string.wrong_credentials));
-					h.postDelayed(new Runnable() {
-						@Override
-						public void run() {
-							invalid();
-						}
-					}, 2000);
+					invalid();
 				} else {
 					// we did get a session id
 					Log.d("LoginActivity", "Received valid session id: " 
