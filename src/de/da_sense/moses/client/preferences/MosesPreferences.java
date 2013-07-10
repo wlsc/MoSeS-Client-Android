@@ -26,15 +26,8 @@ public class MosesPreferences extends PreferenceActivity {
 		ActionBar ab = getActionBar();
 		ab.setTitle("Settings");
 		ab.setDisplayShowTitleEnabled(true);
-		
 		getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
 	}
-	
-	
-	
-//	public void onBuildHeaders(List<Header> target){
-//		loadHeadersFromResource(R.xml.preference_headers, target);
-//	}
 
 	/**
 	 * @see android.app.Activity#onWindowFocusChanged(boolean)
