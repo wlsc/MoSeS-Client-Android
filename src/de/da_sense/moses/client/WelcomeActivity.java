@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
@@ -211,11 +210,11 @@ public class WelcomeActivity extends FragmentActivity {
 		}
 
 		if (!isShowUserStudyCall) {
-			if (showsplash && PreferenceManager.getDefaultSharedPreferences(this)
-					.getBoolean("splashscreen_pref", true)
+			boolean isShowScreenSetInPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+					.getBoolean("splashscreen_pref", true);
+			if (showsplash && isShowScreenSetInPrefs
 					&& !waitingForResult) {
 				showSplashScreen();
-				showsplash = false;
 			}
 		}
 
@@ -227,8 +226,6 @@ public class WelcomeActivity extends FragmentActivity {
 			Intent i = new Intent(WelcomeActivity.this, AskForDeviceIDActivity.class);
 			startActivity(i);
 		}
-
-		showsplash = false;
 
 		if (HistoryExternalApplicationsManager.getInstance() == null) {
 			HistoryExternalApplicationsManager.init(this);
@@ -351,7 +348,6 @@ public class WelcomeActivity extends FragmentActivity {
 		} catch (NameNotFoundException e) {
 			Log.d(LOG_TAG, "There's no MoSeS around here.");
 		}
-		setOrientationSensitive(false); // prevent reloading on orientation change, when the splash screen is shown
 		mSplashDialog.show();
 		
 		/*
@@ -363,7 +359,7 @@ public class WelcomeActivity extends FragmentActivity {
 			@Override
 			public void onClick(View v) {
 				dismissSplashScreen();
-				setOrientationSensitive(true);
+				showsplash = false;
 			}
 		});
 		
@@ -375,22 +371,9 @@ public class WelcomeActivity extends FragmentActivity {
 			@Override
 			public void run() {
 				dismissSplashScreen();
-				setOrientationSensitive(true);
+				showsplash = false;
 			}
 		}, thisInstance.getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
-	}
-	
-	/**
-	 * This method enables or disables changing the layout when the screen orientation
-	 * changes.
-	 * @param enabled set to true if the application should not react on the orientation change,
-	 * set to false otherwise
-	 */
-	private void setOrientationSensitive(boolean enabled){
-		if(enabled)
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-		else
-			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);	
 	}
 	
 	/**
@@ -797,6 +780,11 @@ public class WelcomeActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		checkInstalledStatesOfApks();
+	}
+	
+	protected void onPause(){
+		super.onPause();
+		dismissSplashScreen();
 	}
 	
 	/**
