@@ -8,6 +8,7 @@ import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.ComponentName;
@@ -15,7 +16,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -23,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
@@ -77,12 +82,20 @@ public class WelcomeActivity extends FragmentActivity {
 	private String onLoginCompleteShowUserStudy = null;
 	/** reference to the InstalledStateMonitor */
 	private static InstalledStateMonitor installedStateMonitor = null;
+	
 	/** Boolean for the splashscreen */
 	private static boolean showsplash = true;
+	
+	/** the Dialog shown on the splash screen */
+	private Dialog mSplashDialog;
+	
 	/** If this variable is true the activity is connected to the service. **/
 	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
+	
+	private static final String LOG_TAG = WelcomeActivity.class.getName();
+	
 	
 	/**
 	 * @return the current instance (singleton)
@@ -201,7 +214,7 @@ public class WelcomeActivity extends FragmentActivity {
 			if (showsplash && PreferenceManager.getDefaultSharedPreferences(this)
 					.getBoolean("splashscreen_pref", true)
 					&& !waitingForResult) {
-//TODO				showSplashScreen();
+				showSplashScreen();
 				showsplash = false;
 			}
 		}
@@ -326,7 +339,69 @@ public class WelcomeActivity extends FragmentActivity {
 //		setActiveTab(savedInstanceState.getInt("activeTab", TAB_AVAILABLE));
 //		initControls(savedInstanceState);
 //		Log.d("MainActivity", "onRestoreInstanceState called with activeTab=" + getmActiveTab());
-	}  
+	}
+	
+	private void showSplashScreen() {
+		mSplashDialog = new Dialog(this, R.style.AppTheme);
+		mSplashDialog.setContentView(R.layout.splashscreen);
+		mSplashDialog.setCancelable(false);
+		try {
+			((TextView) mSplashDialog.findViewById(R.id.versiontextview)).setText(getPackageManager().getPackageInfo(
+					getPackageName(), 0).versionName);
+		} catch (NameNotFoundException e) {
+			Log.d(LOG_TAG, "There's no MoSeS around here.");
+		}
+		setOrientationSensitive(false); // prevent reloading on orientation change, when the splash screen is shown
+		mSplashDialog.show();
+		
+		/*
+		 * The splash screen should disappear instantly, when the user clicks on it
+		 */
+		final View splashScreenContainer = mSplashDialog.findViewById(R.id.splash_screen_container);
+		splashScreenContainer.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dismissSplashScreen();
+				setOrientationSensitive(true);
+			}
+		});
+		
+		/*
+		 * Delayed dismissal of the splash screen if the user takes no action
+		 */
+		final Handler handler = new Handler();
+		handler.postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				dismissSplashScreen();
+				setOrientationSensitive(true);
+			}
+		}, thisInstance.getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
+	}
+	
+	/**
+	 * This method enables or disables changing the layout when the screen orientation
+	 * changes.
+	 * @param enabled set to true if the application should not react on the orientation change,
+	 * set to false otherwise
+	 */
+	private void setOrientationSensitive(boolean enabled){
+		if(enabled)
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+		else
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);	
+	}
+	
+	/**
+	 * This method dismisses the splash screen and sets it to null
+	 */
+	private void dismissSplashScreen(){
+		if (mSplashDialog != null) {
+			mSplashDialog.dismiss();
+			mSplashDialog = null;
+		}
+	}
     
     /**
      * This object handles connection and disconnection of the service

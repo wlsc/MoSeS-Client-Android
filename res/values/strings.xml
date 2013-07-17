@@ -107,6 +107,9 @@
     <string name="dialog_duplicated_deviceID_text2">Please choose update if you want to replace this device by your current.</string>
     <string name="dialog_duplicated_deviceID_update">Update</string>
     <string name="dialog_duplicated_deviceID_cancel">Cancel</string>
+    <string name="moses_title">MoSeS</string>
+    <string name="version">Version: </string>
+    <string name="moses_logo">MoSeS logo</string>
 
     <!-- Installed List -->
     <string name="installedApkList_defaultHint">Click on a user study to view the full description.</string>
