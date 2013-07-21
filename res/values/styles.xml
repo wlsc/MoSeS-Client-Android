@@ -4,6 +4,10 @@
         <item name="android:actionBarStyle">@style/ActionBarStyle</item>        
     </style>
     
+    <style name="AppThemeNoActionbar" parent="@android:style/Theme.Holo.Light.NoActionBar.Fullscreen">
+        <item name="android:actionBarStyle">@style/ActionBarStyle</item>        
+    </style>
+    
     <style name="ActionBarStyle">
         <item name="android:background">#333333</item>
     </style>

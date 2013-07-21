@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
@@ -185,6 +186,7 @@ public class WelcomeActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         thisInstance = this;
 		Log.d("MainActivity", "onCreate called");
         
@@ -339,7 +341,7 @@ public class WelcomeActivity extends FragmentActivity {
 	}
 	
 	private void showSplashScreen() {
-		mSplashDialog = new Dialog(this, R.style.AppTheme);
+		mSplashDialog = new Dialog(this, R.style.AppThemeNoActionbar);
 		mSplashDialog.setContentView(R.layout.splashscreen);
 		mSplashDialog.setCancelable(false);
 		try {
@@ -360,6 +362,7 @@ public class WelcomeActivity extends FragmentActivity {
 			public void onClick(View v) {
 				dismissSplashScreen();
 				showsplash = false;
+				requestWindowFeature(Window.FEATURE_ACTION_BAR);
 			}
 		});
 		
@@ -372,6 +375,7 @@ public class WelcomeActivity extends FragmentActivity {
 			public void run() {
 				dismissSplashScreen();
 				showsplash = false;
+				requestWindowFeature(Window.FEATURE_ACTION_BAR);
 			}
 		}, thisInstance.getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
 	}
