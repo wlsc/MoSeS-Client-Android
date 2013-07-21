@@ -24,13 +24,13 @@ import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsMana
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
-import de.da_sense.moses.client.service.helpers.HookTypesEnum;
-import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.service.helpers.ExecutableWithType;
+import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.service.helpers.Logout;
+import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.Log;
 

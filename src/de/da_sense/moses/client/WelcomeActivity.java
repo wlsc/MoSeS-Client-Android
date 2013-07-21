@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
@@ -258,7 +257,9 @@ public class WelcomeActivity extends FragmentActivity {
 	 */
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		
 		Log.d("MainActivity", "options menu Logged in state gets set");
+		/*
 		if (mBound) {
 			if (mService.isLoggedIn())
 				menu.findItem(R.id.Menu_Connect)
@@ -266,7 +267,7 @@ public class WelcomeActivity extends FragmentActivity {
 			else
 				menu.findItem(R.id.Menu_Connect)
 				.setTitle(R.string.menu_connect);
-		}
+		}*/
 		return true;
 	}
 
@@ -277,7 +278,8 @@ public class WelcomeActivity extends FragmentActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.Menu_Connect:
+		
+		/*case R.id.Menu_Connect:
 			Log.d("MainActivity" , "Connect in menu clicked");
 			if (mBound) {
 				if (mService.isLoggedIn())
@@ -285,7 +287,7 @@ public class WelcomeActivity extends FragmentActivity {
 				else
 					connect();
 			}
-			return true;
+			return true;*/
         case R.id.Menu_Settings:
             // Settings entry in menu clicked
         	Log.d("MainActivity", "Settings in menu clicked");
@@ -296,11 +298,12 @@ public class WelcomeActivity extends FragmentActivity {
 //            startActivity(settings);
             
             return true;
-        case R.id.Menu_HardwareInfo:
+       /* case R.id.Menu_HardwareInfo:
         	// Hardware Info entry in menu clicked
         	Log.d("MainActivity", "Hardware Info in menu clicked");
         	new HardwareAbstraction(this).getHardwareParameters();
         	return true;
+        	*/
         case R.id.Menu_Logout:
         	// Logout entry in menu clicked
         	Log.d("MainActivity", "Logout in menu clicked");

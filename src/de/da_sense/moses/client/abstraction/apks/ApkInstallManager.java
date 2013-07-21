@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
 
-import android.app.Activity;
 import android.content.Context;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.ApkMethods;
