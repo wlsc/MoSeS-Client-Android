@@ -9,9 +9,9 @@ import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestUninstalledAPK;
 import de.da_sense.moses.client.service.MosesService;
+import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
-import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.util.Log;
 
 public class ApkUninstalled {
