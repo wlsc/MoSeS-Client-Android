@@ -70,8 +70,10 @@ public class WelcomeActivity extends FragmentActivity {
 
 	/** This Object represents the underlying service. */
     private static MosesService mService;
-    /** Boolean to save if another activity is waiting for a result. */
+    
+    /** Set to true if this Activity is waiting for the result of another activity */
 	private static boolean waitingForResult = false;
+	
 	/** check if necessary */
 	private String onLoginCompleteShowUserStudy = null;
 	/** reference to the InstalledStateMonitor */
@@ -504,6 +506,7 @@ public class WelcomeActivity extends FragmentActivity {
 		if (!isMosesServiceRunning())
 			startAndBindService();
 		if (requestCode == 1) { // Login activity
+			waitingForResult = false;
 			switch (resultCode) {
 			case Activity.RESULT_OK:
 				SharedPreferences.Editor e = PreferenceManager
@@ -515,7 +518,6 @@ public class WelcomeActivity extends FragmentActivity {
 				e.putString(Login.PREF_EMAIL, username);
 				e.putString(Login.PREF_PASSWORD, password);
 				e.commit();
-				waitingForResult = false;
 				if (MosesService.getInstance() != null) {
 					Log.d("MainActivity", "MosesService != null, calling login()");
 					MosesService.getInstance().login();
@@ -529,11 +531,6 @@ public class WelcomeActivity extends FragmentActivity {
 				}
 				break;
 			case Activity.RESULT_CANCELED:
-				if (onLoginCompleteShowUserStudy != null) {
-					// TODO: handle canceling of show user study operation
-					// (maybe: prevent notification from disappearing)
-				}
-
 				finish();
 				break;
 			}
@@ -673,7 +670,7 @@ public class WelcomeActivity extends FragmentActivity {
 		
 
 		if (isShowUserStudyCall && isLoginInformationComplete()) {
-			// if a User study has to be shown, and username and password are
+			// if a User study has to be shown, and email and password are
 			// set, redirect this
 			UserstudyNotificationManager.displayUserStudyContent(
 					onLoginCompleteShowUserStudy, this);
@@ -695,6 +692,8 @@ public class WelcomeActivity extends FragmentActivity {
 		}
 		disconnectService();
 	}
+	
+	
 
 	/**
 	 * @see android.support.v4.app.FragmentActivity#onResume()
@@ -711,10 +710,11 @@ public class WelcomeActivity extends FragmentActivity {
 	 *         properly log-in is complete.
 	 */
 	public static boolean isLoginInformationComplete(Context c) {
-		return !(PreferenceManager.getDefaultSharedPreferences(c)
-				.getString(Login.PREF_EMAIL, "").equals("") ||
-				PreferenceManager.getDefaultSharedPreferences(c)
-				.getString(Login.PREF_PASSWORD, "").equals(""));
+		SharedPreferences sps = PreferenceManager.getDefaultSharedPreferences(c);
+		boolean result = !(sps.getString(Login.PREF_EMAIL, "").equals("") ||
+				sps.getString(Login.PREF_PASSWORD, "").equals(""));
+		
+		return result;
 	}
 	
 	/**
