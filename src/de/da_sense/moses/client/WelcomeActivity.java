@@ -84,7 +84,7 @@ public class WelcomeActivity extends FragmentActivity {
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
 	
-//	private static final String LOG_TAG = WelcomeActivity.class.getName();
+	private static final String LOG_TAG = WelcomeActivity.class.getName();
 	
 	
 	/**
@@ -488,7 +488,9 @@ public class WelcomeActivity extends FragmentActivity {
 				getSystemService(ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : 
 			 manager.getRunningServices(Integer.MAX_VALUE)) {
-			if ("moses.client.service.MosesService"
+			String serviceName = service.service.getClassName();
+			Log.d(LOG_TAG, "service name: "+serviceName); 
+			if (MosesService.class.getName()
 					.equals(service.service.getClassName())) {
 				return true;
 			}
@@ -535,16 +537,6 @@ public class WelcomeActivity extends FragmentActivity {
 				break;
 			}
 		}
-	}
-	
-	/**
-	 * We're back, so get everything going again.
-	 * @see android.app.Activity#onAttachedToWindow()
-	 */
-	@Override
-	public void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		startAndBindService();
 	}
 	
 	/**
