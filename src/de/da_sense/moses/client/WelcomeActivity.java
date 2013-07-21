@@ -8,7 +8,6 @@ import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
-import android.app.Dialog;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.ComponentName;
@@ -16,9 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -26,8 +23,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
@@ -82,18 +77,12 @@ public class WelcomeActivity extends FragmentActivity {
 	/** reference to the InstalledStateMonitor */
 	private static InstalledStateMonitor installedStateMonitor = null;
 	
-	/** Boolean for the splashscreen */
-	private static boolean showsplash = true;
-	
-	/** the Dialog shown on the splash screen */
-	private Dialog mSplashDialog;
-	
 	/** If this variable is true the activity is connected to the service. **/
 	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
 	
-	private static final String LOG_TAG = WelcomeActivity.class.getName();
+//	private static final String LOG_TAG = WelcomeActivity.class.getName();
 	
 	
 	/**
@@ -185,7 +174,6 @@ public class WelcomeActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         thisInstance = this;
 		Log.d("MainActivity", "onCreate called");
         
@@ -201,22 +189,13 @@ public class WelcomeActivity extends FragmentActivity {
 		}
         
 		if (!isLoginInformationComplete(this) && !waitingForResult) {
-			// here, the activity is called to display the login screen, and,
+			// Here, the activity is called to display the login screen, and,
 			// when filled in, redirect the user to the user study that was
 			// meant to be displayed originally
 			waitingForResult = true;
 			// set flag that on login credentials arrival show a user study
 			Intent loginDialog = new Intent(WelcomeActivity.this, LoginActivity.class);
 			startActivityForResult(loginDialog, 1);
-		}
-
-		if (!isShowUserStudyCall) {
-			boolean isShowScreenSetInPrefs = PreferenceManager.getDefaultSharedPreferences(this)
-					.getBoolean("splashscreen_pref", true);
-			if (showsplash && isShowScreenSetInPrefs
-					&& !waitingForResult) {
-				showSplashScreen();
-			}
 		}
 
 		if (PreferenceManager.getDefaultSharedPreferences(this)
@@ -341,56 +320,6 @@ public class WelcomeActivity extends FragmentActivity {
 //		setActiveTab(savedInstanceState.getInt("activeTab", TAB_AVAILABLE));
 //		initControls(savedInstanceState);
 //		Log.d("MainActivity", "onRestoreInstanceState called with activeTab=" + getmActiveTab());
-	}
-	
-	private void showSplashScreen() {
-		mSplashDialog = new Dialog(this, R.style.AppThemeNoActionbar);
-		mSplashDialog.setContentView(R.layout.splashscreen);
-		mSplashDialog.setCancelable(false);
-		try {
-			((TextView) mSplashDialog.findViewById(R.id.versiontextview)).setText(getPackageManager().getPackageInfo(
-					getPackageName(), 0).versionName);
-		} catch (NameNotFoundException e) {
-			Log.d(LOG_TAG, "There's no MoSeS around here.");
-		}
-		mSplashDialog.show();
-		
-		/*
-		 * The splash screen should disappear instantly, when the user clicks on it
-		 */
-		final View splashScreenContainer = mSplashDialog.findViewById(R.id.splash_screen_container);
-		splashScreenContainer.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				dismissSplashScreen();
-				showsplash = false;
-				requestWindowFeature(Window.FEATURE_ACTION_BAR);
-			}
-		});
-		
-		/*
-		 * Delayed dismissal of the splash screen if the user takes no action
-		 */
-		final Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			@Override
-			public void run() {
-				dismissSplashScreen();
-				showsplash = false;
-				requestWindowFeature(Window.FEATURE_ACTION_BAR);
-			}
-		}, thisInstance.getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
-	}
-	
-	/**
-	 * This method dismisses the splash screen and sets it to null
-	 */
-	private void dismissSplashScreen(){
-		if (mSplashDialog != null) {
-			mSplashDialog.dismiss();
-			mSplashDialog = null;
-		}
 	}
     
     /**
@@ -518,19 +447,6 @@ public class WelcomeActivity extends FragmentActivity {
 					"was not started yet or some other failure");
 		}
 		return null;
-	}
-	
-	/**
-	 * Connect to the server and save (changed) settings
-	 */
-	private void connect() {
-		// Login if not already or just start logged in view if present
-		Log.d("MoSeS.ACTIVITY", "Connect button pressed.");
-		if (mService != null) {
-			if (!mService.isLoggedIn()) {
-				mService.login();
-			}
-		}
 	}
 
 	/**
@@ -787,11 +703,6 @@ public class WelcomeActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		checkInstalledStatesOfApks();
-	}
-	
-	protected void onPause(){
-		super.onPause();
-		dismissSplashScreen();
 	}
 	
 	/**
