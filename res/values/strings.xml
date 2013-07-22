@@ -162,7 +162,10 @@
     <string name="application_prefs">Application settings</string>
     <string name="general_settings">General</string>
     <string name="general_settings_summary">Control spash screen or change the id of this device</string>
-    <string name="dev_id_invalid_character_error">Only alphanumeric characters, underscores and empty spaces are allowed.</string>
+    <string name="dev_id_invalid_character_error">Invalid characters.</string>
+    <string name="dev_id_empty_error">Device id may not be empty.</string>
+<!--     <string name="dev_id_invalid_character_error">Only .</string> -->
+<!--     <string name="dev_id_empty_error">Device id .</string> -->
 
     <!-- Buttons -->
     <string name="button_login">Login</string>
