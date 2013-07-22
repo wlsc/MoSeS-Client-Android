@@ -629,11 +629,11 @@ public class WelcomeActivity extends FragmentActivity {
 		}
 
 		// get ActionBar and set NavigationMode
-		ActionBar ab = getActionBar();
-		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		
 		// add Tabs to the ActionBar
-		Tab availabletab = ab
+		Tab availabletab = actionBar
 				.newTab()
 				.setText(getString(R.string.tab_available))
 				.setTabListener(
@@ -641,23 +641,23 @@ public class WelcomeActivity extends FragmentActivity {
 								"available", AvailableFragment.class));
 		
 		// with parameter if tab is selected
-		ab.addTab(availabletab, availableSelected);
+		actionBar.addTab(availabletab, availableSelected);
 
-		Tab runningtab = ab
+		Tab runningtab = actionBar
 				.newTab()
 				.setText(getString(R.string.tab_running))
 				.setTabListener(
 						new MosesTabListener<RunningFragment>(this, 
 								"running", RunningFragment.class));
-		ab.addTab(runningtab, runningSelected);
+		actionBar.addTab(runningtab, runningSelected);
 
-		Tab historytab = ab
+		Tab historytab = actionBar
 				.newTab()
 				.setText(getString(R.string.tab_history))
 				.setTabListener(
 						new MosesTabListener<HistoryFragment>(this, 
 								"history", HistoryFragment.class));
-		ab.addTab(historytab, historySelected);
+		actionBar.addTab(historytab, historySelected);
 		
 		
 
@@ -749,8 +749,6 @@ public class WelcomeActivity extends FragmentActivity {
 	
 	/**
 	 * Moved this into the MainActivity. Also stores a Bundle.
-	 * @author Sandra Amend
-	 * @param <T> class which extends SherlockListFragment
 	 */
 	private static class MosesTabListener<T extends ListFragment> implements TabListener {
 		

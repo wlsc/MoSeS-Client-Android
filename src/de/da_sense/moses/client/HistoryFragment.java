@@ -312,7 +312,7 @@ public class HistoryFragment extends ListFragment {
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView about to inflate View");
 		 View historyFragmentView = inflater.inflate(
-				 R.layout.historyuserstudieslist, container, false);
+				 R.layout.tab_history, container, false);
 		 container.setBackgroundColor(getResources()
 				 .getColor(android.R.color.background_light));
 		 

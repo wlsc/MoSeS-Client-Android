@@ -442,7 +442,7 @@ public class RunningFragment extends ListFragment {
 			Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView about to inflate View");
 		 View runnningFragmentView = inflater.inflate(
-				 R.layout.installedapplicationslist, container, false);
+				 R.layout.tab_running, container, false);
 		 container.setBackgroundColor(getResources()
 				 .getColor(android.R.color.background_light));
 		 
