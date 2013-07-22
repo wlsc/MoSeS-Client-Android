@@ -10,7 +10,7 @@
             android:dialogIcon="@drawable/ic_launcher"
             android:dialogMessage="@string/pref_enter_new_id"
             android:dialogTitle="@string/pref_deviceid"
-            android:key="deviceid_pref"
+            android:key="@string/deviceIDPreferenceKey"
             android:summary="@string/pref_change_id"
             android:title="@string/pref_deviceid" />
     </PreferenceCategory>

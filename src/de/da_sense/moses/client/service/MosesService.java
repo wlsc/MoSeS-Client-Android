@@ -47,6 +47,7 @@ import de.da_sense.moses.client.util.Log;
  * respond.
  * 
  * @author Jaco Hofmann
+ * @author Zijad Maksuti
  */
 public class MosesService extends android.app.Service implements OnSharedPreferenceChangeListener {
 

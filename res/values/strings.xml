@@ -92,12 +92,12 @@
     <string name="check_internet">Not able to connect to MoSeS. Check your Internet connection.</string>
 
     <!-- DeviceID -->
-    <string name="actionBar_deviceID_text">MoSeS - Device ID</string>
+    <string name="actionBar_deviceID_text">Device ID</string>
     <string name="deviceID_text">Device ID</string>
     <string name="deviceID_text2">Device ID:</string>
     <string name="deviceID_decr_text">Please enter an ID for your device.</string>
-    <string name="deviceID_decr_text2">This ID can be an arbitrary non-empty string and is used to identify your device in our system. Please note that special characters are not supported.</string>
-    <string name="deviceID_set_button">Set Device ID</string>
+    <string name="deviceID_decr_text2">This ID can be an arbitrary non-empty string and is used to identify your device in our system. Please note that only alphanumeric characters are allowed.</string>
+    <string name="deviceID_set_button">Set device ID</string>
     <string name="deviceID_not_entered">No device ID entered.</string>
     <string name="deviceID_change_text">Changing the device ID failed, please select another device ID or proceed if you don\'t want to change the ID anymore.</string>
 
@@ -162,6 +162,7 @@
     <string name="application_prefs">Application settings</string>
     <string name="general_settings">General</string>
     <string name="general_settings_summary">Control spash screen or change the id of this device</string>
+    <string name="dev_id_invalid_character_error">Only alphanumeric characters, underscores and empty spaces are allowed.</string>
 
     <!-- Buttons -->
     <string name="button_login">Login</string>
