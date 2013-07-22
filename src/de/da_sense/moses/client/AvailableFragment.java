@@ -355,7 +355,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		Log.d("AvailableFragment", "onCreateView about to inflate View");
-		 View availbleFragmentView = inflater.inflate(R.layout.availableapklist,
+		 View availbleFragmentView = inflater.inflate(R.layout.tab_available,
 				 container, false);
 		 container.setBackgroundColor(getResources()
 				 .getColor(android.R.color.background_light));

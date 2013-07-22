@@ -21,8 +21,9 @@
 	        android:scrollbars="vertical" >
 	    </LinearLayout>
     </ScrollView>
-
+    
     <LinearLayout
+        android:orientation="horizontal"
         android:id="@+id/bottom_quest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
