@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
@@ -16,7 +15,7 @@ import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -40,9 +39,11 @@ public class MosesPreferences extends PreferenceActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Actionbar
-		ActionBar ab = getActionBar();
-		ab.setTitle("Settings");
-		ab.setDisplayShowTitleEnabled(true);
+		ActionBar actionBar = getActionBar();
+		actionBar.setTitle("Settings");
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setDisplayHomeAsUpEnabled(true);
+		
 		getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragment()).commit();
 	}
 
@@ -55,6 +56,15 @@ public class MosesPreferences extends PreferenceActivity {
 		if (f && MosesService.getInstance() != null) {
 			MosesService.getInstance().setActivityContext(this);
 		}
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+	        onBackPressed();
+	        return true;
+	    }
+	    return super.onOptionsItemSelected(item);
 	}
 	
 	
