@@ -75,8 +75,6 @@ public class MosesPreferences extends PreferenceActivity {
 	 */
 	public static class PrefsFragment extends PreferenceFragment {
 		
-		private static String LOG_TAG = PreferenceFragment.class.getSimpleName();
-		
 		private Button mPositiveButtonDeviceId;
 		private String mErrorDeviceIdErrorMessage;
 		
