@@ -73,7 +73,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	/** Save the last layout which was set. */
 	LayoutState lastSetLayout = null;
 	
-	/** Sie of the the APK being downloaded */
+	/** Size of the the APK being downloaded */
 	private int totalSize = -1;
 	
 	/** variable for requestExternalApplications  */
@@ -335,10 +335,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		this.isPaused = true;
 	}
 
-	/**
-	 * 
-	 * @see android.support.v4.app.Fragment#onCreate(android.os.Bundle)
-	 */
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
