@@ -522,7 +522,8 @@ public class WelcomeActivity extends FragmentActivity {
 				Log.d("MoSeS.ACTIVITY", password);
 				e.putString(MosesPreferences.PREF_EMAIL, username);
 				e.putString(MosesPreferences.PREF_PASSWORD, password);
-				e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
+				if(deviceName != null) // the server may not know the name of the device, so check if the response contained the name
+					e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
 				e.commit();
 				if (MosesService.getInstance() != null) {
 					Log.d("MainActivity", "MosesService != null, calling login()");
