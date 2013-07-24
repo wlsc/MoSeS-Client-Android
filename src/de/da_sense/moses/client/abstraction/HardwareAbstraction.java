@@ -580,6 +580,18 @@ public class HardwareAbstraction {
 					MosesPreferences.PREF_DEVICEID, "");
 		return deviceid;
 	}
+	
+	/**
+	 * Returns the name of the device stored in the shared preferences
+	 * @return the name of the device or null if it is not stored in the shared preferences
+	 */
+	public static String extractDeviceNameFromSharedPreferences() {
+		String deviceid = null;
+		if (MosesService.getInstance() != null)
+			deviceid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+					MosesPreferences.PREF_DEVICENAME, null);
+		return deviceid;
+	}
 
 	/**
 	 * to change device id of this device

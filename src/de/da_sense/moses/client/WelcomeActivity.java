@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -26,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
@@ -522,13 +524,19 @@ public class WelcomeActivity extends FragmentActivity {
 				Log.d("MoSeS.ACTIVITY", password);
 				e.putString(MosesPreferences.PREF_EMAIL, username);
 				e.putString(MosesPreferences.PREF_PASSWORD, password);
-				if(deviceName != null) // the server may not know the name of the device, so check if the response contained the name
-					e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
-				e.commit();
-				if (MosesService.getInstance() != null) {
-					Log.d("MainActivity", "MosesService != null, calling login()");
-					MosesService.getInstance().login();
+				String deviceNameAlreadyStored = HardwareAbstraction.extractDeviceNameFromSharedPreferences(); 
+				if(deviceNameAlreadyStored == null){
+					// only set the deviceName sent by the server if the client does not know his name
+					if(deviceName != null){ // the server may not know the name of the device, so check if the response contained the name
+							e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
+						}
+					else{
+						// the server does not know the deviceName either, set the the device's model name as the device name
+						e.putString(MosesPreferences.PREF_DEVICENAME, Build.MODEL);
+					}
+					e.apply();
 				}
+				
 				if (onLoginCompleteShowUserStudy != null) {
 					// if a user study is to be displayed
 					UserstudyNotificationManager.displayUserStudyContent(
