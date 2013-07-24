@@ -141,7 +141,7 @@
     <string name="no_internet_connection">No internet connection.</string>
     <string name="no_deviceid">No device id entered.</string>
     <string name="welcome_to_moses_title_string">Welcome to MoSeS!</string>
-    <string name="welcome_to_moses_string">You have to provide some information about your account and the sensors you want to share.</string>
+    <string name="welcome_to_moses_string">It offers a lot of applications for scientific purposes. Feel free to look around.</string>
     <string name="unknown_response_from_server">Unknown response from server. Maybe you forgot to login to your HotSpot?</string>
 
     <!-- Preferences -->
@@ -156,9 +156,9 @@
     <string name="summary_password_pref">Please enter your MoSeS password.</string>
     <string name="title_password_pref">Password</string>
     <string name="device_prefs">Device settings</string>
-    <string name="pref_deviceid">Device name</string>
+    <string name="pref_device_name">Device name</string>
     <string name="pref_change_id">Change the name of this device.</string>
-    <string name="pref_enter_new_id">Enter a new name for this device.</string>
+    <string name="pref_enter_new_name">Enter a new name for this device.</string>
     <string name="application_prefs">Application settings</string>
     <string name="general_settings">General</string>
     <string name="general_settings_summary">Control spash screen or change the name of this device</string>

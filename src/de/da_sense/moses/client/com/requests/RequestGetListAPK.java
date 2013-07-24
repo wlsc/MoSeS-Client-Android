@@ -46,7 +46,7 @@ public class RequestGetListAPK {
 		try {
 			j.put("MESSAGE", "GET_APK_LIST_REQUEST");
 			j.put("SESSIONID", sessionID);
-			j.put("DEVICEID", HardwareAbstraction.extractDeviceId());
+			j.put("DEVICEID", HardwareAbstraction.extractDeviceIdFromSharedPreferences());
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}

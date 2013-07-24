@@ -18,6 +18,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.Settings.Secure;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,7 +37,6 @@ import de.da_sense.moses.client.service.MosesService.LocalBinder;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
-import de.da_sense.moses.client.service.helpers.Login;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.Log;
@@ -196,17 +196,12 @@ public class WelcomeActivity extends FragmentActivity {
 			// meant to be displayed originally
 			waitingForResult = true;
 			// set flag that on login credentials arrival show a user study
+			
+			// set the deviceID in the SharedPreferences before attempting to login
+			String theDeviceID = Secure.getString(getContentResolver(), Secure.ANDROID_ID); 
+			PreferenceManager.getDefaultSharedPreferences(this).edit().putString(MosesPreferences.PREF_DEVICEID, theDeviceID).commit();
 			Intent loginDialog = new Intent(WelcomeActivity.this, LoginActivity.class);
 			startActivityForResult(loginDialog, 1);
-		}
-
-		if (PreferenceManager.getDefaultSharedPreferences(this)
-				.getString("deviceid_pref", "").equals("")
-				&& !waitingForResult
-				&& PreferenceManager.getDefaultSharedPreferences(this)
-				.getBoolean("firststart", true)) {
-			Intent i = new Intent(WelcomeActivity.this, AskForDeviceIDActivity.class);
-			startActivity(i);
 		}
 
 		if (HistoryExternalApplicationsManager.getInstance() == null) {
@@ -291,7 +286,7 @@ public class WelcomeActivity extends FragmentActivity {
         	// Logout entry in menu clicked
         	Log.d("MainActivity", "Logout in menu clicked");
         	PreferenceManager.getDefaultSharedPreferences(this).edit()
-        	.remove(Login.PREF_EMAIL).remove(Login.PREF_PASSWORD).commit();
+        	.remove(MosesPreferences.PREF_EMAIL).remove(MosesPreferences.PREF_PASSWORD).commit();
         	waitingForResult = true;
         	Intent mainDialog = new Intent(WelcomeActivity.this, LoginActivity.class);
         	startActivityForResult(mainDialog, 1);
@@ -406,6 +401,7 @@ public class WelcomeActivity extends FragmentActivity {
      * Start and bind the Moses service.
      */
     private void startAndBindService() {
+    	
         Intent intent = new Intent(this, MosesService.class);
         if (null == startService(intent)) {
             stopService(intent);
@@ -423,6 +419,12 @@ public class WelcomeActivity extends FragmentActivity {
         super.onStart();
         ((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
         .setVisibility(View.GONE);
+        /*
+         * If the device id is not set in the shared preferences,
+         * it means that this is the first time the client has started on this device.
+         * to the device 
+         */
+        
         startAndBindService();
     }
     
@@ -513,12 +515,14 @@ public class WelcomeActivity extends FragmentActivity {
 			case Activity.RESULT_OK:
 				SharedPreferences.Editor e = PreferenceManager
 						.getDefaultSharedPreferences(this).edit();
-				String username = data.getStringExtra(Login.PREF_EMAIL);
-				String password = data.getStringExtra(Login.PREF_PASSWORD);
+				String username = data.getStringExtra(MosesPreferences.PREF_EMAIL);
+				String password = data.getStringExtra(MosesPreferences.PREF_PASSWORD);
+				String deviceName = data.getStringExtra(MosesPreferences.PREF_DEVICENAME);
 				Log.d("MoSeS.ACTIVITY", username);
 				Log.d("MoSeS.ACTIVITY", password);
-				e.putString(Login.PREF_EMAIL, username);
-				e.putString(Login.PREF_PASSWORD, password);
+				e.putString(MosesPreferences.PREF_EMAIL, username);
+				e.putString(MosesPreferences.PREF_PASSWORD, password);
+				e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
 				e.commit();
 				if (MosesService.getInstance() != null) {
 					Log.d("MainActivity", "MosesService != null, calling login()");
@@ -703,8 +707,8 @@ public class WelcomeActivity extends FragmentActivity {
 	 */
 	public static boolean isLoginInformationComplete(Context c) {
 		SharedPreferences sps = PreferenceManager.getDefaultSharedPreferences(c);
-		boolean result = !(sps.getString(Login.PREF_EMAIL, "").equals("") ||
-				sps.getString(Login.PREF_PASSWORD, "").equals(""));
+		boolean result = !(sps.getString(MosesPreferences.PREF_EMAIL, "").equals("") ||
+				sps.getString(MosesPreferences.PREF_PASSWORD, "").equals(""));
 		
 		return result;
 	}

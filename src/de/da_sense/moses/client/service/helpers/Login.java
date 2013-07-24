@@ -23,16 +23,6 @@ import de.da_sense.moses.client.util.Log;
  * @author Zijad Maksuti
  */
 public class Login {
-	
-	/**
-	 * Key for the shared preference EMAIL
-	 */
-	public static String PREF_EMAIL = "email_pref";
-	
-	/**
-	 * Key for the shared preference PASSWORD
-	 */
-	public static String PREF_PASSWORD = "password_pref";
 
 	/**
 	 * The Class LoginFunc - implements ReqTaskExecutor. Handles the
@@ -130,6 +120,9 @@ public class Login {
 
 	/** The password. */
 	private String pw;
+	
+	/** The deviceID. */
+	private String deviceID;
 
 	/** postExecuteSuccess hooks. */
 	private ConcurrentLinkedQueue<ExecutableWithType> postExecuteSuccess;
@@ -222,9 +215,10 @@ public class Login {
 	 * @param password
 	 *            the password
 	 */
-	public Login(String email, String password) {
+	public Login(String email, String password, String deviceID) {
 		this.pw = password;
 		this.email = email;
+		this.deviceID = deviceID;
 		this.postExecuteSuccess = MosesService.getInstance().getHook(
 				HookTypesEnum.POST_LOGIN_SUCCESS);
 		this.postExecuteSuccessPriority = MosesService.getInstance().getHook(
@@ -236,7 +230,7 @@ public class Login {
 		this.loginStart = MosesService.getInstance().getHook(
 				HookTypesEnum.POST_LOGIN_START);
 		if (System.currentTimeMillis() - lastLoggedIn > sessionAliveTime) {
-			new RequestLogin(new LoginFunc(), this.email, this.pw).send();
+			new RequestLogin(new LoginFunc(), this.email, this.pw, this.deviceID).send();
 		} else {
 			Log.d("MoSeS.LOGIN", "Session still active.");
 			Log.d("MoSeS.LOGIN", "Post login success priority: ");

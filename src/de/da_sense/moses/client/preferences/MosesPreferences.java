@@ -31,6 +31,26 @@ import de.da_sense.moses.client.service.MosesService;
  * 
  */
 public class MosesPreferences extends PreferenceActivity {
+	
+	/**
+	 * Key for the shared preference EMAIL
+	 */
+	public static String PREF_EMAIL = "email_pref";
+	
+	/**
+	 * Key for the shared preference PASSWORD
+	 */
+	public static String PREF_PASSWORD = "password_pref";
+	
+	/**
+	 * Key for the shared preference DEVICENAME
+	 */
+	public static String PREF_DEVICENAME = "devicename_pref";
+	
+	/**
+	 * Key for the shared preference DEVICENAME
+	 */
+	public static String PREF_DEVICEID = "deviceid_pref";
 
 	/**
 	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)
@@ -90,7 +110,7 @@ public class MosesPreferences extends PreferenceActivity {
 			/*
 			 * Change the default behavior of the EditTextPreference for changing the deviceId
 			 */
-			final EditTextPreference prefDevId = (EditTextPreference) findPreference(getString(R.string.deviceIDPreferenceKey));
+			final EditTextPreference prefDevId = (EditTextPreference) findPreference(getString(R.string.deviceNamePreferenceKey));
 			final EditText devIdEditText = prefDevId.getEditText();
 			prefDevId.setOnPreferenceClickListener(new OnPreferenceClickListener() {
 				
@@ -166,18 +186,6 @@ public class MosesPreferences extends PreferenceActivity {
 					}
 				}
 			});
-			
-//			prefDevId.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-//
-//				@Override
-//				public boolean onPreferenceChange(Preference preference, Object newValue) {
-//					String newValueTrimmed = ((String)newValue).trim();
-//					prefDevId.setText(newValueTrimmed);
-//					Log.d(LOG_TAG, preference.toString());
-//					Log.d(LOG_TAG, newValueTrimmed.toString());
-//					return true;
-//				}
-//			});
 			
 		}
 		

@@ -45,7 +45,7 @@ public class RequestGetApkInfo {
 			j.put("MESSAGE", "GET_APK_INFO");
 			j.put("ID", apkId);
 			j.put("SESSIONID", sessionID);
-			j.put("DEVICEID", HardwareAbstraction.extractDeviceId());
+			j.put("DEVICEID", HardwareAbstraction.extractDeviceIdFromSharedPreferences());
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}

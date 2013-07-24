@@ -8,11 +8,11 @@
         android:title="@string/device_prefs" >
         <EditTextPreference
             android:dialogIcon="@drawable/ic_launcher"
-            android:dialogMessage="@string/pref_enter_new_id"
-            android:dialogTitle="@string/pref_deviceid"
-            android:key="@string/deviceIDPreferenceKey"
+            android:dialogMessage="@string/pref_enter_new_name"
+            android:dialogTitle="@string/pref_device_name"
+            android:key="@string/deviceNamePreferenceKey"
             android:summary="@string/pref_change_id"
-            android:title="@string/pref_deviceid" />
+            android:title="@string/pref_device_name" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="app_prefs"

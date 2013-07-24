@@ -61,14 +61,16 @@ public class RequestLogin {
 	 * @param reqTaskExecutorGiven An implementation of ReqTaskExecuter (usually LoginFunc)
 	 * @param email the email
 	 * @param pw The password
+	 * @param deviceID the id of the device 
 	 */
-	public RequestLogin(ReqTaskExecutor reqTaskExecutorGiven, String email, String pw) {
+	public RequestLogin(ReqTaskExecutor reqTaskExecutorGiven, String email, String pw, String deviceID) {
 		j = new JSONObject();
 		this.reqTaskExecutor = reqTaskExecutorGiven;
 		try {
 			j.put("MESSAGE", "LOGIN_REQUEST");
 			j.put("EMAIL", email);
 			j.put("PASSWORD", pw);
+			j.put("DEVICEID", deviceID);
 		} catch (JSONException ex) {
 			reqTaskExecutor.handleException(ex);
 		}

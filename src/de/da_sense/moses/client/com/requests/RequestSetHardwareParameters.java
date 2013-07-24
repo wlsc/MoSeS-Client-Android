@@ -15,7 +15,7 @@ import de.da_sense.moses.client.util.Log;
  * This class is used for setting hardware parameters it provides some basic
  * methods for this
  * 
- * @author Zijad
+ * @author Zijad Maksuti
  * 
  */
 public class RequestSetHardwareParameters {

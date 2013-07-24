@@ -30,6 +30,7 @@ import de.da_sense.moses.client.com.requests.RequestGetHardwareParameters;
 import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.com.requests.RequestSetFilter;
 import de.da_sense.moses.client.com.requests.RequestSetHardwareParameters;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
 import de.da_sense.moses.client.service.helpers.Executable;
@@ -41,6 +42,7 @@ import de.da_sense.moses.client.util.Log;
  * This class provides basic support for hardware sync with server
  * 
  * @author Jaco Hofmann, Wladimir Schmidt
+ * @author Zijad Maksuti
  * 
  */
 public class HardwareAbstraction {
@@ -57,10 +59,10 @@ public class HardwareAbstraction {
 	}
 	
     /**
-     * This class is used to store informaions of a device
+     * This class is used to store informations of a device
      */
 	public class HardwareInfo {
-	    /** device id that user gives to a device */
+	    /** unique device id*/
 		private String deviceID;
 		/** sdk version of a device */
 		private int sdkbuildversion;
@@ -70,6 +72,7 @@ public class HardwareAbstraction {
 		private String model;
 		/** set of sensors that a device provides */
 		private List<Integer> sensors;
+		/** 
 		
 		/**
 		 * This method is used to create a hardwareinfo
@@ -381,11 +384,8 @@ public class HardwareAbstraction {
 									syncDeviceInformation(true);
 								}
 							});
-				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
-				    // if there is a duplication with another device id
-					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
-							MosesService.getInstance().getActivityContext(), true);
-				}  else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
+				}
+				else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
                     // if there is no device id been set for this device
 					MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
 							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
@@ -479,11 +479,7 @@ public class HardwareAbstraction {
 					// sending the current C2DM of this device
 					C2DMManager.sendCurrentC2DM();
 					MosesService.getInstance().uploadFilter();
-				} else if (j.getString("STATUS").equals("FAILURE_DEVICEID_DUPLICATED")) {
-				    // if there is a duplication with another device id
-					showForceDialog(j.getString("VENDOR_NAME"), j.getString("MODEL_NAME"), j.getString("ANDVER"),
-							MosesService.getInstance().getActivityContext(), false);
-				} else {
+				}else {
 				    // if the session id is invalid
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
 				}
@@ -504,89 +500,6 @@ public class HardwareAbstraction {
 		}
 	}
 
-	/**
-	 * Show this dialog when the device id that user set is duplicated with another device id
-	 * @param vendor of this device
-	 * @param model of this device
-	 * @param andver the android version of this device
-	 * @param c Context
-	 * @param update whether there was a valid device id or not
-	 */
-	private void showForceDialog(String vendor, String model, String andver, Context c, boolean update) {
-		AlertDialog a = new AlertDialog.Builder(c).create();
-		// prepare this dialog
-		a.setIcon(R.drawable.ic_launcher);
-		a.setTitle(R.string.dialog_duplicated_deviceID_title);
-		a.setMessage(c.getString(R.string.dialog_duplicated_deviceID_text) + "\nVendor: "
-				+ vendor + "\nModel: " + model + "\nSDK Version: " + andver + "\n"
-				+ c.getString(R.string.dialog_duplicated_deviceID_text2));
-		a.setIcon(R.drawable.ic_launcher);
-		if (update) {
-		    // there was a valid device id for this device
-			a.setButton(DialogInterface.BUTTON_POSITIVE, c.getString(R.string.dialog_duplicated_deviceID_update),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-									MessageTypesEnum.REQUEST_UPDATE_HARDWARE_PARAMETERS, new Executable() {
-										@Override
-										public void execute() {
-											HardwareAbstraction.this.changeDeviceID(true);
-										}
-									});
-							arg0.dismiss();
-						}
-					});
-			a.setButton(DialogInterface.BUTTON_NEGATIVE, c.getString(R.string.dialog_duplicated_deviceID_cancel),
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().noOnSharedPreferenceChanged(true);
-							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
-									.putString("deviceid_pref", "").commit();
-							MosesService.getInstance().noOnSharedPreferenceChanged(false);
-							MosesService.getInstance().notSetDeviceID();
-							arg0.dismiss();
-						}
-
-					});
-		} else {
-		    // there was not a valid device id for this device
-			a.setButton(DialogInterface.BUTTON_POSITIVE, c.getString(R.string.dialog_duplicated_deviceID_update),
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-									MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
-
-										@Override
-										public void execute() {
-											HardwareAbstraction.this.syncDeviceInformation(true);
-										}
-									});
-							arg0.dismiss();
-						}
-					});
-			a.setButton(DialogInterface.BUTTON_NEGATIVE, c.getString(R.string.dialog_duplicated_deviceID_cancel),
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							MosesService.getInstance().noOnSharedPreferenceChanged(true);
-							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
-									.putString("deviceid_pref", "").commit();
-							MosesService.getInstance().noOnSharedPreferenceChanged(false);
-							MosesService.getInstance().notSetDeviceID();
-							arg0.dismiss();
-						}
-
-					});
-		}
-		a.setIcon(R.drawable.ic_launcher);
-		a.show();
-	}
-
 
 	/**
 	 * This method sends a Request to the website for obtaining the filter
@@ -599,7 +512,7 @@ public class HardwareAbstraction {
 						@Override
 						public void execute() {
 							final RequestGetFilter rGetFilter = new RequestGetFilter(new ReqClassGetFilter(),
-									RequestLogin.getSessionID(), extractDeviceId());
+									RequestLogin.getSessionID(), extractDeviceIdFromSharedPreferences());
 							rGetFilter.send();
 						}
 					});
@@ -620,7 +533,7 @@ public class HardwareAbstraction {
 							gethwprogressdialog.setMessage("Retrieving...");
 							gethwprogressdialog.show();
 							new RequestGetHardwareParameters(new ReqClassGetHWParams(), RequestLogin.getSessionID(),
-									extractDeviceId()).send();
+									extractDeviceIdFromSharedPreferences()).send();
 						}
 					});
 	}
@@ -636,7 +549,7 @@ public class HardwareAbstraction {
 						@Override
 						public void execute() {
 							RequestSetFilter rSetFilter = new RequestSetFilter(new ReqClassSetFilter(), RequestLogin
-									.getSessionID(), extractDeviceId(), filter);
+									.getSessionID(), extractDeviceIdFromSharedPreferences(), filter);
 							rSetFilter.send();
 						}
 					});
@@ -653,18 +566,18 @@ public class HardwareAbstraction {
 		for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) {
 			sensors.add(sen.getType());
 		}
-		return new HardwareInfo(extractDeviceId(), Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT, sensors);
+		return new HardwareInfo(extractDeviceIdFromSharedPreferences(), Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT, sensors);
 	}
 
 	/**
-	 * to get device id that been stored
+	 * to get device id that has been stored in the shared preferences
 	 * @return device id as String
 	 */
-	public static String extractDeviceId() {
+	public static String extractDeviceIdFromSharedPreferences() {
 		String deviceid = "";
 		if (MosesService.getInstance() != null)
 			deviceid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
-					"deviceid_pref", "");
+					MosesPreferences.PREF_DEVICEID, "");
 		return deviceid;
 	}
 
@@ -672,7 +585,7 @@ public class HardwareAbstraction {
 	 * to change device id of this device
 	 * @param force whether user want to change the device id or not
 	 */
-	public void changeDeviceID(final boolean force) {
+	private void changeDeviceID(final boolean force) {
 		if (MosesService.getInstance() != null) {
 			if (!PreferenceManager
 					.getDefaultSharedPreferences(MosesService.getInstance())

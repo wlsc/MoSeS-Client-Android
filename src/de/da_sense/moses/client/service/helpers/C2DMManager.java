@@ -126,7 +126,7 @@ public class C2DMManager {
 								// the server!
 								Log.e("MoSeS.C2DM", "sendC2DM failed: " + e.getMessage(), e);
 							}
-						}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceId(),
+						}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceIdFromSharedPreferences(),
 								registrationId);
 
 						request.send();

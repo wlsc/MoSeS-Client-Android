@@ -17,12 +17,12 @@ import android.net.NetworkInfo;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import de.da_sense.moses.client.AskForDeviceIDActivity;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.com.NetworkJSON;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.helpers.C2DMManager;
 import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
@@ -50,6 +50,8 @@ import de.da_sense.moses.client.util.Log;
  * @author Zijad Maksuti
  */
 public class MosesService extends android.app.Service implements OnSharedPreferenceChangeListener {
+	
+	private static String LOG_TAG = MosesService.class.getName();
 
 	/**
 	 * The Class MosesSettings.
@@ -61,6 +63,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 
 		/** This variable holds the password during runtime */
 		private String password = "";
+		
+		/** This variable holds the deviceID during runtime */
+		private String deviceID = "";
 
 		/** The current session id. */
 		private String sessionid = "";
@@ -70,9 +75,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 
 		/** True if the service currently tries to log in. */
 		private boolean loggingIn = false;
-
-		/** The device id currently in use. */
-		private String deviceid = "";
 
 		/** The context of the currently used activity. */
 		private Context activitycontext = null;
@@ -160,9 +162,9 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	private void initConfig() {
 		SharedPreferences settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		mset.username = settingsFile.getString(Login.PREF_EMAIL, "");
-		mset.password = settingsFile.getString(Login.PREF_PASSWORD, "");
-		mset.deviceid = settingsFile.getString("deviceid_pref", "");
+		mset.username = settingsFile.getString(MosesPreferences.PREF_EMAIL, "");
+		mset.password = settingsFile.getString(MosesPreferences.PREF_PASSWORD, "");
+		mset.deviceID = settingsFile.getString(MosesPreferences.PREF_DEVICEID, "");
 		try {
 			mset.filter = new JSONArray(settingsFile.getString("sensor_data", "[]"));
 		} catch (JSONException e) {
@@ -243,7 +245,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		Log.d("Moses.SERVICE", "mset.loggingIn = " + mset.loggingIn);
 		Log.d("Moses.SERVICE", "mset.username = " + mset.username);
 		Log.d("Moses.SERVICE", "mset.password = " + mset.password);
-		Log.d("Moses.SERVICE", "deviceID exists? " + PreferenceManager.getDefaultSharedPreferences(this).contains("deviceid_pref"));
+		Log.d(LOG_TAG, "mset.deviceID = " + mset.deviceID);
 		
 		if (mset.username.equals("") || mset.password.equals("")) {
 			for (ExecutableForObject executableForObject : mset.changeTextFieldHook) {
@@ -268,7 +270,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		if (!mset.loggedIn && !mset.loggingIn) {
 			Log.d("MoSeS.SERVICE", "Logging in...");
 			mset.loggingIn = true;
-			new Login(mset.username, mset.password);
+			new Login(mset.username, mset.password, mset.deviceID);
 		}
 	}
 
@@ -287,16 +289,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	public void noOnSharedPreferenceChanged(boolean t) {
 		this.mset.nopreferenceupdate = t;
-	}
-
-	/**
-	 * Show a device id selection screen if no device id is set.
-	 */
-	public void notSetDeviceID() {
-		if (mset.activitycontext != null) {
-			Intent mainDialog = new Intent(mset.activitycontext, AskForDeviceIDActivity.class);
-			mset.activitycontext.startActivity(mainDialog);
-		}
 	}
 
 	/*
@@ -371,22 +363,21 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			if (key.equals("sensor_data")) {
 				Log.d("MoSeS.SERVICE", "Sensor filter changed to: " + sharedPreferences.getString("sensor_data", ""));
 				uploadFilter();
-			} else if (key.equals(Login.PREF_EMAIL)) {
+			} else if (key.equals(MosesPreferences.PREF_EMAIL)) {
 				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-				mset.username = sharedPreferences.getString(Login.PREF_EMAIL, "");
+				mset.username = sharedPreferences.getString(MosesPreferences.PREF_EMAIL, "");
 			} else if (key.equals("password_pref")) {
 				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
-				mset.password = sharedPreferences.getString(Login.PREF_PASSWORD, "");
-			} else if (key.equals("deviceid_pref")) {
-				Log.d("MoSeS.SERVICE", "Device id changed - updating it on server.");
-				if (sharedPreferences.getBoolean("deviceidsetsuccessfully", false)) {
-					new HardwareAbstraction(this).changeDeviceID(false);
-				} else {
-					syncDeviceInformation(false);
+				mset.password = sharedPreferences.getString(MosesPreferences.PREF_PASSWORD, "");
+			} else if (key.equals(MosesPreferences.PREF_DEVICEID)) {
+				Log.d(LOG_TAG, "Device id changed reload the settings file.");
+				reloadSettings();
+				}
+			else {
+				syncDeviceInformation(false);
 				}
 			}
 		}
-	}
 
 	/**
 	 * Get all Executables with the specified hook type.
@@ -491,9 +482,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		builder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				Intent mainDialog = new Intent(context, AskForDeviceIDActivity.class);
-				mainDialog.putExtra("firststart", true);
-				context.startActivity(mainDialog);
 				dialog.dismiss();
 			}
 		});

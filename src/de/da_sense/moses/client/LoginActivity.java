@@ -24,11 +24,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
+import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestLogin;
-import de.da_sense.moses.client.service.helpers.Login;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.util.Log;
 
 /**
@@ -121,6 +122,7 @@ public class LoginActivity extends Activity {
     public void handleClick(View v) {
     	String email = editTextEmail.getText().toString().trim();
 		String password = editTextPassword.getText().toString();
+		String deviceID = HardwareAbstraction.extractDeviceIdFromSharedPreferences();
     	
     	// validate the format of email and password before sending anything to server
     	if (!validateEmail() || !validatePassword()) {
@@ -132,13 +134,14 @@ public class LoginActivity extends Activity {
 		d.setMessage(getString(R.string.verifying_credentials));
 		d.show();
 		// request a login/session from the server
-		new RequestLogin(new ReqLogin(),  email, password).send();
+		new RequestLogin(new ReqLogin(),  email, password, deviceID).send();
     }
     
     /**
      * Called if we got a SessionID from the server.
+     * @param deviceName the name of the device returned from the server (may be null)
      */
-    private void valid() {
+    private void valid(String deviceName) {
     	Log.d("LoginActivity", "valid() called");
 		d.dismiss();
 		// get email and password
@@ -147,11 +150,12 @@ public class LoginActivity extends Activity {
 		
 		// set the result of the Activity and put the email and password
 		Intent resultData = new Intent();
-		resultData.putExtra(Login.PREF_EMAIL, email);
-		resultData.putExtra(Login.PREF_PASSWORD, password);
+		resultData.putExtra(MosesPreferences.PREF_EMAIL, email);
+		resultData.putExtra(MosesPreferences.PREF_PASSWORD, password);
+		resultData.putExtra(MosesPreferences.PREF_DEVICENAME, deviceName);
 		setResult(Activity.RESULT_OK, resultData);
 
-    	Log.d("LoginActivity", "valid(): email = " + email +
+    	Log.d(LOG_TAG, "valid(): email = " + email +
     			"\npassword = " + password);
     	
     	// persist the valid credentials if the box is set
@@ -159,7 +163,7 @@ public class LoginActivity extends Activity {
     		try {
     			saveCredentials(email, password);
     			} catch (IOException e) {
-    				Log.e(LOG_TAG, "valid: there was a problem storing users credentials");
+    				Log.e(LOG_TAG, "valid(): there was a problem storing users credentials");
     				e.printStackTrace();
     				
     			}
@@ -314,7 +318,12 @@ public class LoginActivity extends Activity {
 					// we did get a session id
 					Log.d("LoginActivity", "Received valid session id: " 
 							+ j.getString("SESSIONID"));
-					valid();
+					String deviceName = null;
+					if(j.has("DEVICENAME")){
+						deviceName = (String) j.get("DEVICENAME");
+						Log.d(LOG_TAG, "Server responded with a DEVICENAME \""+deviceName+"\"");
+					}
+					valid(deviceName);
 				}
 			} catch (JSONException e) {
 				Log.d("LoginActivity", "Handling JSON EXCEPTION");
