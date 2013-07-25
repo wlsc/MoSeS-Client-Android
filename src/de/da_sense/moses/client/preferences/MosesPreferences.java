@@ -15,11 +15,15 @@ import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.service.MosesService;
 
@@ -184,6 +188,19 @@ public class MosesPreferences extends PreferenceActivity {
 					if(input.trim().length() == 0){
 						mErrorDeviceIdErrorMessage = getString(R.string.dev_id_empty_error);
 					}
+				}
+			});
+			
+			/*
+	         * When user clicks the "Go" act as if he clicked the OK button
+	         */
+	        devIdEditText.setOnEditorActionListener(new OnEditorActionListener() {
+				
+				public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+					 if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) || (actionId == EditorInfo.IME_ACTION_DONE)){
+						 mPositiveButtonDeviceId.performClick();
+					}
+					return false;
 				}
 			});
 			

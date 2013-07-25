@@ -350,16 +350,6 @@ public class HardwareAbstraction {
 		@Override
 		public void handleException(Exception e) {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
-			MosesService.getInstance().noOnSharedPreferenceChanged(true);
-			// recover the last device id of this device
-			PreferenceManager
-					.getDefaultSharedPreferences(context)
-					.edit()
-					.putString(
-							"deviceid_pref",
-							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
-									"lastdeviceid", "")).commit();
-			MosesService.getInstance().noOnSharedPreferenceChanged(false);
 		}
 
 		/**
@@ -372,52 +362,26 @@ public class HardwareAbstraction {
 			try {
 				Log.d("MoSeS.HARDWARE_ABSTRACTION", "Received: " + s);
 				j = new JSONObject(s);
-				// if this message contains SUCCESS as value of STATUS which represents that the status of updating the device id
+				// if this message contains SUCCESS as value of STATUS which
+				// represents that the status of updating the device id
 				if (j.getString("STATUS").equals("SUCCESS")) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Updated device id successfully, server returned positive response");
-					MosesService.getInstance().noOnSharedPreferenceChanged(true);
-					// set the new device id as last device id
-					PreferenceManager
-							.getDefaultSharedPreferences(context)
-							.edit()
-							.putString(
-									"lastdeviceid",
-									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-											.getString("deviceid_pref", "")).commit();
-					MosesService.getInstance().noOnSharedPreferenceChanged(false);
-					MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
+					MosesService.getInstance().executeLoggedIn(
+							HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
+							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS,
+							new Executable() {
 								@Override
 								public void execute() {
 									syncDeviceInformation();
 								}
 							});
-				}
-				else if (j.getString("STATUS").equals("FAILURE_DEVICEID_NOT_SET")) {
-                    // if there is no device id been set for this device
-					MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
-								@Override
-								public void execute() {
-									syncDeviceInformation();
-								}
-							});
-				}
-				else
-				{
-				    // if the session id is invalid
-					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Update device id FAILED! Invalid session id.");
-					MosesService.getInstance().noOnSharedPreferenceChanged(true);
-					// set the new device id as last device id
-					PreferenceManager
-							.getDefaultSharedPreferences(context)
-							.edit()
-							.putString(
-									"deviceid_pref",
-									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-											.getString("lastdeviceid", "")).commit();
-					MosesService.getInstance().noOnSharedPreferenceChanged(false);
+				} else {
+					// if the session id is invalid
+					Log.d("MoSeS.HARDWARE_ABSTRACTION",
+							"Update device id FAILED! Invalid session id.");
+					MosesService.getInstance()
+							.noOnSharedPreferenceChanged(true);
 				}
 			} catch (JSONException e) {
 				this.handleException(e);
@@ -448,16 +412,6 @@ public class HardwareAbstraction {
 		@Override
 		public void handleException(Exception e) {
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
-			MosesService.getInstance().noOnSharedPreferenceChanged(true);
-			// recover the last device id for this device
-			PreferenceManager
-					.getDefaultSharedPreferences(context)
-					.edit()
-					.putString(
-							"deviceid_pref",
-							PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
-									"lastdeviceid", "")).commit();
-			MosesService.getInstance().noOnSharedPreferenceChanged(false);
 		}
 
 		/**
@@ -474,17 +428,6 @@ public class HardwareAbstraction {
 				if (RequestSetHardwareParameters.parameterSetOnServer(j)) {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION",
 							"Parameters set successfully, server returned positive response");
-					MosesService.getInstance().noOnSharedPreferenceChanged(true);
-					// set the new device id as last device id
-					PreferenceManager
-							.getDefaultSharedPreferences(context)
-							.edit()
-							.putBoolean("deviceidsetsuccessfully", true)
-							.putString(
-									"lastdeviceid",
-									PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-											.getString("deviceid_pref", "")).commit();
-					MosesService.getInstance().noOnSharedPreferenceChanged(false);
 					// sending the current C2DM of this device
 					C2DMManager.sendCurrentC2DM();
 					MosesService.getInstance().uploadFilter();
@@ -584,8 +527,9 @@ public class HardwareAbstraction {
 	 */
 	public static String extractDeviceIdFromSharedPreferences() {
 		String deviceid = "";
-		if (MosesService.getInstance() != null)
-			deviceid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
+		MosesService mosesService = MosesService.getInstance();
+		if (mosesService != null)
+			deviceid = PreferenceManager.getDefaultSharedPreferences(mosesService).getString(
 					MosesPreferences.PREF_DEVICEID, "");
 		return deviceid;
 	}
@@ -600,33 +544,6 @@ public class HardwareAbstraction {
 			deviceid = PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
 					MosesPreferences.PREF_DEVICENAME, null);
 		return deviceid;
-	}
-
-	/**
-	 * to change device id of this device
-	 * @param force whether user want to change the device id or not
-	 */
-	private void changeDeviceID(final boolean force) {
-		if (MosesService.getInstance() != null) {
-			if (!PreferenceManager
-					.getDefaultSharedPreferences(MosesService.getInstance())
-					.getString("deviceid_pref", "")
-					.equals(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(
-							"lastdeviceid", ""))) {
-			    // if the new device id is not like the last device id
-				MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-						MessageTypesEnum.REQUEST_UPDATE_HARDWARE_PARAMETERS, new Executable() {
-							@Override
-							public void execute() {
-							    // changing the device id
-								new RequestChangeDeviceIDParameters(new ReqClassUpdateHWParams(), force,
-										PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-												.getString("deviceid_pref", ""), PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance())
-												.getString("lastdeviceid", ""), RequestLogin.getSessionID()).send();
-							}
-						});
-			}
-		}
 	}
 
 	/**
