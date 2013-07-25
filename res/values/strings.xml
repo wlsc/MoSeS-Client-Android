@@ -147,9 +147,6 @@
     <!-- Preferences -->
     <string name="settings_title">MoSeS - Settings</string>
     <string name="show_splash">Show splash screen</string>
-    <string name="sensor_data_pref_title">Sensor preferences</string>
-    <string name="sensor_data_pref_summary">Select the sensors you want to share.</string>
-    <string name="sensor_data_pref_dialog_title">Select the sensors you want to share: &#160;</string>
     <string name="title_autologin_pref">Login automatically?</string>
     <string name="summary_autologin_pref">Please tick this checkbox if you want to login to the service on each program start.</string>
     <string name="dialog_title_password_pref">Password</string>

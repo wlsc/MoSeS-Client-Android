@@ -24,11 +24,8 @@ import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
-import de.da_sense.moses.client.com.requests.RequestChangeDeviceIDParameters;
-import de.da_sense.moses.client.com.requests.RequestGetFilter;
 import de.da_sense.moses.client.com.requests.RequestGetHardwareParameters;
 import de.da_sense.moses.client.com.requests.RequestLogin;
-import de.da_sense.moses.client.com.requests.RequestSetFilter;
 import de.da_sense.moses.client.com.requests.RequestSetHardwareParameters;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
@@ -142,54 +139,6 @@ public class HardwareAbstraction {
 	}
 
 	/**
-	 * This class is used for NetworkJSON calls as a response for a filter call
-	 */
-	private class ReqClassGetFilter implements ReqTaskExecutor {
-
-	    /**
-	     * to handle an exception
-         * @param e Exception
-	     */
-		@Override
-		public void handleException(Exception e) {
-			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
-		}
-
-		/**
-		 * to post an execution
-         * @param s the JSONObject as String
-		 */
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestGetFilter.parameterAcquiredFromServer(j)) {
-					JSONArray filter = j.getJSONArray("FILTER");
-					if (MosesService.getInstance() != null)
-						MosesService.getInstance().setFilter(filter);
-				} else {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Parameters NOT retrieved successfully! Server returned negative response");
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-		
-		/**
-		 * to update an execution
-         * @param c BackgroundException
-		 */
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c == ConnectionParam.EXCEPTION) {
-				handleException(c.e);
-			}
-		}
-	}
-
-	/**
 	 * Get all available sensors from the operating system.
 	 * 
 	 * @return All available sensors on this device
@@ -293,114 +242,6 @@ public class HardwareAbstraction {
 	}
 
 	/**
-	 * This class is used for NetworkJSON calls as a request for filter
-	 */
-	private class ReqClassSetFilter implements ReqTaskExecutor {
-
-	    /**
-         * to handle an exception
-         * @param e Exception
-         */
-		@Override
-		public void handleException(Exception e) {
-			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE SETTING FILTER: " + e.getMessage());
-		}
-
-		/**
-         * to post an execution
-         * @param s the JSONObject as String
-         */
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				j = new JSONObject(s);
-				if (RequestSetFilter.filterSetOnServer(j)) {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Filter set successfully, server returned positive response");
-				} else {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Filter NOT set successfully! Server returned negative response");
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		/**
-         * to update an execution
-         * @param c BackgroundException
-         */
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c == ConnectionParam.EXCEPTION) {
-				handleException(c.e);
-			}
-		}
-	}
-
-	/**
-     * This class is used for NetworkJSON calls as a request to update the hardware parameters of a device
-     */
-	private class ReqClassUpdateHWParams implements ReqTaskExecutor {
-
-	    /**
-         * to handle an exception
-         * @param e Exception
-         */
-		@Override
-		public void handleException(Exception e) {
-			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
-		}
-
-		/**
-         * to post an execution
-         * @param s the JSONObject as String
-         */
-		@Override
-		public void postExecution(String s) {
-			JSONObject j = null;
-			try {
-				Log.d("MoSeS.HARDWARE_ABSTRACTION", "Received: " + s);
-				j = new JSONObject(s);
-				// if this message contains SUCCESS as value of STATUS which
-				// represents that the status of updating the device id
-				if (j.getString("STATUS").equals("SUCCESS")) {
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Updated device id successfully, server returned positive response");
-					MosesService.getInstance().executeLoggedIn(
-							HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
-							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS,
-							new Executable() {
-								@Override
-								public void execute() {
-									syncDeviceInformation();
-								}
-							});
-				} else {
-					// if the session id is invalid
-					Log.d("MoSeS.HARDWARE_ABSTRACTION",
-							"Update device id FAILED! Invalid session id.");
-					MosesService.getInstance()
-							.noOnSharedPreferenceChanged(true);
-				}
-			} catch (JSONException e) {
-				this.handleException(e);
-			}
-		}
-
-		/**
-         * to update an execution
-         * @param c BackgroundException
-         */
-		@Override
-		public void updateExecution(BackgroundException c) {
-			if (c.c == ConnectionParam.EXCEPTION) {
-				handleException(c.e);
-			}
-		}
-	}
-
-	/**
      * This class is used for NetworkJSON calls as a request to set the hardware parameters of a device
      */
 	private class ReqClassSetHWParams implements ReqTaskExecutor {
@@ -430,7 +271,6 @@ public class HardwareAbstraction {
 							"Parameters set successfully, server returned positive response");
 					// sending the current C2DM of this device
 					C2DMManager.sendCurrentC2DM();
-					MosesService.getInstance().uploadFilter();
 				}else {
 				    // if the session id is invalid
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
@@ -452,24 +292,6 @@ public class HardwareAbstraction {
 		}
 	}
 
-
-	/**
-	 * This method sends a Request to the website for obtaining the filter
-	 * stored for this device
-	 */
-	public void getFilter() {
-		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS, MessageTypesEnum.REQUEST_GET_FILTER,
-					new Executable() {
-						@Override
-						public void execute() {
-							final RequestGetFilter rGetFilter = new RequestGetFilter(new ReqClassGetFilter(),
-									RequestLogin.getSessionID(), extractDeviceIdFromSharedPreferences());
-							rGetFilter.send();
-						}
-					});
-	}
-
 	/**
 	 * This method reads the sensor list stored for the device on the server
 	 */
@@ -486,23 +308,6 @@ public class HardwareAbstraction {
 							gethwprogressdialog.show();
 							new RequestGetHardwareParameters(new ReqClassGetHWParams(), RequestLogin.getSessionID(),
 									extractDeviceIdFromSharedPreferences()).send();
-						}
-					});
-	}
-
-	/**
-	 * This method sends a set_filter Request to the website
-	 */
-	public void setFilter(final String filter) {
-		// *** SENDING GET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
-		if (MosesService.getInstance() != null)
-			MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS, MessageTypesEnum.REQUEST_SET_FILTER,
-					new Executable() {
-						@Override
-						public void execute() {
-							RequestSetFilter rSetFilter = new RequestSetFilter(new ReqClassSetFilter(), RequestLogin
-									.getSessionID(), extractDeviceIdFromSharedPreferences(), filter);
-							rSetFilter.send();
 						}
 					});
 	}

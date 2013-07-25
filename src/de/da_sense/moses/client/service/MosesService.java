@@ -3,7 +3,6 @@ package de.da_sense.moses.client.service;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.AlertDialog;
@@ -78,9 +77,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 
 		/** The context of the currently used activity. */
 		private Context activitycontext = null;
-
-		/** Saves the used filter. */
-		private JSONArray filter = new JSONArray();
 
 		/** A HashMap of EHookType => ConcurrentLinkedQueue<ExecutorWithType> */
 		private HashMap<HookTypesEnum, ConcurrentLinkedQueue<ExecutableWithType>> hooks = new HashMap<HookTypesEnum, ConcurrentLinkedQueue<ExecutableWithType>>();
@@ -165,11 +161,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		mset.username = settingsFile.getString(MosesPreferences.PREF_EMAIL, "");
 		mset.password = settingsFile.getString(MosesPreferences.PREF_PASSWORD, "");
 		mset.deviceID = settingsFile.getString(MosesPreferences.PREF_DEVICEID, "");
-		try {
-			mset.filter = new JSONArray(settingsFile.getString("sensor_data", "[]"));
-		} catch (JSONException e) {
-			Log.d("MoSeS.SERVICE", "Filter not a valid JSONArray.");
-		}
 	}
 
 	/**
@@ -334,8 +325,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		NetworkJSON.url = mset.url;
 
 		PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this);
-		if (mset.filter == null)
-			new HardwareAbstraction(MosesService.this).getFilter();
+		
 		initConfig();
 
 		Log.d("MoSeS.SERVICE", "Service Created");
@@ -360,10 +350,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 		Log.d("Moses.SERVICE", "onSharedPreferenceChanged called with " + key);
 		if (!this.mset.nopreferenceupdate) {
-			if (key.equals("sensor_data")) {
-				Log.d("MoSeS.SERVICE", "Sensor filter changed to: " + sharedPreferences.getString("sensor_data", ""));
-				uploadFilter();
-			} else if (key.equals(MosesPreferences.PREF_EMAIL)) {
+			if (key.equals(MosesPreferences.PREF_EMAIL)) {
 				Log.d("MoSeS.SERVICE", "Username changed - getting new data.");
 				mset.username = sharedPreferences.getString(MosesPreferences.PREF_EMAIL, "");
 			} else if (key.equals("password_pref")) {
@@ -454,18 +441,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	/**
-	 * Set the filter in the program and in the shared preferences.
-	 * 
-	 * @param filter
-	 */
-	public void setFilter(JSONArray filter) {
-		mset.filter = filter;
-		SharedPreferences settingsFile = PreferenceManager.getDefaultSharedPreferences(this);
-		settingsFile.edit().putString("sensor_data", filter.toString()).commit();
-		Log.d("MoSeS.SERVICE", "Set filter to: " + settingsFile.getString("sensor_data", "[]"));
-	}
-
-	/**
 	 * This function will be executed on first run and shows some welcome
 	 * dialog.
 	 * 
@@ -539,22 +514,6 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 		}
 		if (exeCutableWithTypeCurrent != null)
 			hook.remove(exeCutableWithTypeCurrent);
-	}
-
-	/**
-	 * After logging in this method uploads a filter for the sensor data
-	 * retrieved from the {@link PreferenceManager}.
-	 */
-	public void uploadFilter() {
-		this.executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS, 
-				MessageTypesEnum.REQUEST_SET_FILTER, new Executable() {
-			@Override
-			public void execute() {
-				new HardwareAbstraction(MosesService.this)
-				.setFilter(PreferenceManager.getDefaultSharedPreferences(
-						MosesService.this).getString("sensor_data", "[]"));
-			}
-		});
 	}
 
 	/**
