@@ -39,7 +39,7 @@ import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.util.Log;
 
 /**
- * This class provides basic support for hardware sync with server
+ * This class provides basic support for hardware sync with server.
  * 
  * @author Jaco Hofmann, Wladimir Schmidt
  * @author Zijad Maksuti
@@ -72,7 +72,8 @@ public class HardwareAbstraction {
 		private String model;
 		/** set of sensors that a device provides */
 		private List<Integer> sensors;
-		/** 
+		/** mDeviceName */
+		private String deviceName;
 		
 		/**
 		 * This method is used to create a hardwareinfo
@@ -82,13 +83,14 @@ public class HardwareAbstraction {
 		 * @param sdkbuildversion sd version of a device
 		 * @param sensors of a device
 		 */
-		private HardwareInfo(String deviceID, String vendor, String model, int sdkbuildversion, List<Integer> sensors) {
+		private HardwareInfo(String deviceID, String deviceName, String vendor, String model, int sdkbuildversion, List<Integer> sensors) {
 			super();
 			this.deviceID = deviceID;
 			this.sdkbuildversion = sdkbuildversion;
 			this.sensors = sensors;
 			this.vendor = vendor;
 			this.model = model;
+			this.deviceName = deviceName;
 		}
 		
 		/**
@@ -129,6 +131,13 @@ public class HardwareAbstraction {
          */
 		public List<Integer> getSensors() {
 			return sensors;
+		}
+
+		/**
+		 * @return the deviceName
+		 */
+		public String getDeviceName() {
+			return deviceName;
 		}
 	}
 
@@ -381,7 +390,7 @@ public class HardwareAbstraction {
 							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
 								@Override
 								public void execute() {
-									syncDeviceInformation(true);
+									syncDeviceInformation();
 								}
 							});
 				}
@@ -391,7 +400,7 @@ public class HardwareAbstraction {
 							MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
 								@Override
 								public void execute() {
-									syncDeviceInformation(false);
+									syncDeviceInformation();
 								}
 							});
 				}
@@ -566,7 +575,7 @@ public class HardwareAbstraction {
 		for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) {
 			sensors.add(sen.getType());
 		}
-		return new HardwareInfo(extractDeviceIdFromSharedPreferences(), Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT, sensors);
+		return new HardwareInfo(extractDeviceIdFromSharedPreferences(), extractDeviceNameFromSharedPreferences(), Build.MANUFACTURER, Build.MODEL, Build.VERSION.SDK_INT, sensors);
 	}
 
 	/**
@@ -624,14 +633,14 @@ public class HardwareAbstraction {
 	 * to synchronize the server with the actual information of this device
 	 * @param force boolean
 	 */
-	public void syncDeviceInformation(final boolean force) {
+	public void syncDeviceInformation() {
 		if (MosesService.getInstance() != null) {
 			MosesService.getInstance().executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY,
 					MessageTypesEnum.REQUEST_SET_HARDWARE_PARAMETERS, new Executable() {
 						@Override
 						public void execute() {
 							HardwareInfo hwInfo = retrieveHardwareParameters();
-							new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, force, RequestLogin
+							new RequestSetHardwareParameters(new ReqClassSetHWParams(), hwInfo, RequestLogin
 									.getSessionID()).send();
 						}
 					});

@@ -374,7 +374,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				reloadSettings();
 				}
 			else {
-				syncDeviceInformation(false);
+				syncDeviceInformation();
 				}
 			}
 		}
@@ -502,12 +502,12 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	/**
 	 * Sends device information to the moses server.
 	 */
-	public void syncDeviceInformation(boolean force) {
+	public void syncDeviceInformation() {
 		executeLoggedIn(HookTypesEnum.POST_LOGIN_SUCCESS_PRIORITY, MessageTypesEnum.REQUEST_UPDATE_HARDWARE_PARAMETERS,
 				new Executable() {
 					@Override
 					public void execute() {
-						new HardwareAbstraction(MosesService.this).syncDeviceInformation(false);
+						new HardwareAbstraction(MosesService.this).syncDeviceInformation();
 					}
 				});
 	}

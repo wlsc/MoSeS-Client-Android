@@ -13,7 +13,7 @@ import de.da_sense.moses.client.util.Log;
 
 /**
  * This class is used for setting hardware parameters it provides some basic
- * methods for this
+ * methods for this.
  * 
  * @author Zijad Maksuti
  * 
@@ -30,20 +30,19 @@ public class RequestSetHardwareParameters {
 
 	private ReqTaskExecutor e;
 
-	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, boolean force, String sessionID) {
+	public RequestSetHardwareParameters(ReqTaskExecutor e, HardwareInfo hwInfo, String sessionID) {
 		j = new JSONObject();
 		this.e = e;
 		String uniqueid = Secure.getString(MosesService.getInstance().getContentResolver(), Secure.ANDROID_ID);
 		try {
 			j.put("MESSAGE", "SET_HARDWARE_PARAMS");
 			j.put("SESSIONID", sessionID);
-			j.put("FORCE", force);
 			j.put("VENDOR_NAME", hwInfo.getDeviceVendor());
 			j.put("MODEL_NAME", hwInfo.getDeviceModel());
 			j.put("DEVICEID", hwInfo.getDeviceID());
 			j.put("ANDVER", hwInfo.getSdkbuildversion());
 			j.put("SENSORS", (new JSONArray(hwInfo.getSensors())));
-			j.put("UNIQUEID", uniqueid);
+			j.put("DEVICENAME", hwInfo.getDeviceName());
 		} catch (JSONException ex) {
 			e.handleException(ex);
 		}
