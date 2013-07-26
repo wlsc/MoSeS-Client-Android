@@ -55,6 +55,11 @@ public class MosesPreferences extends PreferenceActivity {
 	 * Key for the shared preference DEVICENAME
 	 */
 	public static String PREF_DEVICEID = "deviceid_pref";
+	
+	/**
+	 * Key for the shared preference for showing the splash screen on the start
+	 */
+	public static String PREF_SHOW_SPLASHSCREEN = "splashscreen_pref";
 
 	/**
 	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)

@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.util.Log;
 
 /**
@@ -22,30 +23,24 @@ import de.da_sense.moses.client.util.Log;
  * 
  */
 public class SplashScreen extends Activity {
-
-	/**
-	 * Boolean for the splash screen, used for debugging purposes only
-	 */
-	private static boolean showsplash = true;
+	
 	private static final String LOG_TAG = SplashScreen.class.getName();
 	
-	private static boolean isAsyncTaskRunning=false;
+	private static boolean isAsyncTaskRunning = false;
 	
-	private static boolean isActivityFinished=false;
+	private static boolean isActivityFinished = false;
+	
+	private boolean mGooglePlayServicesOperational = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		boolean isShowScreenSetInPrefs = PreferenceManager
-				.getDefaultSharedPreferences(this).getBoolean(
-						"splashscreen_pref", true);
-
-		if (!showsplash || !isShowScreenSetInPrefs || isActivityFinished) {
-			// No splash screen needs to be shown, start the welcome activity
-			startWelcomeActivity();
+		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(MosesPreferences.PREF_SHOW_SPLASHSCREEN, true)) {
+			// No splash screen needs to be shown, do not set the content view
+			;
 		} else {
-			// Proceed with showing the splash screen
+			// Splash screen needs to be shown, set the content view
 			setContentView(R.layout.splashscreen);
 			try {
 				((TextView) findViewById(R.id.versiontextview))
@@ -64,16 +59,12 @@ public class SplashScreen extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					if(!isActivityFinished){
+					if(!isActivityFinished && mGooglePlayServicesOperational){
 						startWelcomeActivity();
 					}
 				}
 			});
 			
-			if(!isAsyncTaskRunning){
-				AsyncStartWelcomeActivity asyncTask = new AsyncStartWelcomeActivity();
-				asyncTask.execute(getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
-			}
 
 		}
 
@@ -84,18 +75,28 @@ public class SplashScreen extends Activity {
 		super.onResume();
 		
 		/*
-		 *  Check if Google Play Services are installed, if not, inform the user.
+		 *  Check if Google Play Service is operational, if not, inform the user.
 		 *  The services are needed for using Google Cloud Messaging (GCM).
 		 *  
 		 */
-//		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-//		if(result != ConnectionResult.SUCCESS){
-//			Log.d(LOG_TAG, "Google Play Service not found, outdated or disabled");
-//			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(result, this, 10);
-//			errorDialog.show();
-//		}
-//		else
-//			Log.d(LOG_TAG, "Google Play Service found");
+		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+		if(result != ConnectionResult.SUCCESS){
+			Log.d(LOG_TAG, "Google Play Service not operational, starting error dialog");
+			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(result, this, 10);
+			errorDialog.show();
+		}
+		else{
+			mGooglePlayServicesOperational = true;
+			Log.d(LOG_TAG, "Google Play Service operational");
+			if(PreferenceManager.getDefaultSharedPreferences(this).getBoolean(MosesPreferences.PREF_SHOW_SPLASHSCREEN, true))
+				// splash screen does not need to be shown, start the login activity
+				startWelcomeActivity();
+			else
+				if(!isAsyncTaskRunning){
+					AsyncStartWelcomeActivity asyncTask = new AsyncStartWelcomeActivity();
+					asyncTask.execute(getResources().getInteger(R.integer.splash_screen_duration_milliseconds));
+				}	
+		}
 		
 	}
 
@@ -123,7 +124,7 @@ public class SplashScreen extends Activity {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			isAsyncTaskRunning = true;
+			isActivityFinished = true;
 		}
 
 		protected Void doInBackground(Integer... params) {
@@ -137,7 +138,7 @@ public class SplashScreen extends Activity {
 
 		@Override
 		protected void onPostExecute(Void params) {
-			isAsyncTaskRunning=false;
+			isAsyncTaskRunning = false;
 			if(!isActivityFinished)
 				startWelcomeActivity();
 		}
