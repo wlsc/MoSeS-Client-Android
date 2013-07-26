@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-<!--     this value has to be same as in MosesPreferences.PREF_DEVICENAME -->
-  <string name="deviceNamePreferenceKey">devicename_pref</string> 
-</resources>
