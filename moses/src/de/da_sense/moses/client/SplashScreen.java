@@ -88,14 +88,14 @@ public class SplashScreen extends Activity {
 		 *  The services are needed for using Google Cloud Messaging (GCM).
 		 *  
 		 */
-		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-		if(result != ConnectionResult.SUCCESS){
-			Log.d(LOG_TAG, "Google Play Service not found, outdated or disabled");
-			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(result, this, 10);
-			errorDialog.show();
-		}
-		else
-			Log.d(LOG_TAG, "Google Play Service found");
+//		int result = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+//		if(result != ConnectionResult.SUCCESS){
+//			Log.d(LOG_TAG, "Google Play Service not found, outdated or disabled");
+//			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(result, this, 10);
+//			errorDialog.show();
+//		}
+//		else
+//			Log.d(LOG_TAG, "Google Play Service found");
 		
 	}
 
@@ -104,9 +104,9 @@ public class SplashScreen extends Activity {
 	 */
 	private void startWelcomeActivity() {
 		Intent intent = new Intent(this, WelcomeActivity.class);
-//		startActivity(intent);
+		startActivity(intent);
 		isActivityFinished = true;
-//		finish();
+		finish();
 	}
 
 	/**
