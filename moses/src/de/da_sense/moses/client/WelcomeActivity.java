@@ -257,17 +257,9 @@ public class WelcomeActivity extends FragmentActivity {
      */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		boolean result= false;
 		switch (item.getItemId()) {
-		
-		/*case R.id.Menu_Connect:
-			Log.d("MainActivity" , "Connect in menu clicked");
-			if (mBound) {
-				if (mService.isLoggedIn())
-					mService.logout();
-				else
-					connect();
-			}
-			return true;*/
+
         case R.id.Menu_Settings:
             // Settings entry in menu clicked
         	Log.d("MainActivity", "Settings in menu clicked");
@@ -275,27 +267,30 @@ public class WelcomeActivity extends FragmentActivity {
             Intent settings = new Intent(this, MosesPreferences.class);
             // switch screen to settings 
             startActivityForResult(settings, 0);
-//            startActivity(settings);
+            result = true;
+            break;
             
-            return true;
-       /* case R.id.Menu_HardwareInfo:
-        	// Hardware Info entry in menu clicked
-        	Log.d("MainActivity", "Hardware Info in menu clicked");
-        	new HardwareAbstraction(this).getHardwareParameters();
-        	return true;
-        	*/
         case R.id.Menu_Logout:
         	// Logout entry in menu clicked
         	Log.d("MainActivity", "Logout in menu clicked");
         	PreferenceManager.getDefaultSharedPreferences(this).edit()
         	.remove(MosesPreferences.PREF_EMAIL).remove(MosesPreferences.PREF_PASSWORD).commit();
         	waitingForResult = true;
+        	
+        	// stop the service
+        	if(mBound){
+        		if(mService.isLoggedIn())
+        			mService.logout();
+        	}
+        	
         	Intent mainDialog = new Intent(WelcomeActivity.this, LoginActivity.class);
         	startActivityForResult(mainDialog, 1);
-        	return true;
+        	result = true;
+        	break;
         default:
-            return super.onOptionsItemSelected(item);
+        	result = super.onOptionsItemSelected(item);
         }
+		return result;
 	}
 
 	/**
