@@ -115,6 +115,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 		}
 	}
 
+	// XXX ZM this method is potentially unused
 	private static void notifyAboutC2DMId(final String registrationId, Context context) {
 		// Intent intent = new Intent(context, MosesService.class);
 		// intent.putExtra(EXTRAFIELD_C2DM_ID, registrationId);

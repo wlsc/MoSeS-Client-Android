@@ -313,7 +313,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			UserstudyNotificationManager.init(this);
 		}
 
-		if (PreferenceManager.getDefaultSharedPreferences(this).getString("c2dm_pref", "").equals(""))
+		if (PreferenceManager.getDefaultSharedPreferences(this).getString(MosesPreferences.PREF_GCM_ID, "").equals(""))
 			C2DMManager.requestC2DMId(MosesService.this);
 
 		if (PreferenceManager.getDefaultSharedPreferences(this).contains("url_pref")) {

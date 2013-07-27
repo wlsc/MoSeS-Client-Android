@@ -143,7 +143,7 @@ public class SplashScreen extends Activity {
 	}
 
 	/**
-	 * This task starts starts the welcome activity after the specified time.
+	 * This task starts the welcome activity after the specified time.
 	 * 
 	 * @author Zijad Maksuti
 	 * 

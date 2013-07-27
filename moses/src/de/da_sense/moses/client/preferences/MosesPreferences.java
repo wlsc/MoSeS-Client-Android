@@ -60,6 +60,11 @@ public class MosesPreferences extends PreferenceActivity {
 	 * Key for the shared preference for showing the splash screen on the start
 	 */
 	public static String PREF_SHOW_SPLASHSCREEN = "splashscreen_pref";
+	
+	/**
+	 * Key for the clients ID when using Google Clous Messaging (GCM)
+	 */
+	public static String PREF_GCM_ID = "c2dm_pref";
 
 	/**
 	 * @see android.preference.PreferenceActivity#onCreate(android.os.Bundle)

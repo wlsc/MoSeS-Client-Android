@@ -1,40 +1,38 @@
 package de.da_sense.moses.client.service.helpers;
 
+import java.io.IOException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestC2DM;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * 
  * This Class contains information and methods concerning the
- * connection with Google's Cloud 2 Device Messaging Services.
- * It does not contain C2DM functionality, it only establishes
- * and controls the connection, but does not handle C2DM.
- *
- *	@author Wladimir Schmidt
+ * connection with GCM Services: registering and obtaining an ID from googles server AND sending the ID to MoSeS server.
+ * 
+ * @author Wladimir Schmidt
+ * @author Zijad Maksuti
+ * 
  */
 public class C2DMManager {
-
-	/**
-	 * MoSeS Googlemail Account for Cloud 2 Device Messaging Services
-	 */
-	private static final String MOSES_TUD_GOOGLEMAIL_COM = 
-			MosesService
-			.getInstance()
-			.getApplicationContext()
-			.getString(R.string.app_c2dm_email);
+	
+	private static String LOG_TAG = C2DMManager.class.getName();
 
 	/**
 	 * Contains the current registration ID for C2DM Services
@@ -43,14 +41,12 @@ public class C2DMManager {
 
 	
 	/**
-	 * TODO
+	 * Starts 
 	 * @param baseService
 	 */
 	public static void requestC2DMId(Service baseService) {
-		Intent registrationIntent = new Intent("com.google.android.c2dm.intent.REGISTER");
-		registrationIntent.putExtra("app", PendingIntent.getBroadcast(baseService, 0, new Intent(), 0)); // boilerplate
-		registrationIntent.putExtra("sender", MOSES_TUD_GOOGLEMAIL_COM);
-		baseService.startService(registrationIntent);
+		AsyncObtainGCMID task = new AsyncObtainGCMID();
+		task.execute(baseService);
 	}
 
 	/**
@@ -58,7 +54,7 @@ public class C2DMManager {
 	 * @param registrationId The ID to set to
 	 */
 	public static void setC2DMReceiverId(String registrationId) {
-		Log.i("MoSeS.C2DM", "received C2DM " + registrationId);
+		Log.i(LOG_TAG, "received GCM ID " + registrationId);
 		boolean setNewC2DMID = false;
 		if (registrationId != null) {
 			if (c2dmRegistrationId == null) {
@@ -74,7 +70,7 @@ public class C2DMManager {
 		if (setNewC2DMID) {
 			c2dmRegistrationId = registrationId;
 			PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).edit()
-					.putString("c2dm_pref", registrationId).commit();
+					.putString(MosesPreferences.PREF_GCM_ID, registrationId).commit();
 			sendC2DMIdToServer(registrationId, MosesService.getInstance());
 		}
 	}
@@ -84,7 +80,7 @@ public class C2DMManager {
 	 */
 	public static void sendCurrentC2DM() {
 		sendC2DMIdToServer(
-				PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString("c2dm_pref", ""),
+				PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getString(MosesPreferences.PREF_GCM_ID, ""),
 				MosesService.getInstance());
 	}
 
@@ -109,22 +105,21 @@ public class C2DMManager {
 								try {
 									JSONObject j = new JSONObject(s);
 									if (RequestC2DM.C2DMRequestAccepted(j)) {
-										Log.i("MoSeS.C2DM", "synchronized c2dm id with moses server.");
+										Log.i(LOG_TAG, "synchronized GCM ID with moses server.");
 									} else {
-										Log.w("MoSeS.C2DM", "C2DM request returned NEGATIVE response: " + s);
+										Log.w(LOG_TAG, "C2DM request returned NEGATIVE response: " + s);
 									}
 
 								} catch (JSONException e) {
-									Log.e("MoSeS.C2DM", "C2DMToMosesServer returned malformed message");
+									Log.e(LOG_TAG, "C2DMToMosesServer returned malformed message");
+									e.printStackTrace();
 								}
 							}
 
 							@Override
 							public void handleException(Exception e) {
-								// TODO: make very sure that the id is really
-								// sent to
-								// the server!
-								Log.e("MoSeS.C2DM", "sendC2DM failed: " + e.getMessage(), e);
+								// TODO: make sure that the id is sent to the server after this failure
+								Log.e(LOG_TAG, "sendC2DM failed: " + e.getMessage(), e);
 							}
 						}, MosesService.getInstance().getSessionID(), HardwareAbstraction.extractDeviceIdFromSharedPreferences(),
 								registrationId);
@@ -134,4 +129,27 @@ public class C2DMManager {
 				});
 	}
 
+
+	/**
+	 * This task obtains an ID for reciving of GCM push messages. After the id has been obtained, the task
+	 * subsequently invokes {@link C2DMManager#setC2DMReceiverId(String)} 
+	 * 
+	 * @author Zijad Maksuti
+	 * 
+	 */
+	private static class AsyncObtainGCMID extends AsyncTask<Context, Void, Void> {
+		
+		protected Void doInBackground(Context... params) {
+			Context context = params[0];
+			GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
+			try {
+				setC2DMReceiverId(gcm.register(context.getString(R.string.GoogleProjectNumber)));
+			} catch (IOException e) {
+				Log.w(LOG_TAG, "AsyncObtainGCMID: problem registering for GCM. ID is not obtained");
+				e.printStackTrace();
+			}
+			return null;
+		}
+
+	}
 }

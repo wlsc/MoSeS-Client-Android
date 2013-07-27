@@ -9,20 +9,20 @@
         android:targetSdkVersion="18" />
     
     <!-- This app needs these permissions -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- To use the internet -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- To use the Internet -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- to know about the access network state -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" /> <!-- to receive push messages over GCM -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- to receive GCM messages on devices with Android version lower than 4.0.4 -->
     
     <!-- Only this application can receive the messages and registration result -->
-    <permission 
-        android:name="de.da_sense.moses.client.permission.C2D_MESSAGE"
+    <permission android:name="de.da_sense.moses.client.permission.C2D_MESSAGE" 
         android:protectionLevel="signature" />
-    <uses-permission android:name="de.da_sense.moses.client.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="de.da_sense.moses.client.permission.C2D_MESSAGE" />
     
-    <!-- This app has permission to register and receive messages -->
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -36,13 +36,6 @@
             <!-- Receive the actual message -->
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="de.da_sense.moses.client" />
-            </intent-filter>
-            <!-- Receive the registration id -->
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-
                 <category android:name="de.da_sense.moses.client" />
             </intent-filter>
         </receiver>
@@ -78,7 +71,7 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="de.da_sense.moses.client.service.MosesService" >
+        <service android:name="de.da_sense.moses.client.service.MosesService" android:exported="false">
             <intent-filter>
                 <action android:name="de.da_sense.moses.client.service.MosesService" /> <!-- to be able to let MosesService to make services -->
             </intent-filter>
