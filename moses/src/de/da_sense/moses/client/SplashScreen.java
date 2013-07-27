@@ -1,10 +1,7 @@
 package de.da_sense.moses.client;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
-
 import android.app.Activity;
-import android.app.Dialog;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
@@ -13,6 +10,10 @@ import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.util.Log;
 
@@ -32,6 +33,8 @@ public class SplashScreen extends Activity {
 
 	private boolean mGooglePlayServicesOperational;
 	private static String KEY_GOOGLE_PLAY_SERVICES_OPERATIONAL = "mGooglePlayServicesOperational";
+	
+	private AlertDialog mErrorDialog;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,9 +86,13 @@ public class SplashScreen extends Activity {
 		if (result != ConnectionResult.SUCCESS) {
 			Log.d(LOG_TAG,
 					"Google Play Service not operational, starting error dialog");
-			Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(result,
-					this, 10);
-			errorDialog.show();
+			mErrorDialog = (AlertDialog) GooglePlayServicesUtil.getErrorDialog(result,
+					this, 10); // the request code is a dummy, we don't check the results in onResult()
+			
+			// prevent user from dismissing the dialog
+			mErrorDialog.setCancelable(false);
+			
+			mErrorDialog.show();
 		} else {
 			mGooglePlayServicesOperational = true;
 			Log.d(LOG_TAG, "Google Play Service operational");
@@ -102,6 +109,20 @@ public class SplashScreen extends Activity {
 				// activity
 				startWelcomeActivity();
 			}
+		}
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see android.app.Activity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if(mErrorDialog != null){
+			mErrorDialog.dismiss();
+			mErrorDialog = null;
 		}
 	}
 
