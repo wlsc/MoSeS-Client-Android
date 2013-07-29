@@ -58,7 +58,6 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == showStudyRequestcode) {
-			UserStudyNotification app = lastStartedDialog;
 			if (resultCode == Activity.RESULT_OK) {
 
 			} else {
@@ -189,7 +188,6 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 					// TODO:
 					n.getApplication().setName(retriever.getResultName());
 					n.getApplication().setDescription(retriever.getResultDescription());
-					n.getApplication().setSensors(retriever.getResultSensors());
 					UserstudyNotificationManager.getInstance().updateNotification(n);
 					try {
 						UserstudyNotificationManager.getInstance().saveToDisk(ViewUserStudyNotificationsList.this);

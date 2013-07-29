@@ -39,7 +39,6 @@
     <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
-    <string name="userStudy_userStudyUsedSensors">Used sensors: %1$s</string>
     
     <string name="loadingName">Loading Name... (ID: %1$s)</string>
     <string name="loadingDescription">Loading Description...</string>
@@ -118,7 +117,7 @@
 
     <!-- Available List -->
     <string name="availableApkList_defaultHint">Click on a user study to view the full description.</string>
-    <string name="availableApkList_emptyHint">No user studies are available that match your device and enabled sensors. Enabling more sensors in the settings may show more user studies.</string>
+    <string name="availableApkList_emptyHint">No user studies are available that match your device.</string>
     <string name="availableTab_UserStudies">Available User Studies:</string>
     <string name="availableTab_btnOk">Yes</string>
     <string name="availableTab_noInternetConnection">Cannot display the app information because no internet connection seems to be present</string>
@@ -133,7 +132,6 @@
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the user study list anyway: &#160;</string>
 
     <!-- App Info -->
-    <string name="text_sensor">Sensors: &#160;</string>
     <string name="text_app_description">User study description: &#160;</string>
     
     <!-- Moses Service -->

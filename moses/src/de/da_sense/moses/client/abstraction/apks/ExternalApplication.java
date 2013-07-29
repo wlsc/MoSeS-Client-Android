@@ -3,14 +3,9 @@ package de.da_sense.moses.client.abstraction.apks;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,8 +31,6 @@ public class ExternalApplication {
 	private static final String TAG_DESCRIPTION = "[description]";
 	/** tag for the name */
 	private static final String TAG_NAME = "[name]";
-	/** tag for the sensors */
-	private static final String TAG_SENSORS = "[sensors]";
 	/** tag for start date */
 	private static final String TAG_STARTDATE = "[startdate]";
 	/** tag for end date */
@@ -84,8 +77,6 @@ public class ExternalApplication {
 	private String description;
 	/** the newest version of the user study / apk */
 	private String newestVersion = "0";
-	/** list for the sensor ids */
-	private ArrayList<Integer> sensors = null;
 	/** the start date of this user study */
 	private Date startDate;
 	/** the end date of this user study */
@@ -189,37 +180,6 @@ public class ExternalApplication {
 	 */
 	public String getNewestVersion() {
 		return newestVersion;
-	}
-
-	/**
-	 * Returns the ArrayList<Integer> of Sensors
-	 * 
-	 * @return the sensors
-	 */
-	public ArrayList<Integer> getSensors() {
-		return sensors;
-	}
-
-	/**
-	 * Sets the sensors
-	 * 
-	 * @param sensors
-	 */
-	public void setSensors(Collection<Integer> sensors) {
-		if (sensors == null) {
-			this.sensors = null;
-		} else {
-			this.sensors = new ArrayList<Integer>(sensors);
-		}
-	}
-
-	/**
-	 * Returns if sensors are not null
-	 * 
-	 * @return boolean - sensors != null
-	 */
-	public boolean isSensorsSet() {
-		return sensors != null;
 	}
 
 	/**
@@ -523,10 +483,6 @@ public class ExternalApplication {
 			result += SEPARATOR + TAG_NEWESTVERSION
 					+ getNewestVersion().toString();
 		}
-		if (isSensorsSet()) {
-			result += SEPARATOR + TAG_SENSORS
-					+ new JSONArray(getSensors()).toString();
-		}
 		if (isStartDateSet()) {
 			result += SEPARATOR + TAG_STARTDATE
 					+ getStartDateAsStandardString();
@@ -575,7 +531,6 @@ public class ExternalApplication {
 		String name = null;
 		String description = null;
 		String newestVersion = null;
-		List<Integer> sensors = null;
 		String startDate = null;
 		String endDate = null;
 		String apkVersion = null;
@@ -596,20 +551,6 @@ public class ExternalApplication {
 				if (split[i].startsWith(TAG_NEWESTVERSION)) {
 					newestVersion = split[i].substring(TAG_NEWESTVERSION
 							.length());
-				}
-				if (split[i].startsWith(TAG_SENSORS)) {
-					sensors = new LinkedList<Integer>();
-					JSONArray jsonarray = null;
-					try {
-						jsonarray = new JSONArray(
-								split[i].substring(TAG_SENSORS.length()));
-						for (int j = 0; j < jsonarray.length(); j++)
-							sensors.add(jsonarray.getInt(j));
-					} catch (JSONException e) {
-						Log.e("MoSeS.APK",
-								"error parsing external application from settings file",
-								e);
-					}
 				}
 
 				if (split[i].startsWith(TAG_STARTDATE)) {
@@ -635,7 +576,6 @@ public class ExternalApplication {
 		this.setName(name);
 		this.setDescription(description);
 		this.setNewestVersion(newestVersion);
-		this.setSensors(sensors);
 
 		this.setStartDate(startDate);
 		this.setEndDate(endDate);
@@ -673,11 +613,10 @@ public class ExternalApplication {
 
 	/**
 	 * @return true if all data that could be retrieved for this object (name,
-	 *         description, sensors, ...) is held in this object
+	 *         description, ...) is held in this object
 	 */
 	public boolean isDataComplete() {
-		return isDescriptionSet() && isNameSet() && isSensorsSet()
-				&& isNewestVersionSet() && isStartDateSet() 
+		return isDescriptionSet() && isNameSet()&& isNewestVersionSet() && isStartDateSet() 
 				&& isEndDateSet() && isApkVersionSet();
 	}
 

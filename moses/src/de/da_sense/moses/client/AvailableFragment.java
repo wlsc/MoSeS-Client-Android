@@ -2,7 +2,6 @@ package de.da_sense.moses.client;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -167,7 +166,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 									DetailFragment.AVAILABLE, 
 									app.getName(),
 									app.getDescription(), 
-									(ArrayList<Integer>) app.getSensors(),
 									app.getID(), 
 									app.getApkVersion(), 
 									app.getStartDateAsString(), 
@@ -194,8 +192,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description", 
 								app.getDescription());
-						intent.putExtra("de.da_sense.moses.client.sensors", 
-								app.getSensors());
 						intent.putExtra("de.da_sense.moses.client.apkid", 
 								app.getID());
 						intent.putExtra("de.da_sense.moses.client.apkVersion", 
@@ -250,8 +246,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 							details = DetailFragment.newInstance( 
 									DetailFragment.AVAILABLE, 
 									app.getName(), 
-									app.getDescription(), 
-									(ArrayList<Integer>) app.getSensors(),
+									app.getDescription(),
 									app.getID(), 
 									app.getApkVersion(), 
 									app.getStartDateAsString(), 
@@ -279,8 +274,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description",
 								app.getDescription());
-						intent.putExtra("de.da_sense.moses.client.sensors",
-								app.getSensors());
                         intent.putExtra("de.da_sense.moses.client.apkid", 
                                 app.getID());
                         intent.putExtra("de.da_sense.moses.client.apkVersion", 

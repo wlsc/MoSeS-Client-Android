@@ -1,10 +1,7 @@
 package de.da_sense.moses.client.abstraction;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Observable;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,7 +58,6 @@ public class ExternalApplicationInfoRetriever extends Observable {
 
 	private String resultName;
 	private String resultDescription;
-	private List<Integer> resultSensors;
 	private String resultStartDate;
 	private String resultEndDate;
 	private String resultApkVersion;
@@ -110,11 +106,6 @@ public class ExternalApplicationInfoRetriever extends Observable {
 									if (RequestGetApkInfo.isInfoRetrieved(j)) {
 										resultName = j.getString("NAME");
 										resultDescription = j.getString("DESCR");
-										JSONArray sensorsArray = j.getJSONArray("SENSORS");
-										resultSensors = new LinkedList<Integer>();
-										for (int i = 0; i < sensorsArray.length(); i++) {
-											resultSensors.add(sensorsArray.getInt(i));
-										}
 										resultStartDate = j.getString("STARTDATE");
 										resultEndDate = j.getString("ENDDATE");
 										resultApkVersion = j.getString("APKVERSION");
@@ -182,10 +173,6 @@ public class ExternalApplicationInfoRetriever extends Observable {
 
 	public String getErrorMessage() {
 		return errorMessage;
-	}
-
-	public List<Integer> getResultSensors() {
-		return resultSensors;
 	}
 
     public String getResultStartDate() {

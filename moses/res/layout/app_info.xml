@@ -140,33 +140,6 @@
                     android:minLines="5"
                     android:text="DESCRIPTION" />
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/background_light"
-                android:orientation="horizontal" >
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_sensor"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/sensorname"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </LinearLayout>
-
-            <Gallery
-                android:id="@+id/sensors"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:background="@android:color/background_light"
-                android:spacing="2dip" />
         </LinearLayout>
     </ScrollView>
 

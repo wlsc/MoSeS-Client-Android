@@ -3,7 +3,6 @@ package de.da_sense.moses.client;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
@@ -18,20 +17,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.Gallery;
-import android.widget.ImageView;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever;
 import de.da_sense.moses.client.abstraction.ExternalApplicationInfoRetriever.State;
-import de.da_sense.moses.client.abstraction.SensorsEnum;
 import de.da_sense.moses.client.abstraction.apks.APKInstalled;
 import de.da_sense.moses.client.abstraction.apks.ApkDownloadManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallManager;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
-import de.da_sense.moses.client.abstraction.apks.ImageAdapter;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.userstudy.UserStudyNotification;
 import de.da_sense.moses.client.userstudy.UserStudyNotification.Status;
@@ -142,7 +135,6 @@ public class ViewUserStudyActivity extends Activity {
 
 					handleSingleNotificationData.getApplication().setName(infoRequester.getResultName());
 					handleSingleNotificationData.getApplication().setDescription(infoRequester.getResultDescription());
-					handleSingleNotificationData.getApplication().setSensors(infoRequester.getResultSensors());
 					handleSingleNotificationData.getApplication().setStartDate(infoRequester.getResultStartDate());
 					handleSingleNotificationData.getApplication().setEndDate(infoRequester.getResultEndDate());
 					handleSingleNotificationData.getApplication().setApkVersion(infoRequester.getResultApkVersion());
@@ -223,27 +215,6 @@ public class ViewUserStudyActivity extends Activity {
 			.setText(getString(R.string.userStudy_userStudyName, notification.getApplication().getName()));
 		((TextView) myDialog.findViewById(R.id.userstudydialog_descr))
 			.setText(getString(R.string.userStudy_userStudyDescription, notification.getApplication().getDescription()));
-
-
-		((TextView) myDialog.findViewById(R.id.sensors_descr))
-			.setText(getString(R.string.userStudy_userStudyUsedSensors, ""));
-		List<Integer> sensors = notification.getApplication().getSensors();
-		Gallery g = (Gallery) myDialog.findViewById(R.id.sensors);
-		Integer[] imageIds = new Integer[sensors.size()];
-		String[] alternateText = new String[sensors.size()];
-		for (int i = 0; i < sensors.size(); ++i) {
-			imageIds[i] = SensorsEnum.values()[sensors.get(i)].imageID();
-			alternateText[i] = SensorsEnum.values()[sensors.get(i)].toString();
-		}
-		g.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-				((TextView) myDialog.findViewById(R.id.sensors_descr))
-					.setText(getString(R.string.userStudy_userStudyUsedSensors, ((ImageView) arg1).getContentDescription().toString()));
-			}
-
-		});
-		g.setAdapter(new ImageAdapter(ViewUserStudyActivity.this, imageIds, alternateText));
 
 		OnClickListener clickListenerYes = new View.OnClickListener() {
 			@Override

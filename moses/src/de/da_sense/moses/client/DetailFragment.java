@@ -81,7 +81,6 @@ public class DetailFragment extends Fragment {
 	 * @param index the index of the app in the list
 	 * @param appname the name of the app
 	 * @param description the description for the app
-	 * @param sensors the sensors the app wants to use
 	 * @param id the apkid
 	 * @param apkVersion the apkVersion
 	 * @param startDate the start date
@@ -89,7 +88,7 @@ public class DetailFragment extends Fragment {
 	 * @return the created DetailFragment
 	 */
 	public static DetailFragment newInstance(int index, int belongsTo,
-			String appname, String description, ArrayList<Integer> sensors,
+			String appname, String description,
 			String id, String apkVersion, String startDate, String endDate) {
 		DetailFragment f = new DetailFragment();
 		// set arguments for the Fragment
@@ -99,7 +98,6 @@ public class DetailFragment extends Fragment {
 		args.putString("de.da_sense.moses.client.appname", appname);
 		args.putString("de.da_sense.moses.client" +
 				".description", description);
-		args.putIntegerArrayList("de.da_sense.moses.client.sensors", sensors);
 		args.putString("de.da_sense.moses.client.apkid", id);
 		args.putString("de.da_sense.moses.client.apkVersion", apkVersion);
 		args.putString("de.da_sense.moses.client.startDate", startDate);
@@ -122,7 +120,7 @@ public class DetailFragment extends Fragment {
 	 * @return the created DetailFragment
 	 */
 	public static DetailFragment newInstance(int belongsTo, String appname,
-			String description, ArrayList<Integer> sensors, String id,
+			String description, String id,
 			String apkVersion, String startDate, String endDate) {
 		DetailFragment f = new DetailFragment();
 		// set arguments for the Fragment
@@ -131,7 +129,6 @@ public class DetailFragment extends Fragment {
 		args.putInt("de.da_sense.moses.client.belongsTo", belongsTo);
 		args.putString("de.da_sense.moses.client.appname", appname);
 		args.putString("de.da_sense.moses.client.description", description);
-		args.putIntegerArrayList("de.da_sense.moses.client.sensors", sensors);
 		args.putString("de.da_sense.moses.client.apkid", id);
 		args.putString("de.da_sense.moses.client.apkVersion", apkVersion);
 		args.putString("de.da_sense.moses.client.startDate", startDate);
@@ -234,30 +231,6 @@ public class DetailFragment extends Fragment {
 				t = (TextView) detailFragmentView
 						.findViewById(R.id.tv_us_apkversion);
 				t.setText(apkVersion);
-
-				// insert sensors
-				Gallery g = (Gallery) detailFragmentView
-						.findViewById(R.id.sensors);
-				Integer[] imageIds = new Integer[sensors.size()];
-				String[] alternateText = new String[sensors.size()];
-				for (int i = 0; i < sensors.size(); ++i) {
-					imageIds[i] = SensorsEnum.values()[sensors.get(i)].imageID();
-					alternateText[i] = SensorsEnum.values()[sensors.get(i)]
-							.toString();
-				}
-				g.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						((TextView) detailFragmentView
-								.findViewById(R.id.sensorname))
-								.setText(((ImageView) arg1)
-										.getContentDescription());
-					}
-
-				});
-				g.setAdapter(new ImageAdapter(getActivity(), imageIds,
-						alternateText));
 
 				if (belongsTo == AVAILABLE) {
 					// get start button

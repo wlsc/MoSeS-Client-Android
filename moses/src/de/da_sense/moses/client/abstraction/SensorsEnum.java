@@ -11,6 +11,8 @@ import de.da_sense.moses.client.service.MosesService;
  * 
  * @author Zijad, Wladimir Schmidt
  * 
+ * @deprecated this enum is marked for deletion
+ * 
  */
 public enum SensorsEnum {
 	

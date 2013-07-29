@@ -131,8 +131,7 @@ public class RunningFragment extends ListFragment {
 								details = DetailFragment.newInstance( 
 										DetailFragment.RUNNING, 
 										app.getName(), 
-										app.getDescription(), 
-										(ArrayList<Integer>) app.getSensors(),
+										app.getDescription(),
 										app.getID(), 
 										app.getApkVersion(), 
 										app.getStartDateAsString(), 
@@ -162,8 +161,6 @@ public class RunningFragment extends ListFragment {
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description", 
 								app.getDescription());
-						intent.putExtra("de.da_sense.moses.client.sensors", 
-								app.getSensors());
 						intent.putExtra("de.da_sense.moses.client.apkid", 
                                 app.getID());
 						intent.putExtra("de.da_sense.moses.client.apkVersion", 
@@ -222,8 +219,7 @@ public class RunningFragment extends ListFragment {
 							details = DetailFragment.newInstance( 
 									DetailFragment.RUNNING, 
 									app.getName(), 
-									app.getDescription(), 
-									(ArrayList<Integer>) app.getSensors(),
+									app.getDescription(),
 									app.getID(), 
 									app.getApkVersion(), 
 									app.getStartDateAsString(), 
@@ -249,8 +245,6 @@ public class RunningFragment extends ListFragment {
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description", 
 								app.getDescription());
-						intent.putExtra("de.da_sense.moses.client.sensors", 
-								app.getSensors());
                         intent.putExtra("de.da_sense.moses.client.apkid", 
                                 app.getID());
                         intent.putExtra("de.da_sense.moses.client.apkVersion", 

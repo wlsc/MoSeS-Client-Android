@@ -156,12 +156,6 @@ public class ApkMethods {
 						String id = apkInformation.getString("ID");
 						String name = apkInformation.getString("NAME");
 						String description = apkInformation.getString("DESCR");
-						JSONArray sensorsArray = apkInformation
-								.getJSONArray("SENSORS");
-						List<Integer> resultSensors = new LinkedList<Integer>();
-						for (int k = 0; k < sensorsArray.length(); k++) {
-							resultSensors.add(sensorsArray.getInt(k));
-						}
 						String startDate = apkInformation
 								.getString("STARTDATE");
 						String endDate = apkInformation.getString("ENDDATE");
@@ -172,7 +166,6 @@ public class ApkMethods {
 								Integer.valueOf(id));
 						externalApplication.setName(name);
 						externalApplication.setDescription(description);
-						externalApplication.setSensors(resultSensors);
 						externalApplication.setStartDate(startDate);
 						externalApplication.setEndDate(endDate);
 						externalApplication.setApkVersion(apkVersion);

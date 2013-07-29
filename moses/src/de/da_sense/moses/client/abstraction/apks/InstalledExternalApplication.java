@@ -87,9 +87,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 		if (externalApp.isNameSet()) {
 			setName(externalApp.getName());
 		}
-		if (externalApp.isSensorsSet()) {
-			setSensors(externalApp.getSensors());
-		}
+
 		if (externalApp.isNewestVersionSet()) {
 			super.setNewestVersion(externalApp.getNewestVersion());
 		} else {
@@ -175,8 +173,6 @@ public class InstalledExternalApplication extends ExternalApplication {
 					updatedApplication.setName(infoRequester.getResultName());
 					updatedApplication.setDescription(infoRequester
 							.getResultDescription());
-					updatedApplication.setSensors(infoRequester
-							.getResultSensors());
 					updatedApplication.setApkVersion(infoRequester
 							.getResultApkVersion());
 					updatedApplication.setEndDate(infoRequester

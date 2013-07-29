@@ -54,22 +54,6 @@
                 android:layout_marginRight="10sp"
                 android:text="Description lorem ipsum dolor sit amet, consectetur," />
 
-            <TextView
-                android:id="@+id/sensors_descr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10sp"
-                android:layout_marginRight="10sp"
-                style="@android:style/TextAppearance.Medium"
-                android:text="Used sensors: " />
-            <Gallery
-                android:layout_marginLeft="10sp"
-                android:layout_marginRight="10sp"
-                android:id="@+id/sensors"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:spacing="2dip" />
-
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
