@@ -529,8 +529,8 @@ public class WelcomeActivity extends FragmentActivity {
 						// the server does not know the deviceName either, set the the device's model name as the device name
 						e.putString(MosesPreferences.PREF_DEVICENAME, Build.MODEL);
 					}
-					e.apply();
 				}
+				e.apply();
 				
 				if (onLoginCompleteShowUserStudy != null) {
 					// if a user study is to be displayed
