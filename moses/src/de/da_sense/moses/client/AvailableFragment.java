@@ -412,40 +412,41 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 * Controls what to show and what to do when there is no connection.
 	 */
 	private void initControlsNoConnectivity() {
+		/*
+		 * Following statements need to be executed regardless if we the last layout state NO_CONNECTIVITY
+		 * or not
+		 */
+		LinearLayout apkListCtrls = (LinearLayout) getActivity().findViewById(R.id.apklist_mainListLayout);
+		apkListCtrls.setVisibility(View.GONE);
+		// display button to refresh and set action to perform
+		final Button actionBtn1 = (Button) getActivity()
+				.findViewById(R.id.apklist_emptylistActionBtn1);
+		final String tryToReconnectMessage = getString(R.string.retry);
+
+		actionBtn1.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				refreshResfreshBtnTimeout(actionBtn1, tryToReconnectMessage,
+						LayoutState.NO_CONNECTIVITY);
+				requestExternalApplications();
+			}
+		});
 		if (lastSetLayout != LayoutState.NO_CONNECTIVITY) {
 			// no connection so show an empty list
 			LinearLayout emptylistCtrls = (LinearLayout) getActivity()
 					.findViewById(R.id.apklist_emptylistLayout);
 			emptylistCtrls.setVisibility(View.VISIBLE);
-			
-			LinearLayout apkListCtrls = (LinearLayout) getActivity()
-					.findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(View.GONE);
 
 			// set hint that there is no connection
 			TextView mainHint = (TextView) getActivity()
 					.findViewById(R.id.apklist_emptylistHintMain);
 			mainHint.setText(R.string.apklist_hint_noconnectivity);
-
-			// display button to refresh and set action to perform
-			final Button actionBtn1 = (Button) getActivity()
-					.findViewById(R.id.apklist_emptylistActionBtn1);
-			actionBtn1.setText("Refresh");
-
-			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.retry),
-					LayoutState.NO_CONNECTIVITY);
-
-			actionBtn1.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					refreshResfreshBtnTimeout(actionBtn1, getString(R.string.retry),
-							LayoutState.NO_CONNECTIVITY);
-					requestExternalApplications();
-				}
-			});
 			
 			// set the last layout
 			setLastSetLayout(LayoutState.NO_CONNECTIVITY);
+			
+			refreshResfreshBtnTimeout(actionBtn1, tryToReconnectMessage,
+					LayoutState.NO_CONNECTIVITY);
 		}
 	}
 
@@ -470,9 +471,10 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			// show a refresh button an add an action
 			final Button actionBtn1 = (Button) getActivity()
 					.findViewById(R.id.apklist_emptylistActionBtn1);
-			actionBtn1.setText("Refresh");
+			String refreshButtonMessage = getString(R.string.refresh);
+			actionBtn1.setText(refreshButtonMessage);
 
-			refreshResfreshBtnTimeout(actionBtn1, getString(R.string.refresh),
+			refreshResfreshBtnTimeout(actionBtn1, refreshButtonMessage,
 					LayoutState.PENDING_REQUEST);
 
 			actionBtn1.setOnClickListener(new OnClickListener() {
@@ -490,10 +492,14 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	}
 
 	/**
-	 * Controls what the button does during a refresh.
+	 * Controls the appearance of the button during a refresh. It disables the button and animates
+	 * its text by periodically appending full stops. At the end of the animation, the button gets enabled with the
+	 * default text. 
+	 * @param refreshButton the button which appearance will change
+	 * @param minimalString a String for the starting message
+	 * @param parentLayout the current state of the layout (it may change during the refresh)
 	 */
-	private void refreshResfreshBtnTimeout(final Button refreshButton,
-			final String minimalString, final LayoutState parentLayout) {
+	private void refreshResfreshBtnTimeout(final Button refreshButton, final String minimalString, final LayoutState parentLayout) {
 		// disable the button during a refresh
 		refreshButton.setEnabled(false);
 		refreshButton.setText(minimalString);
@@ -528,6 +534,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			@Override
 			public void run() {
 				if (!isPaused && lastSetLayout == parentLayout) {
+					refreshButton.setText(minimalString);
 					refreshButton.setEnabled(true);
 				}
 			}

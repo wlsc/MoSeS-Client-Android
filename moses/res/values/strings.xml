@@ -12,7 +12,7 @@
 	<string name="connected">Connected</string>
 	<string name="login_error">Error while logging in.</string>
     <string name="nonEmptyString">Please enter a non-empty string.</string>
-    <string name="retry">Retry</string>
+    <string name="retry">Try to reconnect</string>
     <string name="refresh">Refresh</string>
     <string name="downloadingApp">Downloading the app...</string>
     <string name="pleaseWait">Please wait.</string>
@@ -129,7 +129,7 @@
     
     <!-- APK List -->
     <string name="apklist_hint_pendingrequest">Waiting for server &#8230;</string>
-    <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet. You may retry to load the user study list anyway: &#160;</string>
+    <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet.</string>
 
     <!-- App Info -->
     <string name="text_app_description">User study description: &#160;</string>
