@@ -13,7 +13,7 @@
 	<string name="login_error">Error while logging in.</string>
     <string name="nonEmptyString">Please enter a non-empty string.</string>
     <string name="retry">Try to reconnect</string>
-    <string name="refresh">Refresh</string>
+    <string name="refresh">Refetch</string>
     <string name="downloadingApp">Downloading the app...</string>
     <string name="pleaseWait">Please wait.</string>
     <string name="noInternetConnection_title">No connection</string>
@@ -128,7 +128,7 @@
     <string name="historyList_emptyHint">There are no past user studies on your device.</string>
     
     <!-- APK List -->
-    <string name="apklist_hint_pendingrequest">Waiting for server &#8230;</string>
+    <string name="apklist_hint_pendingrequest">Server did not provide a list with available apks.</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet.</string>
 
     <!-- App Info -->

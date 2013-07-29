@@ -454,38 +454,41 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 * Controls what to show and what to do during a pending request.
 	 */
 	private void initControlsPendingListRequest() {
+
+		// during a pending request show an empty list
+		LinearLayout emptylistCtrls = (LinearLayout) getActivity()
+				.findViewById(R.id.apklist_emptylistLayout);
+		emptylistCtrls.setVisibility(View.VISIBLE);
+		LinearLayout apkListCtrls = (LinearLayout) getActivity().findViewById(
+				R.id.apklist_mainListLayout);
+		apkListCtrls.setVisibility(View.GONE);
+
+		// display hint that there is a pending request
+		TextView mainHint = (TextView) getActivity().findViewById(
+				R.id.apklist_emptylistHintMain);
+		mainHint.setText(R.string.apklist_hint_pendingrequest);
+
+		// show a refresh button and add an action
+		final Button actionBtn1 = (Button) getActivity().findViewById(
+				R.id.apklist_emptylistActionBtn1);
+		String refreshButtonMessage = getString(R.string.refresh);
+		actionBtn1.setText(refreshButtonMessage);
+
+		actionBtn1.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				refreshResfreshBtnTimeout(actionBtn1,
+						getString(R.string.refresh),
+						LayoutState.PENDING_REQUEST);
+				requestExternalApplications();
+			}
+		});
+
 		if (lastSetLayout != LayoutState.PENDING_REQUEST) {
-			// during a pending request show an empty list
-			LinearLayout emptylistCtrls = (LinearLayout) getActivity()
-					.findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(View.VISIBLE);
-			LinearLayout apkListCtrls = (LinearLayout) getActivity()
-					.findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(View.GONE);
-
-			// display hint that there is a pending request
-			TextView mainHint = (TextView) getActivity()
-					.findViewById(R.id.apklist_emptylistHintMain);
-			mainHint.setText(R.string.apklist_hint_pendingrequest);
-
-			// show a refresh button an add an action
-			final Button actionBtn1 = (Button) getActivity()
-					.findViewById(R.id.apklist_emptylistActionBtn1);
-			String refreshButtonMessage = getString(R.string.refresh);
-			actionBtn1.setText(refreshButtonMessage);
 
 			refreshResfreshBtnTimeout(actionBtn1, refreshButtonMessage,
 					LayoutState.PENDING_REQUEST);
 
-			actionBtn1.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					refreshResfreshBtnTimeout(actionBtn1, getString(R.string.refresh),
-							LayoutState.PENDING_REQUEST);
-					requestExternalApplications();
-				}
-			});
-			
 			// set the last layout
 			setLastSetLayout(LayoutState.PENDING_REQUEST);
 		}
