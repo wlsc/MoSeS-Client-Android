@@ -1,6 +1,9 @@
 package de.da_sense.moses.client;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -10,16 +13,21 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,7 +38,6 @@ import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.HardwareAbstraction;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
-import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledStateMonitor;
 import de.da_sense.moses.client.preferences.MosesPreferences;
@@ -41,12 +48,16 @@ import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
+import de.da_sense.moses.client.util.InternetConnectionChangeListener;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * This activity shows a login field to the user if necessary and is 
  * responsible for the main application view.
  * It's the first activity a user sees when he starts our App.
+ * 
+ * This activity monitors changes regarding Internet connection
+ * and informs its interested fragments about it. 
  * 
  * @author Jaco Hofmann, Sandra Amend, Wladimir Schmidt
  * @author Zijad Maksuti 
@@ -85,6 +96,18 @@ public class WelcomeActivity extends FragmentActivity {
 	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
+	
+	/*
+	 * For receiving informations about the Internet connection state and informing
+	 * the fragments about it.
+	 * 
+	 */
+	private BroadcastReceiver mConnReceiver;
+	
+	/*
+	 * All fragments added to this activity.
+	 */
+	private List<WeakReference<Fragment>> mFragList;
 	
 	private static final String LOG_TAG = WelcomeActivity.class.getName();
 	
@@ -178,8 +201,9 @@ public class WelcomeActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        thisInstance = this;
-		Log.d("MainActivity", "onCreate called");
+		Log.d(LOG_TAG, "onCreate called");
+		thisInstance = this;
+		mFragList = new ArrayList<WeakReference<Fragment>>();
         
         // Moses got called to view a UserStudy
         boolean isShowUserStudyCall = getIntent()
@@ -219,9 +243,21 @@ public class WelcomeActivity extends FragmentActivity {
 		// initialize the UI elements
 		setContentView(R.layout.activity_main);		
 		initControls(savedInstanceState);
+		
     }
+    
+    
 
-    /**
+    /* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onAttachFragment(android.support.v4.app.Fragment)
+	 */
+	@Override
+	public void onAttachFragment(Fragment fragment) {
+		super.onAttachFragment(fragment);
+		mFragList.add(new WeakReference<Fragment>(fragment));
+	}
+
+	/**
      * @see com.actionbarsherlock.app.SherlockFragmentActivity#onCreateOptionsMenu(android.view.Menu)
      */
     @Override
@@ -476,6 +512,8 @@ public class WelcomeActivity extends FragmentActivity {
 			unbindService(mConnection);
 		}
 	}
+	
+	
 
 	/**
 	 * Checks if is MoSeS service running.
@@ -701,9 +739,55 @@ public class WelcomeActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		/*
+		 * Register the RECEIVER for receiving informations about connectivity to Internet ##############
+		 */
+		mConnReceiver = new BroadcastReceiver() {
+			public void onReceive(Context context, Intent intent) {
+				Log.i(LOG_TAG, "Internet connection changed");
+				ConnectivityManager cm = (ConnectivityManager) context
+						.getSystemService(Context.CONNECTIVITY_SERVICE);
+				NetworkInfo currentNetworkInfo = cm.getActiveNetworkInfo();
+				// go through all Fragments and inform the ones implementing the
+				// InternetConnectionChangeListener
+				for (WeakReference<Fragment> fragRef : mFragList) {
+					Fragment fragment = fragRef.get();
+					if (fragment != null
+							&& fragment instanceof InternetConnectionChangeListener) {
+						InternetConnectionChangeListener listener = (InternetConnectionChangeListener) fragment;
+						if (currentNetworkInfo != null
+								&& currentNetworkInfo.isConnected()) {
+							Log.d(LOG_TAG,
+									"Informing a fragment about the establishment of the Internet connection");
+							listener.onConnectionEstablished();
+						} else {
+							Log.d(LOG_TAG,
+									"Informing a fragment about the loss of the Internet connection");
+							listener.onConnectionLost();
+						}
+					}
+				}
+			}
+		};
+		registerReceiver(mConnReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+		/*
+		 * RECEIVER END #############################################################################
+		 */
+		
 		checkInstalledStatesOfApks();
 	}
 	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		if(mConnReceiver != null)
+			unregisterReceiver(mConnReceiver);
+	}
+
 	/**
 	 * Tests if the login information is complete in the shared preferences.
 	 * @return true when the information which is required for the service to
@@ -738,21 +822,6 @@ public class WelcomeActivity extends FragmentActivity {
 			final Runnable cancelClickAction) {
 		AvailableFragment fragment = (AvailableFragment) getInstance().getFragmentManager().findFragmentByTag("available");
 		fragment.showDetails(app, baseActivity, installAppClickAction, cancelClickAction);
-	}
-	
-	/**
-	 * For update calls.
-	 * @param app
-	 * @param baseActivity
-	 * @param installAppClickAction
-	 * @param cancelClickAction
-	 */
-	@Deprecated
-	public void showRunningDetails(InstalledExternalApplication app, Activity baseActivity, 
-			final Runnable AppClickAction,
-			final Runnable cancelClickAction) {
-		RunningFragment fragment = (RunningFragment) getInstance().getFragmentManager().findFragmentByTag("running");
-		fragment.showDetails(app, baseActivity, AppClickAction, cancelClickAction);
 	}
 	
 	/**

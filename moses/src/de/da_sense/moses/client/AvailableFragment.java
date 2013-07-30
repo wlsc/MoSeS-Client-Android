@@ -40,6 +40,7 @@ import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
+import de.da_sense.moses.client.util.InternetConnectionChangeListener;
 import de.da_sense.moses.client.util.Log;
 
 /**
@@ -48,7 +49,7 @@ import de.da_sense.moses.client.util.Log;
  * @author Sandra Amend, Simon L
  * @author Zijad Maksuti
  */
-public class AvailableFragment extends ListFragment implements ApkListRequestObserver {
+public class AvailableFragment extends ListFragment implements ApkListRequestObserver, InternetConnectionChangeListener {
 	/**
 	 * Enums for the state of the layout.
 	 */
@@ -987,6 +988,23 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	@Override
 	public void onDetach() {
 		super.onDetach();
+	}
+
+	@Override
+	public void onConnectionLost() {
+		// TODO Auto-generated method stub
+		// not interested in this. FOR NOW! muhahahahaha!
+		// act now I am crazy
+	}
+
+	@Override
+	public void onConnectionEstablished() {
+		// if the fragment is visible and is in NO_CONNECTIVITY state,
+		// request the list from the server
+		if(this.isVisible() && lastSetLayout.equals(LayoutState.NO_CONNECTIVITY))
+			requestExternalApplications();
+			
+		
 	}
 	
 	
