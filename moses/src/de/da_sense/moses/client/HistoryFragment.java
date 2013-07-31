@@ -46,9 +46,6 @@ public class HistoryFragment extends ListFragment {
 		return thisInstance;
 	}
 	
-	/**
-	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -186,19 +183,12 @@ public class HistoryFragment extends ListFragment {
 		}
 	}
 	
-	/**
-	 * save the current position in the list 
-	 * @see android.support.v4.app.Fragment#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("curChoice", mCurHistPosition);
 	}
 	
-	/**
-	 * @see android.support.v4.app.Fragment#onPause()
-	 */
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -280,9 +270,6 @@ public class HistoryFragment extends ListFragment {
 		return sortedList;
 	}
 	
-	/**
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -300,10 +287,6 @@ public class HistoryFragment extends ListFragment {
 				getActivity().getClass().getSimpleName());
 	}
 	
-	/**
-	 * Inflate the layout of the list.
-	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

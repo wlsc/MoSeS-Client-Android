@@ -298,8 +298,6 @@ public class QuestionnaireFragment extends Fragment {
 	/**
 	 * Creates a Layout for a Single_Questionnaire
 	 * 
-	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater,
-	 *      android.view.ViewGroup, android.os.Bundle)
 	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

@@ -138,13 +138,6 @@ public class DetailFragment extends Fragment {
 		return f;
 	}
 
-	/**
-	 * Create the view of the detail fragment depending on which tab it belongs
-	 * to.
-	 * 
-	 * @see android.support.v4.app.Fragment#onCreateView(android.view.LayoutInflater,
-	 *      android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -423,9 +416,6 @@ public class DetailFragment extends Fragment {
 		}
 	}
 
-	/**
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
 	@Override
 	public void onResume() {
 		super.onResume();

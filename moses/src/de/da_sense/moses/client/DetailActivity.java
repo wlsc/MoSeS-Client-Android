@@ -1,9 +1,9 @@
 package de.da_sense.moses.client;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.MenuItem;
 import de.da_sense.moses.client.util.Log;
 
@@ -11,12 +11,8 @@ import de.da_sense.moses.client.util.Log;
  * Represents the details of a userstudy.
  * @author Sandra Amend, Wladimir Schmidt
  */
-public class DetailActivity extends FragmentActivity {
+public class DetailActivity extends Activity {
 	
-	/**
-	 * 
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -78,9 +74,6 @@ public class DetailActivity extends FragmentActivity {
         }
 	}
 
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.d("DetailActivity", "onSaveInstanceState");

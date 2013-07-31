@@ -56,9 +56,6 @@ public class RunningFragment extends ListFragment {
 		return thisInstance;
 	}
 	
-	/**
-	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -282,17 +279,13 @@ public class RunningFragment extends ListFragment {
 
 	/**
 	 * save the current position in the list 
-	 * @see android.support.v4.app.Fragment#onSaveInstanceState(android.os.Bundle)
 	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("curChoice", mCurRunPosition);
 	}
-	
-	/**
-	 * @see android.support.v4.app.Fragment#onPause()
-	 */
+
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -403,9 +396,6 @@ public class RunningFragment extends ListFragment {
 	// FIXME: this was already commented out
 //	long thr = System.currentTimeMillis();
 	
-	/**
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -429,7 +419,6 @@ public class RunningFragment extends ListFragment {
 	
 	/**
 	 * Inflate the layout of the APK list.
-	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
 	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

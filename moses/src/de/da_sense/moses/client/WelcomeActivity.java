@@ -11,6 +11,7 @@ import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.BroadcastReceiver;
@@ -27,8 +28,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,7 +62,7 @@ import de.da_sense.moses.client.util.Log;
  * @author Zijad Maksuti 
  *
  */
-public class WelcomeActivity extends FragmentActivity {
+public class WelcomeActivity extends Activity {
 
 	/** Invalid tab. Constant for the tab selection logic. */
 	protected final static int TAB_INVALID = -1;
@@ -195,16 +194,12 @@ public class WelcomeActivity extends FragmentActivity {
 		}
 	};
 	
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG, "onCreate called");
 		thisInstance = this;
-		mFragList = new ArrayList<WeakReference<Fragment>>();
-        
+		
         // Moses got called to view a UserStudy
         boolean isShowUserStudyCall = getIntent()
         		.getStringExtra(ViewUserStudyActivity
@@ -246,14 +241,14 @@ public class WelcomeActivity extends FragmentActivity {
 		
     }
     
-    
-
-    /* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onAttachFragment(android.support.v4.app.Fragment)
-	 */
 	@Override
 	public void onAttachFragment(Fragment fragment) {
 		super.onAttachFragment(fragment);
+		if(mFragList == null)
+			// must be initialized here,
+			// because the method gets invoked before onCreate and onResume
+			mFragList = new ArrayList<WeakReference<Fragment>>();
+		
 		mFragList.add(new WeakReference<Fragment>(fragment));
 	}
 
@@ -329,9 +324,6 @@ public class WelcomeActivity extends FragmentActivity {
 		return result;
 	}
 
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	protected void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
@@ -537,7 +529,6 @@ public class WelcomeActivity extends FragmentActivity {
 	
 	/**
 	 * User comes back from another activity.
-	 * @see android.support.v4.app.FragmentActivity#onActivityResult(int, int, android.content.Intent)
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -733,9 +724,6 @@ public class WelcomeActivity extends FragmentActivity {
 	
 	
 
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onResume()
-	 */
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -777,9 +765,6 @@ public class WelcomeActivity extends FragmentActivity {
 		checkInstalledStatesOfApks();
 	}
 	
-	/* (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onPause()
-	 */
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -832,7 +817,7 @@ public class WelcomeActivity extends FragmentActivity {
 		/** the Fragment of the tab */
 		private ListFragment mFragment;
 		/** the Activity of the tab */
-		private final FragmentActivity mActivity;
+		private final Activity mActivity;
 		/** the tag of the tab */
 		private final String mTag;
 		/** the class of the tab */
@@ -846,7 +831,7 @@ public class WelcomeActivity extends FragmentActivity {
 		 * @param tag the tag for the tab
 		 * @param clz the class of the tab
 		 */
-		private MosesTabListener(FragmentActivity activity, String tag, Class<T> clz) {
+		private MosesTabListener(Activity activity, String tag, Class<T> clz) {
             this(activity, tag, clz, null);
         }
 
@@ -857,7 +842,7 @@ public class WelcomeActivity extends FragmentActivity {
 		 * @param clz
 		 * @param args
 		 */
-        private MosesTabListener(FragmentActivity activity, String tag, Class<T> clz, Bundle args) {
+        private MosesTabListener(Activity activity, String tag, Class<T> clz, Bundle args) {
             mActivity = activity;
             mTag = tag;
             mClass = clz;
@@ -877,7 +862,6 @@ public class WelcomeActivity extends FragmentActivity {
 		
 		/**
 		 * Callback Methods for com.actionbarsherlock.app.ActionBar.TabListener
-		 * @see com.actionbarsherlock.app.ActionBar.TabListener#onTabSelected(com.actionbarsherlock.app.ActionBar.Tab, android.support.v4.app.FragmentTransaction)
 		 */
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
@@ -930,7 +914,6 @@ public class WelcomeActivity extends FragmentActivity {
 
 		/**
 		 * If unselected fragment not null, detach it.
-		 * @see com.actionbarsherlock.app.ActionBar.TabListener#onTabUnselected(com.actionbarsherlock.app.ActionBar.Tab, android.support.v4.app.FragmentTransaction)
 		 */
 		@Override
 		public void onTabUnselected(Tab tab, FragmentTransaction ft) {
@@ -940,9 +923,6 @@ public class WelcomeActivity extends FragmentActivity {
 			}
 		}
 		
-		/**
-		 * @see com.actionbarsherlock.app.ActionBar.TabListener#onTabReselected(com.actionbarsherlock.app.ActionBar.Tab, android.support.v4.app.FragmentTransaction)
-		 */
 		@Override
 		public void onTabReselected(Tab tab, FragmentTransaction ft) {
 			// nothing to do here

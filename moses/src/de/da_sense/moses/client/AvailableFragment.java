@@ -104,10 +104,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		this.externalApps = externalApps;
 	}
 
-	/**
-	 * 
-	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
-	 */
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -308,10 +304,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			}
 	}
 	
-	/**
-	 * Save the current position in the list
-	 * @see android.support.v4.app.Fragment#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -319,10 +311,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		Log.d("AvailableFragment", "onSaveInstanceState called");
 	}
 
-	/**
-	 * 
-	 * @see android.support.v4.app.Fragment#onPause()
-	 */
 	@Override
 	public void onPause() {
 		super.onPause();
@@ -338,10 +326,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 				getActivity().getClass().getSimpleName());
 	}
 	
-	/**
-	 * Inflate the layout of the APK list.
-	 * @see android.support.v4.app.ListFragment#onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)
-	 */
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -852,12 +836,6 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 		}
 	}
 
-	/**
-	 * After the app is resumed we request the external applications, and set up
-	 * a second request.
-	 * 
-	 * @see android.support.v4.app.Fragment#onResume()
-	 */
 	@Override
 	public void onResume() {
 		super.onResume();

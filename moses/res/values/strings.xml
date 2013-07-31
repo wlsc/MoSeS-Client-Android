@@ -14,7 +14,7 @@
     <string name="nonEmptyString">Please enter a non-empty string.</string>
     <string name="retry">Try to reconnect</string>
     <string name="refresh">Refetch</string>
-    <string name="downloadingApp">Downloading the app...</string>
+    <string name="downloadingApp">Downloading the app&#8230;</string>
     <string name="pleaseWait">Please wait.</string>
     <string name="noInternetConnection_title">No connection</string>
     <string name="noInternetConnection_message">There seems to be no open internet connection present for downloading the app.</string>
@@ -30,7 +30,7 @@
     <string name="q_send">Send</string>
     <string name="q_answersSent">Your answers have been sent!</string>
     <string name="q_next">Next</string>
-    <string name="userStudy_loading">Loading...</string>
+    <string name="userStudy_loading">Loading&#8230;</string>
     <string name="userStudy_loadingInformation">Loading userstudy information</string>
     <string name="userStudy_errorMessage">An error occurred when retrieving the informations for a user study: %1$s.\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!</string>
     <string name="userStudy_errorMessage2">An error occurred when installing the user study app. Sorry!</string>
@@ -40,8 +40,8 @@
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
     
-    <string name="loadingName">Loading Name... (ID: %1$s)</string>
-    <string name="loadingDescription">Loading Description...</string>
+    <string name="loadingName">Loading Name&#8230; (ID: %1$s)</string>
+    <string name="loadingDescription">Loading Description&#8230;</string>
     <string name="not_set">not set</string>
     
     
@@ -128,7 +128,7 @@
     <string name="historyList_emptyHint">There are no past user studies on your device.</string>
     
     <!-- APK List -->
-    <string name="apklist_hint_pendingrequest">Server did not provide a list with available apks.</string>
+    <string name="apklist_hint_pendingrequest">List of APKs not fetched from server.</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet.</string>
 
     <!-- App Info -->

@@ -1,8 +1,8 @@
 package de.da_sense.moses.client;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -12,7 +12,7 @@ import android.view.MenuItem;
  * @author Sandra Amend, Wladimir Schmidt
  * 
  */
-public class QuestionnaireActivity extends FragmentActivity {
+public class QuestionnaireActivity extends Activity {
 	/**
 	 * Defining a log tag to this class
 	 */
@@ -63,9 +63,6 @@ public class QuestionnaireActivity extends FragmentActivity {
         }
 	}
 
-	/**
-	 * @see android.support.v4.app.FragmentActivity#onSaveInstanceState(android.os.Bundle)
-	 */
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		Log.d(TAG, "onSaveInstanceState");

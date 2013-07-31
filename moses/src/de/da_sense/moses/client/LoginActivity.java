@@ -62,10 +62,6 @@ public class LoginActivity extends Activity {
 	
 	private LoginActivity lg;
 	
-	/*
-	 * (non-Javadoc)
-	 * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-	 */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
