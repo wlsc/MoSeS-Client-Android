@@ -29,7 +29,11 @@ public class SplashScreen extends Activity {
 
 	private static boolean isAsyncTaskRunning = false;
 
-	private static boolean isActivityFinished = false;
+	/*
+	 * True only if this activity is WelcomeActivity is started. 
+	 */
+	private boolean mIsWelcomeActivityStarted;
+	private static String KEY_IS_WELCOME_ACTIVITY_STARTED = "mIsWelcomeActivityStarted";
 
 	private boolean mGooglePlayServicesOperational;
 	private static String KEY_GOOGLE_PLAY_SERVICES_OPERATIONAL = "mGooglePlayServicesOperational";
@@ -40,11 +44,15 @@ public class SplashScreen extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		if (savedInstanceState != null)
+		if (savedInstanceState != null){
 			mGooglePlayServicesOperational = savedInstanceState.getBoolean(
 					KEY_GOOGLE_PLAY_SERVICES_OPERATIONAL, false);
-		else
+			mIsWelcomeActivityStarted = savedInstanceState.getBoolean(KEY_IS_WELCOME_ACTIVITY_STARTED, false);
+		}
+		else{
 			mGooglePlayServicesOperational = false;
+			mIsWelcomeActivityStarted = false;
+		}
 
 		if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(MosesPreferences.PREF_SHOW_SPLASHSCREEN, true)) {
 			// Splash screen needs to be shown, set the content view
@@ -66,7 +74,7 @@ public class SplashScreen extends Activity {
 
 				@Override
 				public void onClick(View v) {
-					if (!isActivityFinished && mGooglePlayServicesOperational) {
+					if (mGooglePlayServicesOperational) {
 						startWelcomeActivity();
 					}
 				}
@@ -105,8 +113,8 @@ public class SplashScreen extends Activity {
 				}
 			}
 			else{
-				// splash screen does not needs to be shown, don't start the login
-				// activity
+				// splash screen does not needs to be shown,
+				// start welcome activity
 				startWelcomeActivity();
 			}
 		}
@@ -130,16 +138,24 @@ public class SplashScreen extends Activity {
 		super.onSaveInstanceState(savedInstanceState);
 		savedInstanceState.putBoolean(KEY_GOOGLE_PLAY_SERVICES_OPERATIONAL,
 				mGooglePlayServicesOperational);
+		savedInstanceState.putBoolean(KEY_IS_WELCOME_ACTIVITY_STARTED, mIsWelcomeActivityStarted);
 	}
 
 	/**
-	 * Finishes this activity and starts {@link WelcomeActivity}
+	 * Finishes this activity and starts {@link WelcomeActivity}. This method checks for the value of
+	 * {@link #mIsWelcomeActivityStarted} to check if the WelcomeActivity was already started. If so, the method
+	 * takes no action.
 	 */
-	private void startWelcomeActivity() {
-		Intent intent = new Intent(this, WelcomeActivity.class);
-		startActivity(intent);
-		isActivityFinished = true;
-		finish();
+	private synchronized void startWelcomeActivity() {
+		if(!mIsWelcomeActivityStarted){
+			Log.d(LOG_TAG, "startWelcomeActivity() starting WelcomeActivity");
+			Intent intent = new Intent(this, WelcomeActivity.class);
+			startActivity(intent);
+			mIsWelcomeActivityStarted = true;
+			finish();
+		}
+		else
+			Log.d(LOG_TAG, "startWelcomeActivity() skipped starting WelcomeActivity");
 	}
 
 	/**
@@ -169,8 +185,7 @@ public class SplashScreen extends Activity {
 		@Override
 		protected void onPostExecute(Void params) {
 			isAsyncTaskRunning = false;
-			if (!isActivityFinished)
-				startWelcomeActivity();
+			startWelcomeActivity();
 		}
 
 	}

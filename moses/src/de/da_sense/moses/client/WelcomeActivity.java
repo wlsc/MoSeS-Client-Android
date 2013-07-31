@@ -767,7 +767,6 @@ public class WelcomeActivity extends Activity {
 	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		if(mConnReceiver != null)
 			unregisterReceiver(mConnReceiver);

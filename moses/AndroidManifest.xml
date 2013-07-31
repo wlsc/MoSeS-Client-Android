@@ -76,7 +76,7 @@
                 <action android:name="de.da_sense.moses.client.service.MosesService" /> <!-- to be able to let MosesService to make services -->
             </intent-filter>
         </service>
-        <activity android:theme="@style/AppThemeNoActionbar" android:name=".SplashScreen">
+        <activity android:theme="@style/AppThemeNoActionbar" android:name=".SplashScreen" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
