@@ -9,7 +9,6 @@ import de.da_sense.moses.client.com.NetworkJSON;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.helpers.Login;
 
 public class RequestUninstalledAPK {
 	ReqTaskExecutor e;
