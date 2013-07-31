@@ -252,9 +252,6 @@ public class WelcomeActivity extends Activity {
 		mFragList.add(new WeakReference<Fragment>(fragment));
 	}
 
-	/**
-     * @see com.actionbarsherlock.app.SherlockFragmentActivity#onCreateOptionsMenu(android.view.Menu)
-     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
     	MenuInflater inflater = getMenuInflater();
@@ -444,11 +441,6 @@ public class WelcomeActivity extends Activity {
         super.onStart();
         ((ProgressBar) findViewById(R.id.main_spinning_progress_bar))
         .setVisibility(View.GONE);
-        /*
-         * If the device id is not set in the shared preferences,
-         * it means that this is the first time the client has started on this device.
-         * to the device 
-         */
         
         startAndBindService();
     }
