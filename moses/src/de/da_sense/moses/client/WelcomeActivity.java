@@ -7,13 +7,10 @@ import java.util.List;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;

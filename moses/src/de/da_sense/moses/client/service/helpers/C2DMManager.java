@@ -54,7 +54,7 @@ public class C2DMManager {
 	 * @param registrationId The ID to set to
 	 */
 	public static void setC2DMReceiverId(String registrationId) {
-		Log.i(LOG_TAG, "received GCM ID " + registrationId);
+		Log.i(LOG_TAG, "setC2DMReceiverId() received GCM ID " + registrationId);
 		boolean setNewC2DMID = false;
 		if (registrationId != null) {
 			if (c2dmRegistrationId == null) {
