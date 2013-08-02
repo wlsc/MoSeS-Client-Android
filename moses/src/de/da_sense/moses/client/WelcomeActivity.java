@@ -46,6 +46,7 @@ import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.InternetConnectionChangeListener;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * This activity shows a login field to the user if necessary and is 

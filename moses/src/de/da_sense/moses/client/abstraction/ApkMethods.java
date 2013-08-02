@@ -29,6 +29,7 @@ import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Methods for handling the APKs.
@@ -58,6 +59,7 @@ public class ApkMethods {
 
 		@Override
 		public void handleException(Exception e) {
+			Toaster.showBadServerResponseToast();
 			observer.apkDownloadLinkRequestFailed(e);
 		}
 

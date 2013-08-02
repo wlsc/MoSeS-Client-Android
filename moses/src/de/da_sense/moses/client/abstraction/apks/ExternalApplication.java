@@ -17,6 +17,7 @@ import de.da_sense.moses.client.com.requests.RequestMulti_Questionnaire;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.Multi_Questionnaire;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Reference to an application on the server, referenced by it's MoSeS id
@@ -645,6 +646,7 @@ public class ExternalApplication {
 		@Override
 		public void handleException(Exception e) {
 			Log.d("SetQuestionnaireAnswers", "Failed because of an exception: " + e.getMessage());
+			Toaster.showBadServerResponseToast();
 		}
 
 		@Override

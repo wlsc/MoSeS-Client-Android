@@ -6,13 +6,13 @@ import java.net.URL;
 import java.util.Observable;
 
 import android.content.Context;
-import android.widget.Toast;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.abstraction.ApkDownloadLinkRequestObserver;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Abstraction for downloading a single application package downloadedApk, given
@@ -72,7 +72,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	}
 
 	/**
-	 * sets the state of this downloading process aand notifies observers about
+	 * sets the state of this downloading process and notifies observers about
 	 * it
 	 * 
 	 * @param state
@@ -133,8 +133,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 			requestApkDownload(url, progressListener);
 		} catch (MalformedURLException e) {
 			Log.e("MoSeS.APK", "Server sent malformed url; could not download application: " + urlString);
-			Toast.makeText(this.context,  context.getString(R.string.downloadApk_errorMessage2, urlString),
-					Toast.LENGTH_LONG).show();
+			Toaster.showToast(context, context.getString(R.string.downloadApk_errorMessage2, urlString));
 		}
 	}
 

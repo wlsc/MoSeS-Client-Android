@@ -18,7 +18,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import de.da_sense.moses.client.service.MosesService;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * This class gives basic request capability.
@@ -30,6 +32,8 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 
 	// Needed for testing
 	private static CountDownLatch signal = new CountDownLatch(1);
+	
+	private final String LOG_TAG = NetworkJSON.class.getName();
 
 	/**
 	 * The Class APIRequest.
@@ -154,6 +158,8 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 				MosesService.getInstance().login();
 			}
 		} catch (JSONException e1) {
+			Log.e(LOG_TAG, "onPostExecute() " + e1);
+			Toaster.showBadServerResponseToast();
 		}
 	}
 

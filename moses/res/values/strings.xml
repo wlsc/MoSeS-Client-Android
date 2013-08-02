@@ -182,5 +182,12 @@
     <!-- Details -->
     <string name="details_running_noquestionnaire">no questionnaire</string>
     <string name="details_running_questionnairesent">questionnaire sent</string>
+    
+    <!-- Misc -->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor.</string>
+    <string name="content_description_toast">Small MoSeS logo.</string>
+    
+    <!-- Error messages -->
+    <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>
 
 </resources>

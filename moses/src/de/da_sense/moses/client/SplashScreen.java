@@ -16,6 +16,7 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Splash screen shown to the user the first time the application is started.

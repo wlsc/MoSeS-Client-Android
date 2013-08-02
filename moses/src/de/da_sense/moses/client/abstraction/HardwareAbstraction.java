@@ -34,6 +34,7 @@ import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * This class provides basic support for hardware sync with server.
@@ -45,14 +46,14 @@ import de.da_sense.moses.client.util.Log;
 public class HardwareAbstraction {
 
 	/** the context */
-	private Context context;
+	private Context mContext;
 	
 	/**
 	 * This method is used to create HardwareAbstraction
 	 * @param c Context
 	 */
 	public HardwareAbstraction(Context c) {
-		context = c;
+		mContext = c;
 	}
 	
     /**
@@ -207,7 +208,7 @@ public class HardwareAbstraction {
 						sb.append(SensorsEnum.values()[sensors.getInt(i)]);
 					}
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", sb.toString());
-					AlertDialog ad = new AlertDialog.Builder(context).create();
+					AlertDialog ad = new AlertDialog.Builder(mContext).create();
 					// prepare a dialog for this information
 					ad.setCancelable(false); // This blocks the 'BACK' button
 					ad.setIcon(R.drawable.ic_launcher);
@@ -252,6 +253,7 @@ public class HardwareAbstraction {
          */
 		@Override
 		public void handleException(Exception e) {
+			Toaster.showBadServerResponseToast(mContext);
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 		}
 
@@ -302,7 +304,7 @@ public class HardwareAbstraction {
 					MessageTypesEnum.REQUEST_GET_HARDWARE_PARAMETERS, new Executable() {
 						@Override
 						public void execute() {
-							gethwprogressdialog = new ProgressDialog(context);
+							gethwprogressdialog = new ProgressDialog(mContext);
 							gethwprogressdialog.setTitle("Hardware Informations");
 							gethwprogressdialog.setMessage("Retrieving...");
 							gethwprogressdialog.show();
@@ -319,7 +321,7 @@ public class HardwareAbstraction {
 	private HardwareInfo retrieveHardwareParameters() {
 		// *** SENDING SET_HARDWARE_PARAMETERS REQUEST TO SERVER ***//
 		LinkedList<Integer> sensors = new LinkedList<Integer>();
-		SensorManager s = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+		SensorManager s = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
 		for (Sensor sen : s.getSensorList(Sensor.TYPE_ALL)) {
 			sensors.add(sen.getType());
 		}

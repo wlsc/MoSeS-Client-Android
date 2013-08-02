@@ -20,6 +20,7 @@ import de.da_sense.moses.client.com.requests.RequestC2DM;
 import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * 
@@ -111,8 +112,8 @@ public class C2DMManager {
 									}
 
 								} catch (JSONException e) {
-									Log.e(LOG_TAG, "C2DMToMosesServer returned malformed message");
-									e.printStackTrace();
+									Log.e(LOG_TAG, "C2DMToMosesServer returned malformed message "+e.getMessage());
+									Toaster.showBadServerResponseToast(context);
 								}
 							}
 
@@ -145,8 +146,7 @@ public class C2DMManager {
 			try {
 				setC2DMReceiverId(gcm.register(context.getString(R.string.GoogleProjectNumber)));
 			} catch (IOException e) {
-				Log.w(LOG_TAG, "AsyncObtainGCMID: problem registering for GCM. ID is not obtained");
-				e.printStackTrace();
+				Log.w(LOG_TAG, "AsyncObtainGCMID: problem registering for GCM. ID is not obtained " + e.getMessage());
 			}
 			return null;
 		}

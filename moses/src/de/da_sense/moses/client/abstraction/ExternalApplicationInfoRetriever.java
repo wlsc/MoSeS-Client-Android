@@ -14,6 +14,7 @@ import de.da_sense.moses.client.service.helpers.Executable;
 import de.da_sense.moses.client.service.helpers.HookTypesEnum;
 import de.da_sense.moses.client.service.helpers.MessageTypesEnum;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 public class ExternalApplicationInfoRetriever extends Observable {
 
@@ -51,7 +52,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 		ERROR
 	}
 
-	private Context context;
+	private Context mContext;
 	private Exception exception;
 	private State state;
 	private String apkId;
@@ -68,7 +69,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	private boolean cancelled = false;
 
 	public ExternalApplicationInfoRetriever(String apkId, Context c) {
-		this.context = c;
+		this.mContext = c;
 		this.apkId = apkId;
 		setState(State.INITIALIZED);
 	}
@@ -78,11 +79,11 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	}
 
 	public void start() {
-		if (!sendEvenWhenNoNetwork && !MosesService.isOnline(context)) {
+		if (!sendEvenWhenNoNetwork && !MosesService.isOnline(mContext)) {
 			setState(State.NO_NETWORK);
 			return;
 		} else {
-			if (!MosesService.isOnline(context)) {
+			if (!MosesService.isOnline(mContext)) {
 				setState(State.NO_NETWORK_PENDING);
 			} else {
 				setState(State.PENDING);
@@ -118,6 +119,7 @@ public class ExternalApplicationInfoRetriever extends Observable {
 									}
 								} catch (JSONException e) {
 									Log.e("MoSeS.APK", "requesting study information: json exception" + e.getMessage());
+									Toaster.showBadServerResponseToast(mContext);
 									setErrorState(e);
 								}
 							}

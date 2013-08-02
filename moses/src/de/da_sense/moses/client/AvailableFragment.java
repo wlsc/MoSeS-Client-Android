@@ -42,6 +42,7 @@ import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.ExecutableForObject;
 import de.da_sense.moses.client.util.InternetConnectionChangeListener;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Responsible for displaying the available APKs which get fetched from the
@@ -820,6 +821,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	 */
 	@Override
 	public void apkListRequestFailed(Exception e) {
+		Toaster.showBadServerResponseToast();
 		Log.w("MoSeS.APKMETHODS",
 				"invalid response for apk list request: " + e.getMessage());
 	}
