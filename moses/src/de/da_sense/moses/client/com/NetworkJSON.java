@@ -158,8 +158,23 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 				MosesService.getInstance().login();
 			}
 		} catch (JSONException e1) {
-			Log.e(LOG_TAG, "onPostExecute() " + e1);
-			Toaster.showBadServerResponseToast();
+			/*
+			 * One of the reason for a malformed answer could be the loss of Internet connection.
+			 * If so, do not throw any notifications to user from here, higher layers should do that
+			 */
+			MosesService ms = MosesService.getInstance();
+			if(ms != null){
+				if(ms.isOnline()){
+					// Server's answer was not malformed due to an absent Internet connection
+					Log.e(LOG_TAG, "onPostExecute() " + e1);
+					Toaster.showBadServerResponseToast();
+				}
+			}
+			else{
+				Log.w(LOG_TAG, "onPostExecute() MosesService was not running.");
+			}
+			
+			
 		}
 	}
 
