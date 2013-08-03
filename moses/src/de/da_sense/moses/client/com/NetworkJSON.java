@@ -164,7 +164,7 @@ public class NetworkJSON extends AsyncTask<NetworkJSON.APIRequest, NetworkJSON.B
 			 */
 			MosesService ms = MosesService.getInstance();
 			if(ms != null){
-				if(ms.isOnline()){
+				if(ms.isOnlineOrIsConnecting()){
 					// Server's answer was not malformed due to an absent Internet connection
 					Log.e(LOG_TAG, "onPostExecute() " + e1);
 					Toaster.showBadServerResponseToast();

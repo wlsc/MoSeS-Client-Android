@@ -129,7 +129,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	 */
 	public void executeLoggedIn(HookTypesEnum hookType, MessageTypesEnum messageType, Executable executable) {
 		Log.d("Moses.SERVICE", "executeLoggedIn called");
-		if (isLoggedIn() && isOnline()) {
+		if (isLoggedIn() && isOnlineOrIsConnecting()) {
 			executable.execute();
 		} else {
 			registerOneTimeHook(hookType, messageType, executable);
@@ -182,24 +182,39 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	}
 
 	/**
-	 * Checks if the device is connected to the Internet.
+	 * Checks if the device is connected to the Internet or being connected.
 	 * 
-	 * @return true, if the device is online.
+	 * @return true if the device is online or being connected, false otherwise
 	 */
-	public boolean isOnline() {
-		return isOnline(this);
+	public boolean isOnlineOrIsConnecting() {
+		return isOnlineOrIsConnecting(this);
 	}
 
 	/**
+	 * Checks if the device is connected to the Internet or it is being connected.
+	 * 
+	 * @return true if the device is connected or is being connected, false otherwise
+	 */
+	public static boolean isOnlineOrIsConnecting(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo netInfo = cm.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
 	 * Checks if the device is connected to the Internet.
 	 * 
-	 * @return true, if the device is online.
+	 * @return true if the device is connected, false otherwise
 	 */
 	public static boolean isOnline(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = cm.getActiveNetworkInfo();
-		if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+		if (netInfo != null && netInfo.isConnected()) {
 			return true;
 		}
 		return false;
@@ -250,7 +265,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 			}
 			return;
 		}
-		if (!isOnline()) {
+		if (!isOnlineOrIsConnecting()) {
 			Log.d("MoSeS.SERVICE", "Tried logging in but no internet connection was present.");
 			for (ExecutableForObject executableForObject : mset.changeTextFieldHook) {
 				executableForObject.execute(getString(R.string.no_internet_connection));

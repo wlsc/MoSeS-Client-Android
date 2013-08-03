@@ -79,11 +79,11 @@ public class ExternalApplicationInfoRetriever extends Observable {
 	}
 
 	public void start() {
-		if (!sendEvenWhenNoNetwork && !MosesService.isOnline(mContext)) {
+		if (!sendEvenWhenNoNetwork && !MosesService.isOnlineOrIsConnecting(mContext)) {
 			setState(State.NO_NETWORK);
 			return;
 		} else {
-			if (!MosesService.isOnline(mContext)) {
+			if (!MosesService.isOnlineOrIsConnecting(mContext)) {
 				setState(State.NO_NETWORK_PENDING);
 			} else {
 				setState(State.PENDING);

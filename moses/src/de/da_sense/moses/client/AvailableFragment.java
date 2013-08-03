@@ -144,7 +144,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	protected void showDetails(int index, Activity baseActivity, 
 			final Runnable installAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnline(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
 			if (getListView() != null) {
 				if (getExternalApps() != null) {
 					final ExternalApplication app = getExternalApps().get(index);
@@ -231,7 +231,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 	public void showDetails(ExternalApplication app, Activity baseActivity, 
 			final Runnable installAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnline(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
 			if (getListView() != null) {
 					if (mDualPane) {						
 						// check what fragment is currently shown, replace if needed
@@ -386,7 +386,7 @@ public class AvailableFragment extends ListFragment implements ApkListRequestObs
 			// if the App list is still cached just display it
 			initControlsNormalList(getExternalApps());
 		} else {
-			if (MosesService.isOnline(WelcomeActivity.getInstance())) {
+			if (MosesService.isOnlineOrIsConnecting(WelcomeActivity.getInstance())) {
 				initControlsPendingListRequest();
 			} else {
 				initControlsNoConnectivity();

@@ -98,7 +98,7 @@ public class RunningFragment extends ListFragment {
 	protected void showDetails(int index, Activity baseActivity, 
 			final Runnable startAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnline(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
 			if (getListView() != null) {
 				// if we don't have any installed apps on the device an indexOutOfBoundsException gets thrown
 				// this only happens on tablets (dual view)
@@ -203,7 +203,7 @@ public class RunningFragment extends ListFragment {
 	public void showDetails(InstalledExternalApplication app, Activity baseActivity, 
 			final Runnable startAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnline(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
 			if (getListView() != null) {
 					if (mDualPane) {						
 						// check what fragment is currently shown, replace if needed

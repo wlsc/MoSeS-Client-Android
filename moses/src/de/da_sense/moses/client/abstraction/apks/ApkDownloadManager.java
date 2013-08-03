@@ -63,7 +63,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 	 * file).
 	 */
 	public void start() {
-		if (MosesService.isOnline(context)) {
+		if (MosesService.isOnlineOrIsConnecting(context)) {
 			requestUrlForApplication(this.app);
 		} else {
 			errorMsg = context.getString(R.string.no_internet_connection);
@@ -112,7 +112,7 @@ public class ApkDownloadManager extends Observable implements ApkDownloadObserve
 
 	private void requestApkDownload(URL url, ExecutableForObject e) {
 		if (!cancelled) {
-			if (MosesService.isOnline(context)) {
+			if (MosesService.isOnlineOrIsConnecting(context)) {
 				ApkDownloadTask downloadTask = new ApkDownloadTask(this, url, this.context,
 						generateApkFileNameFor(app), e);
 				downloadTask.setExternalApplicationReference(app);

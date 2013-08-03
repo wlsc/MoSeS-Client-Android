@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
 import de.da_sense.moses.client.com.requests.RequestLogin;
 import de.da_sense.moses.client.preferences.MosesPreferences;
+import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
 
 /**
@@ -43,6 +45,8 @@ public class LoginActivity extends Activity {
 	private ProgressDialog d = null;
 	/** handler for the runnables */
 	private Handler h = new Handler();
+	
+	private Context mContext;
 	
 	/**
 	 * The name of the file containing stored users credentials.
@@ -65,6 +69,8 @@ public class LoginActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        mContext = this;
         
         getActionBar().hide();
         
@@ -287,15 +293,28 @@ public class LoginActivity extends Activity {
     	 */
 		@Override
 		public void handleException(Exception e) {
-			Log.d("LoginActivity", getString(R.string.check_internet));
-			d.setMessage(getString(R.string.check_internet));
+			if(e instanceof UnknownHostException || e instanceof JSONException){
+				// Internet connection is possibly dead
+				if(!MosesService.isOnline(mContext)){
+					Log.d(LOG_TAG, getString(R.string.check_internet));
+					d.setMessage(getString(R.string.check_internet));
+				}
+				else{
+					// The host may be down
+					Log.e(LOG_TAG, e.getMessage());
+				}
+			}
+			else{
+				// Some unexpected exception
+				Log.e(LOG_TAG, e.getMessage());
+			}
 			h.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					invalid();
+					d.dismiss();
 				}
 			}, 6000);
-		}
+			}
 
 		/**
 		 * After a login was requested from the server.
