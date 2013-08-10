@@ -3,7 +3,7 @@
     <string name="app_c2dm_email">moses.tud@googlemail.com</string>
     
     <string name="app_name">MoSeS</string>
-    <string name="title_activity_main">MoSeS</string>
+    <string name="title_activity_main">Studies</string>
     <string name="title_activity_questionnaire">Questionnaire</string>
 
 	<!-- Todo: Sort it pls -->
