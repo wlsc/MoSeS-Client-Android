@@ -64,11 +64,6 @@ import de.da_sense.moses.client.util.Log;
 public class WelcomeActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
-	/** Store the currently active tab. */
-	private int mActiveTab = SectionsPagerAdapter.TAB_AVAILABLE;
-
-	private static final String KEY_ACTIVE_TAB = "keyActiveTab";
-
 	/** The current instance is saved in here. */
 	private static WelcomeActivity thisInstance = null;
 
@@ -558,8 +553,6 @@ public class WelcomeActivity extends FragmentActivity implements
 		if (savedInstanceState == null) {
 			Log.d("MainActivity", "savedInstanceState == null");
 			savedInstanceState = new Bundle();
-			savedInstanceState.putInt(KEY_ACTIVE_TAB,
-					SectionsPagerAdapter.TAB_AVAILABLE);
 		}
 
 		// did we get a Bundle? if not use savedInstanceState
@@ -568,9 +561,6 @@ public class WelcomeActivity extends FragmentActivity implements
 			Log.d("MainActivity", "bundle == null");
 			bundle = savedInstanceState;
 		}
-
-		// get the selected Tab
-		setActiveTab(bundle.getInt(KEY_ACTIVE_TAB));
 
 		Log.d("MainActivity", "initControls after getInt -> activeTab = "
 				+ getActiveTab());
@@ -719,17 +709,7 @@ public class WelcomeActivity extends FragmentActivity implements
 	 * @return the active tab
 	 */
 	public int getActiveTab() {
-		return mActiveTab;
-	}
-
-	/**
-	 * Helper method to set the active tab, when another tab gets selected.
-	 * 
-	 * @param mActiveTab
-	 *            the tab to set active
-	 */
-	public void setActiveTab(int mActiveTab) {
-		this.mActiveTab = mActiveTab;
+		return getActionBar().getSelectedTab().getPosition();
 	}
 
 }

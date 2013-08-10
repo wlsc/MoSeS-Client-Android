@@ -170,43 +170,6 @@ public class AvailableFragment extends ListFragment implements
 		}
 	}
 
-	/**
-	 * Helper method for showing the details of a userstudy.
-	 * 
-	 * @param index
-	 *            the index of the userstudy to show the details for
-	 */
-	public void showDetails(ExternalApplication app, Activity baseActivity,
-			final Runnable installAppClickAction,
-			final Runnable cancelClickAction) {
-		if (MosesService.isOnlineOrIsConnecting(mActivity
-				.getApplicationContext())) {
-			if (getListView() != null) {
-				// otherwise launch new activity to display the fragment
-				// with selected text
-				Intent intent = new Intent();
-				intent.setClass(mActivity, DetailActivity.class);
-				intent.putExtra("de.da_sense.moses.client.index", 0);
-				intent.putExtra("de.da_sense.moses.client.belongsTo",
-						DetailFragment.AVAILABLE);
-				intent.putExtra("de.da_sense.moses.client.appname",
-						app.getName());
-				intent.putExtra("de.da_sense.moses.client.description",
-						app.getDescription());
-				intent.putExtra("de.da_sense.moses.client.apkid", app.getID());
-				intent.putExtra("de.da_sense.moses.client.apkVersion",
-						app.getApkVersion());
-				intent.putExtra("de.da_sense.moses.client.startDate",
-						app.getStartDateAsString());
-				intent.putExtra("de.da_sense.moses.client.endDate",
-						app.getEndDateAsString());
-				startActivity(intent);
-			}
-		} else {
-			showNoConnectionInfoBox();
-		}
-	}
-
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
