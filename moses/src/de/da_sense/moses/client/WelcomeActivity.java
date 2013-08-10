@@ -100,7 +100,7 @@ public class WelcomeActivity extends FragmentActivity implements
 	/*
 	 * All fragments added to this activity.
 	 */
-	private List<WeakReference<Fragment>> mFragList = null;
+	private List<WeakReference<Fragment>> mFragList = new ArrayList<WeakReference<Fragment>>();;
 
 	private static final String LOG_TAG = WelcomeActivity.class.getName();
 
@@ -260,11 +260,6 @@ public class WelcomeActivity extends FragmentActivity implements
 	@Override
 	public void onAttachFragment(Fragment fragment) {
 		super.onAttachFragment(fragment);
-		if (mFragList == null)
-			// must be initialized here,
-			// because the method gets invoked before onCreate and onResume
-			mFragList = new ArrayList<WeakReference<Fragment>>();
-
 		mFragList.add(new WeakReference<Fragment>(fragment));
 	}
 
