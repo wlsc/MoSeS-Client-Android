@@ -2,7 +2,6 @@ package de.da_sense.moses.client;
 
 import java.util.List;
 import java.util.Map;
-
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +46,7 @@ public class MosesListAdapter extends SimpleAdapter {
 				WelcomeActivity mA = WelcomeActivity.getInstance();
 				
 				switch (mA.getActiveTab()) {
-				case WelcomeActivity.TAB_AVAILABLE: {
+				case SectionsPagerAdapter.TAB_AVAILABLE: {
 					Log.d("MosesListAdapter", "setting on click listener with available tab.");
 					final AvailableFragment aF = AvailableFragment.getInstance();
 					aF.showDetails(aF.getListIndexElement(position), mA, new Runnable() {
@@ -63,7 +62,7 @@ public class MosesListAdapter extends SimpleAdapter {
 					});
 					break;
 				}
-				case WelcomeActivity.TAB_RUNNING: {
+				case SectionsPagerAdapter.TAB_RUNNING: {
 					Log.d("MosesListAdapter", "setting on click listener with running tab.");
 					final RunningFragment rF = RunningFragment.getInstance();
 					rF.showDetails(position, mA, new Runnable() {
@@ -78,7 +77,7 @@ public class MosesListAdapter extends SimpleAdapter {
 					});
 					break;
 				}
-				case WelcomeActivity.TAB_HISTORY:
+				case SectionsPagerAdapter.TAB_HISTORY:
 					Log.d("MosesListAdapter", "setting on click listener with history tab.");
 					final HistoryFragment hF = HistoryFragment.getInstance();
 					hF.showDetails(position, mA, new Runnable() {

@@ -10,16 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.ApkMethods;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
@@ -32,16 +30,16 @@ import de.da_sense.moses.client.util.Log;
  * Viewing running user studies in a list
  * 
  * @author Simon L, Sandra Amend, Wladimir Schmidt
+ * @author Zijad Maksuti
  */
 public class RunningFragment extends ListFragment {
-	/** boolean for the combined list and detail mode */
-	boolean mDualPane;
+	
 	/** saves the current position in the list */
 	int mCurRunPosition = 0;
 	/** The current instance is saved in here. */
 	private static RunningFragment thisInstance = null;
 	/** a log tag for this class */
-    private final static String TAG = "RunningFragment";
+    private final static String LOG_TAG = RunningFragment.class.getName();
 	/** The installed external applications. */
 	private List<InstalledExternalApplication> installedApps;
 	
@@ -50,6 +48,11 @@ public class RunningFragment extends ListFragment {
 	 * installed apks database
 	 */
 	private int retriesCheckValidState = 0;
+	
+	/**
+	 * The activity containing this fragment
+	 */
+	private Activity mActivity;
     
 	/** Returns the current instance (singleton) */
 	public static RunningFragment getInstance() {
@@ -62,29 +65,9 @@ public class RunningFragment extends ListFragment {
 		
 		initControls();
 		
-		// check for frame in which to embed the details and set the boolean
-		View detailsFrame = getActivity().findViewById(R.id.details);
-		mDualPane = (detailsFrame != null) 
-				&& (detailsFrame.getVisibility() == View.VISIBLE);
-		
 		if (savedInstanceState != null) {
 			// restore last state
 			mCurRunPosition = savedInstanceState.getInt("curChoice", 0);
-		}
-		
-		if (mDualPane) {
-			// in dual pane mode the list view highlights the selected item
-			getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			// show details frame
-			showDetails(mCurRunPosition, getActivity(), new Runnable() {
-					@Override
-					public void run() {
-					}
-				}, new Runnable() {
-					@Override
-					public void run() {
-					}
-				});
 		}
 	}
 	
@@ -98,7 +81,7 @@ public class RunningFragment extends ListFragment {
 	protected void showDetails(int index, Activity baseActivity, 
 			final Runnable startAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(mActivity.getApplicationContext())) {
 			if (getListView() != null) {
 				// if we don't have any installed apps on the device an indexOutOfBoundsException gets thrown
 				// this only happens on tablets (dual view)
@@ -106,49 +89,10 @@ public class RunningFragment extends ListFragment {
 						&& getInstalledApps().size() > 0) {
 					final InstalledExternalApplication app = getInstalledApps()
 							.get(index);
-					
-					if (mDualPane) {
-						getListAdapter().getItem(index);
-							
-						// dual mode: we can display everything on the screen
-						// update list to highlight the selected item and show data
-						getListView().setItemChecked(index, true);
-
-						// check what fragment is currently shown, replace if needed
-						DetailFragment details = (DetailFragment)
-								getActivity()
-								.getFragmentManager()
-								.findFragmentById(R.id.details);
-
-						if (details == null || details.getShownIndex() != index) {
-							if (app == null) {
-								// placeholder Instance
-								details = DetailFragment.newInstance();
-							} else {
-								details = DetailFragment.newInstance( 
-										DetailFragment.RUNNING, 
-										app.getName(), 
-										app.getDescription(),
-										app.getID(), 
-										app.getApkVersion(), 
-										app.getStartDateAsString(), 
-										app.getEndDateAsString());
-							}
-//							details.setRetainInstance(true);
-
-							FragmentTransaction ft = getActivity()
-									.getFragmentManager()
-									.beginTransaction();
-							ft.replace(R.id.details, details);
-							ft.setTransition(FragmentTransaction
-									.TRANSIT_FRAGMENT_FADE);
-							ft.commit();
-						}
-					} else {
 						// otherwise launch new activity to display the fragment
 						// with selected text
 						Intent intent = new Intent();
-						intent.setClass(getActivity(), 
+						intent.setClass(mActivity, 
 								DetailActivity.class);
 						intent.putExtra("de.da_sense.moses.client.index", 
 								index);
@@ -167,26 +111,6 @@ public class RunningFragment extends ListFragment {
 						intent.putExtra("de.da_sense.moses.client.endDate", 
                                 app.getEndDateAsString());
 						startActivity(intent);
-					}
-				} else { // no ExternalApplication: show Placeholder
-					// check what fragment is currently shown, replace if needed
-					DetailFragment details = (DetailFragment)
-							getActivity()
-							.getFragmentManager()
-							.findFragmentById(R.id.details);
-
-					if (details == null) {
-						details = DetailFragment.newInstance();
-//						details.setRetainInstance(true);
-
-						FragmentTransaction ft = getActivity()
-								.getFragmentManager()
-								.beginTransaction();
-						ft.replace(R.id.details, details);
-						ft.setTransition(FragmentTransaction
-								.TRANSIT_FRAGMENT_FADE);
-						ft.commit();
-					}
 				}			
 			} else {
 			}
@@ -203,38 +127,12 @@ public class RunningFragment extends ListFragment {
 	public void showDetails(InstalledExternalApplication app, Activity baseActivity, 
 			final Runnable startAppClickAction,
 			final Runnable cancelClickAction) {
-		if (MosesService.isOnlineOrIsConnecting(getActivity().getApplicationContext())) {
+		if (MosesService.isOnlineOrIsConnecting(mActivity.getApplicationContext())) {
 			if (getListView() != null) {
-					if (mDualPane) {						
-						// check what fragment is currently shown, replace if needed
-						DetailFragment details = (DetailFragment)
-								getActivity()
-								.getFragmentManager()
-								.findFragmentById(R.id.details);
-
-						if (details == null) {
-							details = DetailFragment.newInstance( 
-									DetailFragment.RUNNING, 
-									app.getName(), 
-									app.getDescription(),
-									app.getID(), 
-									app.getApkVersion(), 
-									app.getStartDateAsString(), 
-									app.getEndDateAsString());
-//							details.setRetainInstance(true);
-
-							FragmentTransaction ft = getActivity()
-									.getFragmentManager()
-									.beginTransaction();
-							ft.replace(R.id.details, details);
-							ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-							ft.commit();
-						}
-					} else {
 						// otherwise launch new activity to display the fragment
 						// with selected text
 						Intent intent = new Intent();
-						intent.setClass(getActivity(), DetailActivity.class);
+						intent.setClass(mActivity, DetailActivity.class);
 						intent.putExtra("de.da_sense.moses.client.index", 0);
 						intent.putExtra("de.da_sense.moses.client.belongsTo", 
 								DetailFragment.RUNNING);
@@ -251,27 +149,7 @@ public class RunningFragment extends ListFragment {
                         intent.putExtra("de.da_sense.moses.client.endDate", 
                                 app.getEndDateAsString());
 						startActivity(intent);
-					}
-				} else { // no ExternalApplication: show Placeholder
-					// check what fragment is currently shown, replace if needed
-					DetailFragment details = (DetailFragment)
-							getActivity()
-							.getFragmentManager()
-							.findFragmentById(R.id.details);
-
-					if (details == null) {
-						details = DetailFragment.newInstance();
-//						details.setRetainInstance(true);
-
-						FragmentTransaction ft = getActivity()
-								.getFragmentManager()
-								.beginTransaction();
-						ft.replace(R.id.details, details);
-						ft.setTransition(FragmentTransaction
-								.TRANSIT_FRAGMENT_FADE);
-						ft.commit();
-					}
-				}			
+				}		
 			} else {
 //				showNoConnectionInfoBox();
 			}
@@ -338,7 +216,7 @@ public class RunningFragment extends ListFragment {
 	 * Inits the controls.
 	 */
 	private void initControls() {
-		Log.d(TAG, "initalizing ...");
+		Log.d(LOG_TAG, "initalizing ...");
 		refreshInstalledApplications();
 	}
 
@@ -346,7 +224,7 @@ public class RunningFragment extends ListFragment {
 	 * Refresh the list of installed Applications from the user studies.
 	 */
 	private void refreshInstalledApplications() {
-		Log.d(TAG, "refreshing the installed Applications.");
+		Log.d(LOG_TAG, "refreshing the installed Applications.");
 		if (WelcomeActivity.checkInstalledStatesOfApks() == null) {
 			if (retriesCheckValidState < 4) {
 				Handler delayedRetryHandler = new Handler();
@@ -365,7 +243,7 @@ public class RunningFragment extends ListFragment {
 			retriesCheckValidState = 0;
 		}
 		if (InstalledExternalApplicationsManager.getInstance() == null)
-			InstalledExternalApplicationsManager.init(getActivity());
+			InstalledExternalApplicationsManager.init(mActivity);
 		
 		installedApps = sortForDisplay(
 				new LinkedList<InstalledExternalApplication>
@@ -381,7 +259,7 @@ public class RunningFragment extends ListFragment {
 	 */
 	private List<InstalledExternalApplication> sortForDisplay(
 			Collection<InstalledExternalApplication> linkedList) {
-		Log.d(TAG, "sorting the list of installed applications to display it.");
+		Log.d(LOG_TAG, "sorting the list of installed applications to display it.");
 		if (linkedList == null)	{
 			throw new RuntimeException("installed app list was null");
 		}
@@ -413,8 +291,8 @@ public class RunningFragment extends ListFragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		thisInstance = this;
-		Log.d(TAG, "onCreate: parentActivity = " + 
-				getActivity().getClass().getSimpleName());
+		Log.d(LOG_TAG, "onCreate: parentActivity = " + 
+				mActivity.getClass().getSimpleName());
 	}
 	
 	/**
@@ -423,13 +301,24 @@ public class RunningFragment extends ListFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Log.d(TAG, "onCreateView about to inflate View");
+		Log.d(LOG_TAG, "onCreateView about to inflate View");
 		 View runnningFragmentView = inflater.inflate(
 				 R.layout.tab_running, container, false);
 		 container.setBackgroundColor(getResources()
 				 .getColor(android.R.color.background_light));
 		 
 		 return runnningFragmentView;
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mActivity = activity;
 	}
 
 	/**
@@ -450,9 +339,9 @@ public class RunningFragment extends ListFragment {
 	 */
 	protected void handleStartApp(InstalledExternalApplication app) {
 		try {
-			ApkMethods.startApplication(app.getPackageName(), WelcomeActivity.getInstance()); // getActivity() was NULL again
+			ApkMethods.startApplication(app.getPackageName(), WelcomeActivity.getInstance());
 		} catch (NameNotFoundException e) {
-			Log.e(TAG, "It was not possible to open the app");
+			Log.e(LOG_TAG, "It was not possible to open the app");
 		}
 	}
 
@@ -469,7 +358,7 @@ public class RunningFragment extends ListFragment {
 			counter++;
 		}
 		
-		TextView instructionsView = (TextView) getActivity()
+		TextView instructionsView = (TextView) mActivity
 				.findViewById(R.id.installedAppHeaderInstructions);
 		if (instructionsView != null) {
 			if (applications.size() == 0) {
@@ -487,7 +376,7 @@ public class RunningFragment extends ListFragment {
 			listContent.add(rowMap);
 		}
 		
-		MosesListAdapter contentAdapter = new MosesListAdapter(getActivity(), 
+		MosesListAdapter contentAdapter = new MosesListAdapter(mActivity, 
 				listContent, 
 				R.layout.installedapplistitem,
 				new String[] { "name", "updateIndicator" }, 

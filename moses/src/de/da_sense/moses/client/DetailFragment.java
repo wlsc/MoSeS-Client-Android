@@ -2,9 +2,10 @@ package de.da_sense.moses.client;
 
 import java.util.ArrayList;
 
-import android.app.Fragment;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import de.da_sense.moses.client.util.Log;
  * Shows the details for a user study.
  * 
  * @author Sandra Amend, Wladimir Schmidt
+ * @author Zijad Maksuti
  */
 public class DetailFragment extends Fragment {
 
@@ -35,6 +37,11 @@ public class DetailFragment extends Fragment {
 	protected final static int HISTORY = 2;
 	/** a log tag for this class */
 	private final static String TAG = "DetailFragment";
+	
+	/**
+	 * The Activity containing this fragment
+	 */
+	private Activity mActivity = null;
 
 	/**
 	 * 
@@ -314,7 +321,7 @@ public class DetailFragment extends Fragment {
 								Log.i(TAG, "Display questionnaires of "
 										+ appname + " to fill");
 								Intent intent = new Intent();
-								intent.setClass(getActivity(),
+								intent.setClass(mActivity,
 										QuestionnaireActivity.class);
 								intent.putExtra(
 										"de.da_sense.moses.client.apkid", apkid);
@@ -327,7 +334,7 @@ public class DetailFragment extends Fragment {
 								} else {
 									Log.d(TAG, "Getting Questionnaire from Server");
 									InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getQuestionnaireFromServer();
-									Toast.makeText(getActivity().getApplicationContext(),
+									Toast.makeText(mActivity.getApplicationContext(),
 											"Getting Questionnaire from Server",
 											Toast.LENGTH_LONG).show();
 								}
@@ -388,7 +395,7 @@ public class DetailFragment extends Fragment {
 								Log.i(TAG, "Display questionnaires of "
 										+ appname + " to fill");
 								Intent intent = new Intent();
-								intent.setClass(getActivity(),
+								intent.setClass(mActivity,
 										QuestionnaireActivity.class);
 								intent.putExtra(
 										"de.da_sense.moses.client.apkid", apkid);
@@ -408,6 +415,17 @@ public class DetailFragment extends Fragment {
 
 		return detailFragmentView;
 		}
+	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onAttach(android.app.Activity)
+	 */
+	@Override
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		mActivity = activity;
 	}
 
 	@Override

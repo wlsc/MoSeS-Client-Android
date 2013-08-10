@@ -41,7 +41,6 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 	private static final int showStudyRequestcode = 5;
 	private ListView listView;
 	private List<UserStudyNotification> userStudies;
-	private UserStudyNotification lastStartedDialog;
 
 	/*
 	 * @see android.app.Activity#onCreate(android.os.Bundle)
@@ -77,7 +76,6 @@ public class ViewUserStudyNotificationsList extends ListActivity {
 		intent.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, app.getApplication().getID());
 
 		// TODO: return code management
-		lastStartedDialog = app;
 		startActivityForResult(intent, showStudyRequestcode);
 
 	}
