@@ -39,6 +39,9 @@
     <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
+    <string name="userStudy_available">Available user study</string>
+    <string name="userStudy_running">Running user study</string>
+    <string name="userStudy_past">Past user study</string>
     
     <string name="loadingName">Loading Name&#8230; (ID: %1$s)</string>
     <string name="loadingDescription">Loading Description&#8230;</string>

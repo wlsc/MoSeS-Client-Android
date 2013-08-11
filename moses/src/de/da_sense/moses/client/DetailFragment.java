@@ -2,6 +2,7 @@ package de.da_sense.moses.client;
 
 import java.util.ArrayList;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -145,8 +146,9 @@ public class DetailFragment extends Fragment {
 				t = (TextView) detailFragmentView
 						.findViewById(R.id.tv_us_apkversion);
 				t.setText(apkVersion);
-
+				ActionBar ab = mActivity.getActionBar();
 				if (belongsTo == AVAILABLE) {
+					ab.setTitle(getString(R.string.userStudy_available));
 					// get start button
 					Button button = (Button) detailFragmentView
 							.findViewById(R.id.startapp);
@@ -178,6 +180,7 @@ public class DetailFragment extends Fragment {
 														// questionnaire for
 														// this new app
 				} else if (belongsTo == RUNNING) {
+					ab.setTitle(getString(R.string.userStudy_running));
 					// get start button
 					Button button = (Button) detailFragmentView
 							.findViewById(R.id.startapp);
@@ -272,6 +275,7 @@ public class DetailFragment extends Fragment {
 					}
 					}
 				} else if (belongsTo == HISTORY) {
+					ab.setTitle(getString(R.string.userStudy_past));
 					// get start button
 					Button button = (Button) detailFragmentView
 							.findViewById(R.id.startapp);
