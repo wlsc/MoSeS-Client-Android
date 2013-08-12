@@ -61,7 +61,6 @@ public class C2DMReceiver extends BroadcastReceiver {
                             Log.i("MoSeS.QUEST", "update incoming: " + apkidString + " with content: " + contentString);
 //                            UserstudyNotificationManager.questionnaireNotificationArrived(apkidString,contentString);
                             Log.d("MoSeS.C2DM", !contentString.equals("[]") + ", endDateReached = true");
-                            InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setApkHasQuestOnServer(!contentString.equals("[]"));
                             InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setEndDateReached(true);
                         }else
                         {

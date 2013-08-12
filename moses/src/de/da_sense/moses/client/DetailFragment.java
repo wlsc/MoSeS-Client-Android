@@ -217,19 +217,11 @@ public class DetailFragment extends Fragment {
 					InstalledExternalApplication app = InstalledExternalApplicationsManager.getInstance().getAppForId(apkid);
 					Log.d(TAG, "app = "+app);
 					if (app != null) {
-					boolean hasQuestionnaire = app.couldHaveQuestionnaire();
 					boolean hasQuestionnaireLocal = app.hasQuestionnaire();
-					boolean isQuestionnaireSent = hasQuestionnaireLocal ? app.getMultiQuestionnaire().hasBeenSent(): false;
-					Log.d(TAG, "hasQuest" + hasQuestionnaire + "hasQuestLocal" + hasQuestionnaireLocal + "isQuestSent" + isQuestionnaireSent);
+					boolean isQuestionnaireSent = hasQuestionnaireLocal ? app.getSurvey().hasBeenSent(): false;
+					Log.d(TAG,"hasQuestLocal" + hasQuestionnaireLocal + "isQuestSent" + isQuestionnaireSent);
 					// set button according to the booleans
-					if (!hasQuestionnaire) {
-						Log.d(TAG, "no questionnaire available for userstudy "
-								+ appname);
-						button.setText(getString(
-								R.string.details_running_noquestionnaire));
-						button.setClickable(false);
-						button.setEnabled(false);
-					} else if (isQuestionnaireSent) {
+					if (isQuestionnaireSent) {
 						Log.d(TAG, "questionnaire to userstudy " + appname
 								+ " was already sent");
 						button.setText(getString(
@@ -299,7 +291,7 @@ public class DetailFragment extends Fragment {
 							.hasQuestionnaire();
 					boolean isQuestionnaireSent = hasQuestionnaire ? HistoryExternalApplicationsManager
 							.getInstance().getAppForId(apkid)
-							.getMultiQuestionnaire().hasBeenSent()
+							.getSurvey().hasBeenSent()
 							: true;
 					// set button according to the booleans
 					if (!hasQuestionnaire) {

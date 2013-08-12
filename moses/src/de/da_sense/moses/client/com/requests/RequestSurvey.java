@@ -10,30 +10,34 @@ import de.da_sense.moses.client.util.Log;
 
 /**
  * 
- * @author Wladimir Schmidt & Co
+ * Requests a survey assigned to the specified APK from the server.
+ * 
+ * @author Wladimir Schmidt
+ * @author Zijad Maksuti
  *
  */
-public class RequestMulti_Questionnaire {
+public class RequestSurvey {
 	
 	private JSONObject j;
     private ReqTaskExecutor executor;
+    private static final String LOG_TAG = RequestSurvey.class.getName();
     
 
-	public RequestMulti_Questionnaire(ReqTaskExecutor getQuestionnaireExecutor, String id) {
+	public RequestSurvey(ReqTaskExecutor getQuestionnaireExecutor, String id) {
         j = new JSONObject();
         this.executor = getQuestionnaireExecutor;
         try {
-            j.put("MESSAGE", "QUESTIONNAIRES_REQUEST");
+            j.put("MESSAGE", "GET_SURVEY");
             j.put("SESSIONID", MosesService.getInstance().getSessionID());
             j.put("APKID", id);
-            Log.i("RequestMulti_Questionnaire", "SESSIONID =" + MosesService.getInstance().getSessionID()+ " APKID = " + id);
+            Log.d(LOG_TAG, "SESSIONID =" + MosesService.getInstance().getSessionID()+ " APKID = " + id);
         } catch (JSONException ex) {
             executor.handleException(ex);
         }
 	}
 
     public void send() {
-        Log.d("RequestMulti_Questionnaire", j.toString());
+        Log.d(LOG_TAG, j.toString());
         NetworkJSON task = new NetworkJSON();
         NetworkJSON.APIRequest req;
         req = task.new APIRequest();

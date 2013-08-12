@@ -52,6 +52,23 @@ public class Toaster {
 	}
 	
 	/**
+	 * This method shows a toast to the user.<p>
+	 * <b>Note</b>: the toast will only show if {@link MosesService} is running. If you can provide an
+	 * instance of {@link Context}, use {@link Toaster#showToast(Context, String)} instead.
+	 * 
+	 * @param context the context of the activity
+	 * @param stringResource the string resource containing the message
+	 */
+	public static void showToast(int stringResource){
+		MosesService ms = MosesService.getInstance();
+		Toast theToast;
+		if(ms != null){
+			theToast = Toast.makeText(ms, ms.getString(stringResource), Toast.LENGTH_SHORT);
+			theToast.show();
+			}
+	}
+	
+	/**
 	 * This method shows a toast to the user stating that server is facing problems.<p>
 	 * <b>Note</b>: the toast will only show if {@link MosesService} is running. If you can provide an
 	 * instance of {@link Context}, use {@link Toaster#showBadServerResponseToast(Context)} instead.

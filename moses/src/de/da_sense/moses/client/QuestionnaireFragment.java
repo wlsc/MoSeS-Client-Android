@@ -1,6 +1,8 @@
 package de.da_sense.moses.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -20,24 +22,23 @@ import android.widget.Toast;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.Single_Questionnaire;
-import de.da_sense.moses.client.service.helpers.Question;
+import de.da_sense.moses.client.userstudy.Form;
+import de.da_sense.moses.client.userstudy.PossibleAnswer;
+import de.da_sense.moses.client.userstudy.Question;
+import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * questionnaires for a user study
  * 
  * @author Ibrahim Alyahya, Sandra Amend, Florian Schnell, Wladimir Schmidt
- * 
+ * @author Zijad Maksuti
  */
 public class QuestionnaireFragment extends Fragment {
 	/**
 	 * Defining a log tag to this class
 	 */
 	private static final String TAG = "QuestionnaireFragment";
-
-	/** layout for the questionnaire */
-	private LinearLayout ll;
 	
 	/**
 	 * To send (and to save on local) user's answers of a questionnaire to
@@ -48,7 +49,7 @@ public class QuestionnaireFragment extends Fragment {
 	/**
 	 * The Single Questionnaire to display
 	 */
-	private Single_Questionnaire usQuestionnaire;
+	private Survey usQuestionnaire;
 	
 	/**
 	 * The APKID
@@ -71,13 +72,6 @@ public class QuestionnaireFragment extends Fragment {
 	private Button btnNext;
 
 	/**
-	 * The possible types of a question
-	 */
-	private static final int SINGLE_QUESTION = 1, 
-							 MULTIPLE_QUESTION = 2,
-							 OPEN_QUESTION = 3;
-
-	/**
 	 * Remove the send button from the layout.
 	 */
 	private void removingButtonsFromThisLayout() {
@@ -96,8 +90,8 @@ public class QuestionnaireFragment extends Fragment {
 	 *            the Linear layout to be added on
 	 */
 	private void addingButtonsToThisLayout(LinearLayout ll) {
-		final LinearLayout layout = (LinearLayout) ll
-				.findViewById(R.id.ll_quest);
+//		final LinearLayout layout = (LinearLayout) ll
+//				.findViewById(R.id.ll_quest);
 		LinearLayout bLayout = (LinearLayout) ll
 				.findViewById(R.id.bottom_quest);
 		if (currentIndex == lastIndex) {
@@ -108,9 +102,9 @@ public class QuestionnaireFragment extends Fragment {
 		btnSend.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				usQuestionnaire.setAnswers(layout);
+//				usQuestionnaire.setAnswers(layout);
 				Toast.makeText(getActivity().getApplicationContext(), getString(R.string.q_answersSent), Toast.LENGTH_LONG).show();
-				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getMultiQuestionnaire().sendAnswersToServer();
+//				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getSurvey().sendAnswersToServer();
 				// XXX Test ob es speichern kann
 				try {
 					InstalledExternalApplicationsManager.getInstance().saveToDisk(MosesService.getInstance());
@@ -134,7 +128,7 @@ public class QuestionnaireFragment extends Fragment {
 			public void onClick(View v) {
 				// Sets he answers of the current Questionnaire in order
 				// to swap to the next one				
-				usQuestionnaire.setAnswers(layout);
+//				usQuestionnaire.setAnswers(layout);
 				FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
 				QuestionnaireFragment nextFragment = new QuestionnaireFragment();
 				nextFragment.setRetainInstance(true);
@@ -150,30 +144,44 @@ public class QuestionnaireFragment extends Fragment {
 	}
 
 	/**
-	 * Display a Questionnaire.
+	 * Adds a form with all its questions to the ScrollView so that it is visible to the user.
 	 * 
-	 * @param questionnaire
-	 * @param ll
+	 * @param form the form to be displayed
+	 * @param ll the contained of the scrollview
 	 */
-	private void displayQuestionnaire(Question[] questions, LinearLayout ll) {
+	private void addFormToLayout(Form form, LinearLayout scrollViewContainer) {
 
-		LinearLayout top_quest = (LinearLayout) ll.findViewById(R.id.ll_quest);
-		Log.d(TAG, "top_quest = " + top_quest);
+		LinearLayout linearLayoutInsideAScrollView = (LinearLayout) scrollViewContainer.findViewById(R.id.ll_quest);
+		List<Question> questions = form.getQuestions();
 
 		// Check if there is at least a question to display
-		if (questions.length > 0) {
-			for (int i = 0; i < questions.length; i++) {
-				switch (questions[i].getType()) {
-				case (SINGLE_QUESTION): {
-					makeSingleChoice(questions[i], top_quest, i);
+		if (questions.size() > 0) {
+			// add the label of the form to the scroll view
+			TextView formLabel = new TextView(getActivity());
+			formLabel.setText(form.getTitle());
+			linearLayoutInsideAScrollView.addView(formLabel);
+			
+			for (int i = 0; i < questions.size(); i++) {
+				Question question = questions.get(i);
+				switch (questions.get(i).getType()) {
+				case (Question.TYPE_SINGLE_CHOICE): {
+					makeSingleChoice(questions.get(i), linearLayoutInsideAScrollView, i);
 					break;
 				}
-				case (MULTIPLE_QUESTION): {
-					makeMultipleChoice(questions[i], top_quest, i);
+				case (Question.TYPE_MULTIPLE_CHOICE): {
+					makeMultipleChoice(questions.get(i), linearLayoutInsideAScrollView, i);
 					break;
 				}
-				case (OPEN_QUESTION): {
-					makeOpenQuestion(questions[i], top_quest, i);
+				case (Question.TYPE_TEXT_QUESTION): {
+					makeTextQuestion(questions.get(i), linearLayoutInsideAScrollView, i);
+					break;
+				}
+				case (Question.TYPE_LIKERT_SCALE):{
+					makeSingleChoice(question, linearLayoutInsideAScrollView, i);
+					break;
+				}
+				case (Question.TYPE_YES_NO_QUESTION):{
+					makeSingleChoice(question, linearLayoutInsideAScrollView, i);
 					break;
 				}
 				default:
@@ -187,112 +195,82 @@ public class QuestionnaireFragment extends Fragment {
 	}
 
 	/**
-	 * To display a question with single choice type
-	 * 
-	 * @param question
-	 *            the question to create
-	 * @param ll
-	 *            the layout to put this question on it
-	 * @param qid
-	 *            the question id of this question
+	 * Displays a single choice question to the user.
+	 * @param question the question to be displayed
+	 * @param linearLayoutInsideAScrollView the view to add the question to
+	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeSingleChoice(Question question, LinearLayout ll, int qid) {
-		String questionText = question.getQuestionText();
-		String[] possibleAnswers = question.getPossibleAnswers();
-		Log.d("QuestionnaireFragment", possibleAnswers[0] + possibleAnswers[1] + possibleAnswers[2]);
+	private void makeSingleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+		String questionText = question.getTitle();
+		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
 
 		TextView questionView = new TextView(getActivity());
-		questionView.setText(questionText);
+		questionView.setText(ordinal + ". " + questionText);
 
-		ll.addView(questionView);
+		linearLayoutInsideAScrollView.addView(questionView);
 
-		final RadioButton[] rb = new RadioButton[possibleAnswers.length];
+		final RadioButton[] rb = new RadioButton[possibleAnswers.size()];
 		RadioGroup rg = new RadioGroup(getActivity()); // create the
 																// RadioGroup
 
-		String rgTag = "Questionnaire" + qid;
-		rg.setTag(rgTag);
 
-		Log.i(TAG, "first rg = " + rg);
 		rg.setOrientation(RadioGroup.VERTICAL);// or RadioGroup.VERTICAL
 		for (int i = 0; i < rb.length; i++) {
-			String tagString = rgTag + "Answer" + i;
-
 			rb[i] = new RadioButton(getActivity());
 			rg.addView(rb[i]); // the RadioButtons are added to the radioGroup
 								// instead of the layout
-			rb[i].setText(possibleAnswers[i]);
-			rb[i].setTag(tagString);
-			if (question.getAnswer() != null
-					&& possibleAnswers[i].equals(question.getAnswer())) {
-				Log.i(TAG, "setChecked for index = " + i);
-				rb[i].setChecked(true);
-			}
+			PossibleAnswer possibleAnswer = possibleAnswers.get(i);
+			rb[i].setText(possibleAnswer.getTitle());
 			rb[i].setVisibility(View.VISIBLE);
 		}
 		rg.setVisibility(View.VISIBLE);
 		Log.i(TAG, "last rg = " + rg);
-		ll.addView(rg);
+		linearLayoutInsideAScrollView.addView(rg);
 	}
 
 	/**
-	 * To display a question with multiple choices type
-	 * 
-	 * @param question
-	 *            the question to create
-	 * @param ll
-	 *            the layout to put this question on it
-	 * @param qid
-	 *            the question id of this question
+	 * Displays a multiple choice question to the user.
+	 * @param question the question to be displayed
+	 * @param linearLayoutInsideAScrollView the view to add the question to
+	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeMultipleChoice(Question question, LinearLayout ll, int qid) {
+	private void makeMultipleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 
-		String questionText = question.getQuestionText();
-		String[] possibleAnswers = question.getPossibleAnswers();
-		String currentAnswers = question.getAnswer();
+		String questionText = question.getTitle();
+		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
 
 		TextView questionView = new TextView(getActivity());
-		questionView.setText(questionText);
-		ll.addView(questionView);
+		questionView.setText(ordinal + ". " + questionText);
+		linearLayoutInsideAScrollView.addView(questionView);
 
 		Log.i(TAG, "questionView = " + questionView.getText());
 
-		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.length];
+		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.size()];
 		for (int i = 0; i < checkBoxs.length; i++) {
-			String tagString = "Questionnaire" + qid + "Answer" + i;
 			checkBoxs[i] = new CheckBox(getActivity());
-			checkBoxs[i].setText(possibleAnswers[i]);
+			checkBoxs[i].setText(possibleAnswers.get(i).getTitle());
 			checkBoxs[i].setVisibility(View.VISIBLE);
-			checkBoxs[i].setTag(tagString);
-			checkBoxs[i]
-					.setChecked(currentAnswers.contains(possibleAnswers[i]));
-			ll.addView(checkBoxs[i]);
+			linearLayoutInsideAScrollView.addView(checkBoxs[i]);
 		}
 	}
 
 	/**
-	 * To display a question with open question type
-	 * 
-	 * @param question
-	 *            the question text
-	 * @param ll
-	 *            the layout to put this question on it
-	 * @param qid
-	 *            the question id of this question
-	 * @param answer
+	 * Displays a text question to the user.
+	 * @param question the question to be displayed
+	 * @param linearLayoutInsideAScrollView the view to add the question to
+	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeOpenQuestion(Question question, LinearLayout ll, int qid) {
+	private void makeTextQuestion(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 		TextView questionView = new TextView(getActivity());
-		questionView.setText(question.getQuestionText());
-		ll.addView(questionView);
+		questionView.setText(ordinal + ". " + question.getTitle());
+		linearLayoutInsideAScrollView.addView(questionView);
 
 		EditText editText = new EditText(getActivity());
 		editText.setVisibility(View.VISIBLE);
-		editText.setTag("Questionnaire" + qid);
 		if (question.getAnswer() != null) {
 			editText.setText(question.getAnswer());
 		}
-		ll.addView(editText);
+		linearLayoutInsideAScrollView.addView(editText);
 	}
 
 	/**
@@ -332,22 +310,22 @@ public class QuestionnaireFragment extends Fragment {
 				.getInstance().getAppForId(apkid);
 		
 		if (app != null) {
-			usQuestionnaire = app.getMultiQuestionnaire().getSingleQuestionnaire(currentIndex);
-			lastIndex = app.getMultiQuestionnaire().getLastIndex();
+			usQuestionnaire = app.getSurvey();
 		}
 		Log.d(TAG, "usQuestionnaire = " + usQuestionnaire);
 		if (usQuestionnaire == null) {
 			Log.d(TAG, "Error while trying to get the "+currentIndex+"-th Single_Questionnaire");
 		}
 
-		ll = (LinearLayout) inflater.inflate(
+		LinearLayout ll = (LinearLayout) inflater.inflate(
 				R.layout.questionnaire, container, false);
-		// retrieve the chosen questionnaires for this US
-		Question[] questions = usQuestionnaire.getQuestions();
-		displayQuestionnaire(questions, ll);
+		
+		// retrieve the surveys for this User Study
+		for(Form form : usQuestionnaire.getForms())
+			addFormToLayout(form, ll);
 
 		// TODO Disable Saving if it was already sent to the server
-		if (!app.getMultiQuestionnaire().hasBeenSent()) {
+		if (!app.getSurvey().hasBeenSent()) {
 			Log.i(TAG, "this questionnaire can be sent");
 			addingButtonsToThisLayout(ll);
 		} else {
@@ -359,7 +337,7 @@ public class QuestionnaireFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		usQuestionnaire.setAnswers(ll);
+//		usQuestionnaire.setAnswers(ll);
 		super.onSaveInstanceState(outState);
 	}
 	

@@ -13,9 +13,9 @@ import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
-import de.da_sense.moses.client.com.requests.RequestMulti_Questionnaire;
+import de.da_sense.moses.client.com.requests.RequestSurvey;
 import de.da_sense.moses.client.service.MosesService;
-import de.da_sense.moses.client.service.Multi_Questionnaire;
+import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
 import de.da_sense.moses.client.util.Toaster;
 
@@ -23,6 +23,7 @@ import de.da_sense.moses.client.util.Toaster;
  * Reference to an application on the server, referenced by it's MoSeS id
  * 
  * @author Simon L, Wladimir Schmidt
+ * @author Zijad Maksuti
  * 
  */
 public class ExternalApplication {
@@ -40,10 +41,11 @@ public class ExternalApplication {
 	private static final String TAG_APKVERSION = "[apkversion]";
 	/** tag for questionnaire */
 	private static final String TAG_QUESTIONNAIRE = "[questionnaire]";
-	/** tag for the couldHaveQuest */
-	private static final String TAG_HASQUEST = "[hasQuest]";
+
 	/** tag for the separator */
 	private static final String SEPARATOR = "#EA#";
+	
+	private static final String LOG_TAG = ExternalApplication.class.getName();
 	
 	/**
 	 * Boolean if the enddate is reached
@@ -57,11 +59,6 @@ public class ExternalApplication {
 	public void setEndDateReached(Boolean endDateReached) {
 		this.endDateReached = endDateReached;
 	}
-
-	/**
-	 * Boolean if this External Application can contain a Questionnaire
-	 */
-	private Boolean apkHasQuestOnServer = false; 
 
 	/**
 	 * Boolean if this External Application currently contains a Questionnaire
@@ -84,8 +81,8 @@ public class ExternalApplication {
 	private Date endDate;
 	/** the apk version of this user study */
 	private String apkVersion;
-	/** the questionnaire of this user study */
-	private Multi_Questionnaire questionnaire;
+	/** the survey of this user study */
+	private Survey mSurvey;
 
 	/**
 	 * Gets the ID
@@ -372,9 +369,9 @@ public class ExternalApplication {
 	 * @param questionnaire
 	 *            the quesitonnaire to set
 	 */
-	private void setQuestionnaire(Multi_Questionnaire questionnaire) {
-		if (apkHasQuestOnServer && !apkHasQuestLocal)
-		this.questionnaire = questionnaire;
+	private void setQuestionnaire(Survey questionnaire) {
+		if (!apkHasQuestLocal)
+		this.mSurvey = questionnaire;
 	}
 
 	/**
@@ -383,8 +380,12 @@ public class ExternalApplication {
 	 * @param questAsString
 	 */
 	public void setQuestionnaire(String questAsString) {
-		if (apkHasQuestOnServer && !apkHasQuestLocal)
-		setQuestionnaire(new Multi_Questionnaire(questAsString));
+		if (!apkHasQuestLocal)
+			try {
+				setQuestionnaire(new Survey(new JSONObject(questAsString)));
+			} catch (JSONException e) {
+				Log.e(LOG_TAG, e.getMessage());
+			}
 		apkHasQuestLocal = true;
 	}
 
@@ -395,7 +396,7 @@ public class ExternalApplication {
 	 *         (user study)
 	 */
 	private String getStringQuestionnaire() {
-		return questionnaire.toString();
+		return mSurvey.toString();
 	}
 
 	/**
@@ -403,8 +404,8 @@ public class ExternalApplication {
 	 * 
 	 * @return the questionnaire of this application (user study)
 	 */
-	public Multi_Questionnaire getMultiQuestionnaire() {
-		return questionnaire;
+	public Survey getSurvey() {
+		return mSurvey;
 	}
 
 	/**
@@ -414,31 +415,6 @@ public class ExternalApplication {
 	 */
 	public boolean hasQuestionnaire() {
 		return (apkHasQuestLocal);
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public Boolean getApkHasQuestOnServer() {
-		return apkHasQuestOnServer;
-	}
-
-	/**
-	 * 
-	 * @param apkHasQuestOnServer
-	 */
-	public void setApkHasQuestOnServer(Boolean apkHasQuestOnServer) {
-		Log.d("ExternalApplication", "apkHasQuestOnServer set to " + apkHasQuestOnServer);
-		this.apkHasQuestOnServer = apkHasQuestOnServer;
-	}
-
-	/**
-	 * Returns if this external application could have a questionnaire
-	 * @return
-	 */
-	public boolean couldHaveQuestionnaire(){
-		return apkHasQuestOnServer;
 	}
 
 	private static String LINEBREAK_SUBST = "#LINEBREAK";
@@ -494,13 +470,8 @@ public class ExternalApplication {
 		if (isApkVersionSet()) {
 			result += SEPARATOR + TAG_APKVERSION + getApkVersion();
 		}
-		if (apkHasQuestOnServer){
-			result += SEPARATOR + TAG_HASQUEST + "true";
-		} else {
-			result += SEPARATOR + TAG_HASQUEST + "false";
-		}
-		Log.d("ExternalApplication", "Local = " + apkHasQuestLocal + ", onServer = " + apkHasQuestOnServer);
-		if (apkHasQuestLocal && apkHasQuestOnServer) {
+		
+		if (apkHasQuestLocal) {
 			result += SEPARATOR + TAG_QUESTIONNAIRE + getStringQuestionnaire();
 			
 		} else {
@@ -566,9 +537,6 @@ public class ExternalApplication {
 				if (split[i].startsWith(TAG_QUESTIONNAIRE)) {
 					questionnaireString = split[i].substring(TAG_QUESTIONNAIRE.length());
 				}
-				if (split[i].startsWith(TAG_HASQUEST)){
-					this.apkHasQuestOnServer = (split[i].substring(TAG_HASQUEST.length()) == "true");
-				}
 			}
 		}
 
@@ -582,9 +550,9 @@ public class ExternalApplication {
 		this.setEndDate(endDate);
 		this.setApkVersion(apkVersion);
 		Log.d("ExternalApplication", "questionnaire = " + questionnaireString);
-		if (apkHasQuestOnServer && questionnaireString != null)
+		if (questionnaireString != null)
 		if (questionnaireString.length() > 0) {
-			Log.d("ExternalApplication", "has Lokal questionnaire " + questionnaireString);
+			Log.d(LOG_TAG, "has Local questionnaire " + questionnaireString);
 			this.setQuestionnaire(questionnaireString);
 			apkHasQuestLocal = true;			
 		} else {
@@ -626,8 +594,8 @@ public class ExternalApplication {
 	 */
 	public void getQuestionnaireFromServer(){
 		Log.d("External Application", "Requested Questionnaire from the server");
-		if (couldHaveQuestionnaire() && !hasQuestionnaire())
-		new RequestMulti_Questionnaire(new GetQuestionnaireExecutor(), ID).send();
+		if (!hasQuestionnaire())
+		new RequestSurvey(new GetQuestionnaireExecutor(), ID).send();
 	}
 	
 	/**
@@ -635,7 +603,6 @@ public class ExternalApplication {
 	 */
 	void hasNoQuestionnaire() {
 		apkHasQuestLocal = false;
-		apkHasQuestOnServer = false;
 	}
 	
 	/**
@@ -645,7 +612,7 @@ public class ExternalApplication {
 	private class GetQuestionnaireExecutor implements ReqTaskExecutor {
 		@Override
 		public void handleException(Exception e) {
-			Log.d("SetQuestionnaireAnswers", "Failed because of an exception: " + e.getMessage());
+			Log.d(LOG_TAG, "Failed because of an exception: " + e.getMessage());
 			Toaster.showBadServerResponseToast();
 		}
 
@@ -654,20 +621,24 @@ public class ExternalApplication {
 			try {
 				JSONObject j = new JSONObject(s);
 				Log.d("GetQuestionnaireExecutor", "postExecution return was: "+s);
-				String APKID = j.getString("APKID");
+				String APKID = null;
 				String Status = j.getString("STATUS");
 				if (Status.equals("SUCCESS")){
 					Log.d("GetQuestionnaireExecutor", "Successfully received the Multi_Questionnaire");
+					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).setQuestionnaire(s);
-				} else if (Status.equals("FAILURE_NO_QUESTIONNAIRES")){
+				} else if (Status.equals("FAILURE_NO_QUESTIONNAIRE_FOUND")){
 					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because this ExternalApplication has no Questionnaire on the server");
+					APKID = j.getString("APKID");
+					Toaster.showToast(R.string.notification_no_survey_for_this_apk);
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).hasNoQuestionnaire();
 				} else if (Status.equals("FAILURE_INVALID_APKID")){
 					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because of invalid APK");
 					// TODO Handle wrong APKID
-				} else if (Status.equals("FAILURE_INVALID_SESSION")){
+				} else if (Status.equals("INVALID_SESSION")){
 					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because of invalid Session ID. Trying again");
 					MosesService.getInstance().login();
+					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).getQuestionnaireFromServer();
 				}
 			} catch (JSONException e) {

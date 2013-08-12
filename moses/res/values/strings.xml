@@ -4,7 +4,7 @@
     
     <string name="app_name">MoSeS</string>
     <string name="title_activity_main">Studies</string>
-    <string name="title_activity_questionnaire">Questionnaire</string>
+    <string name="title_activity_questionnaire">Survey</string>
 
 	<!-- Todo: Sort it pls -->
 	<string name="online">Online</string>
@@ -180,7 +180,7 @@
     <string name="menu_hardwareinfo">Hardware Information</string>
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_connect">Connect</string>
-    <string name="btn_questionnaire">Questionnaire</string>
+    <string name="btn_questionnaire">View survey</string>
     
     <!-- Details -->
     <string name="details_running_noquestionnaire">no questionnaire</string>
@@ -190,7 +190,8 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor.</string>
     <string name="content_description_toast">Small MoSeS logo.</string>
     
-    <!-- Error messages -->
+    <!-- Error messages and notifications-->
     <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>
+    <string name="notification_no_survey_for_this_apk">No survey for this apk.</string>
 
 </resources>
