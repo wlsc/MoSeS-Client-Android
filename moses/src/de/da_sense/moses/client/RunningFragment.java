@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.ApkMethods;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
@@ -102,7 +103,7 @@ public class RunningFragment extends ListFragment {
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description", 
 								app.getDescription());
-						intent.putExtra("de.da_sense.moses.client.apkid", 
+						intent.putExtra(ExternalApplication.KEY_APK_ID, 
                                 app.getID());
 						intent.putExtra("de.da_sense.moses.client.apkVersion", 
                                 app.getApkVersion());
@@ -140,7 +141,7 @@ public class RunningFragment extends ListFragment {
 								app.getName());
 						intent.putExtra("de.da_sense.moses.client.description", 
 								app.getDescription());
-                        intent.putExtra("de.da_sense.moses.client.apkid", 
+                        intent.putExtra(ExternalApplication.KEY_APK_ID, 
                                 app.getID());
                         intent.putExtra("de.da_sense.moses.client.apkVersion", 
                                 app.getApkVersion());

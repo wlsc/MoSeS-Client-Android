@@ -1,15 +1,12 @@
 package de.da_sense.moses.client;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -18,27 +15,26 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.userstudy.Form;
 import de.da_sense.moses.client.userstudy.PossibleAnswer;
 import de.da_sense.moses.client.userstudy.Question;
-import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
 
 /**
- * questionnaires for a user study
+ * Instance of this class represent a {@link Fragment} which visualizes the an instance of a
+ * {@link Form}. The form is passed to by its ID. See {@link #setmFormID(int)}.
  * 
  * @author Ibrahim Alyahya, Sandra Amend, Florian Schnell, Wladimir Schmidt
  * @author Zijad Maksuti
  */
-public class QuestionnaireFragment extends Fragment {
+public class FormFragment extends Fragment {
 	/**
 	 * Defining a log tag to this class
 	 */
-	private static final String TAG = "QuestionnaireFragment";
+	private static final String LOG_TAG = FormFragment.class.getName();
 	
 	/**
 	 * To send (and to save on local) user's answers of a questionnaire to
@@ -47,24 +43,19 @@ public class QuestionnaireFragment extends Fragment {
 	private Button btnSend;
 
 	/**
-	 * The Single Questionnaire to display
+	 * The {@link Form} instance visualized with this {@link FormFragment}.
 	 */
-	private Survey usQuestionnaire;
+	private Form mForm;
 	
 	/**
 	 * The APKID
 	 */
-	private String apkid = "";
+	private String mAPKID = "";
 	
 	/**
-	 * Index of the current Questionnaire
+	 * The id of the {@link Form} instance visualized by this {@link FormFragment}.
 	 */
-	private int currentIndex;
-	
-	/**
-	 * Index of the last Questionnaire in the Multi_Questionnaire
-	 */
-	private int lastIndex;
+	private int mFormID = -1;
 
 	/**
 	 * The "Next Questionnaire" Button
@@ -75,10 +66,10 @@ public class QuestionnaireFragment extends Fragment {
 	 * Remove the send button from the layout.
 	 */
 	private void removingButtonsFromThisLayout() {
-		Log.d(TAG, "removingButtonsFormThisLayout: btnSend = " + btnSend);
+		Log.d(LOG_TAG, "removingButtonsFormThisLayout: btnSend = " + btnSend);
 		if (btnSend != null && btnSend.getVisibility() == View.VISIBLE)
 			btnSend.setVisibility(View.INVISIBLE);
-		Log.d(TAG, "removingButtonsFormThisLayout: btnNext = " + btnNext);
+		Log.d(LOG_TAG, "removingButtonsFormThisLayout: btnNext = " + btnNext);
 		if (btnNext != null && btnNext.getVisibility() == View.VISIBLE)
 			btnNext.setVisibility(View.INVISIBLE);
 	}
@@ -90,57 +81,54 @@ public class QuestionnaireFragment extends Fragment {
 	 *            the Linear layout to be added on
 	 */
 	private void addingButtonsToThisLayout(LinearLayout ll) {
-//		final LinearLayout layout = (LinearLayout) ll
-//				.findViewById(R.id.ll_quest);
-		LinearLayout bLayout = (LinearLayout) ll
-				.findViewById(R.id.bottom_quest);
-		if (currentIndex == lastIndex) {
-		// Adding save button
-		btnSend = new Button(getActivity().getApplicationContext());
-		btnSend.setText(getString(R.string.q_send));
-		btnSend.setTag("SendButton");
-		btnSend.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-//				usQuestionnaire.setAnswers(layout);
-				Toast.makeText(getActivity().getApplicationContext(), getString(R.string.q_answersSent), Toast.LENGTH_LONG).show();
-//				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getSurvey().sendAnswersToServer();
-				// XXX Test ob es speichern kann
-				try {
-					InstalledExternalApplicationsManager.getInstance().saveToDisk(MosesService.getInstance());
-				} catch (IOException e) {
-					Log.d("Flo", "Konnte nicht speichern");
-					e.printStackTrace();
-				}
-				// XXX Test ob es speichern kann
-				v.setEnabled(false); // disable buttons
-				}
-			}
-		);
-		bLayout.addView(btnSend);
-		} else {
-		btnNext= new Button(getActivity().getApplicationContext());
-		btnNext.setText(getString(R.string.q_next));
-		btnNext.setTag("NextButton");
-		btnNext.setEnabled(true);
-		btnNext.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// Sets he answers of the current Questionnaire in order
-				// to swap to the next one				
-//				usQuestionnaire.setAnswers(layout);
-				FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
-				QuestionnaireFragment nextFragment = new QuestionnaireFragment();
-				nextFragment.setRetainInstance(true);
-				Bundle args = getArguments();
-				args.putInt("de.da_sense.moses.client.current", currentIndex + 1);
-				nextFragment.setArguments(args);
-				ft.replace(android.R.id.content, nextFragment);
-				ft.commit();
-			}
-		});
-		bLayout.addView(btnNext);
-		}
+//		LinearLayout bLayout = (LinearLayout) ll.findViewById(R.id.bottom_quest);
+//		XXX ZM CLEAN
+//		if (currentIndex == lastIndex) {
+//		// Adding save button
+//		btnSend = new Button(getActivity().getApplicationContext());
+//		btnSend.setText(getString(R.string.q_send));
+//		btnSend.setTag("SendButton");
+//		btnSend.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+////				usQuestionnaire.setAnswers(layout);
+//				Toast.makeText(getActivity().getApplicationContext(), getString(R.string.q_answersSent), Toast.LENGTH_LONG).show();
+////				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getSurvey().sendAnswersToServer();
+//				// XXX Test ob es speichern kann
+//				try {
+//					InstalledExternalApplicationsManager.getInstance().saveToDisk(MosesService.getInstance());
+//				} catch (IOException e) {
+//					Log.d("Flo", "Konnte nicht speichern");
+//					e.printStackTrace();
+//				}
+//				// XXX Test ob es speichern kann
+//				v.setEnabled(false); // disable buttons
+//				}
+//			}
+//		);
+//		bLayout.addView(btnSend);
+//		} else {
+//		btnNext= new Button(getActivity().getApplicationContext());
+//		btnNext.setText(getString(R.string.q_next));
+//		btnNext.setTag("NextButton");
+//		btnNext.setEnabled(true);
+//		btnNext.setOnClickListener(new OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				// Sets he answers of the current Questionnaire in order
+//				// to swap to the next one				
+////				usQuestionnaire.setAnswers(layout);
+//				FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
+//				QuestionnaireFragment nextFragment = new QuestionnaireFragment();
+//				nextFragment.setRetainInstance(true);
+//				Bundle args = getArguments();
+//				nextFragment.setArguments(args);
+//				ft.replace(android.R.id.content, nextFragment);
+//				ft.commit();
+//			}
+//		});
+//		bLayout.addView(btnNext);
+//		}
 	}
 
 	/**
@@ -190,7 +178,7 @@ public class QuestionnaireFragment extends Fragment {
 				}
 			}
 		} else {
-			Log.d(TAG, "No Questions found in questionnaire["+currentIndex+"]");
+			Log.w(LOG_TAG, "No Questions found in form["+mFormID+"]");
 		}
 
 	}
@@ -225,7 +213,7 @@ public class QuestionnaireFragment extends Fragment {
 			rb[i].setVisibility(View.VISIBLE);
 		}
 		rg.setVisibility(View.VISIBLE);
-		Log.i(TAG, "last rg = " + rg);
+		Log.i(LOG_TAG, "last rg = " + rg);
 		linearLayoutInsideAScrollView.addView(rg);
 	}
 
@@ -244,7 +232,7 @@ public class QuestionnaireFragment extends Fragment {
 		questionView.setText(ordinal + ". " + questionText);
 		linearLayoutInsideAScrollView.addView(questionView);
 
-		Log.i(TAG, "questionView = " + questionView.getText());
+		Log.i(LOG_TAG, "questionView = " + questionView.getText());
 
 		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.size()];
 		for (int i = 0; i < checkBoxs.length; i++) {
@@ -285,54 +273,55 @@ public class QuestionnaireFragment extends Fragment {
 		container.setBackgroundColor(getResources().getColor(
 				android.R.color.background_light));
 
-		apkid = "";
+		mAPKID = "";
 		if (savedInstanceState == null) {
-			Log.d(TAG, "savedInstance == null");
+			Log.d(LOG_TAG, "savedInstance == null");
 			savedInstanceState = getArguments();
-			Log.d(TAG, "NOW savedInstance = " + savedInstanceState);
+			Log.d(LOG_TAG, "NOW savedInstance = " + savedInstanceState);
 		}
 
 		// retrieve the arguments
-		apkid = savedInstanceState
-				.getString("de.da_sense.moses.client.apkid");
+		mAPKID = savedInstanceState
+				.getString(ExternalApplication.KEY_APK_ID);
 		savedInstanceState
 				.getInt("de.da_sense.moses.client.belongsTo");
-		Log.d(TAG, "\nretireved apkid = " + apkid);
-		currentIndex = savedInstanceState.getInt("de.da_sense.moses.client.current");
+		Log.d(LOG_TAG, "\nretireved apkid = " + mAPKID);
 
-		if (apkid != null) {
-			Log.d(TAG, "savedInstanceState.apkid = " + apkid);
+		if (mAPKID != null) {
+			Log.d(LOG_TAG, "savedInstanceState.apkid = " + mAPKID);
 		} else {
-			Log.d(TAG, "Error while retrieving APKID");
+			Log.d(LOG_TAG, "Error while retrieving APKID");
+		}
+		
+		// check the presence of the formID
+		if(mFormID == -1){
+			// the id is not set, it must be in the bundle
+			mFormID = savedInstanceState.getInt(Form.KEY_FORM_ID, -1);
+			if(mFormID == -1)
+				// the id of the form was not in the bundle, this should never have happened
+				Log.e(LOG_TAG, "onCreateView the formID was not set and not in the bundle");
 		}
 
 		// get the corresponding installedApp
 		InstalledExternalApplication app = InstalledExternalApplicationsManager
-				.getInstance().getAppForId(apkid);
+				.getInstance().getAppForId(mAPKID);
 		
 		if (app != null) {
-			usQuestionnaire = app.getSurvey();
+			mForm = app.getSurvey().getForm(mFormID);
 		}
-		Log.d(TAG, "usQuestionnaire = " + usQuestionnaire);
-		if (usQuestionnaire == null) {
-			Log.d(TAG, "Error while trying to get the "+currentIndex+"-th Single_Questionnaire");
-		}
+
 
 		LinearLayout ll = (LinearLayout) inflater.inflate(
 				R.layout.questionnaire, container, false);
 		
-		// retrieve the surveys for this User Study
-		List<Form> forms = usQuestionnaire.getForms();
-		Collections.sort(forms);
-		for(Form form : forms)
-			addFormToLayout(form, ll);
+		addFormToLayout(mForm, ll);
 
 		// TODO Disable Saving if it was already sent to the server
 		if (!app.getSurvey().hasBeenSent()) {
-			Log.i(TAG, "this questionnaire can be sent");
+			Log.i(LOG_TAG, "this questionnaire can be sent");
 			addingButtonsToThisLayout(ll);
 		} else {
-			Log.i(TAG, "this questionnaire was sent");
+			Log.i(LOG_TAG, "this questionnaire was sent");
 			removingButtonsFromThisLayout();
 		}
 		return (View) ll;
@@ -340,8 +329,18 @@ public class QuestionnaireFragment extends Fragment {
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-//		usQuestionnaire.setAnswers(ll);
+		// save the formID for the future
+		outState.putInt(Form.KEY_FORM_ID, mFormID);
 		super.onSaveInstanceState(outState);
+	}
+
+	/**
+	 * Sets the ID of the {@link Form} instance which will be visualized by this {@link FormFragment}.
+	 * 
+	 * @param formID the id of the form that will be visualized.
+	 */
+	public void setmFormID(int formID) {
+		this.mFormID = formID;
 	}
 	
 }

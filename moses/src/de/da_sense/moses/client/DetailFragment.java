@@ -105,7 +105,7 @@ public class DetailFragment extends Fragment {
 			sensors = savedInstanceState
 					.getIntegerArrayList("de.da_sense.moses.client.sensors");
 			apkid = savedInstanceState
-					.getString("de.da_sense.moses.client.apkid");
+					.getString(ExternalApplication.KEY_APK_ID);
 			apkVersion = savedInstanceState
 					.getString("de.da_sense.moses.client.apkVersion");
 			startDate = savedInstanceState
@@ -237,14 +237,12 @@ public class DetailFragment extends Fragment {
 										+ appname + " to fill");
 								Intent intent = new Intent();
 								intent.setClass(mActivity,
-										QuestionnaireActivity.class);
+										SurveyActivity.class);
 								intent.putExtra(
-										"de.da_sense.moses.client.apkid", apkid);
+										ExternalApplication.KEY_APK_ID, apkid);
 								intent.putExtra(
 										"de.da_sense.moses.client.belongsTo",
 										RUNNING);
-								intent.putExtra(
-										"de.da_sense.moses.client.current", 0);
 								startActivity(intent);
 								} else {
 									Log.d(TAG, "Getting Questionnaire from Server");
@@ -312,9 +310,9 @@ public class DetailFragment extends Fragment {
 										+ appname + " to fill");
 								Intent intent = new Intent();
 								intent.setClass(mActivity,
-										QuestionnaireActivity.class);
+										SurveyActivity.class);
 								intent.putExtra(
-										"de.da_sense.moses.client.apkid", apkid);
+										ExternalApplication.KEY_APK_ID, apkid);
 								intent.putExtra(
 										"de.da_sense.moses.client.belongsTo",
 										HISTORY);

@@ -2,6 +2,8 @@ package de.da_sense.moses.client.userstudy;
 
 import java.util.List;
 
+import android.os.Bundle;
+
 /**
  * This class represents a form which contains one or more {@link Question} instances. A form is
  * contained in a {@link Survey}.
@@ -14,6 +16,12 @@ public class Form extends HasID implements IHasTitle {
 	private String mTitle;
 	
 	private List<Question> mQuestions;
+	
+	/**
+	 * A constant to be used when passing an id of a {@link Form} through
+	 * a communication channel. For example, through a {@link Bundle}.
+	 */
+	public static final String KEY_FORM_ID = "key_form_id";
 	
 	@Override
 	public String setTitle(String title) {

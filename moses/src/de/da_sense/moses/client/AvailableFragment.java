@@ -154,7 +154,7 @@ public class AvailableFragment extends ListFragment implements
 							app.getName());
 					intent.putExtra("de.da_sense.moses.client.description",
 							app.getDescription());
-					intent.putExtra("de.da_sense.moses.client.apkid",
+					intent.putExtra(ExternalApplication.KEY_APK_ID,
 							app.getID());
 					intent.putExtra("de.da_sense.moses.client.apkVersion",
 							app.getApkVersion());

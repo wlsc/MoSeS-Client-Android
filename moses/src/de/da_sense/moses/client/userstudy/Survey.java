@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Bundle;
 import android.util.Log;
 
 /**
@@ -23,6 +24,12 @@ public class Survey extends HasID implements IHasTitle{
 	private String mTitle;
 	
 	private static final String LOG_TAG = Survey.class.getName();
+	
+	/**
+	 * A constant to be used when passing an id of a {@link Survey} through
+	 * a communication channel. For example, through a {@link Bundle}.
+	 */
+	public static final String KEY_SURVEY_ID = "key_survey_id";
 
 	/**
 	 * This method creates a survey with all its underlying children from the consumed {@link JSONObject}.
@@ -124,6 +131,19 @@ public class Survey extends HasID implements IHasTitle{
 	public boolean hasBeenSent() {
 		// TODO IMPLEMENT ME!
 		return false;
+	}
+	
+	/**
+	 * Returns {@link Form} instance attached to this {@link Survey}.
+	 * @param formID the ID of the form to be returned
+	 * @return the form with the specified formID or null if this survey does not
+	 * contain a form with the specified formID
+	 */
+	public Form getForm(int formID){
+		for(Form form : mForms)
+			if(form.getId() == formID)
+				return form;
+		return null;
 	}
 	
 	

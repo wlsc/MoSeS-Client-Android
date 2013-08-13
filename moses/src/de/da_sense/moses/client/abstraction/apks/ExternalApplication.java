@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Bundle;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
@@ -66,7 +67,13 @@ public class ExternalApplication {
 	private Boolean apkHasQuestLocal = false;
 	
 	/** String containing the id */
-	private String ID;
+	private String apkID;
+	
+	/**
+	 * A constant to be used when passing an id of an {@link ExternalApplication} through
+	 * a communication channel. For example, through a {@link Bundle}.
+	 */
+	public static final String KEY_APK_ID = "keyApkID";
 
 	// lazy loading variables for non-defining attributes
 	/** the user study name */
@@ -90,11 +97,11 @@ public class ExternalApplication {
 	 * @return ID
 	 */
 	public String getID() {
-		return ID;
+		return apkID;
 	}
 	
 	public void setID(String id){
-		this.ID = id;
+		this.apkID = id;
 	}
 
 	/**
@@ -105,7 +112,7 @@ public class ExternalApplication {
 	 */
 	public ExternalApplication(int ID) {
 		Log.d("ExternalApplication", "from ID");
-		this.ID = String.valueOf(ID);
+		this.apkID = String.valueOf(ID);
 	}
 	
 	public ExternalApplication(){
@@ -448,7 +455,7 @@ public class ExternalApplication {
 	 * @return the encoded object
 	 */
 	public String asOnelineString() { // ID-{name}-{description}
-		String result = this.ID;
+		String result = this.apkID;
 		if (isNameSet()) {
 			result += SEPARATOR + TAG_NAME + toLinebreakSubst(getName());
 		}
@@ -595,7 +602,7 @@ public class ExternalApplication {
 	public void getQuestionnaireFromServer(){
 		Log.d("External Application", "Requested Questionnaire from the server");
 		if (!hasQuestionnaire())
-		new RequestSurvey(new GetQuestionnaireExecutor(), ID).send();
+		new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
 	}
 	
 	/**
