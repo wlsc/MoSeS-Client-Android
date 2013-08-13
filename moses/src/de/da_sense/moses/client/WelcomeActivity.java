@@ -99,7 +99,7 @@ public class WelcomeActivity extends FragmentActivity implements
 
 	private static final String LOG_TAG = WelcomeActivity.class.getName();
 
-	SectionsPagerAdapter mAppSectionsPagerAdapter;
+	WelcomeActivityPagerAdapter mAppSectionsPagerAdapter;
 	ViewPager mViewPager;
 
 	@Override
@@ -109,7 +109,7 @@ public class WelcomeActivity extends FragmentActivity implements
 		setContentView(R.layout.activity_main);
 		thisInstance = this;
 
-		mAppSectionsPagerAdapter = new SectionsPagerAdapter(
+		mAppSectionsPagerAdapter = new WelcomeActivityPagerAdapter(
 				getSupportFragmentManager(), this);
 
 		// get ActionBar and set NavigationMode
@@ -574,7 +574,7 @@ public class WelcomeActivity extends FragmentActivity implements
 
 		if (isShowUserStudyCall && isLoginInformationComplete()) {
 			// firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
-			if (getActiveTab() != SectionsPagerAdapter.TAB_AVAILABLE) {
+			if (getActiveTab() != WelcomeActivityPagerAdapter.TAB_AVAILABLE) {
 				Log.d("MainActivity - initControls",
 						"WARNING: active Tab "
 								+ "is going to change because of UserStudy-Call. ACTIVE TAB SET "
@@ -584,7 +584,7 @@ public class WelcomeActivity extends FragmentActivity implements
 
 		}
 		if (isShowUpdateCall) {
-			if (getActiveTab() != SectionsPagerAdapter.TAB_RUNNING) {
+			if (getActiveTab() != WelcomeActivityPagerAdapter.TAB_RUNNING) {
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
 						+ "changed because of ShowUpdate-Call. ACTIVE TAB SET "
 						+ "FROM " + getActiveTab() + " TO RUNNING (1)");

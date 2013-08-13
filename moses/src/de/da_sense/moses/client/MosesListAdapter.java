@@ -47,7 +47,7 @@ public class MosesListAdapter extends SimpleAdapter {
 				WelcomeActivity mA = WelcomeActivity.getInstance();
 				
 				switch (mA.getActiveTab()) {
-				case SectionsPagerAdapter.TAB_AVAILABLE: {
+				case WelcomeActivityPagerAdapter.TAB_AVAILABLE: {
 					Log.d("MosesListAdapter", "setting on click listener with available tab.");
 					final AvailableFragment aF = AvailableFragment.getInstance();
 					aF.showDetails(aF.getListIndexElement(position), mA, new Runnable() {
@@ -63,7 +63,7 @@ public class MosesListAdapter extends SimpleAdapter {
 					});
 					break;
 				}
-				case SectionsPagerAdapter.TAB_RUNNING: {
+				case WelcomeActivityPagerAdapter.TAB_RUNNING: {
 					Log.d("MosesListAdapter", "setting on click listener with running tab.");
 					final RunningFragment rF = RunningFragment.getInstance();
 					rF.showDetails(position, mA, new Runnable() {
@@ -78,7 +78,7 @@ public class MosesListAdapter extends SimpleAdapter {
 					});
 					break;
 				}
-				case SectionsPagerAdapter.TAB_HISTORY:
+				case WelcomeActivityPagerAdapter.TAB_HISTORY:
 					Log.d("MosesListAdapter", "setting on click listener with history tab.");
 					final HistoryFragment hF = HistoryFragment.getInstance();
 					hF.showDetails(position, mA, new Runnable() {

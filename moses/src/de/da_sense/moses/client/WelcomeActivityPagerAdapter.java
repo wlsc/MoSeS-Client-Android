@@ -13,7 +13,7 @@ import android.util.Log;
  * @author Zijad Maksuti
  *
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class WelcomeActivityPagerAdapter extends FragmentPagerAdapter {
 	
 	/** Available user studies tab. Constant for the tab selection logic. */
 	protected final static int TAB_AVAILABLE = 0;
@@ -24,14 +24,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	
 	private Context mContext;
 	
-	private static final String LOG_TAG = SectionsPagerAdapter.class.getName(); 
+	private static final String LOG_TAG = WelcomeActivityPagerAdapter.class.getName(); 
 
 	/**
 	 * 
 	 * @param fm
 	 * @param context the context of the activity that is using this adapter
 	 */
-    public SectionsPagerAdapter(FragmentManager fm, Context context) {
+    public WelcomeActivityPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         mContext = context;
     }

@@ -1,15 +1,15 @@
 package de.da_sense.moses.client;
 
+import android.app.ActionBar;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.MenuItem;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
-import de.da_sense.moses.client.userstudy.Form;
 import de.da_sense.moses.client.userstudy.Survey;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 
 /**
  * Instance of this class is used to visualize a {@link Survey} instance.
@@ -18,29 +18,35 @@ import android.view.MenuItem;
  * @author Zijad Maksuti
  * 
  */
-public class SurveyActivity extends Activity {
+public class SurveyActivity extends FragmentActivity {
+	
 	/**
-	 * Defining a log tag to this class
+	 * Adapter for showing {@link FormFragment}s.
 	 */
-	private static final String LOG_TAG = SurveyActivity.class.getName();
+    private SurveyActivityPagerAdapter mAdapter;
+    
+    private ViewPager mViewPager;
 	
 	/**
 	 * The id of the {@link InstalledExternalApplication} whose {@link Survey} instance
 	 * will be visualized by this {@link SurveyActivity}.
 	 */
 	private String mAPKID = null;
-	
-//	/**
-//	 * The {@link Survey} represented by this {@link SurveyActivity}.
-//	 */
-//	private Survey mSurvey;
 
 	/**
-	 * @see android.app.Activity.onCreate(Bundle savedInstanceState)
+	 * Defining a log tag to this class
 	 */
+	private static final String LOG_TAG = SurveyActivity.class.getName();
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_surveyactivity);
+		
+		// get ActionBar and set AppIcon to direct to the "home screen"
+		ActionBar ab = getActionBar();
+		ab.setTitle(getString(R.string.actionbar_title_survey));
+		ab.setDisplayHomeAsUpEnabled(true);
 		
 		if(mAPKID == null)
 			if(savedInstanceState == null)
@@ -52,33 +58,9 @@ public class SurveyActivity extends Activity {
 			Log.e(LOG_TAG, "onCreate() apkid was not in the bundle nor in the intent");
 		
 		InstalledExternalApplication apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
-		Survey survey = apk.getSurvey();
-		Form form = survey.getForms().get(0);
-
-		FormFragment formFragment;
-		if (savedInstanceState == null) {
-			Log.d(LOG_TAG, "savedInstanceState == null");
-			// during initial setup plug in the detail fragment
-			formFragment = new FormFragment();
-			formFragment.setmFormID(form.getId());
-			formFragment.setRetainInstance(true);
-			formFragment.setArguments(getIntent().getExtras());
-			getFragmentManager().beginTransaction()
-					.add(android.R.id.content, formFragment).commit();
-		} else {
-			Log.d(LOG_TAG, "savedInstanceState != null");
-			formFragment = new FormFragment();
-			formFragment.setmFormID(form.getId());
-			formFragment.setRetainInstance(true);
-			formFragment.setArguments(savedInstanceState);
-			getFragmentManager().beginTransaction()
-					.add(android.R.id.content, formFragment).commit();
-		}
-
-		// get ActionBar and set AppIcon to direct to the "home screen"
-		ActionBar ab = getActionBar();
-		ab.setTitle(getString(R.string.actionbar_title_survey));
-		ab.setDisplayHomeAsUpEnabled(true);
+		mAdapter = new SurveyActivityPagerAdapter(getSupportFragmentManager(), apk);
+		mViewPager = (ViewPager) findViewById(R.id.surveyActivityPager);
+        mViewPager.setAdapter(mAdapter);
 	}
 
 	@Override

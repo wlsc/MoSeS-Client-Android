@@ -3,8 +3,8 @@ package de.da_sense.moses.client;
 import java.util.Collections;
 import java.util.List;
 
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,17 +15,17 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.userstudy.Form;
 import de.da_sense.moses.client.userstudy.PossibleAnswer;
 import de.da_sense.moses.client.userstudy.Question;
+import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
 
 /**
  * Instance of this class represent a {@link Fragment} which visualizes the an instance of a
- * {@link Form}. The form is passed to by its ID. See {@link #setmFormID(int)}.
+ * {@link Form}. The form is passed to by its ID. See {@link #setFormID(int)}.
  * 
  * @author Ibrahim Alyahya, Sandra Amend, Florian Schnell, Wladimir Schmidt
  * @author Zijad Maksuti
@@ -50,7 +50,7 @@ public class FormFragment extends Fragment {
 	/**
 	 * The APKID
 	 */
-	private String mAPKID = "";
+	private String mAPKID = null;
 	
 	/**
 	 * The id of the {@link Form} instance visualized by this {@link FormFragment}.
@@ -273,25 +273,12 @@ public class FormFragment extends Fragment {
 		container.setBackgroundColor(getResources().getColor(
 				android.R.color.background_light));
 
-		mAPKID = "";
-		if (savedInstanceState == null) {
-			Log.d(LOG_TAG, "savedInstance == null");
-			savedInstanceState = getArguments();
-			Log.d(LOG_TAG, "NOW savedInstance = " + savedInstanceState);
-		}
-
-		// retrieve the arguments
-		mAPKID = savedInstanceState
-				.getString(ExternalApplication.KEY_APK_ID);
-		savedInstanceState
-				.getInt("de.da_sense.moses.client.belongsTo");
-		Log.d(LOG_TAG, "\nretireved apkid = " + mAPKID);
-
-		if (mAPKID != null) {
-			Log.d(LOG_TAG, "savedInstanceState.apkid = " + mAPKID);
-		} else {
-			Log.d(LOG_TAG, "Error while retrieving APKID");
-		}
+		if(mAPKID == null)
+			if(savedInstanceState != null)
+				mAPKID = savedInstanceState.getString(InstalledExternalApplication.KEY_APK_ID, null);
+		
+		if(mAPKID == null)
+			Log.e(LOG_TAG, "onCreateView the APKID was not set and not in the bundle");
 		
 		// check the presence of the formID
 		if(mFormID == -1){
@@ -312,7 +299,7 @@ public class FormFragment extends Fragment {
 
 
 		LinearLayout ll = (LinearLayout) inflater.inflate(
-				R.layout.questionnaire, container, false);
+				R.layout.form, container, false);
 		
 		addFormToLayout(mForm, ll);
 
@@ -331,6 +318,7 @@ public class FormFragment extends Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		// save the formID for the future
 		outState.putInt(Form.KEY_FORM_ID, mFormID);
+		outState.putString(InstalledExternalApplication.KEY_APK_ID, mAPKID);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -339,8 +327,18 @@ public class FormFragment extends Fragment {
 	 * 
 	 * @param formID the id of the form that will be visualized.
 	 */
-	public void setmFormID(int formID) {
+	public void setFormID(int formID) {
 		this.mFormID = formID;
+	}
+
+	/**
+	 * Sets the ID of the {@link InstalledExternalApplication} whose {@link Survey} contains the {@link Form} which will
+	 * be visualized by this {@link FormFragment}.
+	 * 
+	 * @param formID the id of the form that will be visualized.
+	 */
+	public void setAPKID(String mAPKID) {
+		this.mAPKID = mAPKID;
 	}
 	
 }
