@@ -1,6 +1,7 @@
 package de.da_sense.moses.client;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.Fragment;
@@ -152,6 +153,7 @@ public class QuestionnaireFragment extends Fragment {
 
 		LinearLayout linearLayoutInsideAScrollView = (LinearLayout) scrollViewContainer.findViewById(R.id.ll_quest);
 		List<Question> questions = form.getQuestions();
+		Collections.sort(questions);
 
 		// Check if there is at least a question to display
 		if (questions.size() > 0) {
@@ -164,23 +166,23 @@ public class QuestionnaireFragment extends Fragment {
 				Question question = questions.get(i);
 				switch (questions.get(i).getType()) {
 				case (Question.TYPE_SINGLE_CHOICE): {
-					makeSingleChoice(questions.get(i), linearLayoutInsideAScrollView, i);
+					makeSingleChoice(questions.get(i), linearLayoutInsideAScrollView, i+1);
 					break;
 				}
 				case (Question.TYPE_MULTIPLE_CHOICE): {
-					makeMultipleChoice(questions.get(i), linearLayoutInsideAScrollView, i);
+					makeMultipleChoice(questions.get(i), linearLayoutInsideAScrollView, i+1);
 					break;
 				}
 				case (Question.TYPE_TEXT_QUESTION): {
-					makeTextQuestion(questions.get(i), linearLayoutInsideAScrollView, i);
+					makeTextQuestion(questions.get(i), linearLayoutInsideAScrollView, i+1);
 					break;
 				}
 				case (Question.TYPE_LIKERT_SCALE):{
-					makeSingleChoice(question, linearLayoutInsideAScrollView, i);
+					makeSingleChoice(question, linearLayoutInsideAScrollView, i+1);
 					break;
 				}
 				case (Question.TYPE_YES_NO_QUESTION):{
-					makeSingleChoice(question, linearLayoutInsideAScrollView, i);
+					makeSingleChoice(question, linearLayoutInsideAScrollView, i+1);
 					break;
 				}
 				default:
@@ -320,7 +322,9 @@ public class QuestionnaireFragment extends Fragment {
 				R.layout.questionnaire, container, false);
 		
 		// retrieve the surveys for this User Study
-		for(Form form : usQuestionnaire.getForms())
+		List<Form> forms = usQuestionnaire.getForms();
+		Collections.sort(forms);
+		for(Form form : forms)
 			addFormToLayout(form, ll);
 
 		// TODO Disable Saving if it was already sent to the server
