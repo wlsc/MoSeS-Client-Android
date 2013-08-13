@@ -1,7 +1,6 @@
 package de.da_sense.moses.client;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Fragment;
