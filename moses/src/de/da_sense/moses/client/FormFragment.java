@@ -192,6 +192,7 @@ public class FormFragment extends Fragment {
 	private void makeSingleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
+		Collections.sort(possibleAnswers);
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
@@ -227,6 +228,7 @@ public class FormFragment extends Fragment {
 
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
+		Collections.sort(possibleAnswers);
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
