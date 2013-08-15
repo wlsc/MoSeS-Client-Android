@@ -12,9 +12,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import de.da_sense.moses.client.R.color;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.userstudy.Form;
@@ -61,6 +63,8 @@ public class FormFragment extends Fragment {
 	 * The "Next Questionnaire" Button
 	 */
 	private Button btnNext;
+	
+	private LayoutInflater mLayoutInflater;
 
 	/**
 	 * Creates a Layout for a Single_Questionnaire
@@ -69,6 +73,8 @@ public class FormFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		mLayoutInflater = inflater;
 	
 		container.setBackgroundColor(getResources().getColor(
 				android.R.color.background_light));
@@ -243,14 +249,15 @@ public class FormFragment extends Fragment {
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
 	private void makeSingleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
 		Collections.sort(possibleAnswers);
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
-
-		linearLayoutInsideAScrollView.addView(questionView);
+		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		questionContainer.addView(questionView);
 
 		final RadioButton[] rb = new RadioButton[possibleAnswers.size()];
 		RadioGroup rg = new RadioGroup(getActivity()); // create the
@@ -260,15 +267,20 @@ public class FormFragment extends Fragment {
 		rg.setOrientation(RadioGroup.VERTICAL);// or RadioGroup.VERTICAL
 		for (int i = 0; i < rb.length; i++) {
 			rb[i] = new RadioButton(getActivity());
+			if(i%2==0)
+				rb[i].setBackgroundColor(getActivity().getResources().getColor(R.color.light_gray));
 			rg.addView(rb[i]); // the RadioButtons are added to the radioGroup
 								// instead of the layout
 			PossibleAnswer possibleAnswer = possibleAnswers.get(i);
 			rb[i].setText(possibleAnswer.getTitle());
+			rb[i].setTextAppearance(getActivity(), R.style.PossibleAnswerTextStyle);
+			LayoutParams rowParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			rb[i].setLayoutParams(rowParam);
 			rb[i].setVisibility(View.VISIBLE);
 		}
 		rg.setVisibility(View.VISIBLE);
 		Log.i(LOG_TAG, "last rg = " + rg);
-		linearLayoutInsideAScrollView.addView(rg);
+		questionContainer.addView(rg);
 	}
 
 	/**
@@ -278,23 +290,27 @@ public class FormFragment extends Fragment {
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
 	private void makeMultipleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
-
+		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
 		Collections.sort(possibleAnswers);
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
-		linearLayoutInsideAScrollView.addView(questionView);
+		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		questionContainer.addView(questionView);
 
 		Log.i(LOG_TAG, "questionView = " + questionView.getText());
 
 		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.size()];
 		for (int i = 0; i < checkBoxs.length; i++) {
 			checkBoxs[i] = new CheckBox(getActivity());
+			if(i%2 == 0)
+				checkBoxs[i].setBackgroundColor(getActivity().getResources().getColor(R.color.light_gray));
 			checkBoxs[i].setText(possibleAnswers.get(i).getTitle());
+			checkBoxs[i].setTextAppearance(getActivity(), R.style.PossibleAnswerTextStyle);
 			checkBoxs[i].setVisibility(View.VISIBLE);
-			linearLayoutInsideAScrollView.addView(checkBoxs[i]);
+			questionContainer.addView(checkBoxs[i]);
 		}
 	}
 
@@ -305,16 +321,29 @@ public class FormFragment extends Fragment {
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
 	private void makeTextQuestion(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + question.getTitle());
-		linearLayoutInsideAScrollView.addView(questionView);
+		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		questionContainer.addView(questionView);
 
 		EditText editText = new EditText(getActivity());
 		editText.setVisibility(View.VISIBLE);
 		if (question.getAnswer() != null) {
 			editText.setText(question.getAnswer());
 		}
-		linearLayoutInsideAScrollView.addView(editText);
+		questionContainer.addView(editText);
+	}
+	
+	/**
+	 * This method creates a {@link LinearLayout} instance which will contain a question with possible
+	 * answers.
+	 * @param root the {@link ViewGroup} instance that will be the parent of the container
+	 * @return a container for question and possible answers
+	 */
+	private LinearLayout generateQuestionContainer(ViewGroup root){
+		LinearLayout container = (LinearLayout) mLayoutInflater.inflate(R.layout.question_container_layout, root);
+		return container;
 	}
 
 	@Override

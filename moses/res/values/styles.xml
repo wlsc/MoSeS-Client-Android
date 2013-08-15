@@ -26,5 +26,16 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:background">#FF0505</item>
     </style>
-
+    
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar" />
+    
+    <style name="QuestionTextStyle" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:textSize">@dimen/text_size_question</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <style name="PossibleAnswerTextStyle" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:textSize">@dimen/text_size_possible_answer</item>
+    </style>
+    
 </resources>
