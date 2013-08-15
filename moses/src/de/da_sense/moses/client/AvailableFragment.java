@@ -137,7 +137,6 @@ public class AvailableFragment extends ListFragment implements
 				if (getExternalApps() != null) {
 					final ExternalApplication app = getExternalApps()
 							.get(index);
-					getListAdapter().getItem(index);
 
 					// dual mode: we can display everything on the screen
 					// update list to highlight the selected item and show data
