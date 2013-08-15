@@ -63,6 +63,62 @@ public class FormFragment extends Fragment {
 	private Button btnNext;
 
 	/**
+	 * Creates a Layout for a Single_Questionnaire
+	 * 
+	 */
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+	
+		container.setBackgroundColor(getResources().getColor(
+				android.R.color.background_light));
+	
+		if(mAPKID == null)
+			if(savedInstanceState != null)
+				mAPKID = savedInstanceState.getString(InstalledExternalApplication.KEY_APK_ID, null);
+		
+		if(mAPKID == null)
+			Log.e(LOG_TAG, "onCreateView the APKID was not set and not in the bundle");
+		
+		// check the presence of the formID
+		if(mFormID == -1){
+			// the id is not set, it must be in the bundle
+			mFormID = savedInstanceState.getInt(Form.KEY_FORM_ID, -1);
+			if(mFormID == -1)
+				// the id of the form was not in the bundle, this should never have happened
+				Log.e(LOG_TAG, "onCreateView the formID was not set and not in the bundle");
+		}
+	
+		// get the corresponding installedApp
+		InstalledExternalApplication app = InstalledExternalApplicationsManager
+				.getInstance().getAppForId(mAPKID);
+		
+		if (app != null) {
+			mForm = app.getSurvey().getForm(mFormID);
+		}
+	
+	
+		LinearLayout ll = (LinearLayout) inflater.inflate(
+				R.layout.form, container, false);
+		
+		// set focus to the dummy layout in order to prevent virtual keyboard from popping up
+		View dummyLayout = ll.findViewById(R.id.dummy_layout_form);
+		dummyLayout.requestFocus();
+		
+		addFormToLayout(mForm, ll);
+	
+		// TODO Disable Saving if it was already sent to the server
+		if (!app.getSurvey().hasBeenSent()) {
+			Log.i(LOG_TAG, "this questionnaire can be sent");
+			addingButtonsToThisLayout(ll);
+		} else {
+			Log.i(LOG_TAG, "this questionnaire was sent");
+			removingButtonsFromThisLayout();
+		}
+		return (View) ll;
+	}
+
+	/**
 	 * Remove the send button from the layout.
 	 */
 	private void removingButtonsFromThisLayout() {
@@ -140,15 +196,12 @@ public class FormFragment extends Fragment {
 	private void addFormToLayout(Form form, LinearLayout scrollViewContainer) {
 
 		LinearLayout linearLayoutInsideAScrollView = (LinearLayout) scrollViewContainer.findViewById(R.id.ll_quest);
+		
 		List<Question> questions = form.getQuestions();
 		Collections.sort(questions);
 
 		// Check if there is at least a question to display
 		if (questions.size() > 0) {
-			// add the label of the form to the scroll view
-			TextView formLabel = new TextView(getActivity());
-			formLabel.setText(form.getTitle());
-			linearLayoutInsideAScrollView.addView(formLabel);
 			
 			for (int i = 0; i < questions.size(); i++) {
 				Question question = questions.get(i);
@@ -262,58 +315,6 @@ public class FormFragment extends Fragment {
 			editText.setText(question.getAnswer());
 		}
 		linearLayoutInsideAScrollView.addView(editText);
-	}
-
-	/**
-	 * Creates a Layout for a Single_Questionnaire
-	 * 
-	 */
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-
-		container.setBackgroundColor(getResources().getColor(
-				android.R.color.background_light));
-
-		if(mAPKID == null)
-			if(savedInstanceState != null)
-				mAPKID = savedInstanceState.getString(InstalledExternalApplication.KEY_APK_ID, null);
-		
-		if(mAPKID == null)
-			Log.e(LOG_TAG, "onCreateView the APKID was not set and not in the bundle");
-		
-		// check the presence of the formID
-		if(mFormID == -1){
-			// the id is not set, it must be in the bundle
-			mFormID = savedInstanceState.getInt(Form.KEY_FORM_ID, -1);
-			if(mFormID == -1)
-				// the id of the form was not in the bundle, this should never have happened
-				Log.e(LOG_TAG, "onCreateView the formID was not set and not in the bundle");
-		}
-
-		// get the corresponding installedApp
-		InstalledExternalApplication app = InstalledExternalApplicationsManager
-				.getInstance().getAppForId(mAPKID);
-		
-		if (app != null) {
-			mForm = app.getSurvey().getForm(mFormID);
-		}
-
-
-		LinearLayout ll = (LinearLayout) inflater.inflate(
-				R.layout.form, container, false);
-		
-		addFormToLayout(mForm, ll);
-
-		// TODO Disable Saving if it was already sent to the server
-		if (!app.getSurvey().hasBeenSent()) {
-			Log.i(LOG_TAG, "this questionnaire can be sent");
-			addingButtonsToThisLayout(ll);
-		} else {
-			Log.i(LOG_TAG, "this questionnaire was sent");
-			removingButtonsFromThisLayout();
-		}
-		return (View) ll;
 	}
 
 	@Override

@@ -43,11 +43,6 @@ public class SurveyActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_surveyactivity);
 		
-		// get ActionBar and set AppIcon to direct to the "home screen"
-		ActionBar ab = getActionBar();
-		ab.setTitle(getString(R.string.actionbar_title_survey));
-		ab.setDisplayHomeAsUpEnabled(true);
-		
 		if(mAPKID == null)
 			if(savedInstanceState == null)
 				mAPKID = getIntent().getStringExtra(ExternalApplication.KEY_APK_ID);
@@ -58,6 +53,13 @@ public class SurveyActivity extends FragmentActivity {
 			Log.e(LOG_TAG, "onCreate() apkid was not in the bundle nor in the intent");
 		
 		InstalledExternalApplication apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+		
+		// get ActionBar and set AppIcon to direct to the "home screen"
+		ActionBar ab = getActionBar();
+		ab.setTitle(String.format(getString(R.string.actionbar_title_survey), apk.getName()));
+		ab.setDisplayHomeAsUpEnabled(true);
+		
+		// set the adapter
 		mAdapter = new SurveyActivityPagerAdapter(getSupportFragmentManager(), apk);
 		mViewPager = (ViewPager) findViewById(R.id.surveyActivityPager);
         mViewPager.setAdapter(mAdapter);
