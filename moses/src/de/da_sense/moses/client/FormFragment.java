@@ -1,15 +1,21 @@
 package de.da_sense.moses.client;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -247,7 +253,7 @@ public class FormFragment extends Fragment {
 	 * @param linearLayoutInsideAScrollView the view to add the question to
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeSingleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+	private void makeSingleChoice(final Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
@@ -259,11 +265,13 @@ public class FormFragment extends Fragment {
 		questionContainer.addView(questionView);
 
 		final RadioButton[] rb = new RadioButton[possibleAnswers.size()];
-		RadioGroup rg = new RadioGroup(getActivity()); // create the
-																// RadioGroup
-
-
+		RadioGroup rg = new RadioGroup(getActivity()); // create the RadioGroup
 		rg.setOrientation(RadioGroup.VERTICAL);// or RadioGroup.VERTICAL
+		String madeAnswer = question.getAnswer();
+		int madeAnswerInt = -1;
+		if(!madeAnswer.equals(Question.ANSWER_UNANSWERED))
+			madeAnswerInt = Integer.parseInt(madeAnswer);
+		
 		for (int i = 0; i < rb.length; i++) {
 			rb[i] = new RadioButton(getActivity());
 			if(i%2==0)
@@ -272,11 +280,25 @@ public class FormFragment extends Fragment {
 								// instead of the layout
 			PossibleAnswer possibleAnswer = possibleAnswers.get(i);
 			rb[i].setText(possibleAnswer.getTitle());
+			final int possibleAnswerId = possibleAnswer.getId();
+			if(madeAnswerInt == possibleAnswerId)
+				rb[i].setChecked(true);
 			rb[i].setTextAppearance(getActivity(), R.style.PossibleAnswerTextStyle);
 			LayoutParams rowParam = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 			rb[i].setLayoutParams(rowParam);
+			
+			// click handling
+			rb[i].setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					question.setAnswer(String.valueOf(possibleAnswerId));
+				}
+			});
+			
 			rb[i].setVisibility(View.VISIBLE);
 		}
+		
 		rg.setVisibility(View.VISIBLE);
 		Log.i(LOG_TAG, "last rg = " + rg);
 		questionContainer.addView(rg);
@@ -288,7 +310,7 @@ public class FormFragment extends Fragment {
 	 * @param linearLayoutInsideAScrollView the view to add the question to
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeMultipleChoice(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+	private void makeMultipleChoice(final Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		String questionText = question.getTitle();
 		List<PossibleAnswer> possibleAnswers = question.getPossibleAnswers();
@@ -300,14 +322,39 @@ public class FormFragment extends Fragment {
 		questionContainer.addView(questionView);
 
 		Log.i(LOG_TAG, "questionView = " + questionView.getText());
+		
+		final HashSet<String> madeAnswers = new HashSet<String>();
+		madeAnswers.addAll(Arrays.asList(question.getAnswer().split(",")));
 
 		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.size()];
 		for (int i = 0; i < checkBoxs.length; i++) {
+			final PossibleAnswer possibleAnswer = possibleAnswers.get(i);
+			final String possibleAnswerId = String.valueOf(possibleAnswer.getId());
 			checkBoxs[i] = new CheckBox(getActivity());
 			if(i%2 == 0)
 				checkBoxs[i].setBackgroundColor(getActivity().getResources().getColor(R.color.light_gray));
-			checkBoxs[i].setText(possibleAnswers.get(i).getTitle());
+			checkBoxs[i].setText(possibleAnswer.getTitle());
 			checkBoxs[i].setTextAppearance(getActivity(), R.style.PossibleAnswerTextStyle);
+			if(madeAnswers.contains(possibleAnswerId))
+				checkBoxs[i].setChecked(true);
+			
+			// click handling
+			checkBoxs[i].setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked)
+						madeAnswers.add(possibleAnswerId);
+					else
+						madeAnswers.remove(possibleAnswerId);
+					String newAnswer = "";
+					for(String madeAnswer1 : madeAnswers)
+						newAnswer = newAnswer+","+madeAnswer1;
+					newAnswer.replaceFirst(",", "");
+					question.setAnswer(newAnswer);
+				}
+			});
+			
 			checkBoxs[i].setVisibility(View.VISIBLE);
 			questionContainer.addView(checkBoxs[i]);
 		}
@@ -319,14 +366,31 @@ public class FormFragment extends Fragment {
 	 * @param linearLayoutInsideAScrollView the view to add the question to
 	 * @param ordinal the ordinal number of the question i.e. 1, 2, 3, 4 or 5
 	 */
-	private void makeTextQuestion(Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
+	private void makeTextQuestion(final Question question, LinearLayout linearLayoutInsideAScrollView, int ordinal) {
 		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + question.getTitle());
 		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
 		questionContainer.addView(questionView);
 
-		EditText editText = new EditText(getActivity());
+		final EditText editText = new EditText(getActivity());
+		String madeAnswer = question.getAnswer();
+		if(!madeAnswer.equals(Question.ANSWER_UNANSWERED))
+			editText.setText(madeAnswer);
+		
+		// remember the answer as soon as the edittext looses focus
+		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View v, boolean hasFocus) {
+				if(!hasFocus){
+					String newAnswer = editText.getText().toString();
+					if(!newAnswer.equals(Question.ANSWER_UNANSWERED))
+						question.setAnswer(newAnswer);
+				}
+			}
+		});
+		
 		editText.setVisibility(View.VISIBLE);
 		if (question.getAnswer() != null) {
 			editText.setText(question.getAnswer());

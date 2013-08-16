@@ -19,9 +19,22 @@ public class Question extends HasID implements IHasTitle{
 	public static final int TYPE_SINGLE_CHOICE = 5;
 	//=============END QUESTION TYPES END=======================
 	
+	/**
+	 * A constant of describing an "unanswered" answer to a question.
+	 * @see <a href="https://github.com/ischweizer/MoSeS/wiki/Question-types">Answer codings</a>
+	 */
+	public static final String ANSWER_UNANSWERED = "";
+	
 	private int mType;
 	
 	private String mTitle;
+	
+	/**
+	 * An answer to this question, given by the user. The answer to a question
+	 * depends on question's type.
+	 * @see <a href="https://github.com/ischweizer/MoSeS/wiki/Question-types">Answer codings</a>
+	 */
+	private String mAnswer = ANSWER_UNANSWERED;
 	
 	/**
 	 * Sets the type of this question.
@@ -76,7 +89,14 @@ public class Question extends HasID implements IHasTitle{
 	 * @return {@link String} containing the answer to this question.
 	 */
 	public String getAnswer() {
-		// TODO IMPLEMENT ME
-		return null;
+		return mAnswer;
+	}
+	
+	/**
+	 * Sets the answer to this question.
+	 * @param answer the answer to set
+	 */
+	public void setAnswer(String answer){
+		this.mAnswer = answer;
 	}
 }
