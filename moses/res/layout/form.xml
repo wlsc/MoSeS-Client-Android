@@ -3,8 +3,8 @@
     android:layout_height="match_parent"
     android:background="@android:color/background_light"
     android:orientation="vertical"
-    android:paddingLeft="@dimen/padding_extrasmall"
-    android:paddingRight="@dimen/padding_extrasmall" >
+    android:paddingLeft="@dimen/padding_small"
+    android:paddingRight="@dimen/padding_small" >
 
     <!-- This dummy layout prevents virtual keyboard from popping up when the form is shown -->
     <LinearLayout
