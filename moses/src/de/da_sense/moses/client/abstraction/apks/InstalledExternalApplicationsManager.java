@@ -98,7 +98,7 @@ public class InstalledExternalApplicationsManager {
 			} else {
 				for (Iterator<InstalledExternalApplication> iterator = apps.iterator(); iterator.hasNext();) {
 					InstalledExternalApplication currentApp = iterator.next();
-					if (currentApp.getPackageName().equals(app.getPackageName()) || currentApp.getID().equals(app.getID())) {
+					if (currentApp.getID().equals(app.getID())) {
 						iterator.remove();
 					}
 				}
@@ -138,21 +138,6 @@ public class InstalledExternalApplicationsManager {
 					new HistoryExternalApplication(app, questionnaireFinished, endDateReached);
 			historyManager.addExternalApplication(histApp);
 			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Returns whether there is a app with the given package name in this
-	 * manager or not
-	 * 
-	 * @param packageName
-	 *            the name of a package
-	 */
-	private boolean containsApp(String packageName) {
-		for (InstalledExternalApplication app : apps) {
-			if (app.getPackageName().equals(packageName))
-				return true;
 		}
 		return false;
 	}
@@ -205,13 +190,8 @@ public class InstalledExternalApplicationsManager {
 		forgetExternalApplication(app);
 	}
 
-	/**
-	 * Returns containsApp(app.getPackageName()); (see
-	 * {@link #containsApp(String)})
-	 * 
-	 */
 	private boolean containsApp(InstalledExternalApplication app) {
-		return containsApp(app.getPackageName()) || containsAppForId(app.getID());
+		return containsAppForId(app.getID());
 	}
 
 	/**

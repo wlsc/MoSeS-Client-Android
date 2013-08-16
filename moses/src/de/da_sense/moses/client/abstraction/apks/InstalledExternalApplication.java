@@ -434,10 +434,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof InstalledExternalApplication) {
-			if (this.getPackageName() == null)
-				return false;
-			return this.getPackageName().equals(
-					((InstalledExternalApplication) o).getPackageName());
+			return (this.getID().equals(((InstalledExternalApplication) o).getID()));
 		} else {
 			return false;
 		}
