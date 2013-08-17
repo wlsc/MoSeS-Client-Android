@@ -51,6 +51,17 @@ class SurveyActivityPagerAdapter extends FragmentStatePagerAdapter{
         FormFragment formFragment = new FormFragment();
         formFragment.setFormID(mForms.get(i).getId());
         formFragment.setAPKID(mAPKID);
+        
+        if(i==0)
+        	formFragment.setIsFirst(true);
+        else
+        	formFragment.setIsFirst(false);
+        
+        if(i==getCount()-1)
+        	formFragment.setIsLast(true);
+        else
+        	formFragment.setIsLast(false);
+        
         return formFragment;
     }
 

@@ -27,7 +27,7 @@
     <string name="apkInstallManager_apkInstallFailed">Apk install failed</string>
     <string name="open">Open</string>
     <string name="install">Install</string>
-    <string name="q_send">Send</string>
+    <string name="q_send">Send to server</string>
     <string name="q_answersSent">Your answers have been sent!</string>
     <string name="q_next">Next</string>
     <string name="userStudy_loading">Loading&#8230;</string>
@@ -196,5 +196,9 @@
     
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>
+    
+    <!-- Button labels -->
+    <string name="next">Next form</string>
+    <string name="back">Back</string>
 
 </resources>

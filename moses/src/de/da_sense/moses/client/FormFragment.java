@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,6 +30,7 @@ import de.da_sense.moses.client.userstudy.PossibleAnswer;
 import de.da_sense.moses.client.userstudy.Question;
 import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Instance of this class represent a {@link Fragment} which visualizes the an instance of a
@@ -70,6 +72,25 @@ public class FormFragment extends Fragment {
 	private Button btnNext;
 	
 	private LayoutInflater mLayoutInflater;
+	
+	/**
+	 * Set to true only if this fragment is on the first position in the {@link SurveyActivity}
+	 */
+	private Boolean mIsFirst = null;
+	
+	private static final String KEY_IS_FIRST = "keymIsFirst";
+	
+	/**
+	 * Set to true only if this fragment is on the last position in the {@link SurveyActivity}
+	 */
+	private Boolean mIsLast = null;
+	
+	private static final String KEY_IS_LAST = "keymIsLast";
+	
+	/**
+	 * The root {@link View} of this {@link Fragment}.
+	 */
+	private LinearLayout mRoot;
 
 	/**
 	 * Creates a Layout for a Single_Questionnaire
@@ -109,25 +130,87 @@ public class FormFragment extends Fragment {
 		}
 	
 	
-		LinearLayout ll = (LinearLayout) inflater.inflate(
+		mRoot = (LinearLayout) inflater.inflate(
 				R.layout.form, container, false);
 		
 		// set focus to the dummy layout in order to prevent virtual keyboard from popping up
-		View dummyLayout = ll.findViewById(R.id.dummy_layout_form);
+		View dummyLayout = mRoot.findViewById(R.id.dummy_layout_form);
 		dummyLayout.requestFocus();
 		
-		addFormToLayout(mForm, ll);
+		addFormToLayout(mForm, mRoot);
+		
+		if(savedInstanceState != null){
+			if(mIsFirst == null)
+				mIsFirst = savedInstanceState.getBoolean(KEY_IS_FIRST);
+			
+			if(mIsLast == null)
+				mIsLast = savedInstanceState.getBoolean(KEY_IS_LAST);
+		}
+		
+		
+		
 	
 		// TODO Disable Saving if it was already sent to the server
 		if (!app.getSurvey().hasBeenSent()) {
 			Log.i(LOG_TAG, "this questionnaire can be sent");
-			addingButtonsToThisLayout(ll);
+			addingButtonsToThisLayout(mRoot);
 		} else {
 			Log.i(LOG_TAG, "this questionnaire was sent");
 			removingButtonsFromThisLayout();
 		}
-		return (View) ll;
+		return (View) mRoot;
 	}
+	
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onActivityCreated(android.os.Bundle)
+	 */
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		//============ HANDLING OF BUTTONS SHOWN IN FRAGMENT ========================
+		LinearLayout formButtonContainer =  (LinearLayout) mLayoutInflater.inflate(R.layout.form_button_container, generateQuestionContainer((ViewGroup) mRoot.findViewById(R.id.ll_quest)));
+		final ViewPager viewPager = (ViewPager) mRoot.getParent().getParent();
+		Button buttonPrevious = (Button) formButtonContainer.findViewById(R.id.button_form_previous);
+		Button buttonNext = (Button) formButtonContainer.findViewById(R.id.button_form_next);
+		
+		if(mIsFirst)
+			buttonPrevious.setVisibility(View.GONE);
+		else
+			buttonPrevious.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					int curPosition  = viewPager.getCurrentItem();
+					viewPager.setCurrentItem(curPosition-1, true);
+				}
+			});
+		
+		if(mIsLast){
+			buttonNext.setText(getString(R.string.q_send));
+			buttonNext.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Toaster.showToast(getActivity(), "implement me");
+				}
+			});
+		}
+		else
+			buttonNext.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					int curPosition  = viewPager.getCurrentItem();
+					viewPager.setCurrentItem(curPosition+1, true);
+				}
+			});
+			
+		//============ END HANDLING OF BUTTONS SHOWN IN FRAGMENT END ========================
+	}
+
+
 
 	/**
 	 * Remove the send button from the layout.
@@ -414,6 +497,8 @@ public class FormFragment extends Fragment {
 		// save the formID for the future
 		outState.putInt(Form.KEY_FORM_ID, mFormID);
 		outState.putString(InstalledExternalApplication.KEY_APK_ID, mAPKID);
+		outState.putBoolean(KEY_IS_FIRST, mIsFirst);
+		outState.putBoolean(KEY_IS_LAST, mIsLast);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -434,6 +519,22 @@ public class FormFragment extends Fragment {
 	 */
 	public void setAPKID(String mAPKID) {
 		this.mAPKID = mAPKID;
+	}
+
+	/**
+	 * Sets the flag for the first {@link FormFragment} in the list.
+	 * @param isFirst the mIsFirst to set
+	 */
+	void setIsFirst(boolean isFirst) {
+		this.mIsFirst = isFirst;
+	}
+
+	/**
+	 * Sets the flag for the last {@link FormFragment} in the list.
+	 * @param isLast the mIsLast to set
+	 */
+	void setIsLast(boolean isLast) {
+		this.mIsLast = isLast;
 	}
 	
 }

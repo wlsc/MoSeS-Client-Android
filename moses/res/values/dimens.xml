@@ -11,6 +11,6 @@
     <dimen name="text_size_possible_answer">15sp</dimen>
     
     <!-- Margins -->
-    <dimen name="margin_question_container">10dp</dimen>
+    <dimen name="margin_question_container">8dp</dimen>
     
 </resources>
