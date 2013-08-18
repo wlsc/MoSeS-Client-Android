@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
-import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
@@ -286,46 +285,47 @@ public class DetailFragment extends Fragment {
 					// sent
 					button = (Button) detailFragmentView
 							.findViewById(R.id.btn_questionnaire);
-					// check if it has Questionnaire and if it's sent
-					if (HistoryExternalApplicationsManager.getInstance() == null)
-						HistoryExternalApplicationsManager.init(MosesService
-								.getInstance());
-					boolean hasQuestionnaire = HistoryExternalApplicationsManager
-							.getInstance().getAppForId(apkid)
-							.hasSurveyLocally();
-					boolean isQuestionnaireSent = hasQuestionnaire ? HistoryExternalApplicationsManager
-							.getInstance().getAppForId(apkid)
-							.getSurvey().hasBeenSent()
-							: true;
-					// set button according to the booleans
-					if (!hasQuestionnaire) {
-						button.setText(getString(
-								R.string.details_running_noquestionnaire));
-						button.setClickable(false);
-						button.setEnabled(false);
-					} else if (isQuestionnaireSent) {
-						button.setText(getString(
-								R.string.details_running_questionnairesent));
-						button.setClickable(false);
-						button.setEnabled(false);
-					} else {
-						button.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								Log.i(TAG, "Display questionnaires of "
-										+ appname + " to fill");
-								Intent intent = new Intent();
-								intent.setClass(mActivity,
-										SurveyActivity.class);
-								intent.putExtra(
-										ExternalApplication.KEY_APK_ID, apkid);
-								intent.putExtra(
-										"de.da_sense.moses.client.belongsTo",
-										HISTORY);
-								startActivity(intent);
-							}
-						});
-					}
+					button.setVisibility(View.GONE);
+//					// check if it has Questionnaire and if it's sent
+//					if (HistoryExternalApplicationsManager.getInstance() == null)
+//						HistoryExternalApplicationsManager.init(MosesService
+//								.getInstance());
+//					boolean hasQuestionnaire = HistoryExternalApplicationsManager
+//							.getInstance().getAppForId(apkid)
+//							.hasSurveyLocally();
+//					boolean isQuestionnaireSent = hasQuestionnaire ? HistoryExternalApplicationsManager
+//							.getInstance().getAppForId(apkid)
+//							.getSurvey().hasBeenSent()
+//							: true;
+//					// set button according to the booleans
+//					if (!hasQuestionnaire) {
+//						button.setText(getString(
+//								R.string.details_running_noquestionnaire));
+//						button.setClickable(false);
+//						button.setEnabled(false);
+//					} else if (isQuestionnaireSent) {
+//						button.setText(getString(
+//								R.string.details_running_questionnairesent));
+//						button.setClickable(false);
+//						button.setEnabled(false);
+//					} else {
+//						button.setOnClickListener(new OnClickListener() {
+//							@Override
+//							public void onClick(View v) {
+//								Log.i(TAG, "Display questionnaires of "
+//										+ appname + " to fill");
+//								Intent intent = new Intent();
+//								intent.setClass(mActivity,
+//										SurveyActivity.class);
+//								intent.putExtra(
+//										ExternalApplication.KEY_APK_ID, apkid);
+//								intent.putExtra(
+//										"de.da_sense.moses.client.belongsTo",
+//										HISTORY);
+//								startActivity(intent);
+//							}
+//						});
+//					}
 				}
 			} else {
 				Log.e(TAG, "User study's informations are missing");
