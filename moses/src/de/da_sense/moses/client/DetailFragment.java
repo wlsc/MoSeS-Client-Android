@@ -29,6 +29,12 @@ import de.da_sense.moses.client.util.Log;
  * @author Zijad Maksuti
  */
 public class DetailFragment extends Fragment {
+	
+	/**
+	 * Request code that {@link SurveyActivity} should use for passing back information about survey status:<br>
+	 * {@link Activity#RESULT_OK} if it is successfully sent to server.
+	 */
+	private static final int REQUEST_CODE_NOTIFY_ABOUT_SEND = 1;
 
 	/** Belongs to Available. Constant for creating the view. */
 	protected final static int AVAILABLE = 0;
@@ -243,7 +249,7 @@ public class DetailFragment extends Fragment {
 								intent.putExtra(
 										"de.da_sense.moses.client.belongsTo",
 										RUNNING);
-								startActivity(intent);
+								startActivityForResult(intent, REQUEST_CODE_NOTIFY_ABOUT_SEND);
 								} else {
 									Log.d(TAG, "Getting Questionnaire from Server");
 									InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getQuestionnaireFromServer();
@@ -347,4 +353,21 @@ public class DetailFragment extends Fragment {
 		super.onResume();
 		Log.d(TAG, "onResume index=" + getShownIndex());
 	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
+	 */
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == REQUEST_CODE_NOTIFY_ABOUT_SEND){
+			if(resultCode == Activity.RESULT_OK)
+				// the survey has been sent to server, forward the result and finish this activity
+				mActivity.setResult(Activity.RESULT_OK);
+				mActivity.finish();
+		}
+		else
+			super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	
 }

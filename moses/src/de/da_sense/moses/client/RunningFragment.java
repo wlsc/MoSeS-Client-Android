@@ -35,6 +35,12 @@ import de.da_sense.moses.client.util.Log;
  */
 public class RunningFragment extends ListFragment {
 	
+	/**
+	 * Request code that {@link DetailActivity} should use for passing back information about survey status:<br>
+	 * {@link Activity#RESULT_OK} if it is successfully sent to server.
+	 */
+	static final int REQUEST_CODE_NOTIFY_ABOUT_SEND = 2;
+	
 	/** saves the current position in the list */
 	int mCurRunPosition = 0;
 	/** The current instance is saved in here. */
@@ -111,7 +117,7 @@ public class RunningFragment extends ListFragment {
                                 app.getStartDateAsString());
 						intent.putExtra("de.da_sense.moses.client.endDate", 
                                 app.getEndDateAsString());
-						startActivity(intent);
+						mActivity.startActivityForResult(intent, REQUEST_CODE_NOTIFY_ABOUT_SEND);
 				}			
 			} else {
 			}

@@ -543,6 +543,12 @@ public class WelcomeActivity extends FragmentActivity implements
 				break;
 			}
 		}
+		else if(requestCode == RunningFragment.REQUEST_CODE_NOTIFY_ABOUT_SEND){
+			if(resultCode == RESULT_OK)
+				// the survey has successfully been sent to server, meaning it disappeared from available tab
+				// switch to history tab, she is there
+				mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_HISTORY, true);
+		}
 	}
 
 	/**

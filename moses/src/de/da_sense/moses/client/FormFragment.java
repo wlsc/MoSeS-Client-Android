@@ -11,6 +11,7 @@ import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -610,7 +611,10 @@ public class FormFragment extends Fragment {
 						Log.d(LOG_TAG, "IEA Manager = "+InstalledExternalApplicationsManager.getInstance()+" IEA = " + InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID).asOnelineString());
 						InstalledExternalApplicationsManager.getInstance().forgetExternalApplication(InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID));
 						Toaster.showToastLong(getActivity(), getString(R.string.notification_results_sent_to_server));
-						getActivity().finish();
+						// survey has been sent to server, set result to OK and finish the activity
+						Activity activity = getActivity();
+						activity.setResult(Activity.RESULT_OK);
+						activity.finish();
 					} else 
 						if (Status.equals("INVALID_SESSION")){
 						Log.d("SendQuestionnaireAnswers", "Failed to set the answers, because of invalid Session ID. Trying again");
