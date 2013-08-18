@@ -26,6 +26,18 @@ public class Toaster {
 	}
 	
 	/**
+	 * This method shows a toast to the user.
+	 * 
+	 * @param context the context of the activity
+	 * @param message the message to show
+	 */
+	public static void showToastLong(Context context, String message){
+		
+		Toast theToast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+		theToast.show();
+	}
+	
+	/**
 	 * This method shows a toast to the user stating that server is facing problems.
 	 * 
 	 * @param context the context of the activity

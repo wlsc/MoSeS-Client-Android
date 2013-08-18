@@ -2,8 +2,14 @@ package de.da_sense.moses.client;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,6 +31,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
+import de.da_sense.moses.client.com.ConnectionParam;
+import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
+import de.da_sense.moses.client.com.ReqTaskExecutor;
+import de.da_sense.moses.client.com.requests.RequestSendSurveyAnswers;
+import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.userstudy.Form;
 import de.da_sense.moses.client.userstudy.PossibleAnswer;
 import de.da_sense.moses.client.userstudy.Question;
@@ -91,6 +102,14 @@ public class FormFragment extends Fragment {
 	 * The root {@link View} of this {@link Fragment}.
 	 */
 	private LinearLayout mRoot;
+	
+	private int mNumberOfAttemptsToSendResultsToServer = 0;
+	
+	/**
+	 * Mappings between free questions and their edit texts. This mapping is needed in order to
+	 * save the entered text in edit text to {@link Question} instance, BEFORE the results are sent to server.
+	 */
+	private Map<Question, EditText> mQuestionEditTextMappings = new HashMap<Question, EditText>();
 
 	/**
 	 * Creates a Layout for a Single_Questionnaire
@@ -193,7 +212,12 @@ public class FormFragment extends Fragment {
 				
 				@Override
 				public void onClick(View v) {
-					Toaster.showToast(getActivity(), "implement me");
+					Set<Question> questions = mQuestionEditTextMappings.keySet();
+					for(Question question : questions){
+						String finalAnswerOfUser = mQuestionEditTextMappings.get(question).getText().toString();
+						question.setAnswer(finalAnswerOfUser);
+					}
+					sendAnswersToServer();
 				}
 			});
 		}
@@ -478,6 +502,9 @@ public class FormFragment extends Fragment {
 		if (question.getAnswer() != null) {
 			editText.setText(question.getAnswer());
 		}
+		
+		mQuestionEditTextMappings.put(question, editText);
+		
 		questionContainer.addView(editText);
 	}
 	
@@ -536,5 +563,79 @@ public class FormFragment extends Fragment {
 	void setIsLast(boolean isLast) {
 		this.mIsLast = isLast;
 	}
+	
+	
+	//===========================================================================
+		//================== SENDING ANSWERS TO SERVER ==============================
+		//===========================================================================
+		/**
+		 * Sends this {@link Survey}'s answers to the server. If the sessionID
+		 * is invalid it will try 2 more times, else it fails.
+		 */
+		public void sendAnswersToServer() {
+			mNumberOfAttemptsToSendResultsToServer = 0;
+			retrySendAnswersToServer();
+		}
+		
+		/**
+		 * Retries to send the answers.
+		 */
+		private void retrySendAnswersToServer(){
+			mNumberOfAttemptsToSendResultsToServer++;		
+			if (mNumberOfAttemptsToSendResultsToServer > 3){
+				//
+			} else {
+				new RequestSendSurveyAnswers(new SendQuestionnaireAnswers(), MosesService.getInstance().getSessionID(), mAPKID).send();
+				}
+			}
+		
+		/**
+		 * Implementation of {@link ReqTaskExecutor} to handle the return of the server
+		 * for a SetQuestionnaireRequest
+		 */
+		private class SendQuestionnaireAnswers implements ReqTaskExecutor {
+			@Override
+			public void handleException(Exception e) {
+				Log.d("SendQuestionnaireAnswers", "Failed because of an exception: " + e.getMessage());
+			}
+
+			@Override
+			public void postExecution(String s) {
+				try {
+					JSONObject j = new JSONObject(s);
+					Log.d(LOG_TAG, "postExecution return was: "+s);
+					String Status = j.getString("STATUS");
+					if (Status.equals("SUCCESS")){
+						Log.d(LOG_TAG, "Successfully set the answers");
+						Log.d(LOG_TAG, "IEA Manager = "+InstalledExternalApplicationsManager.getInstance()+" IEA = " + InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID).asOnelineString());
+						InstalledExternalApplicationsManager.getInstance().forgetExternalApplication(InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID));
+						Toaster.showToastLong(getActivity(), getString(R.string.notification_results_sent_to_server));
+						getActivity().finish();
+					} else 
+						if (Status.equals("INVALID_SESSION")){
+						Log.d("SendQuestionnaireAnswers", "Failed to set the answers, because of invalid Session ID. Trying again");
+						// Retries to send the answers
+						MosesService.getInstance().login();
+						retrySendAnswersToServer();
+					}
+						else
+							Log.w(LOG_TAG, "postExecution() unknown error");
+				} catch (JSONException e) {
+					this.handleException(e);
+				}
+			}
+
+			@Override
+			public void updateExecution(BackgroundException c) {
+				if (c.c == ConnectionParam.EXCEPTION) {
+					handleException(c.e);
+				}
+			}
+		}	
+		
+		//===========================================================================
+		//================== END SENDING RESULTS TO SERVER ==========================
+		//===========================================================================
+	
 	
 }

@@ -15,6 +15,7 @@ import android.util.Log;
  * This class represents a survey. A survey consists of one ore more {@link Form} instances.
  * 
  * @author Zijad Maksuti
+ * @author Wladimir Schmidt
  *
  */
 public class Survey extends HasID implements IHasTitle{
@@ -30,7 +31,7 @@ public class Survey extends HasID implements IHasTitle{
 	 * a communication channel. For example, through a {@link Bundle}.
 	 */
 	public static final String KEY_SURVEY_ID = "key_survey_id";
-
+	
 	/**
 	 * This method creates a survey with all its underlying children from the consumed {@link JSONObject}.
 	 * This constructor assumes that the consumed object has the same structure as provided by the server.
@@ -145,7 +146,4 @@ public class Survey extends HasID implements IHasTitle{
 				return form;
 		return null;
 	}
-	
-	
-	
 }
