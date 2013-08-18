@@ -217,7 +217,7 @@ public class DetailFragment extends Fragment {
 					InstalledExternalApplication app = InstalledExternalApplicationsManager.getInstance().getAppForId(apkid);
 					Log.d(TAG, "app = "+app);
 					if (app != null) {
-					boolean hasQuestionnaireLocal = app.hasQuestionnaire();
+					boolean hasQuestionnaireLocal = app.hasSurveyLocally();
 					boolean isQuestionnaireSent = hasQuestionnaireLocal ? app.getSurvey().hasBeenSent(): false;
 					Log.d(TAG,"hasQuestLocal" + hasQuestionnaireLocal + "isQuestSent" + isQuestionnaireSent);
 					// set button according to the booleans
@@ -232,7 +232,7 @@ public class DetailFragment extends Fragment {
 						button.setOnClickListener(new OnClickListener() {
 							@Override
 							public void onClick(View v) {
-								if (InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).hasQuestionnaire()){
+								if (InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).hasSurveyLocally()){
 								Log.i(TAG, "Display questionnaires of "
 										+ appname + " to fill");
 								Intent intent = new Intent();
@@ -286,7 +286,7 @@ public class DetailFragment extends Fragment {
 								.getInstance());
 					boolean hasQuestionnaire = HistoryExternalApplicationsManager
 							.getInstance().getAppForId(apkid)
-							.hasQuestionnaire();
+							.hasSurveyLocally();
 					boolean isQuestionnaireSent = hasQuestionnaire ? HistoryExternalApplicationsManager
 							.getInstance().getAppForId(apkid)
 							.getSurvey().hasBeenSent()

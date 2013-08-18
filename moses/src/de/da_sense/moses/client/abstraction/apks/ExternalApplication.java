@@ -62,9 +62,9 @@ public class ExternalApplication {
 	}
 
 	/**
-	 * Boolean if this External Application currently contains a Questionnaire
+	 * Boolean if this {@link ExternalApplication} contains a locally stored {@link Survey}.
 	 */
-	private Boolean apkHasQuestLocal = false;
+	private Boolean apkHasSurveyLocally = false;
 	
 	/** String containing the id */
 	private String apkID;
@@ -377,7 +377,7 @@ public class ExternalApplication {
 	 *            the quesitonnaire to set
 	 */
 	private void setQuestionnaire(Survey questionnaire) {
-		if (!apkHasQuestLocal)
+		if (!apkHasSurveyLocally)
 		this.mSurvey = questionnaire;
 	}
 
@@ -387,13 +387,13 @@ public class ExternalApplication {
 	 * @param questAsString
 	 */
 	public void setQuestionnaire(String questAsString) {
-		if (!apkHasQuestLocal)
+		if (!apkHasSurveyLocally)
 			try {
 				setQuestionnaire(new Survey(new JSONObject(questAsString)));
 			} catch (JSONException e) {
 				Log.e(LOG_TAG, e.getMessage());
 			}
-		apkHasQuestLocal = true;
+		apkHasSurveyLocally = true;
 	}
 
 	/**
@@ -416,12 +416,12 @@ public class ExternalApplication {
 	}
 
 	/**
-	 * Checks if the external application has a questionnaire.
+	 * Checks if the external application has a {@link Survey} stored locally.
 	 * 
-	 * @return true if the external app contains a questionnaire
+	 * @return true if the external app contains a locally stored survey
 	 */
-	public boolean hasQuestionnaire() {
-		return (apkHasQuestLocal);
+	public boolean hasSurveyLocally() {
+		return (apkHasSurveyLocally);
 	}
 
 	private static String LINEBREAK_SUBST = "#LINEBREAK";
@@ -478,7 +478,7 @@ public class ExternalApplication {
 			result += SEPARATOR + TAG_APKVERSION + getApkVersion();
 		}
 		
-		if (apkHasQuestLocal) {
+		if (apkHasSurveyLocally) {
 			result += SEPARATOR + TAG_QUESTIONNAIRE + getStringQuestionnaire();
 			
 		} else {
@@ -561,9 +561,9 @@ public class ExternalApplication {
 		if (questionnaireString.length() > 0) {
 			Log.d(LOG_TAG, "has Local questionnaire " + questionnaireString);
 			this.setQuestionnaire(questionnaireString);
-			apkHasQuestLocal = true;			
+			apkHasSurveyLocally = true;			
 		} else {
-			apkHasQuestLocal = false;
+			apkHasSurveyLocally = false;
 		}
 	}
 
@@ -601,15 +601,15 @@ public class ExternalApplication {
 	 */
 	public void getQuestionnaireFromServer(){
 		Log.d("External Application", "Requested Questionnaire from the server");
-		if (!hasQuestionnaire())
-		new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
+		if (!hasSurveyLocally())
+			new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
 	}
 	
 	/**
 	 * Sets that this apk has neither an Questionnaire on the server nor locally
 	 */
 	void hasNoQuestionnaire() {
-		apkHasQuestLocal = false;
+		apkHasSurveyLocally = false;
 	}
 	
 	/**
@@ -634,6 +634,7 @@ public class ExternalApplication {
 					Log.d("GetQuestionnaireExecutor", "Successfully received the Multi_Questionnaire");
 					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).setQuestionnaire(s);
+					Toaster.showToast(R.string.notification_survey_ready_to_view);
 				} else if (Status.equals("FAILURE_NO_QUESTIONNAIRE_FOUND")){
 					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because this ExternalApplication has no Questionnaire on the server");
 					APKID = j.getString("APKID");

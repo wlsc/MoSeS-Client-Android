@@ -130,7 +130,7 @@ public class InstalledExternalApplicationsManager {
         boolean endDateReached = app.getEndDateReached();//(app.isEndDateSet()) ? (app.getEndDate().compareTo(new Date()) < 0) : false;
         Log.d("IEA", "endDateReached = " + endDateReached);
 		boolean questionnaireFinished = 
-				app.hasQuestionnaire() ? app.getSurvey().hasBeenSent() : false;
+				app.hasSurveyLocally() ? app.getSurvey().hasBeenSent() : false;
 		Log.d("IEA", "endDateReached? " + endDateReached + " questionnaireFinished? " + questionnaireFinished);
 		if (endDateReached && questionnaireFinished) {
 			Log.d("IEA", "Constraints for History US match: adding to HistoryAppManager!");
