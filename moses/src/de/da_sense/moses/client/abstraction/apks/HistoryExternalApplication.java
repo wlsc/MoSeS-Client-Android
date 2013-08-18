@@ -164,8 +164,10 @@ public class HistoryExternalApplication extends ExternalApplication {
 	 */	
 	public HistoryExternalApplication(String s) {
 		String[] split = s.split(SEPARATOR);
-		ExternalApplication exApp = new ExternalApplication(split[0]);
-		new HistoryExternalApplication(split[1], exApp, Boolean.parseBoolean(split[2]), Boolean.parseBoolean(split[3]));
+		initializeFromString(split[0]);
+		this.packageName = split[1];
+		this.questionnaireSent = Boolean.parseBoolean(split[2]);
+		this.hasEnded = Boolean.parseBoolean(split[3]);
 	}
 
 	/**

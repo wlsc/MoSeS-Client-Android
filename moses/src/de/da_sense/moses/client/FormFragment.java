@@ -30,6 +30,8 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.com.ConnectionParam;
@@ -609,7 +611,9 @@ public class FormFragment extends Fragment {
 					if (Status.equals("SUCCESS")){
 						Log.d(LOG_TAG, "Successfully set the answers");
 						Log.d(LOG_TAG, "IEA Manager = "+InstalledExternalApplicationsManager.getInstance()+" IEA = " + InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID).asOnelineString());
-						InstalledExternalApplicationsManager.getInstance().forgetExternalApplication(InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID));
+						InstalledExternalApplication apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+						InstalledExternalApplicationsManager.getInstance().forgetExternalApplication(apk);
+						HistoryExternalApplicationsManager.getInstance().addExternalApplication(new HistoryExternalApplication(apk, true, true)); // add the app to history
 						Toaster.showToastLong(getActivity(), getString(R.string.notification_results_sent_to_server));
 						// survey has been sent to server, set result to OK and finish the activity
 						Activity activity = getActivity();

@@ -504,6 +504,14 @@ public class ExternalApplication {
 	 * @return the decoded external application
 	 */
 	public ExternalApplication(String s) {
+		initializeFromString(s);
+	}
+	
+	/**
+	 * Builds this {@link ExternalApplication} instance from consumed String.
+	 * @param s the String containing a serialized {@link ExternalApplication} instance.
+	 */
+	protected void initializeFromString(String s){
 		Log.d("ExternalApplication", "fromOnelineString : " + s);
 		String[] split = s.split(Pattern.quote(SEPARATOR));
 		String ID = null;

@@ -148,16 +148,7 @@ public class HistoryFragment extends ListFragment {
 		@Override
 		public int compare(HistoryExternalApplication lhs,
 				HistoryExternalApplication rhs) {
-			if (rhs == null && lhs == null) {
-				return 0;
-			}
-			if (rhs != null && lhs == null) {
-				return -1;
-			}
-			if (rhs == null && lhs != null) {
-				return 1;
-			}
-			return rhs.getEndDate().compareTo(lhs.getEndDate());
+			return lhs.getID().compareTo(rhs.getID());
 		}
 
 	};
