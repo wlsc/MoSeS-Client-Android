@@ -1,5 +1,7 @@
 package de.da_sense.moses.client.com.requests;
 
+import java.util.HashSet;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -38,8 +40,31 @@ public class  RequestSendSurveyAnswers{
             j.put("SESSIONID", sessionID);
             // setting answers
             for(Form form : InstalledExternalApplicationsManager.getInstance().getAppForId(apkID).getSurvey().getForms())
-            	for(Question question : form.getQuestions())
-            		j.put(String.valueOf(question.getId()), question.getAnswer());
+            	for(Question question : form.getQuestions()){
+            		int questionType = question.getType();
+            		if(questionType == Question.TYPE_MULTIPLE_CHOICE){
+            			// extra care for multiple choice answers
+            			String answer = question.getAnswer();
+            			String newAnswer = "";
+            			String[] splits = answer.split(",");
+            			HashSet<String> theAnswers = new HashSet<String>();
+            			for(String split : splits){
+            				String temp = split.replaceAll(",", "").trim();
+            				if(!temp.isEmpty())
+            					theAnswers.add(temp);
+            			}
+            			if(!theAnswers.isEmpty()){
+            				newAnswer ="[";
+            				for(String anAnswer : theAnswers)
+            					newAnswer=newAnswer+anAnswer+",";
+            				newAnswer = newAnswer.substring(0, newAnswer.length()-1);
+            				newAnswer = newAnswer+"]";
+            			}
+            			j.put(String.valueOf(question.getId()), newAnswer);
+            		}
+            		else
+            			j.put(String.valueOf(question.getId()), question.getAnswer());
+            	}
         } catch (JSONException ex) {
             e.handleException(ex);
         }
