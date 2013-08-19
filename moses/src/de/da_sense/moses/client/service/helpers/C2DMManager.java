@@ -147,7 +147,12 @@ public class C2DMManager {
 			Context context = params[0];
 			GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 			try {
-				setC2DMReceiverId(gcm.register(context.getString(R.string.GoogleProjectNumber)));
+				if(MosesService.getInstance() != null)
+					setC2DMReceiverId(gcm.register(context.getString(R.string.GoogleProjectNumber)));
+				else{
+					Log.w(LOG_TAG, "AsyncObtainGCMID: ReceiverID not set because MosesService was null");
+				}
+					
 			} catch (IOException e) {
 				Log.w(LOG_TAG, "AsyncObtainGCMID: problem registering for GCM. ID is not obtained " + e.getMessage());
 			}
