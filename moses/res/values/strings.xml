@@ -192,6 +192,7 @@
     
     <!-- Error messages and notifications-->
     <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>
+    <string name="notification_no_internet_connection">Please check your internet connection.</string>
     <string name="notification_no_survey_for_this_apk">No survey for this apk.</string>
     <string name="notification_results_sent_to_server">Results successfully sent to server.</string>
     <string name="notification_survey_ready_to_view">Survey successfully downloaded.</string>

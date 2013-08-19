@@ -189,6 +189,16 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 	public boolean isOnlineOrIsConnecting() {
 		return isOnlineOrIsConnecting(this);
 	}
+	
+	/**
+	 * Checks if the device is connected to the Internet
+	 * 
+	 * @return true if the device is online
+	 */
+	public boolean isOnline() {
+		return isOnline(this);
+	}
+	
 
 	/**
 	 * Checks if the device is connected to the Internet or it is being connected.

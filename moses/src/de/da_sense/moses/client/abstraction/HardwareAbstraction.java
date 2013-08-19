@@ -278,7 +278,10 @@ public class HardwareAbstraction {
 					Log.d("MoSeS.HARDWARE_ABSTRACTION", "Parameters NOT set successfully! Invalid session id.");
 				}
 			} catch (JSONException e) {
-				this.handleException(e);
+				if(!MosesService.isOnline(mContext))
+					Toaster.showNoInternetConnection(mContext);
+				else
+					this.handleException(e);
 			}
 		}
 

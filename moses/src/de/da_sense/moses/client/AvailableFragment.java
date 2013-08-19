@@ -702,7 +702,10 @@ public class AvailableFragment extends ListFragment implements
 	 */
 	@Override
 	public void apkListRequestFailed(Exception e) {
-		Toaster.showBadServerResponseToast();
+		if(!MosesService.isOnline(mActivity))
+			Toaster.showNoInternetConnection(mActivity);
+		else
+			Toaster.showBadServerResponseToast();
 		Log.w("MoSeS.APKMETHODS",
 				"invalid response for apk list request: " + e.getMessage());
 	}

@@ -59,7 +59,10 @@ public class ApkMethods {
 
 		@Override
 		public void handleException(Exception e) {
-			Toaster.showBadServerResponseToast();
+			if(!MosesService.getInstance().isOnline())
+				Toaster.showNoInternetConnectionToast();
+			else
+				Toaster.showBadServerResponseToast();
 			observer.apkDownloadLinkRequestFailed(e);
 		}
 

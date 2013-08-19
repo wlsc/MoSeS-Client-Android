@@ -36,7 +36,10 @@ public class Logout {
 		public void handleException(Exception e) {
 			if (e instanceof UnknownHostException || e instanceof JSONException) {
 				Log.d("MoSeS.LOGOUT", "No internet connection present (or DNS problems.)");
-				Toaster.showBadServerResponseToast(serv);
+				if(!serv.isOnline())
+					Toaster.showNoInternetConnection(serv);
+				else
+					Toaster.showBadServerResponseToast(serv);
 			} else
 				Log.d("MoSeS.LOGOUT", "FAILURE: " + e.getMessage());
 		}

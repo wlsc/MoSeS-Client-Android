@@ -47,6 +47,15 @@ public class Toaster {
 	}
 	
 	/**
+	 * This method shows a toast to the user stating that there is no internet connection.
+	 * 
+	 * @param context the context of the activity
+	 */
+	public static void showNoInternetConnection(Context context){
+		showToast(context, context.getString(R.string.notification_no_internet_connection));
+	}
+	
+	/**
 	 * This method shows a toast to the user.<p>
 	 * <b>Note</b>: the toast will only show if {@link MosesService} is running. If you can provide an
 	 * instance of {@link Context}, use {@link Toaster#showToast(Context, String)} instead.
@@ -92,6 +101,23 @@ public class Toaster {
 		Toast theToast;
 		if(ms != null){
 			String message = ms.getString(R.string.error_moses_server_bad_response);
+			theToast = Toast.makeText(ms, message, Toast.LENGTH_SHORT);
+			theToast.show();
+			}
+	}
+	
+	/**
+	 * This method shows a toast to the user stating that the client is offline.<p>
+	 * <b>Note</b>: the toast will only show if {@link MosesService} is running. If you can provide an
+	 * instance of {@link Context}, use {@link Toaster#showNoInternetConnection(Context)} instead.
+	 * 
+	 * @param context the context of the activity
+	 */
+	public static void showNoInternetConnectionToast(){
+		MosesService ms = MosesService.getInstance();
+		Toast theToast;
+		if(ms != null){
+			String message = ms.getString(R.string.notification_no_internet_connection);
 			theToast = Toast.makeText(ms, message, Toast.LENGTH_SHORT);
 			theToast.show();
 			}

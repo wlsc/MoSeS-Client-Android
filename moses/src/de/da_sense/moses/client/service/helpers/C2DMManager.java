@@ -113,7 +113,10 @@ public class C2DMManager {
 
 								} catch (JSONException e) {
 									Log.e(LOG_TAG, "C2DMToMosesServer returned malformed message "+e.getMessage());
-									Toaster.showBadServerResponseToast(context);
+									if(!MosesService.isOnline(context))
+										Toaster.showNoInternetConnection(context);
+									else
+										Toaster.showBadServerResponseToast(context);
 								}
 							}
 

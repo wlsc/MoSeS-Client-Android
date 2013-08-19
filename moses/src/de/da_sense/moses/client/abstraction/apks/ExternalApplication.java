@@ -628,7 +628,10 @@ public class ExternalApplication {
 		@Override
 		public void handleException(Exception e) {
 			Log.d(LOG_TAG, "Failed because of an exception: " + e.getMessage());
-			Toaster.showBadServerResponseToast();
+			if(!MosesService.getInstance().isOnline())
+				Toaster.showNoInternetConnectionToast();
+			else
+				Toaster.showBadServerResponseToast();
 		}
 
 		@Override

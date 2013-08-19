@@ -119,7 +119,11 @@ public class ExternalApplicationInfoRetriever extends Observable {
 									}
 								} catch (JSONException e) {
 									Log.e("MoSeS.APK", "requesting study information: json exception" + e.getMessage());
-									Toaster.showBadServerResponseToast(mContext);
+									if(!MosesService.isOnline(mContext))
+										Toaster.showNoInternetConnection(mContext);
+									else
+										
+										Toaster.showBadServerResponseToast(mContext);
 									setErrorState(e);
 								}
 							}
