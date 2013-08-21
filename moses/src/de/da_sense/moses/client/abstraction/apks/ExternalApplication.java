@@ -23,7 +23,8 @@ import de.da_sense.moses.client.util.Toaster;
 /**
  * Reference to an application on the server, referenced by it's MoSeS id
  * 
- * @author Simon L, Wladimir Schmidt
+ * @author Simon L
+ * @author Wladimir Schmidt
  * @author Zijad Maksuti
  * 
  */
@@ -111,7 +112,7 @@ public class ExternalApplication {
 	 *            the id in the MoSeS database
 	 */
 	public ExternalApplication(int ID) {
-		Log.d("ExternalApplication", "from ID");
+		//Log.d(LOG_TAG, "from ID");
 		this.apkID = String.valueOf(ID);
 	}
 	
@@ -485,7 +486,7 @@ public class ExternalApplication {
 			Log.i("ExternalApplication", "no questionnaire for "
 					+ toLinebreakSubst(getName()) + " found");
 		}
-		Log.d("ExternalApplication", "asOnelineString = " + result);
+		Log.d(LOG_TAG, "asOnelineString = " + result);
 		return result;
 	}
 
@@ -512,7 +513,7 @@ public class ExternalApplication {
 	 * @param s the String containing a serialized {@link ExternalApplication} instance.
 	 */
 	protected void initializeFromString(String s){
-		Log.d("ExternalApplication", "fromOnelineString : " + s);
+		Log.d(LOG_TAG, "fromOnelineString : " + s);
 		String[] split = s.split(Pattern.quote(SEPARATOR));
 		String ID = null;
 		String name = null;
@@ -524,7 +525,7 @@ public class ExternalApplication {
 		String questionnaireString = null;
 		for (int i = 0; i < split.length; i++) {
 			if (i == 0) {
-				Log.d("ExternalApplication", "ID set to "+ split[i].toString());
+				Log.d(LOG_TAG, "ID set to "+ split[i].toString());
 				ID = split[i];
 			} else {
 				if (split[i].startsWith(TAG_DESCRIPTION)) {
@@ -564,7 +565,7 @@ public class ExternalApplication {
 		this.setStartDate(startDate);
 		this.setEndDate(endDate);
 		this.setApkVersion(apkVersion);
-		Log.d("ExternalApplication", "questionnaire = " + questionnaireString);
+		Log.d(LOG_TAG, "questionnaire = " + questionnaireString);
 		if (questionnaireString != null)
 		if (questionnaireString.length() > 0) {
 			Log.d(LOG_TAG, "has Local questionnaire " + questionnaireString);
@@ -608,7 +609,7 @@ public class ExternalApplication {
 	 * Gets the questionnaire for this app from the server
 	 */
 	public void getQuestionnaireFromServer(){
-		Log.d("External Application", "Requested Questionnaire from the server");
+		Log.d(LOG_TAG, "Request survey from server");
 		if (!hasSurveyLocally())
 			new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
 	}
@@ -625,6 +626,9 @@ public class ExternalApplication {
 	 * for a SetQuestionnaireRequest
 	 */
 	private class GetQuestionnaireExecutor implements ReqTaskExecutor {
+		
+		private final String LOG_TAG = GetQuestionnaireExecutor.class.getName(); 
+		
 		@Override
 		public void handleException(Exception e) {
 			Log.d(LOG_TAG, "Failed because of an exception: " + e.getMessage());
@@ -638,24 +642,24 @@ public class ExternalApplication {
 		public void postExecution(String s) {
 			try {
 				JSONObject j = new JSONObject(s);
-				Log.d("GetQuestionnaireExecutor", "postExecution return was: "+s);
+				Log.d(LOG_TAG, "postExecution return was: "+s);
 				String APKID = null;
 				String Status = j.getString("STATUS");
 				if (Status.equals("SUCCESS")){
-					Log.d("GetQuestionnaireExecutor", "Successfully received the Multi_Questionnaire");
+					Log.d(LOG_TAG, "Successfully received the Multi_Questionnaire");
 					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).setQuestionnaire(s);
 					Toaster.showToast(R.string.notification_survey_ready_to_view);
 				} else if (Status.equals("FAILURE_NO_QUESTIONNAIRE_FOUND")){
-					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because this ExternalApplication has no Questionnaire on the server");
+					Log.d(LOG_TAG, "Failed to receive the Questionnare, because this ExternalApplication has no Questionnaire on the server");
 					APKID = j.getString("APKID");
 					Toaster.showToast(R.string.notification_no_survey_for_this_apk);
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).hasNoQuestionnaire();
 				} else if (Status.equals("FAILURE_INVALID_APKID")){
-					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because of invalid APK");
+					Log.d(LOG_TAG, "Failed to receive the Questionnare, because of invalid APK");
 					// TODO Handle wrong APKID
 				} else if (Status.equals("INVALID_SESSION")){
-					Log.d("GetQuestionnaireExecutor", "Failed to receive the Questionnare, because of invalid Session ID. Trying again");
+					Log.d(LOG_TAG, "Failed to receive the Questionnare, because of invalid Session ID. Trying again");
 					MosesService.getInstance().login();
 					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).getQuestionnaireFromServer();

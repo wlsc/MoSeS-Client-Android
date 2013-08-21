@@ -113,7 +113,7 @@ public class HistoryExternalApplicationsManager {
 	public boolean containsApp(ExternalApplication exapp) {
 		for (HistoryExternalApplication app : apps) {
 			if (app != null) {
-				Log.d("HistoryExternalApplicationsManager", "External app is not Null and ID is: " + app.getID());
+				//Log.d("HistoryExternalApplicationsManager", "External app is not Null and ID is: " + app.getID());
 				if (app.getID().equals(exapp.getID()) && 
 						app.getDescription().equals(exapp.getDescription())) {
 					return true;
