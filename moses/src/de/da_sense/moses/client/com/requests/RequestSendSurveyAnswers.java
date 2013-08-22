@@ -38,6 +38,7 @@ public class  RequestSendSurveyAnswers{
         try {
             j.put("MESSAGE", "SURVEY_RESULT");
             j.put("SESSIONID", sessionID);
+            j.put("APKID", apkID);
             // setting answers
             for(Form form : InstalledExternalApplicationsManager.getInstance().getAppForId(apkID).getSurvey().getForms())
             	for(Question question : form.getQuestions()){
