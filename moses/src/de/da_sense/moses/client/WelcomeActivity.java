@@ -98,6 +98,14 @@ public class WelcomeActivity extends FragmentActivity implements
 	private List<WeakReference<Fragment>> mFragList = new ArrayList<WeakReference<Fragment>>();;
 
 	private static final String LOG_TAG = WelcomeActivity.class.getName();
+	
+	/**
+	 * The key for an apkid in the bundle.
+	 * If an activity starts {@link WelcomeActivity} with this key set in bundle,
+	 * it means that {@link WelcomeActivity} should show the
+	 * survey of the apk with the id associated with this key to the user.
+	 */
+	public static final String KEY_VIEW_SURVEY = "keyViewSurvey";
 
 	WelcomeActivityPagerAdapter mAppSectionsPagerAdapter;
 	ViewPager mViewPager;
@@ -662,6 +670,12 @@ public class WelcomeActivity extends FragmentActivity implements
 		 */
 
 		checkInstalledStatesOfApks();
+		Intent startingIntent = getIntent();
+		if(startingIntent.hasExtra(WelcomeActivity.KEY_VIEW_SURVEY)){
+			// some other activity has started this activity in order to show an available survey, just scroll
+			// to running fragment and let him do the rest
+			mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_RUNNING, true);
+		}
 	}
 
 	@Override

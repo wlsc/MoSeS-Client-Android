@@ -14,7 +14,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
+import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.ViewUserStudyActivity;
+import de.da_sense.moses.client.WelcomeActivity;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
@@ -33,6 +35,9 @@ public class UserstudyNotificationManager {
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
 	private static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
+
+	private static final String LOG_TAG = UserstudyNotificationManager.class
+			.getName();
 
 	/**
 	 * initializes the manager (if there is a file that contains an old manager,
@@ -61,7 +66,8 @@ public class UserstudyNotificationManager {
 	 * @return the loaded manager
 	 */
 	private static UserstudyNotificationManager loadInstance(Context context) {
-		File settingsFile = FileLocationUtil.getNotificationDatabaseFile(context);
+		File settingsFile = FileLocationUtil
+				.getNotificationDatabaseFile(context);
 		UserstudyNotificationManager manager = new UserstudyNotificationManager();
 		if (settingsFile.exists()) {
 			FileReader reader = null;
@@ -72,7 +78,8 @@ public class UserstudyNotificationManager {
 				String line;
 				while ((line = bufReader.readLine()) != null) {
 					if (!line.trim().equals("")) {
-						UserStudyNotification notification = UserStudyNotification.fromOnelineString(line);
+						UserStudyNotification notification = UserStudyNotification
+								.fromOnelineString(line);
 						manager.addNotification(notification);
 					}
 				}
@@ -112,7 +119,8 @@ public class UserstudyNotificationManager {
 		FileWriter writer;
 		BufferedWriter bufWriter = null;
 		try {
-			writer = new FileWriter(FileLocationUtil.getNotificationDatabaseFile(appContext));
+			writer = new FileWriter(
+					FileLocationUtil.getNotificationDatabaseFile(appContext));
 			bufWriter = new BufferedWriter(writer);
 			for (UserStudyNotification notification : notifications) {
 				bufWriter.append(notification.asOnelineString() + "\n");
@@ -204,7 +212,8 @@ public class UserstudyNotificationManager {
 
 		// Threshold C2DM shotgun messages
 		if (userstudyArrivalTimes.containsKey(apkId)
-				&& System.currentTimeMillis() - userstudyArrivalTimes.get(apkId) < 10000) {
+				&& System.currentTimeMillis()
+						- userstudyArrivalTimes.get(apkId) < 10000) {
 			doIt = false;
 		}
 		userstudyArrivalTimes.put(apkId, System.currentTimeMillis());
@@ -212,7 +221,8 @@ public class UserstudyNotificationManager {
 		if (doIt) {
 			if (UserstudyNotificationManager.getInstance() == null) {
 				if (MosesService.getInstance() != null) {
-					UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
+					UserstudyNotificationManager.init(MosesService
+							.getInstance().getApplicationContext());
 				} else {
 					Log.e("MoSeS.USERSTUDY",
 							"Could not initialize Userstudy notification manager because of dead service");
@@ -220,8 +230,10 @@ public class UserstudyNotificationManager {
 			}
 
 			if (UserstudyNotificationManager.getInstance() != null) {
-				UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(Integer.valueOf(apkId)));
-				UserstudyNotificationManager.getInstance().addNotification(notification);
+				UserStudyNotification notification = new UserStudyNotification(
+						new ExternalApplication(Integer.valueOf(apkId)));
+				UserstudyNotificationManager.getInstance().addNotification(
+						notification);
 				try {
 					UserstudyNotificationManager.getInstance().saveToDisk(
 							MosesService.getInstance().getApplicationContext());
@@ -238,6 +250,69 @@ public class UserstudyNotificationManager {
 	}
 
 	/**
+	 * Handling a notification from a userstudy to answer its surveys
+	 * 
+	 * @param apkidString
+	 *            the apk id as a user study id
+	 */
+	public static void questionnaireNotificationArrived(String apkId) {
+		// create a new user study object and save it to the manager
+		boolean doIt = true;
+
+		// Threshold C2DM shotgun messages
+		if (userstudyArrivalTimes.containsKey(apkId)
+				&& System.currentTimeMillis()
+						- userstudyArrivalTimes.get(apkId) < 10000) {
+			doIt = false;
+		}
+		Log.i(LOG_TAG, "doIt = " + doIt);
+		userstudyArrivalTimes.put(apkId, System.currentTimeMillis());
+
+		if (doIt) {
+			Log.i(LOG_TAG,
+					"check UsNM = "
+							+ UserstudyNotificationManager.getInstance());
+			if (UserstudyNotificationManager.getInstance() == null) {
+				Log.i(LOG_TAG, "check MS = " + MosesService.getInstance());
+				if (MosesService.getInstance() != null) {
+					Log.i(LOG_TAG, "UsNM.int ( "
+							+ MosesService.getInstance()
+									.getApplicationContext() + " )");
+					UserstudyNotificationManager.init(MosesService
+							.getInstance().getApplicationContext());
+				} else {
+					Log.e(LOG_TAG,
+							"Could not initialize Userstudy notification manager because of dead service");
+				}
+			}
+
+			if (UserstudyNotificationManager.getInstance() != null) {
+				UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(Integer.valueOf(apkId)));
+				UserstudyNotificationManager.getInstance().addNotification(notification);
+				Log.i(LOG_TAG, "try");
+				try {
+					UserstudyNotificationManager.getInstance().saveToDisk(MosesService.getInstance().getApplicationContext());
+				} catch (IOException e) {
+					Log.e("MoSeS",
+							"Error when saving questionnaire notifications for ");
+				}
+			} else {
+				Log.e("MoSeS.USERSTUDY",
+						"Could not save userstudy notification to manager because the manager could not be initialized");
+			}
+			
+			Intent intent = new Intent(MosesService.getInstance(), WelcomeActivity.class);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.putExtra(WelcomeActivity.KEY_VIEW_SURVEY, apkId);
+			String notificationMessage = String.format(MosesService.getInstance().getString(R.string.notification_survey_available_for),
+					InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName());
+			String notificationTitle = MosesService.getInstance().getString(R.string.moses_title);
+			UserStudyStatusBarHelper.showNotificationStatic(intent,notificationMessage, notificationTitle, false, UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
+		}
+
+	}
+
+	/**
 	 * call this method to display a android status bar notification that a new
 	 * user study has arrived
 	 * 
@@ -246,7 +321,8 @@ public class UserstudyNotificationManager {
 	 */
 	private static void displayStatusBarNotificationForUserStudy(String apkId) {
 		if (MosesService.getInstance() != null) {
-			UserStudyStatusBarHelper.displayStatusBarNotification(apkId, MosesService.getInstance());
+			UserStudyStatusBarHelper.displayStatusBarNotification(apkId,
+					MosesService.getInstance());
 		} else {
 			Log.e("MoSeS.USERSTUDY",
 					"Could not display notification that new userstudy has arrived, because moses service was null");
@@ -260,94 +336,24 @@ public class UserstudyNotificationManager {
 	 * @param userStudyId
 	 * @param applicationContext
 	 */
-	public static void displayUserStudyContent(String userStudyId, Context applicationContext) {
-		Intent viewUserStudy = new Intent(applicationContext, ViewUserStudyActivity.class);
+	public static void displayUserStudyContent(String userStudyId,
+			Context applicationContext) {
+		Intent viewUserStudy = new Intent(applicationContext,
+				ViewUserStudyActivity.class);
 		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
+		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
+				userStudyId);
 		applicationContext.startActivity(viewUserStudy);
 	}
 
 	public void removeNotificationById(String id) {
-		for (Iterator<UserStudyNotification> iterator = notifications.iterator(); iterator.hasNext();) {
+		for (Iterator<UserStudyNotification> iterator = notifications
+				.iterator(); iterator.hasNext();) {
 			UserStudyNotification us = iterator.next();
 			if (us.getApplication().getID().equals(id)) {
 				iterator.remove();
 			}
 		}
 	}
-	
-	/**
-     * Handling a notification from a userstudy to answer its questionnaires
-     * @param apkidString  the apk id as a user study id
-     */
-    public static void questionnaireNotificationArrived(String apkId) {
-        // create a new user study object and save it to the manager
-        boolean doIt = true;
-
-        // Threshold C2DM shotgun messages
-        if (userstudyArrivalTimes.containsKey(apkId)
-                && System.currentTimeMillis() - userstudyArrivalTimes.get(apkId) < 10000) {
-            doIt = false;
-        }
-        Log.i("FIXME", "doIt = " + doIt);
-        userstudyArrivalTimes.put(apkId, System.currentTimeMillis());
-        
-
-        if (doIt)
-        {
-            Log.i("FIXME", "check UsNM = " + UserstudyNotificationManager.getInstance());
-            if (UserstudyNotificationManager.getInstance() == null)
-            {
-                Log.i("FIXME", "check MS = " + MosesService.getInstance());
-                if (MosesService.getInstance() != null)
-                {
-                    Log.i("FIXME", "UsNM.int ( "+MosesService.getInstance().getApplicationContext()+" )");
-                    UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
-                }
-                else
-                {
-                    Log.e("MoSeS.USERSTUDY",
-                            "Could not initialize Userstudy notification manager because of dead service");
-                }
-            }
-            
-            if (UserstudyNotificationManager.getInstance() != null)
-            {
-                UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(Integer.valueOf(apkId)));
-                UserstudyNotificationManager.getInstance().addNotification(notification);
-                Log.i("FIXME", "try");
-                try
-                {
-                    UserstudyNotificationManager.getInstance().saveToDisk(MosesService.getInstance().getApplicationContext());
-                }
-                catch (IOException e)
-                {
-                    Log.e("MoSeS", "Error when saving questionnaire notifications for ");
-                }
-            }
-            else
-            {
-                Log.e("MoSeS.USERSTUDY",
-                        "Could not save userstudy notification to manager because the manager could not be initialized");
-            }
-            
-            UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(apkId);
-            Log.i("FIXME", "notification = " + notification);
-            
-            Intent intent = UserStudyStatusBarHelper.generateIntentForNotification(notification.getApplication().getID(),
-                    MosesService.getInstance());
-            Log.i("FIXME", "intent = "+ intent);
-            
-            Log.d("FIXME", "InstExtappMng = " + InstalledExternalApplicationsManager.getInstance()
-                    + " apk = "+ InstalledExternalApplicationsManager.getInstance().getAppForId(apkId)
-                    + " USSBH.notifMng = " + UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId)
-                    + " MosesService = " + MosesService.getInstance());
-            UserStudyStatusBarHelper.showNotificationStatic(intent,
-                    "You recieve a questionnaire from xyz"// TODO + InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName()
-                    + "\nClick here to view it", "MoSeS", false,
-                    UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
-        }
-        
-    }
 
 }

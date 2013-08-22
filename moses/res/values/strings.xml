@@ -196,6 +196,8 @@
     <string name="notification_no_survey_for_this_apk">No survey for this apk.</string>
     <string name="notification_results_sent_to_server">Results successfully sent to server.</string>
     <string name="notification_survey_ready_to_view">Survey successfully downloaded.</string>
+    <string name="notification_survey_available_for">A survey for %s is available.</string>
+    <string name="notification_user_study_not_available">User study is not available. You may have already filled it\'s survey.</string>
     
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>

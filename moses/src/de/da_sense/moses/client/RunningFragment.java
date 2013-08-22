@@ -25,6 +25,7 @@ import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.util.Log;
+import de.da_sense.moses.client.util.Toaster;
 
 /**
  * Represents the Fragment of an Available UserStudy.
@@ -60,6 +61,13 @@ public class RunningFragment extends ListFragment {
 	 * The activity containing this fragment
 	 */
 	private Activity mActivity;
+	
+	/**
+	 * Sometimes, we want to display info of a running user study and we only know the apkid assigned to it,
+	 * but we do not know, which position the user study has in the list which is shown to the user.
+	 * This {@link Map} tracks this information.
+	 */
+	private Map<String, Integer> mApkPositions;
     
 	/** Returns the current instance (singleton) */
 	public static RunningFragment getInstance() {
@@ -277,18 +285,36 @@ public class RunningFragment extends ListFragment {
 		Collections.sort(sortedList, comparator);
 		return sortedList;
 	}
-
-	// FIXME: this was already commented out
-//	long thr = System.currentTimeMillis();
 	
 	@Override
 	public void onResume() {
 		super.onResume();
 		refreshInstalledApplications();
-		// FIXME: this was already commented out
-//		if(System.currentTimeMillis()-thr>6000) {
-//			UserstudyNotificationManager.getInstance().userStudyNotificationArrived("11");
-//		}
+		Intent startingIntent = mActivity.getIntent();
+		if(startingIntent.hasExtra(WelcomeActivity.KEY_VIEW_SURVEY)){
+			// some other activity has started the parent activity in order to show an available survey, show it god damn it
+			String apkID = startingIntent.getStringExtra(WelcomeActivity.KEY_VIEW_SURVEY);
+			// obtain the view responsible for the apk
+			final Integer positionOfTheView = mApkPositions.get(apkID);
+			if(positionOfTheView == null || installedApps.size() <= positionOfTheView ){
+				// the could already be in history tab, for example when the user fills the survey and then
+				// tries to fill it again by following the status bar notification
+				Log.i(LOG_TAG, "onResume() the apk is no longer in the list, the user may have already filled the survey");
+				Toaster.showToast(mActivity, getString(R.string.notification_user_study_not_available));		
+			}
+			else{
+				showDetails(positionOfTheView, mActivity, new Runnable() {
+					@Override
+					public void run() {
+						handleStartApp(getInstalledApps().get(positionOfTheView));
+					}
+				}, new Runnable() {
+					@Override
+					public void run() {
+					}
+				});
+			}
+		}
 	}
 
 	/**
@@ -376,11 +402,15 @@ public class RunningFragment extends ListFragment {
 		}
 
 		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
+		mApkPositions = new HashMap<String, Integer>();
+		int positionCounter = 0; // remember the positions of the shown APKs in the list
 		for (InstalledExternalApplication app : applications) {
 			HashMap<String, String> rowMap = new HashMap<String, String>();
 			rowMap.put("name", app.getName());
 			rowMap.put("updateIndicator", app.isUpdateAvailable() ? "update available" : "");
 			listContent.add(rowMap);
+			mApkPositions.put(app.getID(), positionCounter);
+			positionCounter++;
 		}
 		
 		MosesListAdapter contentAdapter = new MosesListAdapter(mActivity, 
