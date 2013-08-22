@@ -26,6 +26,7 @@ import de.da_sense.moses.client.util.Log;
  * Manages pending user studies and their persistence
  * 
  * @author Simon L
+ * @author Zijad Maksuti
  * 
  */
 public class UserstudyNotificationManager {
@@ -275,13 +276,11 @@ public class UserstudyNotificationManager {
 		}
 	}
 	
-	/** XXX by Ibrahim
-     * handling a notification from a userstudy to answer its questionnaires
+	/**
+     * Handling a notification from a userstudy to answer its questionnaires
      * @param apkidString  the apk id as a user study id
-     * @param contentString an array of numbers that determines which questionnaires should be shown and answered
      */
-    public static void questionnaireNotificationArrived(String apkId, String contentString) {
-        Log.i("FIXME", "questionnaireNotificationArrived( "+apkId+" , "+contentString+" )");
+    public static void questionnaireNotificationArrived(String apkId) {
         // create a new user study object and save it to the manager
         boolean doIt = true;
 
@@ -323,7 +322,7 @@ public class UserstudyNotificationManager {
                 }
                 catch (IOException e)
                 {
-                    Log.e("MoSeS", "Error when saving questionnaire notifications for " + apkId + " with content: " + contentString);
+                    Log.e("MoSeS", "Error when saving questionnaire notifications for ");
                 }
             }
             else
@@ -344,8 +343,8 @@ public class UserstudyNotificationManager {
                     + " USSBH.notifMng = " + UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId)
                     + " MosesService = " + MosesService.getInstance());
             UserStudyStatusBarHelper.showNotificationStatic(intent,
-                    "You recieve a questionnaire from "// TODO + InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName()
-                    + " with content " + contentString +  "\nClick here to view it", "MoSeS", false,
+                    "You recieve a questionnaire from xyz"// TODO + InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName()
+                    + "\nClick here to view it", "MoSeS", false,
                     UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
         }
         

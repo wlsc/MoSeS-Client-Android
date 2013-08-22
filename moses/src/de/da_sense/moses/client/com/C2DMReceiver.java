@@ -14,16 +14,12 @@ public class C2DMReceiver extends BroadcastReceiver {
 
 	private static final String C2DM_PUSH_MESSAGTYPE_USERSTUDY = "USERSTUDY";
 	private static final String C2DM_PUSH_MESSAGTYPE_UPDATE = "UPDATE";
-	private static final String C2DM_PUSH_MESSAGTYPE_QUEST = "QUEST"; // XXX by
-																		// Ibrahim
+	private static final String C2DM_PUSH_MESSAGTYPE_QUEST = "QUEST"; 
 	public static final String EXTRAFIELD_USERSTUDY_NOTIFICATION = "UserStudyNotification";
 	private static final String C2DN_MESSAGETYPE_FIELD = "MESSAGE";
 	private static final String C2DN_USERSTUDY_APKID_FIELD = "APKID";
 	private static final String C2DN_UPDATE_APKID_FIELD = "APKID";
-	private static final String C2DN_QUEST_APKID_FIELD = "APKID"; // XXX by
-																	// Ibrahim
-	private static final String C2DN_QUEST_CONTENT_FIELD = "CONTENT"; // XXX by
-																		// Ibrahim
+	private static final String C2DN_QUEST_APKID_FIELD = "APKID";
 	public static final String EXTRAFIELD_C2DM_ID = "c2dmId";
 
 	private static final String LOG_TAG = C2DMReceiver.class.getName();
@@ -37,35 +33,36 @@ public class C2DMReceiver extends BroadcastReceiver {
 
 	private static void handleNotifications(Context context, Intent intent) {
 		try {
-			JSONObject message = new JSONObject(intent.getExtras().getString(
-					"message"));
+			JSONObject message = new JSONObject(intent.getExtras().getString("message"));
 			String messagetype = message.getString(C2DN_MESSAGETYPE_FIELD);
 			if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
-				String apkidString = message.getString(C2DN_USERSTUDY_APKID_FIELD);
+				String apkidString = message
+						.getString(C2DN_USERSTUDY_APKID_FIELD);
 				Log.i(LOG_TAG, "User study notification received!! APK ID = "
 						+ apkidString);
-				UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
-			} else
-				if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_UPDATE)) {
+				UserstudyNotificationManager
+						.userStudyNotificationArrived(apkidString);
+			} else if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_UPDATE)) {
 				String apkidString = message.getString(C2DN_UPDATE_APKID_FIELD);
 				Log.i(LOG_TAG, "update notification received!! APK ID = "
 						+ apkidString);
 				Log.i(LOG_TAG, "update incoming: " + apkidString);
 				InstalledExternalApplicationsManager.updateArrived(apkidString);
-
-			}
-				else // XXX by Ibrahim : to handle a questionnaire notification
-					if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_QUEST)) {
-						String apkidString = message.getString(C2DN_QUEST_APKID_FIELD);
-						String contentString = message.getString(C2DN_QUEST_CONTENT_FIELD);
-				Log.i(LOG_TAG, "update incoming: " + apkidString+ " with content: " + contentString);
-				// UserstudyNotificationManager.questionnaireNotificationArrived(apkidString,contentString);
-				Log.d("MoSeS.C2DM", !contentString.equals("[]")
-						+ ", endDateReached = true");
-				InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setEndDateReached(true);
+			} else
+			if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_QUEST)) {
+				String apkidString = message.getString(C2DN_QUEST_APKID_FIELD);
+				Log.i(LOG_TAG, "update incoming: " + apkidString);
+				if(InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString) != null){
+					// show a notification to user only if the app is still installed
+					// the data on the server may be inconsistent
+					UserstudyNotificationManager.questionnaireNotificationArrived(apkidString);
+					InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setEndDateReached(true);
+				}
+				 
 
 			} else {
-				Log.w("MoSeS.C2DM", "Unhandled C2DM Message from type: "+ messagetype);
+				Log.w("MoSeS.C2DM", "Unhandled C2DM Message from type: "
+						+ messagetype);
 			}
 		} catch (JSONException e) {
 			Log.e(LOG_TAG, e.getMessage());
