@@ -294,6 +294,7 @@ public class RunningFragment extends ListFragment {
 		if(startingIntent.hasExtra(WelcomeActivity.KEY_VIEW_SURVEY)){
 			// some other activity has started the parent activity in order to show an available survey, show it god damn it
 			String apkID = startingIntent.getStringExtra(WelcomeActivity.KEY_VIEW_SURVEY);
+			startingIntent.removeExtra(WelcomeActivity.KEY_VIEW_SURVEY); // remove the extra from the intent because already processed
 			// obtain the view responsible for the apk
 			final Integer positionOfTheView = mApkPositions.get(apkID);
 			if(positionOfTheView == null || installedApps.size() <= positionOfTheView ){
