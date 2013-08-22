@@ -411,7 +411,7 @@ public class AvailableFragment extends ListFragment implements
 		if (applications.size() > 0) {
 			initControlsNormalList(applications);
 		} else {
-			initControlsEmptyArrivedList(false);
+			initControlsEmptyArrivedList();
 		}
 		populateList(applications); // TODO : Why should we execute this method
 									// when we do this in initControlsNormalList
@@ -420,32 +420,31 @@ public class AvailableFragment extends ListFragment implements
 
 	/**
 	 * Controls what to do and what to show in case we get an empty APK list.
-	 * 
-	 * @param mayShowSensorsList
-	 *            true to show the sensor hint
 	 */
-	private void initControlsEmptyArrivedList(boolean mayShowSensorsList) {
-		if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
-			// show an empty list, because the list we got was empty
-			LinearLayout emptylistCtrls = (LinearLayout) mActivity
-					.findViewById(R.id.apklist_emptylistLayout);
-			emptylistCtrls.setVisibility(View.VISIBLE);
-			LinearLayout apkListCtrls = (LinearLayout) mActivity
-					.findViewById(R.id.apklist_mainListLayout);
-			apkListCtrls.setVisibility(View.GONE);
+	private void initControlsEmptyArrivedList() {
+		if (isVisible()) {
+			if (lastSetLayout != LayoutState.EMPTYLIST_HINT) {
+				// show an empty list, because the list we got was empty
+				LinearLayout emptylistCtrls = (LinearLayout) mActivity
+						.findViewById(R.id.apklist_emptylistLayout);
+				emptylistCtrls.setVisibility(View.VISIBLE);
+				LinearLayout apkListCtrls = (LinearLayout) mActivity
+						.findViewById(R.id.apklist_mainListLayout);
+				apkListCtrls.setVisibility(View.GONE);
 
-			// show a hint, that there are no apks
-			TextView mainHint = (TextView) mActivity.findViewById(
-					R.id.apklist_emptylistHintMain);
-			mainHint.setText(R.string.availableApkList_emptyHint);
+				// show a hint, that there are no apks
+				TextView mainHint = (TextView) mActivity
+						.findViewById(R.id.apklist_emptylistHintMain);
+				mainHint.setText(R.string.availableApkList_emptyHint);
 
-			// we don't need any buttons here
-			Button actionBtn1 = (Button) mActivity.findViewById(
-					R.id.apklist_emptylistActionBtn1);
-			actionBtn1.setVisibility(View.GONE);
+				// we don't need any buttons here
+				Button actionBtn1 = (Button) mActivity
+						.findViewById(R.id.apklist_emptylistActionBtn1);
+				actionBtn1.setVisibility(View.GONE);
 
-			// set last layout
-			setLastSetLayout(LayoutState.EMPTYLIST_HINT);
+				// set last layout
+				setLastSetLayout(LayoutState.EMPTYLIST_HINT);
+			}
 		}
 	}
 
@@ -457,24 +456,21 @@ public class AvailableFragment extends ListFragment implements
 	 *            list of the applications to show
 	 */
 	private void initControlsNormalList(List<ExternalApplication> applications) {
-		// show a "normal" non-empty list
-		LinearLayout emptylistCtrls = (LinearLayout) mActivity
-				.findViewById(R.id.apklist_emptylistLayout);
-		// TODO: fast switching between tabs causes NullPointerExc, where
-		// emptylistCtrls and apkListCtrls will be here NULL
-		if (emptylistCtrls != null)
-			emptylistCtrls.setVisibility(View.GONE);
-
-		LinearLayout apkListCtrls = (LinearLayout) mActivity.findViewById(
-				R.id.apklist_mainListLayout);
-
-		if (apkListCtrls != null)
-			apkListCtrls.setVisibility(View.VISIBLE);
-
-		// set last layout
-		setLastSetLayout(LayoutState.NORMAL_LIST);
-		// and show the applications in the list
-		populateList(applications);
+		if (isVisible()) {
+			// show a "normal" non-empty list
+			LinearLayout emptylistCtrls = (LinearLayout) mActivity
+					.findViewById(R.id.apklist_emptylistLayout);
+			if (emptylistCtrls != null)
+				emptylistCtrls.setVisibility(View.GONE);
+			LinearLayout apkListCtrls = (LinearLayout) mActivity
+					.findViewById(R.id.apklist_mainListLayout);
+			if (apkListCtrls != null)
+				apkListCtrls.setVisibility(View.VISIBLE);
+			// set last layout
+			setLastSetLayout(LayoutState.NORMAL_LIST);
+			// and show the applications in the list
+			populateList(applications);
+		}
 	}
 
 	/**
