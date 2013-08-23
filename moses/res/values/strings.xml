@@ -113,6 +113,7 @@
     <string name="version">Version: </string>
     <string name="moses_logo">MoSeS logo</string>
     <string name="tap_to_skip">Tap to skip</string>
+    <string name="later">Later</string>
 
     <!-- Installed List -->
     <string name="installedApkList_defaultHint">Click on a user study to view the full description.</string>

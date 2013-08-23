@@ -585,18 +585,7 @@ public class WelcomeActivity extends FragmentActivity implements
 		// or an update call
 		boolean isShowUpdateCall = getIntent().getStringExtra(
 				EXTRA_UPDATE_APK_ID) != null;
-
-		if (isShowUserStudyCall && isLoginInformationComplete()) {
-			// firstTabPreference = TAB_TAG_AVAILABLE_USER_STUDIES;
-			if (getActiveTab() != WelcomeActivityPagerAdapter.TAB_AVAILABLE) {
-				Log.d("MainActivity - initControls",
-						"WARNING: active Tab "
-								+ "is going to change because of UserStudy-Call. ACTIVE TAB SET "
-								+ "FROM " + getActiveTab()
-								+ " TO AVAILABLE (0)");
-			}
-
-		}
+		
 		if (isShowUpdateCall) {
 			if (getActiveTab() != WelcomeActivityPagerAdapter.TAB_RUNNING) {
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
@@ -608,8 +597,7 @@ public class WelcomeActivity extends FragmentActivity implements
 		if (isShowUserStudyCall && isLoginInformationComplete()) {
 			// if a User study has to be shown, and email and password are
 			// set, redirect this
-			UserstudyNotificationManager.displayUserStudyContent(
-					onLoginCompleteShowUserStudy, this);
+			UserstudyNotificationManager.displayUserStudyContent(onLoginCompleteShowUserStudy, this);
 		}
 	}
 

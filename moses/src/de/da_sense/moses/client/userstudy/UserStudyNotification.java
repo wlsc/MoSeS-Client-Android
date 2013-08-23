@@ -25,7 +25,7 @@ public class UserStudyNotification {
 	 * Enums for the Status of the user study.
 	 */
 	public static enum Status {
-		ACCEPTED, DENIED, UNDECIDED
+		ACCEPTED, UNDECIDED
 	}
 
 	/**

@@ -221,8 +221,7 @@ public class UserstudyNotificationManager {
 		if (doIt) {
 			if (UserstudyNotificationManager.getInstance() == null) {
 				if (MosesService.getInstance() != null) {
-					UserstudyNotificationManager.init(MosesService
-							.getInstance().getApplicationContext());
+					UserstudyNotificationManager.init(MosesService.getInstance().getApplicationContext());
 				} else {
 					Log.e("MoSeS.USERSTUDY",
 							"Could not initialize Userstudy notification manager because of dead service");
@@ -230,13 +229,10 @@ public class UserstudyNotificationManager {
 			}
 
 			if (UserstudyNotificationManager.getInstance() != null) {
-				UserStudyNotification notification = new UserStudyNotification(
-						new ExternalApplication(Integer.valueOf(apkId)));
-				UserstudyNotificationManager.getInstance().addNotification(
-						notification);
+				UserStudyNotification notification = new UserStudyNotification(new ExternalApplication(Integer.valueOf(apkId)));
+				UserstudyNotificationManager.getInstance().addNotification(notification);
 				try {
-					UserstudyNotificationManager.getInstance().saveToDisk(
-							MosesService.getInstance().getApplicationContext());
+					UserstudyNotificationManager.getInstance().saveToDisk(MosesService.getInstance().getApplicationContext());
 				} catch (IOException e) {
 					Log.e("MoSeS", "Error when saving user study notifications");
 				}
@@ -321,8 +317,7 @@ public class UserstudyNotificationManager {
 	 */
 	private static void displayStatusBarNotificationForUserStudy(String apkId) {
 		if (MosesService.getInstance() != null) {
-			UserStudyStatusBarHelper.displayStatusBarNotification(apkId,
-					MosesService.getInstance());
+			UserStudyStatusBarHelper.displayStatusBarNotification(apkId,MosesService.getInstance());
 		} else {
 			Log.e("MoSeS.USERSTUDY",
 					"Could not display notification that new userstudy has arrived, because moses service was null");
@@ -336,13 +331,10 @@ public class UserstudyNotificationManager {
 	 * @param userStudyId
 	 * @param applicationContext
 	 */
-	public static void displayUserStudyContent(String userStudyId,
-			Context applicationContext) {
-		Intent viewUserStudy = new Intent(applicationContext,
-				ViewUserStudyActivity.class);
+	public static void displayUserStudyContent(String userStudyId, Context applicationContext) {
+		Intent viewUserStudy = new Intent(applicationContext, ViewUserStudyActivity.class);
 		viewUserStudy.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID,
-				userStudyId);
+		viewUserStudy.putExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID, userStudyId);
 		applicationContext.startActivity(viewUserStudy);
 	}
 

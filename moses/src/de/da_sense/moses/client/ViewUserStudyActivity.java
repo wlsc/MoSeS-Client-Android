@@ -224,17 +224,7 @@ public class ViewUserStudyActivity extends Activity {
 				myDialog.dismiss();
 			}
 		};
-		View.OnClickListener clickListenerNo = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				notification.setStatus(Status.DENIED);
-				UserstudyNotificationManager.getInstance().updateNotification(notification);
-				UserstudyNotificationManager.getInstance().removeNotificationWithApkId(notification.getApplication().getID());
 
-				myDialog.dismiss();
-				cancelActivity();
-			}
-		};
 		View.OnClickListener clickListenerLater = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -243,10 +233,10 @@ public class ViewUserStudyActivity extends Activity {
 			}
 		};
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_yes)).setOnClickListener(clickListenerYes);
-		((Button) myDialog.findViewById(R.id.userstudydialog_btn_no)).setOnClickListener(clickListenerNo);
 		((Button) myDialog.findViewById(R.id.userstudydialog_btn_later)).setOnClickListener(clickListenerLater);
 
 		myDialog.setOwnerActivity(ViewUserStudyActivity.this);
+		myDialog.setCanceledOnTouchOutside(false);
 		myDialog.show();
 
 	}
@@ -288,6 +278,7 @@ public class ViewUserStudyActivity extends Activity {
 //			}
 //		});
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		progressDialog.setCanceledOnTouchOutside(false);
 		progressDialog.show();
 			/*
 			 * Observer Design Pattern

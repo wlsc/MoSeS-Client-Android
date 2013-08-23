@@ -36,12 +36,9 @@ public class C2DMReceiver extends BroadcastReceiver {
 			JSONObject message = new JSONObject(intent.getExtras().getString("message"));
 			String messagetype = message.getString(C2DN_MESSAGETYPE_FIELD);
 			if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
-				String apkidString = message
-						.getString(C2DN_USERSTUDY_APKID_FIELD);
-				Log.i(LOG_TAG, "User study notification received!! APK ID = "
-						+ apkidString);
-				UserstudyNotificationManager
-						.userStudyNotificationArrived(apkidString);
+				String apkidString = message.getString(C2DN_USERSTUDY_APKID_FIELD);
+				Log.i(LOG_TAG, "User study notification received!! APK ID = "+ apkidString);
+				UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
 			} else if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_UPDATE)) {
 				String apkidString = message.getString(C2DN_UPDATE_APKID_FIELD);
 				Log.i(LOG_TAG, "update notification received!! APK ID = "

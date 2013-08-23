@@ -15,12 +15,13 @@ import de.da_sense.moses.client.util.Log;
 
 /**
  * Class for creating and showing notifications for user studies in the status bar.
+ * @author Zijad Maksuti
  */
 public class UserStudyStatusBarHelper {
 
 	/**
 	 * displays an android status bar notification for an incoming user study
-	 * notification. There must be an user study notification object already in
+	 * notification. There must be n user study notification object already in
 	 * the {@link UserstudyNotificationManager}, from which it will be retrieved
 	 * using the given id.
 	 * 
@@ -32,11 +33,9 @@ public class UserStudyStatusBarHelper {
 	public static void displayStatusBarNotification(String apkId, Context context) {
 		Log.i("MoSeS.Service", "saving user study notification to the manager");
 		if (UserstudyNotificationManager.getInstance() != null) {
-			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(
-					apkId);
+			UserStudyNotification notification = UserstudyNotificationManager.getInstance().getNotificationForApkId(apkId);
 
-			Intent intent = generateIntentForNotification(notification.getApplication().getID(),
-					MosesService.getInstance());
+			Intent intent = generateIntentForNotification(notification.getApplication().getID(), MosesService.getInstance());
 			Log.i("MoSeS.Service", "starting intent to display user study notification");
 			showNotificationStatic(intent, apkId, context);
 

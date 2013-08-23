@@ -89,15 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
             android:onClick="dialogClickYay"
-            android:text="Yes" />
-
-        <Button
-            android:id="@+id/userstudydialog_btn_no"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:onClick="dialogClickNay"
-            android:text="No, thanks" />
+            android:text="@string/install"/>
 
         <Button
             android:id="@+id/userstudydialog_btn_later"
@@ -105,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.33"
             android:onClick="dialogClickLater"
-            android:text="Later" />
+            android:text="@string/later" />
     </LinearLayout>
 
 </LinearLayout>
