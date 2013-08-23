@@ -52,7 +52,8 @@ import de.da_sense.moses.client.util.Toaster;
  * Instance of this class represent a {@link Fragment} which visualizes the an instance of a
  * {@link Form}. The form is passed to by its ID. See {@link #setFormID(int)}.
  * 
- * @author Ibrahim Alyahya, Sandra Amend, Florian Schnell, Wladimir Schmidt
+ * @author Ibrahim Alyahya, Sandra Amend, Florian Schnell, 
+ * @author Wladimir Schmidt
  * @author Zijad Maksuti
  */
 public class FormFragment extends Fragment {

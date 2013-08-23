@@ -10,6 +10,11 @@ import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsMa
 import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.Log;
 
+/**
+ * Main GCM receiver and message handler
+ * @author Wladimir Schmidt
+ *
+ */
 public class C2DMReceiver extends BroadcastReceiver {
 
 	private static final String C2DM_PUSH_MESSAGTYPE_USERSTUDY = "USERSTUDY";
@@ -38,7 +43,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 			if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_USERSTUDY)) {
 				String apkidString = message.getString(C2DN_USERSTUDY_APKID_FIELD);
 				Log.i(LOG_TAG, "User study notification received!! APK ID = "+ apkidString);
-				UserstudyNotificationManager.userStudyNotificationArrived(apkidString);
+				UserstudyNotificationManager.userStudyNotificationArrived(context, apkidString);
 			} else if (messagetype.equals(C2DM_PUSH_MESSAGTYPE_UPDATE)) {
 				String apkidString = message.getString(C2DN_UPDATE_APKID_FIELD);
 				Log.i(LOG_TAG, "update notification received!! APK ID = "
@@ -52,7 +57,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 				if(InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString) != null){
 					// show a notification to user only if the app is still installed
 					// the data on the server may be inconsistent
-					UserstudyNotificationManager.questionnaireNotificationArrived(apkidString);
+					UserstudyNotificationManager.questionnaireNotificationArrived(context, apkidString);
 					InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setEndDateReached(true);
 				}
 				 
