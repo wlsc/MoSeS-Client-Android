@@ -181,7 +181,7 @@
     <string name="menu_hardwareinfo">Hardware Information</string>
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_connect">Connect</string>
-    <string name="btn_questionnaire">View survey</string>
+    <string name="btn_survey">View survey</string>
     
     <!-- Details -->
     <string name="details_running_noquestionnaire">no questionnaire</string>
@@ -199,6 +199,9 @@
     <string name="notification_survey_ready_to_view">Survey successfully downloaded.</string>
     <string name="notification_survey_available_for">A survey for %s is available.</string>
     <string name="notification_user_study_not_available">User study is not available. You may have already filled it\'s survey.</string>
+    <string name="notification_server_took_too_long_to_respond">Server took too long to respond.</string>
+    <string name="notification_unknown_error_has_occurred">An unknown error has occurred.</string>
+    <string name="notification_downloading_survey">Downloading survey.</string>
     
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>
@@ -206,5 +209,6 @@
     <!-- Button labels -->
     <string name="next">Next form</string>
     <string name="back">Back</string>
+    <string name="download_survey">Download survey</string>
 
 </resources>
