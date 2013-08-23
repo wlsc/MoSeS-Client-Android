@@ -100,6 +100,7 @@ public class InstallApkActivity extends Activity {
 			} else {
 				// TODO: apparently there is no way to determine whether the
 				// installation
+				
 				// crashed, or whether it was explicitly cancelled.
 				// Maybe put some more thinking into it, but for now, always
 				// signalize

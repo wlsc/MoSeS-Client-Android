@@ -42,7 +42,7 @@ import de.da_sense.moses.client.util.Log;
  */
 public class LoginActivity extends Activity {
 	/** ProgressDialog showed after pressing the login button */
-	private ProgressDialog d = null;
+	private ProgressDialog loginDialog = null;
 	/** handler for the runnables */
 	private Handler h = new Handler();
 	
@@ -131,10 +131,11 @@ public class LoginActivity extends Activity {
     		return;
     	}
     	// show ProgressDialog while checking and verifying entered credentials
-    	d = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
-		d.setTitle(getString(R.string.checking_credentials));
-		d.setMessage(getString(R.string.verifying_credentials));
-		d.show();
+    	loginDialog = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
+		loginDialog.setTitle(getString(R.string.checking_credentials));
+		loginDialog.setMessage(getString(R.string.verifying_credentials));
+		loginDialog.setCanceledOnTouchOutside(false);
+		loginDialog.show();
 		// request a login/session from the server
 		new RequestLogin(new ReqLogin(),  email, password, deviceID).send();
     }
@@ -145,7 +146,7 @@ public class LoginActivity extends Activity {
      */
     private void valid(String deviceName) {
     	Log.d("LoginActivity", "valid() called");
-		d.dismiss();
+		loginDialog.dismiss();
 		// get email and password
 		String email = editTextEmail.getText().toString().trim();
 		String password = editTextPassword.getText().toString();
@@ -187,7 +188,7 @@ public class LoginActivity extends Activity {
      */
 	private void invalid() {
 		Log.d("LoginActivity", "invalid() called, d.dismiss() follows");
-		d.dismiss();
+		loginDialog.dismiss();
 		showWrongCredentials();
 	}
     
@@ -297,7 +298,7 @@ public class LoginActivity extends Activity {
 				// Internet connection is possibly dead
 				if(!MosesService.isOnline(mContext)){
 					Log.d(LOG_TAG, getString(R.string.check_internet));
-					d.setMessage(getString(R.string.check_internet));
+					loginDialog.setMessage(getString(R.string.check_internet));
 				}
 				else{
 					// The host may be down
@@ -311,7 +312,7 @@ public class LoginActivity extends Activity {
 			h.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					d.dismiss();
+					loginDialog.dismiss();
 				}
 			}, 6000);
 			}

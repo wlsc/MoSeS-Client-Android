@@ -631,10 +631,7 @@ public class AvailableFragment extends ListFragment implements
 					new APKInstalled(externalAppRef.getID());
 					try {
 						ApkInstallManager.registerInstalledApk(originalApk,
-								externalAppRef, WelcomeActivity.getInstance() // It
-																				// was
-																				// :
-																				// AvailableFragment.this.getActivity())
+								externalAppRef, WelcomeActivity.getInstance()
 										.getApplicationContext(), false);
 					} catch (IOException e) {
 						Log.e("MoSeS.Install",
