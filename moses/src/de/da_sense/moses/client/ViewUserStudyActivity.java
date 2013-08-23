@@ -35,6 +35,7 @@ import de.da_sense.moses.client.util.Log;
  * Viewing and installing APKs from the server
  * 
  * @author Simon L, Wladimir Schmidt
+ * @author Zijad Maksuti
  */
 public class ViewUserStudyActivity extends Activity {
 
@@ -221,6 +222,8 @@ public class ViewUserStudyActivity extends Activity {
 			public void onClick(View v) {
 				Log.i("MoSeS.USERSTUDY", "starting download process...");
 				downloadUserstudyApp(notification);
+				// by removing this, we prevent the dialog from reappearing
+				getIntent().removeExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
 				myDialog.dismiss();
 			}
 		};
@@ -228,6 +231,7 @@ public class ViewUserStudyActivity extends Activity {
 		View.OnClickListener clickListenerLater = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				getIntent().removeExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
 				myDialog.dismiss();
 				cancelActivity();
 			}

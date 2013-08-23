@@ -598,6 +598,8 @@ public class WelcomeActivity extends FragmentActivity implements
 			// if a User study has to be shown, and email and password are
 			// set, redirect this
 			UserstudyNotificationManager.displayUserStudyContent(onLoginCompleteShowUserStudy, this);
+			isShowUserStudyCall = false;
+			getIntent().removeExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
 		}
 	}
 
