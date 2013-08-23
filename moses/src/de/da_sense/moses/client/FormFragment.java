@@ -12,6 +12,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -215,12 +217,33 @@ public class FormFragment extends Fragment {
 				
 				@Override
 				public void onClick(View v) {
-					Set<Question> questions = mQuestionEditTextMappings.keySet();
-					for(Question question : questions){
-						String finalAnswerOfUser = mQuestionEditTextMappings.get(question).getText().toString();
-						question.setAnswer(finalAnswerOfUser);
-					}
-					sendAnswersToServer();
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					// Add the buttons
+					builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+					           public void onClick(DialogInterface dialog, int id) {
+					               // User clicked OK button
+					        	   Set<Question> questions = mQuestionEditTextMappings.keySet();
+									for(Question question : questions){
+										String finalAnswerOfUser = mQuestionEditTextMappings.get(question).getText().toString();
+										question.setAnswer(finalAnswerOfUser);
+									}
+									sendAnswersToServer();
+					           }
+					       });
+					builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					           public void onClick(DialogInterface dialog, int id) {
+					               // User cancelled the dialog
+					        	   dialog.dismiss();
+					           }
+					       });
+
+					builder.setMessage(R.string.surveySendToServerMessage)
+				           .setTitle(R.string.surveySendToServerTitle);
+					
+					// Create the AlertDialog
+					AlertDialog dialog = builder.create();
+
+					dialog.show();
 				}
 			});
 		}

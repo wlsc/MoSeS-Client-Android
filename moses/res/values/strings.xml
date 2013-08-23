@@ -30,6 +30,8 @@
     <string name="q_send">Send to server</string>
     <string name="q_answersSent">Your answers have been sent!</string>
     <string name="q_next">Next</string>
+    <string name="surveySendToServerTitle">Sending survey</string>
+    <string name="surveySendToServerMessage">Please, confirm sending of survey\'s answers to server.</string>
     <string name="userStudy_loading">Loading&#8230;</string>
     <string name="userStudy_loadingInformation">Loading userstudy information</string>
     <string name="userStudy_errorMessage">An error occurred when retrieving the informations for a user study: %1$s.\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!</string>
