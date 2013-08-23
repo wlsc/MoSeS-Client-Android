@@ -263,9 +263,10 @@ public class UserstudyNotificationManager {
 	    Notification notif = new Notification();
 	    notif.ledARGB = Color.LTGRAY;
 	    notif.flags = Notification.FLAG_SHOW_LIGHTS;
+	    notif.defaults |= Notification.DEFAULT_SOUND;
 	    notif.ledOnMS = 100; 
 	    notif.ledOffMS = 2000; 
-	    notifManager.notify(1, notif);
+	    notifManager.notify(0, notif);
 	}
 
 	/**
