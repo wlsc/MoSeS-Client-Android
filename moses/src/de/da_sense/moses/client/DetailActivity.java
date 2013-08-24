@@ -10,7 +10,8 @@ import de.da_sense.moses.client.util.Log;
 /**
  * Represents the details of a userstudy.
  * 
- * @author Sandra Amend, Wladimir Schmidt
+ * @author Sandra Amend
+ * @author Wladimir Schmidt
  * @author Zijad Maksuti
  */
 public class DetailActivity extends FragmentActivity {

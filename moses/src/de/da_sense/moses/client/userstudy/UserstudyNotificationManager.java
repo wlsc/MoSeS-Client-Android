@@ -12,8 +12,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.ViewUserStudyActivity;
 import de.da_sense.moses.client.WelcomeActivity;
@@ -28,10 +31,12 @@ import de.da_sense.moses.client.util.Log;
  * Manages pending user studies and their persistence
  * 
  * @author Simon L
+ * @author Wladimir Schmidt
  * @author Zijad Maksuti
  * 
  */
 public class UserstudyNotificationManager {
+	
 	private static UserstudyNotificationManager instance;
 	private List<UserStudyNotification> notifications;
 	private static HashMap<String, Long> userstudyArrivalTimes = new HashMap<String, Long>();
@@ -206,7 +211,7 @@ public class UserstudyNotificationManager {
 	 * @param apkId
 	 *            the id for the user study
 	 */
-	public static void userStudyNotificationArrived(String apkId) {
+	public static void userStudyNotificationArrived(Context context, String apkId) {
 		// create a new user study object and save it to the manager
 		boolean doIt = true;
 
@@ -242,7 +247,26 @@ public class UserstudyNotificationManager {
 			}
 
 			displayStatusBarNotificationForUserStudy(apkId);
+			
+			// blink with LED
+			displayBlinkingLED(context);
 		}
+		
+	}
+
+	/**
+	 * Blinks with LED with given speed and color
+	 * @param context
+	 */
+	private static void displayBlinkingLED(Context context) {
+		NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+	    Notification notif = new Notification();
+	    notif.ledARGB = Color.LTGRAY;
+	    notif.flags = Notification.FLAG_SHOW_LIGHTS;
+	    notif.defaults |= Notification.DEFAULT_SOUND;
+	    notif.ledOnMS = 100; 
+	    notif.ledOffMS = 2000; 
+	    notifManager.notify(0, notif);
 	}
 
 	/**
@@ -251,7 +275,7 @@ public class UserstudyNotificationManager {
 	 * @param apkidString
 	 *            the apk id as a user study id
 	 */
-	public static void questionnaireNotificationArrived(String apkId) {
+	public static void questionnaireNotificationArrived(Context context, String apkId) {
 		// create a new user study object and save it to the manager
 		boolean doIt = true;
 
@@ -304,6 +328,9 @@ public class UserstudyNotificationManager {
 					InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName());
 			String notificationTitle = MosesService.getInstance().getString(R.string.moses_title);
 			UserStudyStatusBarHelper.showNotificationStatic(intent,notificationMessage, notificationTitle, false, UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
+			
+			// blink with LED
+			displayBlinkingLED(context);
 		}
 
 	}
