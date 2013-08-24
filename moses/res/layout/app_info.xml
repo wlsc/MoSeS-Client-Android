@@ -173,7 +173,7 @@
             android:layout_height="match_parent"
             android:layout_weight="0.3"
             android:maxWidth="80dip"
-            android:text="@string/btn_questionnaire" />
+            android:text="@string/btn_survey" />
     </LinearLayout>
 
 </RelativeLayout>

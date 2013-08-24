@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
+import de.da_sense.moses.client.DetailFragment.AsyncGetSurvey;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
@@ -607,11 +608,12 @@ public class ExternalApplication {
 
 	/**
 	 * Gets the questionnaire for this app from the server
+	 * 
+	 * @param getSurveyTask the task that has to be notified about the arrived survey
 	 */
 	public void getQuestionnaireFromServer(){
 		Log.d(LOG_TAG, "Request survey from server");
-		if (!hasSurveyLocally())
-			new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
+		new RequestSurvey(new GetQuestionnaireExecutor(), apkID).send();
 	}
 	
 	/**
@@ -628,7 +630,7 @@ public class ExternalApplication {
 	private class GetQuestionnaireExecutor implements ReqTaskExecutor {
 		
 		private final String LOG_TAG = GetQuestionnaireExecutor.class.getName(); 
-		
+
 		@Override
 		public void handleException(Exception e) {
 			Log.d(LOG_TAG, "Failed because of an exception: " + e.getMessage());
@@ -649,15 +651,19 @@ public class ExternalApplication {
 					Log.d(LOG_TAG, "Successfully received the Multi_Questionnaire");
 					APKID = j.getString("APKID");
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).setQuestionnaire(s);
-					Toaster.showToast(R.string.notification_survey_ready_to_view);
+					// notify the async task
+					if(AsyncGetSurvey.isRunning())
+						AsyncGetSurvey.surveyArrived(APKID, false);
 				} else if (Status.equals("FAILURE_NO_QUESTIONNAIRE_FOUND")){
 					Log.d(LOG_TAG, "Failed to receive the Questionnare, because this ExternalApplication has no Questionnaire on the server");
 					APKID = j.getString("APKID");
-					Toaster.showToast(R.string.notification_no_survey_for_this_apk);
+					if(AsyncGetSurvey.isRunning())
+						AsyncGetSurvey.surveyArrived(APKID, true);
 					InstalledExternalApplicationsManager.getInstance().getAppForId(APKID).hasNoQuestionnaire();
 				} else if (Status.equals("FAILURE_INVALID_APKID")){
 					Log.d(LOG_TAG, "Failed to receive the Questionnare, because of invalid APK");
-					// TODO Handle wrong APKID
+					if(AsyncGetSurvey.isRunning())
+						AsyncGetSurvey.surveyArrived(null, true);
 				} else if (Status.equals("INVALID_SESSION")){
 					Log.d(LOG_TAG, "Failed to receive the Questionnare, because of invalid Session ID. Trying again");
 					MosesService.getInstance().login();
