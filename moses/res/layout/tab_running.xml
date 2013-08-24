@@ -28,7 +28,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:choiceMode="multipleChoice" >
+        android:choiceMode="singleChoice"
+        android:divider="#000000"
+        android:dividerHeight="0.5dp" >
     </ListView>
     
 </LinearLayout>
