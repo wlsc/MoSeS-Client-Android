@@ -6,7 +6,6 @@ import java.util.Map;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.SimpleAdapter;
 import de.da_sense.moses.client.util.Log;
 
@@ -38,8 +37,10 @@ public class MosesListAdapter extends SimpleAdapter {
 	 */
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		View view = super.getView(position, convertView, parent);
-		LinearLayout listElement = (LinearLayout) view.findViewById(R.id.apklistitemelement);
+		final View view = super.getView(position, convertView, parent);
+		View listElement = view.findViewById(R.id.apklistitemelement);
+		
+		
 		listElement.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

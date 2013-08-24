@@ -191,7 +191,9 @@
     
     <!-- Misc -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor.</string>
+    <string name="apk_name">Apk name</string>
     <string name="content_description_toast">Small MoSeS logo.</string>
+    <string name="content_description_badge">A badge.</string>
     
     <!-- Error messages and notifications-->
     <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>

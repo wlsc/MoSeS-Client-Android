@@ -814,6 +814,7 @@ public class AvailableFragment extends ListFragment implements
 			if (!hashAppIDs.contains(app.getID())
 					&& !realHistApps.contains(app)) {
 				rowMap.put("name", app.getName());
+				rowMap.put("badge", app.getBadge());
 				listContent.add(rowMap);
 				listIndex.put(j, i);
 				j++;
@@ -823,7 +824,7 @@ public class AvailableFragment extends ListFragment implements
 
 		MosesListAdapter contentAdapter = new MosesListAdapter(mActivity,
 				listContent, R.layout.availableapkslistitem,
-				new String[] { "name" }, new int[] { R.id.apklistitemtext });
+				new String[] { "name", "badge" }, new int[] { R.id.apklistitemtext, R.id.badge });
 
 		setListAdapter(contentAdapter);
 

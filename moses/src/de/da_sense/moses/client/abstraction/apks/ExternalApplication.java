@@ -92,6 +92,8 @@ public class ExternalApplication {
 	private String apkVersion;
 	/** the survey of this user study */
 	private Survey mSurvey;
+	
+	private String mBadge="";
 
 	/**
 	 * Gets the ID
@@ -681,6 +683,20 @@ public class ExternalApplication {
 				handleException(c.e);
 			}
 		}
+	}
+
+	/**
+	 * @return the mBadge
+	 */
+	public String getBadge() {
+		return mBadge;
+	}
+
+	/**
+	 * @param mBadge the mBadge to set
+	 */
+	public void setBadge(String mBadge) {
+		this.mBadge = mBadge;
 	}	
 	
 }

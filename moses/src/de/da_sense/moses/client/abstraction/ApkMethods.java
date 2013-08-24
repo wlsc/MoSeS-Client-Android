@@ -166,6 +166,8 @@ public class ApkMethods {
 						String endDate = apkInformation.getString("ENDDATE");
 						String apkVersion = apkInformation
 								.getString("APKVERSION");
+						
+						String badge = apkInformation.getString("BADGE");
 
 						ExternalApplication externalApplication = new ExternalApplication(
 								Integer.valueOf(id));
@@ -174,6 +176,7 @@ public class ApkMethods {
 						externalApplication.setStartDate(startDate);
 						externalApplication.setEndDate(endDate);
 						externalApplication.setApkVersion(apkVersion);
+						externalApplication.setBadge(badge);
 
 						apps.add(externalApplication);
 					}
