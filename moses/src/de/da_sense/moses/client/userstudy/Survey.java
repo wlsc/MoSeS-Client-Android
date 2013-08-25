@@ -33,6 +33,11 @@ public class Survey extends HasID implements IHasTitle{
 	public static final String KEY_SURVEY_ID = "key_survey_id";
 	
 	/**
+	 * {@link JSONObject} used to instantiate this survey.
+	 */
+	private JSONObject mSurveyAsJSON = null;
+	
+	/**
 	 * This method creates a survey with all its underlying children from the consumed {@link JSONObject}.
 	 * This constructor assumes that the consumed object has the same structure as provided by the server.
 	 * @see <a href="https://github.com/ischweizer/MoSeS/wiki/Communication-API-between-MoSeS-Server-and-MoSeS-Clients"> protocol specifications</a>
@@ -41,6 +46,7 @@ public class Survey extends HasID implements IHasTitle{
 	public Survey(JSONObject jsonObject) {
 		try {
 			JSONObject surveyObject = jsonObject.getJSONObject("SURVEY");
+			mSurveyAsJSON = jsonObject;
 			JSONArray names = surveyObject.names();
 			mForms = new ArrayList<Form>();
 			for(int i=0; i<names.length(); i++){
@@ -148,5 +154,14 @@ public class Survey extends HasID implements IHasTitle{
 			if(form.getId() == formID)
 				return form;
 		return null;
+	}
+
+	/**
+	 * Returns the {@link JSONObject} that was used to instantiate this {@link Survey}.
+	 * 
+	 * @return the json object used to instantiate this survey or null if the object was not set
+	 */
+	public JSONObject getSurveyAsJSON() {
+		return mSurveyAsJSON;
 	}
 }

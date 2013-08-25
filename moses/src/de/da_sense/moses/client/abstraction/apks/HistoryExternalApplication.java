@@ -1,10 +1,17 @@
 package de.da_sense.moses.client.abstraction.apks;
 
 import java.util.Date;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import de.da_sense.moses.client.userstudy.Form;
+import de.da_sense.moses.client.userstudy.Question;
+import de.da_sense.moses.client.userstudy.Survey;
 import de.da_sense.moses.client.util.Log;
 
 /**
@@ -20,6 +27,7 @@ public class HistoryExternalApplication extends ExternalApplication {
 	private String packageName;
 	private boolean questionnaireSent;
 	private boolean hasEnded;
+	private static final String LOG_TAG = HistoryExternalApplication.class.getName();
 
 	/**
 	 * Creates the reference to the external application by specifying the
@@ -75,6 +83,10 @@ public class HistoryExternalApplication extends ExternalApplication {
 		
 		setQuestionnaireSent(questionnaireSent);
 		setHasEnded(hasEnded);
+		
+
+		setSurvey(externalApp.getSurvey());
+		
 	}
 	
 	@Deprecated
@@ -150,6 +162,29 @@ public class HistoryExternalApplication extends ExternalApplication {
 				+ Boolean.valueOf(questionnaireSent).toString()
 				+ SEPARATOR 
 				+ Boolean.valueOf(hasEnded).toString();
+		Survey survey = getSurvey();
+		if(survey != null){
+			JSONObject surveyAsJsonObject = survey.getSurveyAsJSON();
+			if(surveyAsJsonObject != null){
+				// there is a survey, add JSONObject as one line string
+				String jsonAsString = surveyAsJsonObject.toString();
+				jsonAsString = jsonAsString.replace("\n", " "); // paranoia
+				oneLine = oneLine+SEPARATOR+jsonAsString;
+			}
+			// now save the answers
+			JSONObject answersAsJson = new JSONObject();
+			List<Form> forms = survey.getForms();
+			for(Form form : forms)
+				for(Question question : form.getQuestions()){
+					try {
+						answersAsJson.put(String.valueOf(question.getId()), question.getAnswer());
+					} catch (JSONException e) {
+						Log.e(LOG_TAG, e.getMessage());
+					}
+				}
+			oneLine = oneLine + SEPARATOR + answersAsJson.toString().replace("\n", " "); // paranoia 2
+		}
+		
 		Log.d("HEA", "returning one line String:\n" + oneLine);
 		return oneLine;
 	}
@@ -168,6 +203,28 @@ public class HistoryExternalApplication extends ExternalApplication {
 		this.packageName = split[1];
 		this.questionnaireSent = Boolean.parseBoolean(split[2]);
 		this.hasEnded = Boolean.parseBoolean(split[3]);
+		// check if it has a Survey
+		if(split.length > 4){
+			String surveyAsJsonStrong = split[4];
+			setQuestionnaire(surveyAsJsonStrong);
+		}
+		
+		// set answers of the survey
+		if(split.length > 5){
+			String answersAsJsoString = split[5];
+			try {
+				JSONObject answersAsJsonObject = new JSONObject(answersAsJsoString);
+				for(Form form : getSurvey().getForms())
+					for(Question question : form.getQuestions()){
+						if(answersAsJsonObject.has(String.valueOf(question.getId())))
+							question.setAnswer(answersAsJsonObject.getString(String.valueOf(question.getId())));
+					}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	/**

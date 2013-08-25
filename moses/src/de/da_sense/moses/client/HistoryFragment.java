@@ -90,7 +90,7 @@ public class HistoryFragment extends ListFragment {
 					Intent intent = new Intent();
 					intent.setClass(mActivity, DetailActivity.class);
 					intent.putExtra("de.da_sense.moses.client.index", index);
-					intent.putExtra("de.da_sense.moses.client.belongsTo",
+					intent.putExtra(WelcomeActivity.KEY_BELONGS_TO,
 							DetailFragment.HISTORY);
 					intent.putExtra("de.da_sense.moses.client.appname",
 							app.getName());

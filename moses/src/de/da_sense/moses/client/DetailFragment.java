@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.service.MosesService;
@@ -54,11 +55,11 @@ public class DetailFragment extends Fragment {
 	private static View mDetailFragmentView;
 
 	private static DetailFragment mThisInstance;
-	
+
 	private static int mBelongsTo;
-	
+
 	private static int mIndex;
-	
+
 	private static String mAPKID;
 
 	/**
@@ -105,7 +106,7 @@ public class DetailFragment extends Fragment {
 				mIndex = savedInstanceState
 						.getInt("de.da_sense.moses.client.index");
 				mBelongsTo = savedInstanceState
-						.getInt("de.da_sense.moses.client.belongsTo");
+						.getInt(WelcomeActivity.KEY_BELONGS_TO);
 				appname = savedInstanceState
 						.getString("de.da_sense.moses.client.appname");
 				description = savedInstanceState
@@ -180,20 +181,15 @@ public class DetailFragment extends Fragment {
 			button.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					ExternalApplication app = AvailableFragment
-							.getInstance().getExternalApps()
-							.get(mIndex);// getShownIndex());
-					Log.d(LOG_TAG,
-							"installing app ( " + app.getName()
-									+ " ) with apkid = "
-									+ app.getID());
-					AvailableFragment.getInstance()
-							.handleInstallApp(app);
+					ExternalApplication app = AvailableFragment.getInstance()
+							.getExternalApps().get(mIndex);// getShownIndex());
+					Log.d(LOG_TAG, "installing app ( " + app.getName()
+							+ " ) with apkid = " + app.getID());
+					AvailableFragment.getInstance().handleInstallApp(app);
 				}
 			});
 			// get update button
-			button = (Button) mDetailFragmentView
-					.findViewById(R.id.update);
+			button = (Button) mDetailFragmentView.findViewById(R.id.update);
 			button.setVisibility(View.GONE); // there is no update
 												// for
 												// this new app
@@ -210,12 +206,9 @@ public class DetailFragment extends Fragment {
 					.findViewById(R.id.startapp);
 			Button updateButton = (Button) mDetailFragmentView
 					.findViewById(R.id.update);
-			updateButton
-					.setVisibility(RunningFragment.getInstance()
-							.getInstalledApps()
-							.get(getShownIndex())
-							.getUpdateAvailable() ? View.VISIBLE
-							: View.GONE);
+			updateButton.setVisibility(RunningFragment.getInstance()
+					.getInstalledApps().get(getShownIndex())
+					.getUpdateAvailable() ? View.VISIBLE : View.GONE);
 			// change the text of it to install
 			button.setText(getString(R.string.open));
 			// make an action listener for it
@@ -223,12 +216,10 @@ public class DetailFragment extends Fragment {
 				@Override
 				public void onClick(View v) {
 					InstalledExternalApplication app = RunningFragment
-							.getInstance().getInstalledApps()
-							.get(mIndex);// getShownIndex());
+							.getInstance().getInstalledApps().get(mIndex);// getShownIndex());
 					Log.d(LOG_TAG, "open app ( " + app.getName()
 							+ " ) with apkid = " + app.getID());
-					RunningFragment.getInstance().handleStartApp(
-							app);
+					RunningFragment.getInstance().handleStartApp(app);
 				}
 			});
 			// get questionnaire button, if the questionnaire is not
@@ -238,18 +229,17 @@ public class DetailFragment extends Fragment {
 					.findViewById(R.id.btn_questionnaire);
 			// check if it has Questionnaire and if it's sent
 			if (InstalledExternalApplicationsManager.getInstance() == null)
-				InstalledExternalApplicationsManager
-						.init(MosesService.getInstance());
+				InstalledExternalApplicationsManager.init(MosesService
+						.getInstance());
 			InstalledExternalApplication app = InstalledExternalApplicationsManager
 					.getInstance().getAppForId(mAPKID);
 			Log.d(LOG_TAG, "app = " + app);
 			if (app != null) {
-				final boolean hasSurveyLocal = app
-						.hasSurveyLocally();
-				boolean isQuestionnaireSent = hasSurveyLocal ? app
-						.getSurvey().hasBeenSent() : false;
-				Log.d(LOG_TAG, "hasQuestLocal" + hasSurveyLocal
-						+ "isQuestSent" + isQuestionnaireSent);
+				final boolean hasSurveyLocal = app.hasSurveyLocally();
+				boolean isQuestionnaireSent = hasSurveyLocal ? app.getSurvey()
+						.hasBeenSent() : false;
+				Log.d(LOG_TAG, "hasQuestLocal" + hasSurveyLocal + "isQuestSent"
+						+ isQuestionnaireSent);
 				// set button according to the booleans
 				if (isQuestionnaireSent) {
 					button.setText(getString(R.string.details_running_questionnairesent));
@@ -257,12 +247,11 @@ public class DetailFragment extends Fragment {
 					button.setEnabled(false);
 				} else {
 
-					if (hasSurveyLocal){
+					if (hasSurveyLocal) {
 						button.setText(getString(R.string.btn_survey));
 						button.setClickable(true);
 						button.setEnabled(true);
-					}
-					else {
+					} else {
 						button.setText(getString(R.string.download_survey));
 						if (AsyncGetSurvey.isRunning()) {
 							// disable the button, the async task is
@@ -286,8 +275,7 @@ public class DetailFragment extends Fragment {
 										getString(R.string.notification_downloading_survey));
 								AsyncGetSurvey getSurveyAsyncTask = new AsyncGetSurvey();
 								InstalledExternalApplicationsManager
-										.getInstance()
-										.getAppForId(mAPKID)
+										.getInstance().getAppForId(mAPKID)
 										.getQuestionnaireFromServer();
 								getSurveyAsyncTask.execute(mAPKID);
 							}
@@ -296,10 +284,8 @@ public class DetailFragment extends Fragment {
 				}
 				// get update button
 				boolean updateAvailable = InstalledExternalApplicationsManager
-						.getInstance().getAppForId(mAPKID)
-						.isUpdateAvailable();
-				button = (Button) mDetailFragmentView
-						.findViewById(R.id.update);
+						.getInstance().getAppForId(mAPKID).isUpdateAvailable();
+				button = (Button) mDetailFragmentView.findViewById(R.id.update);
 				if (updateAvailable) {
 					button.setVisibility(View.VISIBLE);
 				} else {
@@ -314,8 +300,7 @@ public class DetailFragment extends Fragment {
 			button.setVisibility(View.GONE); // hide open / install
 												// button
 			// get update button
-			button = (Button) mDetailFragmentView
-					.findViewById(R.id.update);
+			button = (Button) mDetailFragmentView.findViewById(R.id.update);
 			button.setVisibility(View.GONE); // there is no update
 												// for
 												// this old app
@@ -325,49 +310,42 @@ public class DetailFragment extends Fragment {
 			button = (Button) mDetailFragmentView
 					.findViewById(R.id.btn_questionnaire);
 			button.setVisibility(View.GONE);
-			// // check if it has Questionnaire and if it's sent
-			// if (HistoryExternalApplicationsManager.getInstance()
-			// == null)
-			// HistoryExternalApplicationsManager.init(MosesService
-			// .getInstance());
-			// boolean hasQuestionnaire =
-			// HistoryExternalApplicationsManager
-			// .getInstance().getAppForId(apkid)
-			// .hasSurveyLocally();
-			// boolean isQuestionnaireSent = hasQuestionnaire ?
-			// HistoryExternalApplicationsManager
-			// .getInstance().getAppForId(apkid)
-			// .getSurvey().hasBeenSent()
-			// : true;
-			// // set button according to the booleans
-			// if (!hasQuestionnaire) {
-			// button.setText(getString(
-			// R.string.details_running_noquestionnaire));
-			// button.setClickable(false);
-			// button.setEnabled(false);
-			// } else if (isQuestionnaireSent) {
-			// button.setText(getString(
-			// R.string.details_running_questionnairesent));
-			// button.setClickable(false);
-			// button.setEnabled(false);
-			// } else {
-			// button.setOnClickListener(new OnClickListener() {
-			// @Override
-			// public void onClick(View v) {
-			// Log.i(TAG, "Display questionnaires of "
-			// + appname + " to fill");
-			// Intent intent = new Intent();
-			// intent.setClass(mActivity,
-			// SurveyActivity.class);
-			// intent.putExtra(
-			// ExternalApplication.KEY_APK_ID, apkid);
-			// intent.putExtra(
-			// "de.da_sense.moses.client.belongsTo",
-			// HISTORY);
-			// startActivity(intent);
-			// }
-			// });
-			// }
+			// check if it has Questionnaire and if it's sent
+			if (HistoryExternalApplicationsManager.getInstance() == null)
+				HistoryExternalApplicationsManager.init(MosesService
+						.getInstance());
+			boolean hasQuestionnaire = HistoryExternalApplicationsManager
+					.getInstance().getAppForId(mAPKID).hasSurveyLocally();
+//			boolean isQuestionnaireSent = hasQuestionnaire ? HistoryExternalApplicationsManager
+//					.getInstance().getAppForId(mAPKID).getSurvey()
+//					.hasBeenSent()
+//					: true;
+			// set button according to the booleans
+			if (!hasQuestionnaire) {
+				button.setText(getString(R.string.details_running_noquestionnaire));
+				button.setClickable(false);
+				button.setEnabled(false);
+			}
+//			else if (isQuestionnaireSent) {
+//				button.setText(getString(R.string.details_running_questionnairesent));
+//				button.setClickable(false);
+//				button.setEnabled(false);
+//			} 
+			else {
+				// we have Survey
+				button.setVisibility(View.VISIBLE);
+				button.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						Intent intent = new Intent();
+						intent.setClass(mActivity, SurveyActivity.class);
+						intent.putExtra(ExternalApplication.KEY_APK_ID, mAPKID);
+						intent.putExtra(WelcomeActivity.KEY_BELONGS_TO,
+								HISTORY);
+						startActivity(intent);
+					}
+				});
+			}
 		}
 	}
 
@@ -419,7 +397,7 @@ public class DetailFragment extends Fragment {
 		Intent intent = new Intent();
 		intent.setClass(mActivity, SurveyActivity.class);
 		intent.putExtra(ExternalApplication.KEY_APK_ID, apkid);
-		intent.putExtra("de.da_sense.moses.client.belongsTo", RUNNING);
+		intent.putExtra(WelcomeActivity.KEY_BELONGS_TO, RUNNING);
 		startActivityForResult(intent, REQUEST_CODE_NOTIFY_ABOUT_SEND);
 	}
 

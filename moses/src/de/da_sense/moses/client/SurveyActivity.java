@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MenuItem;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.userstudy.Survey;
@@ -52,7 +53,12 @@ public class SurveyActivity extends FragmentActivity {
 		if(mAPKID == null)
 			Log.e(LOG_TAG, "onCreate() apkid was not in the bundle nor in the intent");
 		
-		InstalledExternalApplication apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+		int belongsTo = getIntent().getIntExtra(WelcomeActivity.KEY_BELONGS_TO, WelcomeActivityPagerAdapter.TAB_RUNNING);
+		ExternalApplication apk;
+		if(belongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+			apk = HistoryExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+		else
+			apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
 		
 		// get ActionBar and set AppIcon to direct to the "home screen"
 		ActionBar ab = getActionBar();

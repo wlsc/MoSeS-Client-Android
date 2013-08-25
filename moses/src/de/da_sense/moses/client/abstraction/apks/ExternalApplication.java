@@ -375,29 +375,18 @@ public class ExternalApplication {
 	}
 
 	/**
-	 * setter for questionnaire
-	 * 
-	 * @param questionnaire
-	 *            the quesitonnaire to set
-	 */
-	private void setQuestionnaire(Survey questionnaire) {
-		if (!apkHasSurveyLocally)
-		this.mSurvey = questionnaire;
-	}
-
-	/**
 	 * Set the questionnaire from a string.
 	 * 
 	 * @param questAsString
 	 */
 	public void setQuestionnaire(String questAsString) {
-		if (!apkHasSurveyLocally)
-			try {
-				setQuestionnaire(new Survey(new JSONObject(questAsString)));
-			} catch (JSONException e) {
-				Log.e(LOG_TAG, e.getMessage());
-			}
-		apkHasSurveyLocally = true;
+		try {
+			JSONObject questAsJson = new JSONObject(questAsString);
+			setSurvey(new Survey(questAsJson));
+			apkHasSurveyLocally = true;
+		} catch (JSONException e) {
+			Log.e(LOG_TAG, e.getMessage());
+		}
 	}
 
 	/**
@@ -417,6 +406,16 @@ public class ExternalApplication {
 	 */
 	public Survey getSurvey() {
 		return mSurvey;
+	}
+
+	/**
+	 * Sets a {@link Survey} instance to this {@link ExternalApplication}.
+	 * 
+	 * @param mSurvey the survey to set
+	 */
+	public void setSurvey(Survey survey) {
+		this.mSurvey = survey;
+		apkHasSurveyLocally = true;
 	}
 
 	/**

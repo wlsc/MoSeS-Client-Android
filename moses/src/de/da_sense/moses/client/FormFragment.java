@@ -34,6 +34,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
@@ -63,12 +64,6 @@ public class FormFragment extends Fragment {
 	 * Defining a log tag to this class
 	 */
 	private static final String LOG_TAG = FormFragment.class.getName();
-	
-	/**
-	 * To send (and to save on local) user's answers of a questionnaire to
-	 * server
-	 */
-	private Button btnSend;
 
 	/**
 	 * The {@link Form} instance visualized with this {@link FormFragment}.
@@ -84,11 +79,6 @@ public class FormFragment extends Fragment {
 	 * The id of the {@link Form} instance visualized by this {@link FormFragment}.
 	 */
 	private int mFormID = -1;
-
-	/**
-	 * The "Next Questionnaire" Button
-	 */
-	private Button btnNext;
 	
 	private LayoutInflater mLayoutInflater;
 	
@@ -143,6 +133,11 @@ public class FormFragment extends Fragment {
 	private static final String KEY_POSITION_OF_FRAGMENT_WHICH_SHOULD_SCROLL = "keyPositionOfFragmentWhichShouldScroll";
 	private static final String KEY_QUESTION_TO_SCROLL_TO = "keyQuestionToScrollTo";
 	
+	/*
+	 * Signals to whom does the apk, whose Survey is being represented, belongs to
+	 */
+	private int mBelongsTo = WelcomeActivityPagerAdapter.TAB_RUNNING;
+	
 
 	/**
 	 * Creates a Layout for a Single_Questionnaire
@@ -151,6 +146,9 @@ public class FormFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		Intent intent = getActivity().getIntent();
+		mBelongsTo = intent.getIntExtra(WelcomeActivity.KEY_BELONGS_TO, WelcomeActivityPagerAdapter.TAB_RUNNING);
 		
 		mLayoutInflater = inflater;
 	
@@ -177,9 +175,15 @@ public class FormFragment extends Fragment {
 				Log.e(LOG_TAG, "onCreateView the formID was not set and not in the bundle");
 		}
 	
+		ExternalApplication app;
+		
 		// get the corresponding installedApp
-		InstalledExternalApplication app = InstalledExternalApplicationsManager
-				.getInstance().getAppForId(mAPKID);
+		if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY){
+			app = HistoryExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+		}
+		else{
+		app = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
+		}
 		
 		if (app != null) {
 			mForm = app.getSurvey().getForm(mFormID);
@@ -205,17 +209,6 @@ public class FormFragment extends Fragment {
 				mIsLast = savedInstanceState.getBoolean(KEY_IS_LAST);
 		}
 		
-		
-		
-	
-		// TODO Disable Saving if it was already sent to the server
-		if (!app.getSurvey().hasBeenSent()) {
-			Log.i(LOG_TAG, "this questionnaire can be sent");
-			addingButtonsToThisLayout(mRoot);
-		} else {
-			Log.i(LOG_TAG, "this questionnaire was sent");
-			removingButtonsFromThisLayout();
-		}
 		return (View) mRoot;
 	}
 	
@@ -334,6 +327,8 @@ public class FormFragment extends Fragment {
 						}
 						}
 				});
+			if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+				buttonNext.setVisibility(View.GONE); // disable sending button if we are viewing the survey from history tab
 			}
 		else
 			buttonNext.setOnClickListener(new OnClickListener() {
@@ -373,76 +368,6 @@ public class FormFragment extends Fragment {
 				activityIntent.removeExtra(KEY_QUESTION_TO_SCROLL_TO);
 				}
 			}
-	}
-
-
-	/**
-	 * Remove the send button from the layout.
-	 */
-	private void removingButtonsFromThisLayout() {
-		Log.d(LOG_TAG, "removingButtonsFormThisLayout: btnSend = " + btnSend);
-		if (btnSend != null && btnSend.getVisibility() == View.VISIBLE)
-			btnSend.setVisibility(View.INVISIBLE);
-		Log.d(LOG_TAG, "removingButtonsFormThisLayout: btnNext = " + btnNext);
-		if (btnNext != null && btnNext.getVisibility() == View.VISIBLE)
-			btnNext.setVisibility(View.INVISIBLE);
-	}
-
-	/**
-	 * Adds Buttons to this Layout. If the current questionnaire's index
-	 * is not the last index it adds a Next Button, else an Send Button 
-	 * @param layout
-	 *            the Linear layout to be added on
-	 */
-	private void addingButtonsToThisLayout(LinearLayout ll) {
-//		LinearLayout bLayout = (LinearLayout) ll.findViewById(R.id.bottom_quest);
-//		XXX ZM CLEAN
-//		if (currentIndex == lastIndex) {
-//		// Adding save button
-//		btnSend = new Button(getActivity().getApplicationContext());
-//		btnSend.setText(getString(R.string.q_send));
-//		btnSend.setTag("SendButton");
-//		btnSend.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-////				usQuestionnaire.setAnswers(layout);
-//				Toast.makeText(getActivity().getApplicationContext(), getString(R.string.q_answersSent), Toast.LENGTH_LONG).show();
-////				InstalledExternalApplicationsManager.getInstance().getAppForId(apkid).getSurvey().sendAnswersToServer();
-//				// XXX Test ob es speichern kann
-//				try {
-//					InstalledExternalApplicationsManager.getInstance().saveToDisk(MosesService.getInstance());
-//				} catch (IOException e) {
-//					Log.d("Flo", "Konnte nicht speichern");
-//					e.printStackTrace();
-//				}
-//				// XXX Test ob es speichern kann
-//				v.setEnabled(false); // disable buttons
-//				}
-//			}
-//		);
-//		bLayout.addView(btnSend);
-//		} else {
-//		btnNext= new Button(getActivity().getApplicationContext());
-//		btnNext.setText(getString(R.string.q_next));
-//		btnNext.setTag("NextButton");
-//		btnNext.setEnabled(true);
-//		btnNext.setOnClickListener(new OnClickListener() {
-//			@Override
-//			public void onClick(View v) {
-//				// Sets he answers of the current Questionnaire in order
-//				// to swap to the next one				
-////				usQuestionnaire.setAnswers(layout);
-//				FragmentTransaction ft = getActivity().getFragmentManager().beginTransaction();
-//				QuestionnaireFragment nextFragment = new QuestionnaireFragment();
-//				nextFragment.setRetainInstance(true);
-//				Bundle args = getArguments();
-//				nextFragment.setArguments(args);
-//				ft.replace(android.R.id.content, nextFragment);
-//				ft.commit();
-//			}
-//		});
-//		bLayout.addView(btnNext);
-//		}
 	}
 
 	/**
@@ -546,11 +471,15 @@ public class FormFragment extends Fragment {
 					question.setAnswer(String.valueOf(possibleAnswerId));
 				}
 			});
+			if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+				rb[i].setEnabled(false);
 			
 			rb[i].setVisibility(View.VISIBLE);
 		}
 		
 		rg.setVisibility(View.VISIBLE);
+		if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+			rg.setEnabled(false);
 		Log.i(LOG_TAG, "last rg = " + rg);
 		questionContainer.addView(rg);
 	}
@@ -613,6 +542,8 @@ public class FormFragment extends Fragment {
 			});
 			
 			checkBoxs[i].setVisibility(View.VISIBLE);
+			if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+				checkBoxs[i].setEnabled(false);
 			questionContainer.addView(checkBoxs[i]);
 		}
 	}
@@ -639,18 +570,22 @@ public class FormFragment extends Fragment {
 		if(!madeAnswer.equals(Question.ANSWER_UNANSWERED))
 			editText.setText(madeAnswer);
 		
-		// remember the answer as soon as the edittext looses focus
-		editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-			
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				if(!hasFocus){
-					String newAnswer = editText.getText().toString();
-					if(!newAnswer.equals(Question.ANSWER_UNANSWERED))
-						question.setAnswer(newAnswer);
+		if(mBelongsTo == WelcomeActivityPagerAdapter.TAB_HISTORY)
+			editText.setEnabled(false);
+		else{
+			// remember the answer as soon as the edittext looses focus
+			editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+				
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					if(!hasFocus){
+						String newAnswer = editText.getText().toString();
+						if(!newAnswer.equals(Question.ANSWER_UNANSWERED))
+							question.setAnswer(newAnswer);
+					}
 				}
-			}
-		});
+			});
+		}
 		
 		editText.setVisibility(View.VISIBLE);
 		if (question.getAnswer() != null) {

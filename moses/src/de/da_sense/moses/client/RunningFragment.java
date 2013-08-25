@@ -111,7 +111,7 @@ public class RunningFragment extends ListFragment {
 								DetailActivity.class);
 						intent.putExtra("de.da_sense.moses.client.index", 
 								index);
-						intent.putExtra("de.da_sense.moses.client.belongsTo", 
+						intent.putExtra(WelcomeActivity.KEY_BELONGS_TO, 
 								DetailFragment.RUNNING);
 						intent.putExtra("de.da_sense.moses.client.appname", 
 								app.getName());
@@ -149,7 +149,7 @@ public class RunningFragment extends ListFragment {
 						Intent intent = new Intent();
 						intent.setClass(mActivity, DetailActivity.class);
 						intent.putExtra("de.da_sense.moses.client.index", 0);
-						intent.putExtra("de.da_sense.moses.client.belongsTo", 
+						intent.putExtra(WelcomeActivity.KEY_BELONGS_TO, 
 								DetailFragment.RUNNING);
 						intent.putExtra("de.da_sense.moses.client.appname", 
 								app.getName());

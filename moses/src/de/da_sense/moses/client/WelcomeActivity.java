@@ -85,6 +85,11 @@ public class WelcomeActivity extends FragmentActivity implements
 	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
+	
+	/**
+	 * Used as a key to pass a variable signaling the owner tab through communication channel.
+	 */
+	public static final String KEY_BELONGS_TO = "keyBelongsTo";
 
 	/*
 	 * For receiving informations about the Internet connection state and

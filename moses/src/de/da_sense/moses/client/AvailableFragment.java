@@ -147,8 +147,7 @@ public class AvailableFragment extends ListFragment implements
 					Intent intent = new Intent();
 					intent.setClass(mActivity, DetailActivity.class);
 					intent.putExtra("de.da_sense.moses.client.index", index);
-					intent.putExtra("de.da_sense.moses.client.belongsTo",
-							DetailFragment.AVAILABLE);
+					intent.putExtra(WelcomeActivity.KEY_BELONGS_TO,DetailFragment.AVAILABLE);
 					intent.putExtra("de.da_sense.moses.client.appname",
 							app.getName());
 					intent.putExtra("de.da_sense.moses.client.description",

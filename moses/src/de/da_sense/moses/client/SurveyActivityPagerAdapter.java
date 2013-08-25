@@ -6,6 +6,7 @@ import java.util.List;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
 import de.da_sense.moses.client.userstudy.Form;
 import de.da_sense.moses.client.userstudy.Survey;
@@ -36,10 +37,10 @@ class SurveyActivityPagerAdapter extends FragmentStatePagerAdapter{
 	/**
 	 * Constructs a new {@link SurveyActivityPagerAdapter} based on the consumed arguments.
 	 * @param fm an instance of {@link FragmentManager}
-	 * @param apk an {@link InstalledExternalApplication} containing the {@link Form} instances for which this adapter instantiates
+	 * @param apk an {@link ExternalApplication} containing the {@link Form} instances for which this adapter instantiates
 	 * {@link FormFragment}s.
 	 */
-	public SurveyActivityPagerAdapter(FragmentManager fm, InstalledExternalApplication apk) {
+	public SurveyActivityPagerAdapter(FragmentManager fm, ExternalApplication apk) {
 		super(fm);
 		this.mAPKID = apk.getID();
 		this.mForms = apk.getSurvey().getForms();
