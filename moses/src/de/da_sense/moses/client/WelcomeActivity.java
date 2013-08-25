@@ -596,6 +596,7 @@ public class WelcomeActivity extends FragmentActivity implements
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
 						+ "changed because of ShowUpdate-Call. ACTIVE TAB SET "
 						+ "FROM " + getActiveTab() + " TO RUNNING (1)");
+				mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_RUNNING, true);
 			}
 		}
 

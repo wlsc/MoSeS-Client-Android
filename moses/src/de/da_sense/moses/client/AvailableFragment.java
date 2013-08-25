@@ -481,8 +481,7 @@ public class AvailableFragment extends ListFragment implements
 	 */
 	protected void handleInstallApp(ExternalApplication app) {
 
-		final ProgressDialog progressDialog = new ProgressDialog(
-				WelcomeActivity.getInstance());
+		final ProgressDialog progressDialog = new ProgressDialog(WelcomeActivity.getInstance());
 
 		Log.d(TAG, "progressDialog = " + progressDialog);
 
@@ -629,9 +628,9 @@ public class AvailableFragment extends ListFragment implements
 				} else if (installer.getState() == ApkInstallManager.State.INSTALLATION_COMPLETED) {
 					new APKInstalled(externalAppRef.getID());
 					try {
-						ApkInstallManager.registerInstalledApk(originalApk,
-								externalAppRef, WelcomeActivity.getInstance()
-										.getApplicationContext(), false);
+						InstalledExternalApplication extApp = ApkInstallManager.registerInstalledApk(originalApk, externalAppRef, WelcomeActivity.getInstance().getApplicationContext(), false);
+						extApp.setUpdateAvailable(false);
+						
 					} catch (IOException e) {
 						Log.e("MoSeS.Install",
 								"Problems with extracting package name from "

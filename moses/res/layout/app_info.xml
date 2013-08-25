@@ -154,25 +154,22 @@
         <Button
             android:id="@+id/startapp"
             android:layout_width="0dip"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:maxWidth="80dip"
             android:text="@string/button_start" />
 
         <Button
             android:id="@+id/update"
             android:layout_width="0dip"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:maxWidth="80dip"
             android:text="@string/button_update" />
 
         <Button
             android:id="@+id/btn_questionnaire"
             android:layout_width="0dip"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="0.3"
-            android:maxWidth="80dip"
             android:text="@string/btn_survey" />
     </LinearLayout>
 

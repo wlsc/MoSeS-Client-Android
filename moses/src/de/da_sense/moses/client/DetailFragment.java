@@ -288,6 +288,13 @@ public class DetailFragment extends Fragment {
 				button = (Button) mDetailFragmentView.findViewById(R.id.update);
 				if (updateAvailable) {
 					button.setVisibility(View.VISIBLE);
+					button.setOnClickListener(new OnClickListener() {
+						
+						@Override
+						public void onClick(View v) {
+							AvailableFragment.getInstance().handleInstallApp(InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID));
+						}
+					});
 				} else {
 					button.setVisibility(View.GONE);
 				}
