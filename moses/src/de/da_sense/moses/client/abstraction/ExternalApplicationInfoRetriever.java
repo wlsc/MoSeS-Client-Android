@@ -122,7 +122,6 @@ public class ExternalApplicationInfoRetriever extends Observable {
 									if(!MosesService.isOnline(mContext))
 										Toaster.showNoInternetConnection(mContext);
 									else
-										
 										Toaster.showBadServerResponseToast(mContext);
 									setErrorState(e);
 								}

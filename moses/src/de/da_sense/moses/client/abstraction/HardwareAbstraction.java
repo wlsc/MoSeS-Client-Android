@@ -253,7 +253,10 @@ public class HardwareAbstraction {
          */
 		@Override
 		public void handleException(Exception e) {
-			Toaster.showBadServerResponseToast(mContext);
+			if(!MosesService.isOnline(mContext))
+				Toaster.showBadServerResponseToast(mContext);
+			else
+				Toaster.showNoInternetConnection(mContext);
 			Log.d("MoSeS.HARDWARE_ABSTRACTION", "FAILURE: " + e.getMessage());
 		}
 

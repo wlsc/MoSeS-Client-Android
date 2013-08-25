@@ -701,7 +701,7 @@ public class FormFragment extends Fragment {
 						InstalledExternalApplication apk = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID);
 						InstalledExternalApplicationsManager.getInstance().forgetExternalApplication(apk);
 						HistoryExternalApplicationsManager.getInstance().addExternalApplication(new HistoryExternalApplication(apk, true, true)); // add the app to history
-						Toaster.showToastLong(getActivity(), getString(R.string.notification_results_sent_to_server));
+						Toaster.showToast(getActivity(), getString(R.string.notification_results_sent_to_server));
 						// survey has been sent to server, set result to OK and finish the activity
 						Activity activity = getActivity();
 						activity.setResult(Activity.RESULT_OK);

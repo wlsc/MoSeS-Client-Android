@@ -39,6 +39,7 @@ public class C2DMReceiver extends BroadcastReceiver {
 	private static void handleNotifications(Context context, Intent intent) {
 		try {
 			JSONObject message = new JSONObject(intent.getExtras().getString("message"));
+			Log.v(LOG_TAG, "handleNotifications() message="+message);
 			String messagetype = message.getString(GCM_MESSAGETYPE_FIELD);
 			if (messagetype.equals(GCM_PUSH_MESSAGTYPE_USERSTUDY)) {
 				String apkidString = message.getString(GCM_USERSTUDY_APKID_FIELD);
