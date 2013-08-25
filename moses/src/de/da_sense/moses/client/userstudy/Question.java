@@ -19,6 +19,12 @@ public class Question extends HasID implements IHasTitle{
 	public static final int TYPE_SINGLE_CHOICE = 5;
 	//=============END QUESTION TYPES END=======================
 	
+	//=================MANDATORY OR NOT===========================
+	public static final int MANDATORY_QUESTION_NO = 0;
+	public static final int MANDATORY_QUESTION_YES = 1;
+	//=============END MANDATORY OR NOT END=======================
+	
+	
 	/**
 	 * A constant of describing an "unanswered" answer to a question.
 	 * @see <a href="https://github.com/ischweizer/MoSeS/wiki/Question-types">Answer codings</a>
@@ -28,6 +34,8 @@ public class Question extends HasID implements IHasTitle{
 	private int mType;
 	
 	private String mTitle;
+	
+	private int mIsMandatory = MANDATORY_QUESTION_NO;
 	
 	/**
 	 * An answer to this question, given by the user. The answer to a question
@@ -98,5 +106,30 @@ public class Question extends HasID implements IHasTitle{
 	 */
 	public void setAnswer(String answer){
 		this.mAnswer = answer;
+	}
+
+	/**
+	 * Returns {@link Question#MANDATORY_QUESTION_YES} if and only if this question is mandatory.
+	 * @return {@link Question#MANDATORY_QUESTION_YES} if the question is mandatory, {@link Question#MANDATORY_QUESTION_NO} otherwise.
+	 */
+	public int getIsMandatory() {
+		return mIsMandatory;
+	}
+
+	/**
+	 * Sets the flag to this {@link Question} instance signaling if the question is mandatory or not.
+	 * @param isMandatory set {@link Question#MANDATORY_QUESTION_NO} if the question is not mandatory, {@link Question#MANDATORY_QUESTION_YES}
+	 * otherwise.
+	 */
+	public void setIsMandatory(int isMandatory) {
+		this.mIsMandatory = isMandatory;
+	}
+	
+	/**
+	 * Returns true if and only if this question is mandatory.
+	 * @return true if this question is mandatory, false otherwise.
+	 */
+	public boolean isMandatory(){
+		return getIsMandatory() == MANDATORY_QUESTION_YES;
 	}
 }

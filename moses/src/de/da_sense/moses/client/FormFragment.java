@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -31,6 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.HistoryExternalApplicationsManager;
@@ -116,6 +118,31 @@ public class FormFragment extends Fragment {
 	 * save the entered text in edit text to {@link Question} instance, BEFORE the results are sent to server.
 	 */
 	private Map<Question, EditText> mQuestionEditTextMappings = new HashMap<Question, EditText>();
+	
+	/**
+	 * Mappings between {@link Question} represented by this {@link FormFragment} and EditText
+	 * instances which hold their title representations.
+	 */
+	private Map<Question, TextView> mQuestionTitleMappings = new HashMap<Question, TextView>();
+	
+	/**
+	 * The scroll view containing question in this fragment.
+	 */
+	private ScrollView mScrollView;
+	
+	/**
+	 * The position of this Fragment in the view pager
+	 */
+	private int mPosition = -1;
+	
+	private static final String KEY_POSITION = "keyMPosition";
+	
+	/*
+	 * Used to save position and question id of the fragment which contains a mandatory question which is unanswered
+	 */
+	private static final String KEY_POSITION_OF_FRAGMENT_WHICH_SHOULD_SCROLL = "keyPositionOfFragmentWhichShouldScroll";
+	private static final String KEY_QUESTION_TO_SCROLL_TO = "keyQuestionToScrollTo";
+	
 
 	/**
 	 * Creates a Layout for a Single_Questionnaire
@@ -129,10 +156,14 @@ public class FormFragment extends Fragment {
 	
 		container.setBackgroundColor(getResources().getColor(
 				android.R.color.background_light));
-	
-		if(mAPKID == null)
-			if(savedInstanceState != null)
+		
+		if(savedInstanceState != null){
+			if(mPosition == -1)
+				mPosition = savedInstanceState.getInt(KEY_POSITION, -1);
+			
+			if(mAPKID == null)
 				mAPKID = savedInstanceState.getString(InstalledExternalApplication.KEY_APK_ID, null);
+		}
 		
 		if(mAPKID == null)
 			Log.e(LOG_TAG, "onCreateView the APKID was not set and not in the bundle");
@@ -157,6 +188,8 @@ public class FormFragment extends Fragment {
 	
 		mRoot = (LinearLayout) inflater.inflate(
 				R.layout.form, container, false);
+		
+		mScrollView = (ScrollView) mRoot.findViewById(R.id.scrollView1);
 		
 		// set focus to the dummy layout in order to prevent virtual keyboard from popping up
 		View dummyLayout = mRoot.findViewById(R.id.dummy_layout_form);
@@ -200,6 +233,7 @@ public class FormFragment extends Fragment {
 		Button buttonPrevious = (Button) formButtonContainer.findViewById(R.id.button_form_previous);
 		Button buttonNext = (Button) formButtonContainer.findViewById(R.id.button_form_next);
 		
+		
 		if(mIsFirst)
 			buttonPrevious.setVisibility(View.GONE);
 		else
@@ -218,49 +252,128 @@ public class FormFragment extends Fragment {
 				
 				@Override
 				public void onClick(View v) {
-					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-					// Add the buttons
-					builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-					           public void onClick(DialogInterface dialog, int id) {
-					               // User clicked OK button
-					        	   Set<Question> questions = mQuestionEditTextMappings.keySet();
-									for(Question question : questions){
-										String finalAnswerOfUser = mQuestionEditTextMappings.get(question).getText().toString();
-										question.setAnswer(finalAnswerOfUser);
-									}
-									sendAnswersToServer();
-					           }
-					       });
-					builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					           public void onClick(DialogInterface dialog, int id) {
-					               // User cancelled the dialog
-					        	   dialog.dismiss();
-					           }
-					       });
-
-					builder.setMessage(R.string.surveySendToServerMessage)
-				           .setTitle(R.string.surveySendToServerTitle);
+					// User clicked SEND button
 					
-					// Create the AlertDialog
-					AlertDialog dialog = builder.create();
+					// special care for text questions
+		        	   Set<Question> questions = mQuestionEditTextMappings.keySet();
+						for(Question question : questions){
+							String finalAnswerOfUser = mQuestionEditTextMappings.get(question).getText().toString();
+							question.setAnswer(finalAnswerOfUser);
+						}
+						
+						// ===== MANDATORY QUESTION FILLED CHECK ====== //
+						
+						Survey theSurvey = InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID).getSurvey();
+						List<Form> forms = theSurvey.getForms();
+						Collections.sort(forms);
+						// iterate over all forms and the over all questions and check if there is
+						// a mandatory question that is not filled
+						boolean mayBeSent = true; // set to true only if the survey may be sent
+						for(Form form : forms){
+							boolean formWithUnansweredQuestionFound = false;
+							List<Question> questionsToCheck = form.getQuestions();
+							Collections.sort(questionsToCheck);
+							for(Question questionToCheck : questionsToCheck){
+								if(questionToCheck.isMandatory()){
+									// check if we have an answer
+									if(questionToCheck.getAnswer().equals(Question.ANSWER_UNANSWERED)){
+										// the question is unanswered although mandatory, take action
+										mayBeSent = false;
+										int formPosition = forms.indexOf(form);
+										// go to the tab with containing the question
+										Toaster.showToast(getActivity(), getString(R.string.notification_mandatory_question_unanswered));
+										if(mPosition == formPosition){
+											// the unanswered mandatory question is in this FormFragment
+											// just scroll to the question (EditText representing the title of the question)
+											scrollToQuestion(questionToCheck);
+											formWithUnansweredQuestionFound = true;
+											break;
+										}
+										else{
+											// the question is not in this FormFragment
+											// leave a message to this fragment and page to his position
+											// that fragment should take care of scrolling
+											Intent activityIntent = getActivity().getIntent();
+											activityIntent.putExtra(KEY_POSITION_OF_FRAGMENT_WHICH_SHOULD_SCROLL, formPosition);
+											activityIntent.putExtra(KEY_QUESTION_TO_SCROLL_TO, questionToCheck.getId());
+											viewPager.setCurrentItem(formPosition, true);
+											formWithUnansweredQuestionFound = true;
+											break;
+										}
+									}
+								}
+							}
+							if(formWithUnansweredQuestionFound)
+								break;
+							
+						}
+						// ===== END MANDATORY QUESTION CHECK  END ========= //
+						
+						if(mayBeSent){//  send to server only if all mandatory questions were filled
+							
+							AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+							// Add the buttons
+							builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+							           public void onClick(DialogInterface dialog, int id) {
+							        	   sendAnswersToServer();
+							           }
+							       });
+							builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+							           public void onClick(DialogInterface dialog, int id) {
+							               // User cancelled the dialog
+							        	   dialog.dismiss();
+							           }
+							       });
 
-					dialog.show();
-				}
-			});
-		}
+							builder.setMessage(R.string.surveySendToServerMessage).setTitle(R.string.surveySendToServerTitle);
+							
+							// Create the AlertDialog
+							AlertDialog dialog = builder.create();
+
+							dialog.show();
+						}
+						}
+				});
+			}
 		else
 			buttonNext.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					int curPosition  = viewPager.getCurrentItem();
-					viewPager.setCurrentItem(curPosition+1, true);
-				}
-			});
+			
+			@Override
+			public void onClick(View v) {
+				int curPosition  = viewPager.getCurrentItem();
+				viewPager.setCurrentItem(curPosition+1, true);
+			}
+		});
 			
 		//============ END HANDLING OF BUTTONS SHOWN IN FRAGMENT END ========================
 	}
 
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.Fragment#setUserVisibleHint(boolean)
+	 */
+	@Override
+	public void setUserVisibleHint(boolean isVisibleToUser) {
+		super.setUserVisibleHint(isVisibleToUser);
+		if(isVisibleToUser){
+			// oh I got selected, check if there is a message for me
+			Intent activityIntent = getActivity().getIntent();
+			int fragmentWhichShouldScroll = activityIntent.getIntExtra(KEY_POSITION_OF_FRAGMENT_WHICH_SHOULD_SCROLL, -1);
+			if(fragmentWhichShouldScroll == mPosition){
+				// it is me who should scroll, get that question id
+				int questionId = activityIntent.getIntExtra(KEY_QUESTION_TO_SCROLL_TO, -1);
+				// find the question instance
+				for(Question aQuestion : mQuestionTitleMappings.keySet())
+					if(aQuestion.getId() == questionId){
+						// we have found the question, now scroll to it
+						scrollToQuestion(aQuestion);
+						break;
+					}
+				// remove the information from the intent, because consumed by this FormFragment
+				activityIntent.removeExtra(KEY_POSITION_OF_FRAGMENT_WHICH_SHOULD_SCROLL);
+				activityIntent.removeExtra(KEY_QUESTION_TO_SCROLL_TO);
+				}
+			}
+	}
 
 
 	/**
@@ -395,8 +508,12 @@ public class FormFragment extends Fragment {
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
-		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		if(question.isMandatory())
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyleMandatory);
+		else
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
 		questionContainer.addView(questionView);
+		mQuestionTitleMappings.put(question, questionView);
 
 		final RadioButton[] rb = new RadioButton[possibleAnswers.size()];
 		RadioGroup rg = new RadioGroup(getActivity()); // create the RadioGroup
@@ -452,13 +569,18 @@ public class FormFragment extends Fragment {
 
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + questionText);
-		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		if(question.isMandatory())
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyleMandatory);
+		else
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
 		questionContainer.addView(questionView);
+		mQuestionTitleMappings.put(question, questionView);
 
 		Log.i(LOG_TAG, "questionView = " + questionView.getText());
 		
 		final HashSet<String> madeAnswers = new HashSet<String>();
 		madeAnswers.addAll(Arrays.asList(question.getAnswer().split(",")));
+		madeAnswers.remove(""); // paranoia
 
 		final CheckBox[] checkBoxs = new CheckBox[possibleAnswers.size()];
 		for (int i = 0; i < checkBoxs.length; i++) {
@@ -484,7 +606,8 @@ public class FormFragment extends Fragment {
 					String newAnswer = "";
 					for(String madeAnswer1 : madeAnswers)
 						newAnswer = newAnswer+","+madeAnswer1;
-					newAnswer.replaceFirst(",", "");
+					if(!newAnswer.isEmpty())
+						newAnswer=newAnswer.substring(1); // remove the leading ","
 					question.setAnswer(newAnswer);
 				}
 			});
@@ -504,8 +627,12 @@ public class FormFragment extends Fragment {
 		LinearLayout questionContainer = generateQuestionContainer(linearLayoutInsideAScrollView);
 		TextView questionView = new TextView(getActivity());
 		questionView.setText(ordinal + ". " + question.getTitle());
-		questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
+		if(question.isMandatory())
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyleMandatory);
+		else
+			questionView.setTextAppearance(getActivity(), R.style.QuestionTextStyle);
 		questionContainer.addView(questionView);
+		mQuestionTitleMappings.put(question, questionView);
 
 		final EditText editText = new EditText(getActivity());
 		String madeAnswer = question.getAnswer();
@@ -553,6 +680,7 @@ public class FormFragment extends Fragment {
 		outState.putString(InstalledExternalApplication.KEY_APK_ID, mAPKID);
 		outState.putBoolean(KEY_IS_FIRST, mIsFirst);
 		outState.putBoolean(KEY_IS_LAST, mIsLast);
+		outState.putInt(KEY_POSITION, mPosition);
 		super.onSaveInstanceState(outState);
 	}
 
@@ -663,11 +791,42 @@ public class FormFragment extends Fragment {
 					handleException(c.e);
 				}
 			}
-		}	
+		}
 		
 		//===========================================================================
 		//================== END SENDING RESULTS TO SERVER ==========================
 		//===========================================================================
+
+		/**
+		 * Returns the position of this {@link FormFragment} instance in the view pager.
+		 * @return the position of this fragment in the pager
+		 */
+		public int getPosition() {
+			return mPosition;
+		}
+
+
+		/**
+		 * Sets a variable in this {@link FormFragment} indicating its position
+		 * in the view pager.
+		 * @param position the position to set
+		 */
+		void setPosition(int position) {
+			this.mPosition = position;
+		}
+		
+		/**
+		 * Scrolls the scroll view of this {@link FormFragment} instance to specified question
+		 * so that it is visible to the user.
+		 * @param questionToCheck question to scroll to
+		 */
+		private void scrollToQuestion(Question questionToCheck) {
+			TextView textView = mQuestionTitleMappings.get(questionToCheck);
+			// scroll to the top of the title
+			mScrollView.smoothScrollTo(0, textView.getTop());
+		}
+		
+		
 	
 	
 }

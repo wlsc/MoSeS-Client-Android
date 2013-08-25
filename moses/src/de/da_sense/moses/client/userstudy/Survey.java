@@ -75,14 +75,17 @@ public class Survey extends HasID implements IHasTitle{
 									else
 										if(somethingInQuestion.equals("QUESTION_TITLE"))
 											aQuestion.setTitle(questionObject.getString(somethingInQuestion));
-										else{
-											// it is not QUESTION_TYPE nor QUESTION_TITLE, it must be an id of a possible answer
-											PossibleAnswer aPossibleAnswer = new PossibleAnswer();
-											aPossibleAnswer.setId(Integer.parseInt(somethingInQuestion));
-											JSONObject possibleAnswerObject = questionObject.getJSONObject(somethingInQuestion);
-											aPossibleAnswer.setTitle(possibleAnswerObject.getString("POSSIBLE_ANSWER_TITLE"));
-											possibleAnswers.add(aPossibleAnswer);
-										}
+										else
+											if(somethingInQuestion.equals("QUESTION_MANDATORY"))
+												aQuestion.setIsMandatory(Integer.parseInt(questionObject.getString(somethingInQuestion)));
+											else{
+												// it is not QUESTION_TYPE nor QUESTION_TITLE, it must be an id of a possible answer
+												PossibleAnswer aPossibleAnswer = new PossibleAnswer();
+												aPossibleAnswer.setId(Integer.parseInt(somethingInQuestion));
+												JSONObject possibleAnswerObject = questionObject.getJSONObject(somethingInQuestion);
+												aPossibleAnswer.setTitle(possibleAnswerObject.getString("POSSIBLE_ANSWER_TITLE"));
+												possibleAnswers.add(aPossibleAnswer);
+											}
 								}
 								aQuestion.setPossibleAnswers(possibleAnswers);
 								questions.add(aQuestion);

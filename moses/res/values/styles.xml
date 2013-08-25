@@ -34,6 +34,12 @@
         <item name="android:textStyle">bold</item>
     </style>
     
+    <style name="QuestionTextStyleMandatory" parent="android:Theme.Holo.Light.DarkActionBar">
+        <item name="android:textSize">@dimen/text_size_question</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/dark_red</item>
+    </style>
+    
     <style name="PossibleAnswerTextStyle" parent="android:Theme.Holo.Light.DarkActionBar">
         <item name="android:textSize">@dimen/text_size_possible_answer</item>
     </style>

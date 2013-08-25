@@ -206,6 +206,7 @@
     <string name="notification_server_took_too_long_to_respond">Server took too long to respond.</string>
     <string name="notification_unknown_error_has_occurred">An unknown error has occurred.</string>
     <string name="notification_downloading_survey">Downloading survey.</string>
+    <string name="notification_mandatory_question_unanswered">Red questions are mandatory!</string>
     
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>

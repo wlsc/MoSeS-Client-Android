@@ -49,6 +49,7 @@ class SurveyActivityPagerAdapter extends FragmentStatePagerAdapter{
     @Override
     public Fragment getItem(int i) {
         FormFragment formFragment = new FormFragment();
+        formFragment.setPosition(i);
         formFragment.setFormID(mForms.get(i).getId());
         formFragment.setAPKID(mAPKID);
         
