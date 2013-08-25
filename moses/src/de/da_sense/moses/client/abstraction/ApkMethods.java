@@ -18,6 +18,8 @@ import android.preference.PreferenceManager;
 import de.da_sense.moses.client.abstraction.apks.ApkInstallObserver;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstallApkActivity;
+import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplication;
+import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
 import de.da_sense.moses.client.com.ConnectionParam;
 import de.da_sense.moses.client.com.NetworkJSON.BackgroundException;
 import de.da_sense.moses.client.com.ReqTaskExecutor;
@@ -179,6 +181,19 @@ public class ApkMethods {
 						externalApplication.setBadge(badge);
 
 						apps.add(externalApplication);
+						
+						// update external application
+						
+						InstalledExternalApplication externalApp = InstalledExternalApplicationsManager.getInstance().getAppForId(id);
+						if(externalApp != null){
+							externalApp.setName(name);
+							externalApp.setDescription(description);
+							externalApp.setStartDate(startDate);
+							externalApp.setEndDate(endDate);
+							externalApp.setApkVersion(apkVersion);
+							externalApp.setBadge(badge);
+						}
+						
 					}
 
 					observer.apkListRequestFinished(apps);
