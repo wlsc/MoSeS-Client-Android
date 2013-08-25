@@ -295,6 +295,9 @@ public class DetailFragment extends Fragment {
 							AvailableFragment.getInstance().handleInstallApp(InstalledExternalApplicationsManager.getInstance().getAppForId(mAPKID));
 						}
 					});
+					// make the label of survey button shorter
+					Button surveyButton = (Button) mDetailFragmentView.findViewById(R.id.btn_questionnaire);
+					surveyButton.setText(getString(R.string.btn_survey_short));
 				} else {
 					button.setVisibility(View.GONE);
 				}

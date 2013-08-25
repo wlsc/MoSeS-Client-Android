@@ -170,7 +170,7 @@
 
     <!-- Buttons -->
     <string name="button_login">Login</string>
-    <string name="button_update">Update App</string>
+    <string name="button_update">Update</string>
     <string name="button_close">Close</string>
     <string name="button_start">Start</string>
     
@@ -184,6 +184,7 @@
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_connect">Connect</string>
     <string name="btn_survey">View survey</string>
+    <string name="btn_survey_short">Survey</string>
     
     <!-- Details -->
     <string name="details_running_noquestionnaire">no questionnaire</string>
