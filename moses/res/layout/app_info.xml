@@ -3,8 +3,8 @@
     android:id="@+id/relativeParent"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginLeft="5dip"
-    android:layout_marginRight="5dip"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
     android:background="@android:color/background_light"
     android:gravity="end"
     android:orientation="vertical" >
@@ -13,8 +13,9 @@
         android:id="@+id/appInfoHeadline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="10dp"
-        android:text="User Study Information"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="@string/text_page_title"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold" />
 
@@ -22,21 +23,24 @@
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:layout_below="@id/appInfoHeadline" >
 
+        <!-- 
         <ImageView
+            android:contentDescription="@string/content_description_moses_logo"
             android:id="@+id/appimage"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="@dimen/padding_small"
-            android:src="@drawable/ic_launcher" />
+            android:src="@drawable/ic_launcher" /> -->
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/padding_medium"
-            android:text="Name: "
+            android:text="@string/text_app_name"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold" />
 
@@ -44,7 +48,7 @@
             android:id="@+id/usname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="US_NAME"
+            android:layout_marginLeft="5dp"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
@@ -77,30 +81,30 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:text="Start Date: "
+                        android:text="@string/text_app_start_date"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_us_startdate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
                         android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:layout_marginRight="@dimen/padding_medium"
-                        android:text="START_DATE" />
+                        android:layout_marginRight="@dimen/padding_medium" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:text=" End Date: "
+                        android:text="@string/text_app_end_date"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_us_enddate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:text="END_DATE" />
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginBottom="@dimen/padding_extrasmall" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -112,16 +116,16 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:text="APK Version: "
+                        android:text="@string/text_app_version"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tv_us_apkversion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
                         android:layout_marginBottom="@dimen/padding_extrasmall"
-                        android:layout_marginRight="@dimen/padding_medium"
-                        android:text="APK_VERSION" />
+                        android:layout_marginRight="@dimen/padding_medium" />
                 </LinearLayout>
 
                 <TextView
@@ -137,8 +141,8 @@
                     android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minLines="5"
-                    android:text="DESCRIPTION" />
+                    android:layout_marginTop="10dp"
+                    android:minLines="5" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

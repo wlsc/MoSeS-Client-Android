@@ -41,9 +41,9 @@
     <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
-    <string name="userStudy_available">Available user study</string>
-    <string name="userStudy_running">Running user study</string>
-    <string name="userStudy_past">Past user study</string>
+    <string name="userStudy_available">Back to available tab</string>
+    <string name="userStudy_running">Back to running tab</string>
+    <string name="userStudy_past">Back to history tab</string>
     
     <string name="loadingName">Loading Name&#8230; (ID: %1$s)</string>
     <string name="loadingDescription">Loading Description&#8230;</string>
@@ -140,6 +140,11 @@
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet.</string>
 
     <!-- App Info -->
+    <string name="text_page_title">User Study Information</string>
+    <string name="text_app_name">Name:</string>
+    <string name="text_app_start_date">Start Date:</string>
+    <string name="text_app_end_date">End Date:</string>
+    <string name="text_app_version">Version:</string> 
     <string name="text_app_description">User study description: &#160;</string>
     
     <!-- Moses Service -->
@@ -196,7 +201,7 @@
     <!-- Misc -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor.</string>
     <string name="apk_name">Apk name</string>
-    <string name="content_description_toast">Small MoSeS logo.</string>
+    <string name="content_description_moses_logo">Small MoSeS logo.</string>
     <string name="content_description_badge">A badge.</string>
     
     <!-- Error messages and notifications-->
