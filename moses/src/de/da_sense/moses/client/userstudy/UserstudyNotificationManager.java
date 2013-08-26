@@ -17,11 +17,13 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import de.da_sense.moses.client.R;
 import de.da_sense.moses.client.ViewUserStudyActivity;
 import de.da_sense.moses.client.WelcomeActivity;
 import de.da_sense.moses.client.abstraction.apks.ExternalApplication;
 import de.da_sense.moses.client.abstraction.apks.InstalledExternalApplicationsManager;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.UserStudyStatusBarHelper;
 import de.da_sense.moses.client.util.FileLocationUtil;
@@ -246,10 +248,11 @@ public class UserstudyNotificationManager {
 						"Could not save userstudy notification to manager because the manager could not be initialized");
 			}
 
-			displayStatusBarNotificationForUserStudy(apkId);
-			
-			// blink with LED
-			displayBlinkingLED(context);
+			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MosesPreferences.PREF_SHOW_STATUSBAR_NOTIFICATIONS, true)){
+				displayStatusBarNotificationForUserStudy(apkId);
+				// blink with LED
+				displayBlinkingLED(context);
+			}
 		}
 		
 	}
@@ -258,7 +261,7 @@ public class UserstudyNotificationManager {
 	 * Blinks with LED with given speed and color
 	 * @param context
 	 */
-	private static void displayBlinkingLED(Context context) {
+	public static void displayBlinkingLED(Context context) {
 		NotificationManager notifManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 	    Notification notif = new Notification();
 	    notif.ledARGB = Color.LTGRAY;
@@ -327,10 +330,11 @@ public class UserstudyNotificationManager {
 			String notificationMessage = String.format(MosesService.getInstance().getString(R.string.notification_survey_available_for),
 					InstalledExternalApplicationsManager.getInstance().getAppForId(apkId).getName());
 			String notificationTitle = MosesService.getInstance().getString(R.string.moses_title);
-			UserStudyStatusBarHelper.showNotificationStatic(intent,notificationMessage, notificationTitle, false, UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
-			
-			// blink with LED
-			displayBlinkingLED(context);
+			if(PreferenceManager.getDefaultSharedPreferences(context).getBoolean(MosesPreferences.PREF_SHOW_STATUSBAR_NOTIFICATIONS, true)){
+				UserStudyStatusBarHelper.showNotificationStatic(intent,notificationMessage, notificationTitle, false, UserStudyStatusBarHelper.notificationManagerIdForApkId(apkId), MosesService.getInstance());
+				// blink with LED
+				displayBlinkingLED(context);
+			}
 		}
 
 	}

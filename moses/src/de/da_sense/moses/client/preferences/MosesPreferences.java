@@ -62,6 +62,11 @@ public class MosesPreferences extends PreferenceActivity {
 	public static String PREF_SHOW_SPLASHSCREEN = "splashscreen_pref";
 	
 	/**
+	 * Key for the shared preference for showing the notifications in status bar
+	 */
+	public static String PREF_SHOW_STATUSBAR_NOTIFICATIONS = "statusbar_notifications_pref";
+	
+	/**
 	 * Key for the clients ID when using Google Clous Messaging (GCM)
 	 */
 	public static String PREF_GCM_ID = "c2dm_pref";

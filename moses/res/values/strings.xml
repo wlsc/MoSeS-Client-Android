@@ -151,6 +151,7 @@
     <!-- Preferences -->
     <string name="settings_title">MoSeS - Settings</string>
     <string name="show_splash">Show splash screen</string>
+    <string name="show_notifications_in_statusbar">Show notifications in statusbar</string>
     <string name="title_autologin_pref">Login automatically?</string>
     <string name="summary_autologin_pref">Please tick this checkbox if you want to login to the service on each program start.</string>
     <string name="dialog_title_password_pref">Password</string>

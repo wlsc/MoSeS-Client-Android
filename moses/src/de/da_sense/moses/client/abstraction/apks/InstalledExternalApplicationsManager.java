@@ -12,8 +12,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
+import android.preference.PreferenceManager;
+import de.da_sense.moses.client.preferences.MosesPreferences;
 import de.da_sense.moses.client.service.MosesService;
 import de.da_sense.moses.client.service.helpers.UpdateStatusBarHelper;
+import de.da_sense.moses.client.userstudy.UserstudyNotificationManager;
 import de.da_sense.moses.client.util.FileLocationUtil;
 import de.da_sense.moses.client.util.Log;
 
@@ -351,7 +354,10 @@ public class InstalledExternalApplicationsManager {
 				}
 
 				if (MosesService.getInstance() != null) {
-					UpdateStatusBarHelper.displayStatusBarNotification(app.getID(), MosesService.getInstance());
+					if(PreferenceManager.getDefaultSharedPreferences(MosesService.getInstance()).getBoolean(MosesPreferences.PREF_SHOW_STATUSBAR_NOTIFICATIONS, true)){
+						UpdateStatusBarHelper.displayStatusBarNotification(app.getID(), MosesService.getInstance());
+						UserstudyNotificationManager.displayBlinkingLED(MosesService.getInstance());
+					}
 				} else {
 					Log.e("MoSeS.UPDATE", "MoSesService is dead, so no notification about the update could be shown");
 				}

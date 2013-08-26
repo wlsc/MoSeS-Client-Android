@@ -21,5 +21,11 @@
             android:defaultValue="true"
             android:key="splashscreen_pref"
             android:title="@string/show_splash" />
+        
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="statusbar_notifications_pref"
+            android:title="@string/show_notifications_in_statusbar" />
+        
     </PreferenceCategory>
 </PreferenceScreen>
