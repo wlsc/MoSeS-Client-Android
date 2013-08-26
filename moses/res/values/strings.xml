@@ -3,7 +3,7 @@
     <string name="app_c2dm_email">moses.tud@googlemail.com</string>
     
     <string name="app_name">MoSeS</string>
-    <string name="title_activity_main">Studies</string>
+    <string name="title_activity_main">Control Panel</string>
     <string name="title_activity_questionnaire">Survey</string>
 
 	<!-- Todo: Sort it pls -->
@@ -12,7 +12,7 @@
 	<string name="connected">Connected</string>
 	<string name="login_error">Error while logging in.</string>
     <string name="nonEmptyString">Please enter a non-empty string.</string>
-    <string name="retry">Try to reconnect</string>
+    <string name="retry">Reconnect</string>
     <string name="refresh">Refetch</string>
     <string name="downloadingApp">Downloading the app&#8230;</string>
     <string name="pleaseWait">Please wait.</string>
@@ -118,19 +118,21 @@
     <string name="later">Later</string>
 
     <!-- Installed List -->
-    <string name="installedApkList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="runningTab_UserStudies">Running User Studies</string>
+    <string name="installedApkList_defaultHint">(Tap on a user study for additional information)</string>
     <string name="installedApkList_emptyHint">There are no running user studies on your device.</string>
 
     <!-- Available List -->
-    <string name="availableApkList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="availableApkList_defaultHint">(Tap on a user study for additional information)</string>
     <string name="availableApkList_emptyHint">No user studies are available that match your device.</string>
-    <string name="availableTab_UserStudies">Available User Studies:</string>
+    <string name="availableTab_UserStudies">Available User Studies</string>
     <string name="availableTab_btnOk">Yes</string>
     <string name="availableTab_noInternetConnection">Cannot display the app information because no internet connection seems to be present</string>
     
     
     <!-- History List -->
-    <string name="historyList_defaultHint">Click on a user study to view the full description.</string>
+    <string name="historyTab_UserStudies">Participated User Studies</string>
+    <string name="historyList_defaultHint">(Tap on a user study for additional information)</string>
     <string name="historyList_emptyHint">There are no past user studies on your device.</string>
     
     <!-- APK List -->

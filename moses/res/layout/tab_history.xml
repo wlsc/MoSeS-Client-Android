@@ -9,9 +9,9 @@
         android:id="@+id/historyHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
-        android:text="Participated User Studies:"
+        android:gravity="center"
+        android:text="@string/historyTab_UserStudies"
         android:textAppearance="?android:attr/textAppearanceLarge" />
     
     <TextView
@@ -19,9 +19,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:layout_marginTop="0dp"
+        android:gravity="center"
         android:text="@string/installedApkList_defaultHint"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textSize="12sp" />
     
     <ListView
         android:id="@id/android:list"
