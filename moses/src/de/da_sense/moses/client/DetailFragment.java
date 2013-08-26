@@ -423,7 +423,7 @@ public class DetailFragment extends Fragment {
 
 	/**
 	 * Sends a request to server for a survey. Periodically checks if the server
-	 * has responded for 2 seconds. If so, takes proper actions. If not, it
+	 * has responded for 3 seconds. If so, takes proper actions. If not, it
 	 * informs the user.
 	 * 
 	 * @author Zijad Maksuti
@@ -474,7 +474,7 @@ public class DetailFragment extends Fragment {
 						// survey has arrived, kill the pigeons
 						break;
 					} else {
-						if (System.nanoTime() - mTimeStarted > 2000000000L) { // 2
+						if (System.nanoTime() - mTimeStarted > 3000000000L) { // 3
 																				// seconds
 							mToLongToRespond = true;
 							break; // do not wait to long
