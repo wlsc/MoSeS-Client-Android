@@ -7,6 +7,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Queue;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -54,7 +55,8 @@ public class ViewUserStudyActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		ActionBar ab = getActionBar();
+		ab.setTitle(getString(R.string.actionbar_title_new_study));
 		// TODO: remove userstudy NOTIFICATION if it still exists in the bar,
 		// because this could've been called from the "later" list (very
 		// unlikely thou: requires double notification)
@@ -399,19 +401,6 @@ public class ViewUserStudyActivity extends Activity {
 			}
 		});
 		installer.start();
-	}
-
-	/**
-	 * Concatenate an exception to the stack trace.
-	 * @param e the exception to add to the stack trace
-	 * @return the stack trace
-	 */
-	public static String concatStacktrace(Exception e) {
-		String stackTrace = "";
-		for (int i = 0; i < e.getStackTrace().length; i++) {
-			stackTrace += e.getStackTrace()[i];
-		}
-		return stackTrace;
 	}
 
 }

@@ -42,21 +42,21 @@
         
         <activity
             android:name=".WelcomeActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:launchMode="standard">
             <!-- android:configChanges="orientation|keyboardHidden" -->
         </activity>
         
         <activity android:name=".LoginActivity"></activity>
         <activity android:name=".RunningActivity"></activity>
         <activity android:name=".DetailActivity"></activity>
-        <activity android:name="de.da_sense.moses.client.abstraction.apks.InstallApkActivity"></activity>
+        <activity android:name=".InstallApkActivity"></activity>
         <activity android:name=".SurveyActivity"></activity>
         
         <!-- just added from old client -->
-        <activity android:name="MosesActivity"></activity>
-        <activity android:name="ViewUserStudyActivity"></activity>
-        <activity android:name="ViewUserStudyNotificationsList"></activity>
-        <activity android:name="AskForDeviceIDActivity"></activity>
+        <activity android:name=".ViewUserStudyActivity"></activity>
+        <activity android:name=".ViewUserStudyNotificationsList"></activity>
+        <activity android:name=".AskForDeviceIDActivity"></activity>
        
         <activity 
             android:name=".preferences.MosesPreferences"

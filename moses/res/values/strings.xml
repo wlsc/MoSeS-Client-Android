@@ -219,6 +219,7 @@
     
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>
+    <string name="actionbar_title_new_study">New user study</string>
     
     <!-- Button labels -->
     <string name="next">Next form</string>
