@@ -305,9 +305,18 @@ public class WelcomeActivity extends FragmentActivity implements
 		boolean result = false;
 		switch (item.getItemId()) {
 
+		case R.id.Menu_About:
+			// About menu was clicked
+			Log.d(LOG_TAG, "About MoSeS was clicked");
+			// start about activity
+			Intent about = new Intent(this, AboutActivity.class);
+			startActivityForResult(about, 0);
+			result = true;
+			break;
+		
 		case R.id.Menu_Settings:
 			// Settings entry in menu clicked
-			Log.d("MainActivity", "Settings in menu clicked");
+			Log.d(LOG_TAG, "Settings in menu clicked");
 			// make an intent between this activity and MosesPreferences to show
 			// the setting screen
 			Intent settings = new Intent(this, MosesPreferences.class);
@@ -318,7 +327,7 @@ public class WelcomeActivity extends FragmentActivity implements
 
 		case R.id.Menu_Logout:
 			// Logout entry in menu clicked
-			Log.d("MainActivity", "Logout in menu clicked");
+			Log.d(LOG_TAG, "Logout in menu clicked");
 			PreferenceManager.getDefaultSharedPreferences(this).edit()
 					.remove(MosesPreferences.PREF_EMAIL)
 					.remove(MosesPreferences.PREF_PASSWORD).commit();

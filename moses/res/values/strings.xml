@@ -1,16 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <string name="app_c2dm_email">moses.tud@googlemail.com</string>
-    
     <string name="app_name">MoSeS</string>
     <string name="title_activity_main">Control Panel</string>
     <string name="title_activity_questionnaire">Survey</string>
 
-	<!-- Todo: Sort it pls -->
-	<string name="online">Online</string>
-	<string name="offline">Offline</string>
-	<string name="connected">Connected</string>
-	<string name="login_error">Error while logging in.</string>
+    <!-- Todo: Sort it pls -->
+    <string name="online">Online</string>
+    <string name="offline">Offline</string>
+    <string name="connected">Connected</string>
+    <string name="login_error">Error while logging in.</string>
     <string name="nonEmptyString">Please enter a non-empty string.</string>
     <string name="retry">Reconnect</string>
     <string name="refresh">Refetch</string>
@@ -37,30 +37,24 @@
     <string name="userStudy_errorMessage">An error occurred when retrieving the informations for a user study: %1$s.\nSorry! This was a shock for both of us. Maybe you could try again from the available tab later? Thanks!</string>
     <string name="userStudy_errorMessage2">An error occurred when installing the user study app. Sorry!</string>
     <string name="userStudy_errorMessage_saveDatabase">An error occurred when saving the app database.</string>
-    
     <string name="userStudy_newStudyAvailable">A new user study is available for you!</string>
     <string name="userStudy_userStudyName">Name: %1$s</string>
     <string name="userStudy_userStudyDescription">%1$s</string>
     <string name="userStudy_available">Back to available tab</string>
     <string name="userStudy_running">Back to running tab</string>
     <string name="userStudy_past">Back to history tab</string>
-    
     <string name="loadingName">Loading Name&#8230; (ID: %1$s)</string>
     <string name="loadingDescription">Loading Description&#8230;</string>
     <string name="not_set">not set</string>
-    
-    
     <string name="hwInfo_errorMessage">Error while retrieving Hardware Informations.</string>
     <string name="hwInfo_parametersRetrievedSuccessfully">Parameters retrieved successfully from server</string>
     <string name="hwInfo_androidVersion">Android version:</string>
     <string name="hwInfo_sensors">SENSORS:</string>
-    
     <string name="downloadApk_downloadFailed">Download failed.</string>
     <string name="downloadApk_errorMessage2">Server sent malformed url. We could not download application: %1$s</string>
     <string name="downloadApn_failedLinkRequest">Downloadlink request failed</string>
-    
     <string name="appUpdateAvailable">An update is available for the app \"%1$s\".</string>
-    
+
     <!-- Sensor names -->
     <string name="sensor_all">All</string>
     <string name="sensor_unknown">Unknown sensor</string>
@@ -77,14 +71,12 @@
     <string name="sensor_rotation">Rotation sensor</string>
     <string name="sensor_humidity">Humidity sensor</string>
     <string name="sensor_ambient_temperature">Ambient temperature</string>
-    
-   
+
     <!-- Tabs -->
     <string name="tab_available">Available</string>
     <string name="tab_running">Running</string>
     <string name="tab_history">History</string>
-    
-       
+
     <!-- Login screen -->
     <string name="login_hint_email">Email</string>
     <string name="login_hint_pass">Password</string>
@@ -128,13 +120,12 @@
     <string name="availableTab_UserStudies">Available User Studies</string>
     <string name="availableTab_btnOk">Yes</string>
     <string name="availableTab_noInternetConnection">Cannot display the app information because no internet connection seems to be present</string>
-    
-    
+
     <!-- History List -->
     <string name="historyTab_UserStudies">Participated User Studies</string>
     <string name="historyList_defaultHint">(Tap on a user study for additional information)</string>
     <string name="historyList_emptyHint">There are no past user studies on your device.</string>
-    
+
     <!-- APK List -->
     <string name="apklist_hint_pendingrequest">List of APKs not fetched from server.</string>
     <string name="apklist_hint_noconnectivity">Your device appears not to be connected to the internet.</string>
@@ -144,9 +135,9 @@
     <string name="text_app_name">Name:</string>
     <string name="text_app_start_date">Start Date:</string>
     <string name="text_app_end_date">End Date:</string>
-    <string name="text_app_version">Version:</string> 
+    <string name="text_app_version">Version:</string>
     <string name="text_app_description">User study description: &#160;</string>
-    
+
     <!-- Moses Service -->
     <string name="no_username_password">Please enter your username and password before logging in.</string>
     <string name="no_internet_connection">No internet connection.</string>
@@ -173,38 +164,40 @@
     <string name="general_settings_summary">Control spash screen or change the name of this device</string>
     <string name="dev_id_invalid_character_error">Only alphanumeric characters, underscores and spaces allowed.</string>
     <string name="dev_id_empty_error">Device name may not be empty.</string>
-<!--     <string name="dev_id_invalid_character_error">Only .</string> -->
-<!--     <string name="dev_id_empty_error">Device id .</string> -->
+    <!-- <string name="dev_id_invalid_character_error">Only .</string> -->
+    <!-- <string name="dev_id_empty_error">Device id .</string> -->
+
 
     <!-- Buttons -->
     <string name="button_login">Login</string>
     <string name="button_update">Update</string>
     <string name="button_close">Close</string>
     <string name="button_start">Start</string>
-    
+
     <!-- Checkboxes -->
     <string name="remember_credentials">Remember Credentials</string>
 
     <!-- Menus -->
-    <string name="menu_logout">Logout</string>
+    <string name="menu_about">About</string>
     <string name="menu_settings">Settings</string>
+    <string name="menu_logout">Logout</string>
     <string name="menu_hardwareinfo">Hardware Information</string>
     <string name="menu_disconnect">Disconnect</string>
     <string name="menu_connect">Connect</string>
     <string name="btn_survey">View survey</string>
     <string name="btn_survey_short">Survey</string>
-    
+
     <!-- Details -->
     <string name="details_running_noquestionnaire">no questionnaire</string>
     <string name="details_running_questionnairesent">questionnaire sent</string>
-    
+
     <!-- Misc -->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor.</string>
     <string name="apk_name">Apk name</string>
     <string name="content_description_moses_logo">Small MoSeS logo.</string>
     <string name="content_description_badge">A badge.</string>
-    
-    <!-- Error messages and notifications-->
+
+    <!-- Error messages and notifications -->
     <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>
     <string name="notification_no_internet_connection">Please check your internet connection.</string>
     <string name="notification_no_survey_for_this_apk">No survey for this apk.</string>
@@ -216,14 +209,35 @@
     <string name="notification_unknown_error_has_occurred">An unknown error has occurred.</string>
     <string name="notification_downloading_survey">Downloading survey.</string>
     <string name="notification_mandatory_question_unanswered">Red questions are mandatory!</string>
-    
+
     <!-- ActionBar titles -->
     <string name="actionbar_title_survey">Survey for: \"%s\"</string>
     <string name="actionbar_title_new_study">New user study</string>
+    <string name="actionbar_title_about">About</string>
     
+    <!-- About activity -->
+    <string name="about_header_developers">Developers</string>
+    <string name="about_last_developers_text">In the summer of 2013 major improvements in usability, user experience and overall system stability were made to MoSeS platform by:</string>
+    <string name="about_founder_developer_with_email_1">Wladimir Schmidt (w_schmidt_w@yahoo.com)</string>
+    <string name="about_founder_developer_with_email_2">Zijad Maksuti (zijad.maksuti@gmail.com)</string>
+    <string name="about_supervisor_text">The MoSeS project started and being developed under supervision of Smart Urban Networks\'s area head Dr. Immanuel Schweizer.</string>
+    <string name="about_continue_developers_text">The further development of the MoSeS platform was accomplished in 2012 by:</string>
+    <string name="about_continue_developer_1">Sandra Christina Amend</string>
+    <string name="about_continue_developer_2">Ibrahim Alyahya</string>
+    <string name="about_continue_developer_3">Fehmi Belhadj</string>
+    <string name="about_continue_developer_4">Florian Schnell</string>
+    <string name="about_founder_developers_text">MoSeS platform was founded in 2011 and originally developed by:</string>
+    <string name="about_founder_developer_1">Wladimir Schmidt</string>
+    <string name="about_founder_developer_2">Zijad Maksuti</string>
+    <string name="about_founder_developer_3">Jaco Hofmann</string>
+    <string name="about_founder_developer_4">Simon Leisching</string>
+    <string name="about_telecooperation_lab_more_info">More info about Telecooperation Lab on the website: <a href="http://www.tk.informatik.tu-darmstadt.de">www.tk.informatik.tu-darmstadt.de</a></string>
+    <string name="about_telecooperation_lab_footer">2013 © Telecooperation Lab \nAll rights reserved</string>
+
     <!-- Button labels -->
     <string name="next">Next form</string>
     <string name="back">Back</string>
     <string name="download_survey">Download survey</string>
+    <string name="action_settings">Settings</string>
 
 </resources>
