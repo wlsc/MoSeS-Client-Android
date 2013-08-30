@@ -258,6 +258,12 @@ public class DetailFragment extends Fragment {
 							// still waiting for the survey
 							button.setEnabled(false);
 						}
+						else{
+							if(!app.getEndDateReached()){
+								// the button should be disabled because the end date has still not been reached
+								button.setEnabled(false);
+							}
+						}
 					}
 
 					button.setOnClickListener(new OnClickListener() {

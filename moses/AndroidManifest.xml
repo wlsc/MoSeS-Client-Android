@@ -56,6 +56,7 @@
 
             <!-- android:configChanges="orientation|keyboardHidden" -->
         </activity>
+<<<<<<< HEAD
         <activity android:name="de.da_sense.moses.client.LoginActivity" >
         </activity>
         <activity android:name="de.da_sense.moses.client.RunningActivity" >
@@ -81,6 +82,22 @@
         </activity>
  <!-- to be able to run the window of settings -->
 
+=======
+        
+        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".DetailActivity"></activity>
+        <activity android:name=".abstraction.apks.InstallApkActivity"></activity>
+        <activity android:name=".SurveyActivity"></activity>
+        
+        <!-- just added from old client -->
+        <activity android:name=".ViewUserStudyActivity"></activity>
+       
+        <activity 
+            android:name=".preferences.MosesPreferences"
+            android:theme="@style/AppTheme" android:configChanges="orientation|screenSize">
+        </activity> <!-- to be able to run the window of settings -->
+       
+>>>>>>> 1c3f95934057f3761143eb9e699ca952162fd42d
         <receiver android:name="de.da_sense.moses.client.service.StartupIntentReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

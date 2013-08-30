@@ -16,6 +16,7 @@ public class InstalledExternalApplication extends ExternalApplication {
 	private boolean wasInstalledAsUserStudy;
 	private boolean updateAvailable;
 	private String installedVersion;
+	private boolean mIsSurveyAvailable = false;
 
 	/**
 	 * Creates the reference to the external application by specifying the
@@ -484,6 +485,20 @@ public class InstalledExternalApplication extends ExternalApplication {
 	@Override
 	public boolean isDataComplete() {
 		return super.isDataComplete();
+	}
+
+	/**
+	 * @return the mIsSurveyAvailable
+	 */
+	public boolean isSurveyAvailable() {
+		return mIsSurveyAvailable;
+	}
+
+	/**
+	 * @param mIsSurveyAvailable the mIsSurveyAvailable to set
+	 */
+	public void setSurveyAvailable(boolean isAvailable) {
+		this.mIsSurveyAvailable = isAvailable;
 	}
 
 }
