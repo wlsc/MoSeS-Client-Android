@@ -48,15 +48,12 @@
         </activity>
         
         <activity android:name=".LoginActivity"></activity>
-        <activity android:name=".RunningActivity"></activity>
         <activity android:name=".DetailActivity"></activity>
-        <activity android:name=".InstallApkActivity"></activity>
+        <activity android:name=".abstraction.apks.InstallApkActivity"></activity>
         <activity android:name=".SurveyActivity"></activity>
         
         <!-- just added from old client -->
         <activity android:name=".ViewUserStudyActivity"></activity>
-        <activity android:name=".ViewUserStudyNotificationsList"></activity>
-        <activity android:name=".AskForDeviceIDActivity"></activity>
        
         <activity 
             android:name=".preferences.MosesPreferences"

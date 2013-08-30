@@ -58,8 +58,8 @@ public class C2DMReceiver extends BroadcastReceiver {
 				if(InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString) != null){
 					// show a notification to user only if the app is still installed
 					// the data on the server may be inconsistent
-					UserstudyNotificationManager.questionnaireNotificationArrived(context, apkidString);
 					InstalledExternalApplicationsManager.getInstance().getAppForId(apkidString).setEndDateReached(true);
+					UserstudyNotificationManager.questionnaireNotificationArrived(context, apkidString);
 				}
 				 
 
