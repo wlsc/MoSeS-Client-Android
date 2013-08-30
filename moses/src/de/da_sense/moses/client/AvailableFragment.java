@@ -89,6 +89,8 @@ public class AvailableFragment extends ListFragment implements
 	 * The activity containing this fragment
 	 */
 	private Activity mActivity;
+	
+	private static final String LOG_TAG = AvailableFragment.class.getName();
 
 	/** Returns the current instance (singleton) */
 	public static AvailableFragment getInstance() {
@@ -290,9 +292,9 @@ public class AvailableFragment extends ListFragment implements
 			emptylistCtrls.setVisibility(View.VISIBLE);
 
 			// set hint that there is no connection
-			TextView mainHint = (TextView) mActivity.findViewById(
-					R.id.apklist_emptylistHintMain);
-			mainHint.setText(R.string.apklist_hint_noconnectivity);
+			TextView instructionView = (TextView) mActivity.findViewById(
+					R.id.availableApkHeaderInstructions);
+			instructionView.setText(R.string.apklist_hint_noconnectivity);
 
 			// set the last layout
 			setLastSetLayout(LayoutState.NO_CONNECTIVITY);
@@ -308,17 +310,14 @@ public class AvailableFragment extends ListFragment implements
 	private void initControlsPendingListRequest() {
 
 		// during a pending request show an empty list
-		LinearLayout emptylistCtrls = (LinearLayout) mActivity
-				.findViewById(R.id.apklist_emptylistLayout);
+		View emptylistCtrls = mActivity.findViewById(R.id.apklist_emptylistLayout);
 		emptylistCtrls.setVisibility(View.VISIBLE);
-		LinearLayout apkListCtrls = (LinearLayout) mActivity.findViewById(
-				R.id.apklist_mainListLayout);
+		View apkListCtrls = mActivity.findViewById(R.id.apklist_mainListLayout);
 		apkListCtrls.setVisibility(View.GONE);
 
 		// display hint that there is a pending request
-		TextView mainHint = (TextView) mActivity.findViewById(
-				R.id.apklist_emptylistHintMain);
-		mainHint.setText(R.string.apklist_hint_pendingrequest);
+		TextView instructionView = (TextView) mActivity.findViewById(R.id.availableApkHeaderInstructions);
+		instructionView.setText(R.string.apklist_hint_pendingrequest);
 
 		// show a refresh button and add an action
 		final Button actionBtn1 = (Button) mActivity.findViewById(
@@ -430,11 +429,6 @@ public class AvailableFragment extends ListFragment implements
 				LinearLayout apkListCtrls = (LinearLayout) mActivity
 						.findViewById(R.id.apklist_mainListLayout);
 				apkListCtrls.setVisibility(View.GONE);
-
-				// show a hint, that there are no apks
-				TextView mainHint = (TextView) mActivity
-						.findViewById(R.id.apklist_emptylistHintMain);
-				mainHint.setText(R.string.availableApkList_emptyHint);
 
 				// we don't need any buttons here
 				Button actionBtn1 = (Button) mActivity
@@ -816,7 +810,10 @@ public class AvailableFragment extends ListFragment implements
 			} else {
 				instructionsView.setText(R.string.availableApkList_defaultHint);
 			}
+			instructionsView.setVisibility(View.VISIBLE);
 		}
+		else
+			Log.w(LOG_TAG, "populateList() instructionview was null");
 
 	}
 

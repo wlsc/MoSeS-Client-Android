@@ -14,6 +14,15 @@
         android:text="@string/availableTab_UserStudies"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+   <TextView
+       android:id="@+id/availableApkHeaderInstructions"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginBottom="10dp"
+       android:gravity="center"
+       android:text="@string/installedApkList_defaultHint"
+       android:textSize="12sp" />
+
     <LinearLayout
         android:id="@+id/apklist_emptylistLayout"
         android:layout_width="match_parent"
@@ -22,14 +31,6 @@
     	android:layout_marginRight="15dp"
        	android:gravity="center"
         android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/apklist_emptylistHintMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxWidth="500sp"
-            android:layout_marginTop="30sp"
-            android:text="@string/apklist_hint_noconnectivity" />
         <LinearLayout
             android:id="@+id/emptylistBtnsLayout"
             android:layout_width="match_parent"
@@ -51,15 +52,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/availableApkHeaderInstructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:text="@string/installedApkList_defaultHint"
-            android:textSize="12sp" />
 
         <ListView
             android:id="@id/android:list"
