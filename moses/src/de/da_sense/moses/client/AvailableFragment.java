@@ -782,26 +782,6 @@ public class AvailableFragment extends ListFragment implements
 		}
 		// we set everything up, so that the installed apps
 		// and the history apps are (should be) disjoint
-		int numberOfApps = applications.size() - hashAppIDs.size()
-				- realHistApps.size();
-
-		Log.d(TAG,
-				"installed: " + hashAppIDs.size() + " history: "
-						+ realHistApps.size() + " available before: "
-						+ applications.size() + " available now: "
-						+ numberOfApps);
-
-		TextView instructionsView = (TextView) mActivity.findViewById(
-				R.id.availableApkHeaderInstructions);
-		// show hint depending the number of available apps
-		if (instructionsView != null) {
-			if (numberOfApps <= 0) { // changed from: if (applications.size() ==
-										// 0)
-				instructionsView.setText(R.string.availableApkList_emptyHint);
-			} else {
-				instructionsView.setText(R.string.availableApkList_defaultHint);
-			}
-		}
 
 		List<Map<String, String>> listContent = new LinkedList<Map<String, String>>();
 		int i = 0, j = 0;
@@ -825,6 +805,18 @@ public class AvailableFragment extends ListFragment implements
 				new String[] { "name", "badge" }, new int[] { R.id.apklistitemtext, R.id.badge });
 
 		setListAdapter(contentAdapter);
+		
+		TextView instructionsView = (TextView) mActivity.findViewById(
+				R.id.availableApkHeaderInstructions);
+		// show hint depending the number of available apps
+		if (instructionsView != null) {
+			if (listContent.size() == 0) {
+				
+				instructionsView.setText(R.string.availableApkList_emptyHint);
+			} else {
+				instructionsView.setText(R.string.availableApkList_defaultHint);
+			}
+		}
 
 	}
 
