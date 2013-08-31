@@ -220,9 +220,9 @@
     <!-- About activity -->
     <string name="about_header_developers">Developers</string>
     <string name="about_last_developers_text">In the summer of 2013 major improvements in usability, user experience and overall system stability were made to MoSeS platform by:</string>
-    <string name="about_founder_developer_with_email_1">Wladimir Schmidt (w_schmidt_w@yahoo.com)</string>
-    <string name="about_founder_developer_with_email_2">Zijad Maksuti (zijad.maksuti@gmail.com)</string>
-    <string name="about_supervisor_text">The MoSeS project started and being developed under supervision of Smart Urban Networks\'s area head Dr. Immanuel Schweizer.</string>
+    <string name="about_founder_developer_with_email_1">Wladimir Schmidt (<a href="mailto:w_schmidt_w@yahoo.com">w_schmidt_w@yahoo.com</a>)</string>
+    <string name="about_founder_developer_with_email_2">Zijad Maksuti (<a href="mailto:zijad.maksuti@gmail.com">zijad.maksuti@gmail.com</a>)</string>
+    <string name="about_supervisor_text">The MoSeS project started and being developed under supervision of Smart Urban Networks\'s area head <a href="http://www.tk.informatik.tu-darmstadt.de/?id=1699">Dr. Immanuel Schweizer</a>.</string>
     <string name="about_continue_developers_text">The further development of the MoSeS platform was accomplished in 2012 by:</string>
     <string name="about_continue_developer_1">Sandra Christina Amend</string>
     <string name="about_continue_developer_2">Ibrahim Alyahya</string>
