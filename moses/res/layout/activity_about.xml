@@ -9,6 +9,7 @@
     tools:context=".AboutActivity" >
 
         <LinearLayout
+            android:id="@+id/about_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"

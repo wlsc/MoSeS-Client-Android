@@ -108,6 +108,7 @@
     <string name="moses_logo">MoSeS logo</string>
     <string name="tap_to_skip">Tap to skip</string>
     <string name="later">Later</string>
+    <string name="dialog_goat">Hello, I am a ninja goat!</string>
 
     <!-- Installed List -->
     <string name="runningTab_UserStudies">Running User Studies</string>
@@ -196,6 +197,7 @@
     <string name="apk_name">Apk name</string>
     <string name="content_description_moses_logo">Small MoSeS logo.</string>
     <string name="content_description_badge">A badge.</string>
+    <string name="content_description_goat">A ninja goat.</string>
 
     <!-- Error messages and notifications -->
     <string name="error_moses_server_bad_response">Server\'s answer was malformed.</string>
