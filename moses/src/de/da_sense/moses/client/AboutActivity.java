@@ -20,8 +20,17 @@ public class AboutActivity extends Activity {
 		setContentView(R.layout.activity_about);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		TextView t2 = (TextView) findViewById(R.id.tk_lab_more_info);
-	    t2.setMovementMethod(LinkMovementMethod.getInstance());
+		TextView tkLabMoreInfo = (TextView) findViewById(R.id.tk_lab_more_info);
+	    tkLabMoreInfo.setMovementMethod(LinkMovementMethod.getInstance());
+	    
+	    TextView aboutFounderDevEmail1 = (TextView) findViewById(R.id.about_founder_dev_email_1);
+	    aboutFounderDevEmail1.setMovementMethod(LinkMovementMethod.getInstance());
+	    
+	    TextView aboutFounderDevEmail2 = (TextView) findViewById(R.id.about_founder_dev_email_2);
+	    aboutFounderDevEmail2.setMovementMethod(LinkMovementMethod.getInstance());
+	    
+	    TextView aboutSupervisorText = (TextView) findViewById(R.id.about_supervisor);
+	    aboutSupervisorText.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
 	@Override
