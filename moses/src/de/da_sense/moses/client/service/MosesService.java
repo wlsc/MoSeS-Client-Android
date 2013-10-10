@@ -404,9 +404,7 @@ public class MosesService extends android.app.Service implements OnSharedPrefere
 				Log.d(LOG_TAG, "Device id changed reload the settings file.");
 				reloadSettings();
 				}
-			else {
-				syncDeviceInformation();
-				}
+			syncDeviceInformation(); // sync with the server
 			}
 		}
 

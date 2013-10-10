@@ -102,9 +102,10 @@ public class WelcomeActivity extends FragmentActivity implements
 	private static boolean mBound = false;
 	/** Stores an APK ID to update the APK. **/
 	public static final String EXTRA_UPDATE_APK_ID = "update_arrived_apkid";
-	
+
 	/**
-	 * Used as a key to pass a variable signaling the owner tab through communication channel.
+	 * Used as a key to pass a variable signaling the owner tab through
+	 * communication channel.
 	 */
 	public static final String KEY_BELONGS_TO = "keyBelongsTo";
 
@@ -120,12 +121,12 @@ public class WelcomeActivity extends FragmentActivity implements
 	private List<WeakReference<Fragment>> mFragList = new ArrayList<WeakReference<Fragment>>();;
 
 	private static final String LOG_TAG = WelcomeActivity.class.getName();
-	
+
 	/**
-	 * The key for an apkid in the bundle.
-	 * If an activity starts {@link WelcomeActivity} with this key set in bundle,
-	 * it means that {@link WelcomeActivity} should show the
-	 * survey of the apk with the id associated with this key to the user.
+	 * The key for an apkid in the bundle. If an activity starts
+	 * {@link WelcomeActivity} with this key set in bundle, it means that
+	 * {@link WelcomeActivity} should show the survey of the apk with the id
+	 * associated with this key to the user.
 	 */
 	public static final String KEY_VIEW_SURVEY = "keyViewSurvey";
 
@@ -330,7 +331,7 @@ public class WelcomeActivity extends FragmentActivity implements
 			startActivityForResult(about, 0);
 			result = true;
 			break;
-		
+
 		case R.id.Menu_Settings:
 			// Settings entry in menu clicked
 			Log.d(LOG_TAG, "Settings in menu clicked");
@@ -549,23 +550,17 @@ public class WelcomeActivity extends FragmentActivity implements
 				Log.d("MoSeS.ACTIVITY", password);
 				e.putString(MosesPreferences.PREF_EMAIL, username);
 				e.putString(MosesPreferences.PREF_PASSWORD, password);
-				String deviceNameAlreadyStored = HardwareAbstraction
-						.extractDeviceNameFromSharedPreferences();
-				if (deviceNameAlreadyStored == null) {
-					// only set the deviceName sent by the server if the client
-					// does not know his name
-					if (deviceName != null) { // the server may not know the
-												// name of the device, so check
-												// if the response contained the
-												// name
-						e.putString(MosesPreferences.PREF_DEVICENAME,
-								deviceName);
-					} else {
-						// the server does not know the deviceName either, set
-						// the the device's model name as the device name
-						e.putString(MosesPreferences.PREF_DEVICENAME,
-								Build.MODEL);
-					}
+				// only set the deviceName sent by the server if the client
+				// does not know his name
+				if (deviceName != null) { // the server may not know the
+											// name of the device, so check
+											// if the response contained the
+											// name
+					e.putString(MosesPreferences.PREF_DEVICENAME, deviceName);
+				} else {
+					// the server does not know the deviceName either, set
+					// the device's model name as the device name
+					e.putString(MosesPreferences.PREF_DEVICENAME, Build.MODEL);
 				}
 				e.apply();
 
@@ -581,12 +576,13 @@ public class WelcomeActivity extends FragmentActivity implements
 				finish();
 				break;
 			}
-		}
-		else if(requestCode == RunningFragment.REQUEST_CODE_NOTIFY_ABOUT_SEND){
-			if(resultCode == RESULT_OK)
-				// the survey has successfully been sent to server, meaning it disappeared from available tab
+		} else if (requestCode == RunningFragment.REQUEST_CODE_NOTIFY_ABOUT_SEND) {
+			if (resultCode == RESULT_OK)
+				// the survey has successfully been sent to server, meaning it
+				// disappeared from available tab
 				// switch to history tab, she is there
-				mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_HISTORY, true);
+				mViewPager.setCurrentItem(
+						WelcomeActivityPagerAdapter.TAB_HISTORY, true);
 		}
 	}
 
@@ -616,22 +612,25 @@ public class WelcomeActivity extends FragmentActivity implements
 		// or an update call
 		boolean isShowUpdateCall = getIntent().getStringExtra(
 				EXTRA_UPDATE_APK_ID) != null;
-		
+
 		if (isShowUpdateCall) {
 			if (getActiveTab() != WelcomeActivityPagerAdapter.TAB_RUNNING) {
 				Log.d("MainActivity - initControls", "WARNING: active Tab "
 						+ "changed because of ShowUpdate-Call. ACTIVE TAB SET "
 						+ "FROM " + getActiveTab() + " TO RUNNING (1)");
-				mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_RUNNING, true);
+				mViewPager.setCurrentItem(
+						WelcomeActivityPagerAdapter.TAB_RUNNING, true);
 			}
 		}
 
 		if (isShowUserStudyCall && isLoginInformationComplete()) {
 			// if a User study has to be shown, and email and password are
 			// set, redirect this
-			UserstudyNotificationManager.displayUserStudyContent(onLoginCompleteShowUserStudy, this);
+			UserstudyNotificationManager.displayUserStudyContent(
+					onLoginCompleteShowUserStudy, this);
 			isShowUserStudyCall = false;
-			getIntent().removeExtra(ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
+			getIntent().removeExtra(
+					ViewUserStudyActivity.EXTRA_USER_STUDY_APK_ID);
 		}
 	}
 
@@ -693,10 +692,12 @@ public class WelcomeActivity extends FragmentActivity implements
 
 		checkInstalledStatesOfApks();
 		Intent startingIntent = getIntent();
-		if(startingIntent.hasExtra(WelcomeActivity.KEY_VIEW_SURVEY)){
-			// some other activity has started this activity in order to show an available survey, just scroll
+		if (startingIntent.hasExtra(WelcomeActivity.KEY_VIEW_SURVEY)) {
+			// some other activity has started this activity in order to show an
+			// available survey, just scroll
 			// to running fragment and let him do the rest
-			mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_RUNNING, true);
+			mViewPager.setCurrentItem(WelcomeActivityPagerAdapter.TAB_RUNNING,
+					true);
 		}
 	}
 
