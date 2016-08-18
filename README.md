@@ -1,8 +1,8 @@
 ==============
-MoSeS-Client
+MoSeS-Client-Android (DISCONTINUED)
 ==============
 
-This is the Android client for the Mobile Sensing System (MoSeS)
+This is the Android client for the Mobile Sensing System (MoSeS) project @ Telecooperation Lab, TU Darmstadt
 
 ==============
 
